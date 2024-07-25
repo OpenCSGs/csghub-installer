@@ -21,7 +21,7 @@ data:
     {{- range $username := $merged.databases }}
     {{- if ne $username "postgres" }}
     {{- $database := printf "%s_production" $username }}
-    {{- $password := include "postgres.initPass" $database }}
+    {{- $password := include "postgresql.initPass" $database }}
     {{- if $secretData }}
     {{- $password = index $secretData $username | b64dec }}
     {{- end }}
