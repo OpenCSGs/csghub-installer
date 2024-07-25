@@ -1,0 +1,26 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.redis }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- if $merged.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "names.hl.svc" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ $merged.service.port }}
+      targetPort: 6379
+      protocol: TCP
+      name: {{ include "common.names.name" . }}
+  selector:
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+{{- end }}
