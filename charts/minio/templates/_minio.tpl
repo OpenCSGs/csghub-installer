@@ -4,33 +4,64 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the name of server endpoint
+Define the name of minio endpoint
 */}}
 {{- define "minio.endpoint" -}}
+{{- $host := include "minio.host" . }}
 {{- $port := include "minio.ports.api" . }}
-{{- printf "http://%s:%s" (include "names.hl.svc" .) $port }}
+{{- printf "http://%s:%s" $host $port -}}
 {{- end }}
 
 {{/*
-Define the port of server api
+Define the host of minio
+*/}}
+{{- define "minio.host" -}}
+{{- printf "%s-%s-hl-svc" .Release.Name "minio" -}}
+{{- end }}
+
+{{/*
+Define the port of minio api
 */}}
 {{- define "minio.ports.api" -}}
-{{- $minioSubchart := .Values.global.minio | default dict }}
-{{- coalesce $minioSubchart.service.ports.api "9000" }}
+{{- $port := "9000" }}
+{{- if hasKey .Values.global "minio" }}
+  {{- if hasKey .Values.global.minio "service" }}
+    {{- if hasKey .Values.global.minio.service "ports" }}
+        {{- if hasKey .Values.global.minio.service.ports "api" }}
+            {{- $port = .Values.global.minio.service.ports.api }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
 {{- end }}
 
 {{/*
-Define the port of server console
+Define the port of minio console
 */}}
 {{- define "minio.ports.console" -}}
-{{- $minioSubchart := .Values.global.minio | default dict }}
-{{- coalesce $minioSubchart.service.ports.console "9001" }}
+{{- $port := "9001" }}
+{{- if hasKey .Values.global "minio" }}
+  {{- if hasKey .Values.global.minio "service" }}
+    {{- if hasKey .Values.global.minio.service "ports" }}
+        {{- if hasKey .Values.global.minio.service.ports "console" }}
+            {{- $port = .Values.global.minio.service.ports.console }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
 {{- end }}
 
 {{/*
 Define the region of server
 */}}
 {{- define "minio.region" -}}
-{{- $minioSubchart := .Values.global.minio | default dict }}
-{{- coalesce $minioSubchart.region "cn-north-1" }}
+{{- $region := "cn-north-1" }}
+{{- if hasKey .Values.global "minio" }}
+  {{- if hasKey .Values.global.minio "region" }}
+    {{- $region = .Values.global.minio.region }}
+  {{- end }}
+{{- end }}
+{{- $region -}}
 {{- end }}
