@@ -1,0 +1,132 @@
+# Default values for minio.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Minio configuration section
+## Minio is a high-performance distributed object storage server, compatible with Amazon S3 cloud storage service.
+enabled: true
+
+replicas: 1
+
+image:
+  ## The repository and tag of the Minio image to use.
+  repository: minio/minio
+  tag: "RELEASE.2024-07-15T19-02-30Z"
+  ## Image pull policy and secrets for accessing private Docker registries.
+  pullPolicy: "IfNotPresent"
+  pullSecret: [ ]
+
+service:
+  ## Service type and ports configuration for Minio API and Console.
+  type: ClusterIP
+  ports:
+    api: 9000
+    console: 9001
+
+## List of default buckets to be created upon Minio deployment.
+buckets:
+  - csghub-portal
+  - csghub-server
+  - gitea
+
+## The region where Minio will operate, useful for configuring location-specific data replication and redundancy.
+region: "cn-north-1"
+
+## Authentication credentials for accessing Minio. It's crucial to replace these placeholders with actual secure values.
+authentication:
+  user: "minio"
+  password: ""
+
+ingress:
+  ## Ingress configuration for accessing Minio from outside the Kubernetes cluster.
+  enabled: true
+  className: "nginx"
+  host: minio.example.cn
+  tls:
+    enabled: false
+    secretName: ""
+
+persistence:
+  ## Persistence settings for Minio data. Ensures data is retained across pod restarts.
+  enabled: true
+  storageClass: ""
+  accessMode:
+    - ReadWriteOnce
+  size: 1Gi
+
+client:
+  repository: minio/mc
+  pullPolicy: IfNotPresent
+  tag: "RELEASE.2024-07-15T17-46-06Z"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Defined environment
+environments: {}
+
+annotations: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

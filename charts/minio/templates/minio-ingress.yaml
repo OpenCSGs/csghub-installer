@@ -1,0 +1,53 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.minio }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- if and $merged.enabled $merged.ingress.enabled }}
+{{- $apiVersion := include "common.capabilities.ingress.apiVersion" . }}
+apiVersion: {{ $apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ include "names.ing" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers read_ip_header X-Real-IP;
+      chunked_transfer_encoding off;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_set_header X-NginX-Proxy true;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection "upgrade";
+spec:
+  {{- if and $merged.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $merged.ingress.className }}
+  {{- end }}
+  {{- if $merged.ingress.tls.enabled }}
+  tls:
+    - hosts: {{ $merged.ingress.host | quote }}
+      secretName: {{ $merged.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ $merged.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              {{- if eq $apiVersion "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "names.hl.svc" . }}
+                port:
+                  number: {{ $merged.service.ports.console }}
+              {{- else }}
+              serviceName: {{ include "names.hl.svc" . }}
+              servicePort: {{ $merged.service.ports.console }}
+              {{- end }}
+{{- end }}
