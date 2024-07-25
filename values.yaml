@@ -516,9 +516,9 @@ global:
 
     service:
       ## The type of service to expose the Docker Registry
-      type: ClusterIP
+      type: NodePort
       ## The port on which the Docker Registry service is exposed
-      port: 32000
+      nodePort: 32500
 
     # authentication: {}
       ## Username for Docker Registry authentication
