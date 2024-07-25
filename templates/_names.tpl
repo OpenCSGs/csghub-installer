@@ -67,6 +67,13 @@ Return name of Secret
 {{- end -}}
 
 {{/*
+Return name of docker Secret
+*/}}
+{{- define "names.docker.secret" -}}
+{{ printf "%s-docker.secret" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
 Return name of TLS Secret
 */}}
 {{- define "names.tls.secret" -}}
