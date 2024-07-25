@@ -1,0 +1,78 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.gitea }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  GITEA_DOMAIN: {{ include "gitea.domain" . }}
+  GITEA_ROOT_URL: {{ include "gitea.root.url" . }}
+  GITEA_HTTP_PORT: {{ 3001 | quote }}
+  GITEA_SSH_DOMAIN: {{ include "csghub.domain" . }}
+  GITEA_SSH_LISTEN_PORT: {{ 2222 | quote }}
+  GITEA_APP_NAME: "CSGHub-Git: Git with a cup of tea"
+  GITEA_SMTP_ENABLED: {{ $merged.smtp.enabled | quote }}
+  {{- if $merged.smtp.enabled }}
+  {{- with $merged.smtp }}
+  {{- if and .from .host (.port | toString) .user .password }}
+  GITEA_SMTP_FROM: {{ .from }}
+  GITEA_SMTP_HOST: {{ .host }}
+  GITEA_SMTP_PORT: {{ .port | quote }}
+  GITEA_SMTP_USER: {{ .user }}
+  GITEA_SMTP_PASSWORD: {{ .password }}
+  {{- else }}
+  {{ fail "Valid smtp.{ from & host & port } and smtp.{ user & password } entry are required!" }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+  BITNAMI_DEBUG: {{ $merged.debug | quote }}
+  GITEA_DATABASE_TYPE: postgres
+  {{- if eq "true" (include "postgresql.enabled" .) }}
+  GITEA_DATABASE_HOST: {{ include "postgresql.host" . }}
+  GITEA_DATABASE_PORT_NUMBER: {{ include "postgresql.port" . | quote }}
+  GITEA_DATABASE_NAME: gitea_production
+  GITEA_DATABASE_USERNAME: gitea
+  GITEA_DATABASE_SSL_MODE: disable
+  GITEA_DATABASE_SCHEMA: public
+  {{- else }}
+  {{- with $merged.postgresql }}
+  GITEA_DATABASE_HOST: {{ .host }}
+  GITEA_DATABASE_PORT_NUMBER: {{ .port | quote }}
+  GITEA_DATABASE_NAME: {{ .database }}
+  GITEA_DATABASE_USERNAME: {{ .username }}
+  GITEA_DATABASE_PASSWORD: {{ .password }}
+  GITEA_DATABASE_SSL_MODE: disable
+  GITEA_DATABASE_SCHEMA: public
+  {{- end }}
+  {{- end }}
+  GITEA_LFS_START_SERVER: "true"
+  {{- if eq "true" (include "minio.enabled" .) }}
+  GITEA_LFS_STORAGE_TYPE: minio
+  GITEA_LFS_MINIO_ENDPOINT: {{ include "minio.endpoint" . | trimPrefix "http://" }}
+  GITEA_LFS_MINIO_BUCKET: csghub-git
+  GITEA_LFS_MINIO_LOCATION: {{ include "minio.region" . }}
+  GITEA_LFS_MINIO_USE_SSL: "false"
+  {{- else }}
+  {{- with $merged.objectStorage }}
+  GITEA_LFS_STORAGE_TYPE: {{ .type }}
+  GITEA_LFS_MINIO_ACCESS_KEY_ID: {{ .accessKey }}
+  GITEA_LFS_MINIO_SECRET_ACCESS_KEY: {{ .accessSecret }}
+  GITEA_LFS_MINIO_ENDPOINT: {{ .endpoint }}
+  GITEA_LFS_MINIO_BUCKET: {{ .bucket }}
+  GITEA_LFS_MINIO_LOCATION: {{ .region }}
+  GITEA_LFS_MINIO_USE_SSL: {{ .ssl }}
+  {{- end }}
+  {{- end }}
+  GITEA_SERVICE_DEFAULT_ALLOW_CREATE_ORGANIZATION: "true"
+  GITEA_SERVICE_DISABLE_REGISTRATION: "false"
+  GITEA_LOG_MODE: console
+  # GITEA_LOG_ROOT_PATH: "/opt/bitnami/gitea/logs"

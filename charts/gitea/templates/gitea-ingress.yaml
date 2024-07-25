@@ -1,0 +1,61 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.gitea }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- if $merged.ingress.enabled }}
+{{- $apiVersion := include "common.capabilities.ingress.apiVersion" . }}
+apiVersion: {{ $apiVersion }}
+kind: Ingress
+metadata:
+  name: {{ include "names.ing" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    {{- if $merged.ingress.tls.enabled }}
+    nginx.ingress.kubernetes.io/backend-protocol: https
+    {{- if $merged.ingress.tls.verify }}
+    nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
+    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.hl.svc" . }}.{{ .Release.Namespace }}.svc
+    {{- if $merged.ingress.tls.caSecretName }}
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ include "names.tls.secret" }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- range $key, $value := $merged.ingress.annotations }}
+    {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  {{- if and $merged.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ $merged.ingress.className }}
+  {{- end }}
+  {{- if $merged.ingress.tls.enabled }}
+  tls:
+    - hosts: {{ .Values.global.ingress.external.host }}
+      secretName: {{ $merged.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.global.ingress.external.host }}
+      http:
+        paths:
+          - path: /gitserver
+            pathType: Prefix
+            backend:
+              {{- if eq $apiVersion "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "names.hl.svc" . }}
+                port:
+                  number: {{ $merged.service.ports.http }}
+              {{- else }}
+              serviceName: {{ include "names.hl.svc" . }}
+              servicePort: {{ $merged.service.ports.http }}
+              {{- end }}
+{{- end }}
