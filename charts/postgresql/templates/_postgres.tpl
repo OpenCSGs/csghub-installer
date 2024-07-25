@@ -31,3 +31,10 @@ Define the port of postgresql
 {{- end }}
 {{- $port -}}
 {{- end }}
+
+{{/*
+Define the secret of postgresql
+*/}}
+{{- define "postgresql.secret" -}}
+{{- printf "%s-%s-secret" .Release.Name "postgresql" -}}
+{{- end }}
