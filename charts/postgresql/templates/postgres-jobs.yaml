@@ -1,0 +1,62 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.postgresql }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- if $merged.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "names.job" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 60
+  template:
+    metadata:
+      name: {{ include "names.job" . }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-service
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "names.hl.svc" . }} -p {{ $merged.service.port }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done' ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "names.secret" . }}
+                  key: postgres
+      containers:
+        - name: postgresql-client
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ "psql", "-h", "{{ include "names.hl.svc" . }}", "-p", "{{ $merged.service.port }}", "-U", "postgres", "-d", "postgres", "-f", "/data/initialize.sql" ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "names.secret" . }}
+                  key: postgres
+          volumeMounts:
+            - name: initialize
+              mountPath: /data
+      volumes:
+        - name: initialize
+          configMap:
+            name: {{ include "names.init.cm" . }}
+{{- end }}
