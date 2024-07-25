@@ -65,3 +65,10 @@ Define the region of server
 {{- end }}
 {{- $region -}}
 {{- end }}
+
+{{/*
+Define the secret of minio
+*/}}
+{{- define "minio.secret" -}}
+{{- printf "%s-%s-secret" .Release.Name "minio" -}}
+{{- end }}

@@ -34,7 +34,7 @@ region: "cn-north-1"
 
 ## Authentication credentials for accessing Minio. It's crucial to replace these placeholders with actual secure values.
 authentication:
-  user: "minio"
+  username: "minio"
   password: ""
 
 ingress:
