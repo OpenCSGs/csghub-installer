@@ -26,7 +26,7 @@ service:
 
 authentication:
   ## Username for Docker Registry authentication
-  user: "registry"
+  username: "registry"
   ## Password for Docker Registry authentication
   password: ""
 

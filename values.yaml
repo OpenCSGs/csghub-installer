@@ -284,6 +284,9 @@ global:
       pullSecrets:
         - name: csghub-registry-credential
 
+    service:
+      type: ClusterIP
+      ports: {}
     ## Authentication details for accessing external services or registries
     ## This section is commented out by default. Uncomment and fill in your details if needed.
     # authentication: {}
@@ -482,7 +485,7 @@ global:
 
     ## Authentication credentials for accessing Minio. It's crucial to replace these placeholders with actual secure values.
     # authentication: {}
-    #   user: ""
+    #   username: ""
     #   password: ""
 
     ingress:
@@ -522,7 +525,7 @@ global:
 
     # authentication: {}
       ## Username for Docker Registry authentication
-      # user: ""
+      # username: ""
       ## Password for Docker Registry authentication
       # password: ""
 
