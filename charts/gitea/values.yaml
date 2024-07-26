@@ -70,9 +70,6 @@ ingress:
   host: gitea.msens.cn
   tls:
     enabled: false
-    verify: false
-    secretName: ""
-    caSecretName: ""
     annotations: {}
 
 ## Configuration for persistence using Persistent Volume Claims
