@@ -1,0 +1,115 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.runner }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "names.deploy" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- with $merged.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+  replicas: {{ $merged.replicas }}
+  minReadySeconds: 10
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/runner-configmaps.yaml") . | sha256sum }}
+        {{- with $merged.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $merged.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- if $merged.serviceAccount.create }}
+      serviceAccountName: {{ include "names.sa" . }}
+      automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - securityContext:
+          {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          name: {{ include "common.names.name" . }}
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command:
+            - "/starhub-bin/starhub"
+            - "deploy"
+            - "runner"
+          ports:
+            - containerPort: 8082
+              name: {{ include "common.names.name" . }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "names.cm" . }}
+          env:
+            - name: STARHUB_SERVER_INTERNAL_ROOT_DOMAIN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "server.cm" . }}
+                  key: STARHUB_SERVER_INTERNAL_ROOT_DOMAIN
+            - name: STARHUB_SERVER_DOCKER_REG_BASE
+              value: {{ include "registry.repository" . }}
+            - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
+              value: {{ include "names.docker.secret" . }}
+          {{- with $merged.environments }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          volumeMounts:
+            - name: kube-config
+              mountPath: /root/.kube
+              readOnly: true
+            - name: docker-config
+              mountPath: /root/.docker
+              readOnly: true
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: kube-config
+          configMap:
+            name: {{ include "runner.cm" . }}
+        - name: docker-config
+          secret:
+            secretName: {{ include "registry.docker.secret" . }}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
