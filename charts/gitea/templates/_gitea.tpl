@@ -11,7 +11,7 @@ Define domain of gitea with route
 {{- end }}
 
 {{/*
-Define the endpoint of gitea
+Define the root url of gitea
 */}}
 {{- define "gitea.root.url" -}}
 {{- $prefix := "http://" }}
@@ -28,7 +28,7 @@ Define the endpoint of gitea
 {{- end }}
 
 {{/*
-Return the root url of gitea
+Return the endpoint of gitea
 */}}
 {{- define "gitea.endpoint" -}}
 {{- printf "http://%s:%s" (include "gitea.host" .) (include "gitea.port" .) }}
@@ -56,4 +56,11 @@ Define the port of gitea
   {{- end }}
 {{- end }}
 {{- $port -}}
+{{- end }}
+
+{{/*
+Define the secret of gitea
+*/}}
+{{- define "gitea.secret" -}}
+{{- printf "%s-%s-secret" .Release.Name "gitea" }}
 {{- end }}

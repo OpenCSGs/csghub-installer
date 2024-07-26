@@ -26,4 +26,4 @@ spec:
       {{- end }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
-{{- end }}
+  {{- end }}

@@ -38,3 +38,18 @@ Define the secret of postgresql
 {{- define "postgresql.secret" -}}
 {{- printf "%s-%s-secret" .Release.Name "postgresql" -}}
 {{- end }}
+
+{{/*
+Define the timezone of postgresql
+*/}}
+{{- define "postgresql.timezone" -}}
+{{- $timezone := "UTC" }}
+{{- if hasKey .Values.global "postgresql" }}
+  {{- if hasKey .Values.global.postgresql "parameters" }}
+    {{- if hasKey .Values.global.postgresql.parameters "timezone" }}
+      {{- $timezone = .Values.global.postgresql.parameters.timezone }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $timezone -}}
+{{- end }}

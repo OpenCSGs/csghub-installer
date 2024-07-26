@@ -15,13 +15,37 @@ Return domain of csghub
       {{- $host = .Values.global.ingress.external.host }}
     {{- end }}
     {{- if hasKey .Values.global.ingress.external "port" }}
-      {{- $port = .Values.global.ingress.external.port }}
+      {{- $port = .Values.global.ingress.external.port | toString }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- if eq (len ($port | quote) | toString) "4" }}
+{{- if gt (len $port | toString) "4" }}
 {{- printf "%s:%s" $host $port -}}
 {{- else }}
 {{- $host -}}
 {{- end }}
+{{- end }}
+
+{{/*
+Define the endpoint of gitea
+*/}}
+{{- define "csghub.external.url" -}}
+{{- $prefix := "http://" }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "tls" }}
+    {{- if hasKey .Values.global.ingress.tls "enabled" }}
+      {{- if .Values.global.ingress.tls.enabled }}
+        {{- $prefix = "https://" }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- printf "%s%s" $prefix (include "csghub.domain" .) -}}
+{{- end }}
+
+{{/*
+Lookup the namespace of ingress-nginx
+*/}}
+{{- define "ingress.namespace" -}}
+{{ $ingress := lookup "networking.k8s.io/v1" "Ingress" "" }}
 {{- end }}

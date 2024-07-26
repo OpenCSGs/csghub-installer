@@ -39,6 +39,20 @@ Return name of headless Service
 {{- end -}}
 
 {{/*
+Return name of headless Service
+*/}}
+{{- define "names.docker.svc" -}}
+{{ printf "%s-docker-svc" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return name of external Service
+*/}}
+{{- define "names.external.svc" -}}
+{{ printf "%s-external-svc" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
 Return name of PersistentVolumeClaim
 */}}
 {{- define "names.pvc" -}}
@@ -70,7 +84,7 @@ Return name of Secret
 Return name of docker Secret
 */}}
 {{- define "names.docker.secret" -}}
-{{ printf "%s-docker.secret" ( include "common.names.fullname" . ) }}
+{{ printf "%s-docker-secret" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
@@ -85,6 +99,13 @@ Return name of Ingress
 */}}
 {{- define "names.ing" -}}
 {{ printf "%s-ing" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return name of Ingress
+*/}}
+{{- define "names.gitserver.ing" -}}
+{{ printf "%s-gitserver-ing" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*

@@ -14,7 +14,7 @@ Define global unique HUB_SERVER_API_TOKEN
 Define the host of server
 */}}
 {{- define "server.host" }}
-{{- printf "%s-%s-external-svc" .Release.Name "server" -}}
+{{- printf "%s-%s-svc" .Release.Name "server" -}}
 {{- end }}
 
 {{/*

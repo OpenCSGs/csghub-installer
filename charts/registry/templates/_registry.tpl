@@ -26,7 +26,7 @@ Define the endpoint of registry
       {{- end }}
     {{- end }}
 {{- end }}
-{{- if and (eq "NodePort" $type) (ne "80" $port) (ne "443" $port) }}
+{{- if eq "NodePort" $type }}
 {{- printf "%s:%s" $host $port -}}
 {{- else }}
 {{- printf "%s" $host -}}
@@ -41,6 +41,20 @@ Define the host of registry
 {{- end }}
 
 {{/*
+Define the secret of registry
+*/}}
+{{- define "registry.secret" -}}
+{{- printf "%s-%s-secret" .Release.Name "registry" -}}
+{{- end }}
+
+{{/*
+Define the docker secret of registry
+*/}}
+{{- define "registry.docker.secret" -}}
+{{- printf "%s-%s-docker-secret" .Release.Name "registry" -}}
+{{- end }}
+
+{{/*
 Define the port of registry
 */}}
 {{- define "registry.port" -}}
@@ -50,7 +64,30 @@ Define the port of registry
     {{- if hasKey .Values.global.registry.service "port" }}
       {{- $port = .Values.global.registry.service.port }}
     {{- end }}
+    {{- if hasKey .Values.global.registry.service "nodePort" }}
+      {{- $port = .Values.global.registry.service.nodePort }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $port -}}
+{{- end }}
+
+{{/*
+Define the namespace of registry
+*/}}
+{{- define "registry.namespace" -}}
+{{- $namespace := "space" }}
+{{- if hasKey .Values.global "registry" }}
+  {{- if hasKey .Values.global.registry "namespace" }}
+      {{- $namespace = .Values.global.registry.namespace }}
+  {{- end }}
+{{- end }}
+{{- $namespace -}}
+{{- end }}
+
+{{/*
+Define the repository of registry
+*/}}
+{{- define "registry.repository" -}}
+{{- printf "%s/%s/" (include "registry.endpoint" .) (include "registry.namespace" .) -}}
 {{- end }}
