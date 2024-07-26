@@ -19,9 +19,9 @@ data:
     #!/bin/bash
     alias="myMinio"
     {{ printf "mc alias set $alias %s $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD" ( include "minio.endpoint" . ) }}
-    {{- if not $merged.region }}
+    {{- if $merged.region }}
     mc admin config set "$alias" region name={{ $merged.region }}
-    mc admin service restart "$alias"
+    mc admin service restart "$alias" --quiet
     {{- end }}
     {{- range $bucket := $merged.buckets }}
     mc ls $alias/{{ $bucket }} 2>/dev/null

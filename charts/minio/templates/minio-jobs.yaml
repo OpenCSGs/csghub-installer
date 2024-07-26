@@ -20,7 +20,7 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   backoffLimit: 3
-  activeDeadlineSeconds: 60
+  activeDeadlineSeconds: 120
   template:
     metadata:
       name: {{ include "names.job" . }}
@@ -33,12 +33,13 @@ spec:
       initContainers:
         - name: wait-for-service
           image: curlimages/curl
-          command: [ 'sh', '-c', 'until curl -s {{ include "minio.endpoint" . }}/minio/health/live; do echo "Waiting for service minio ready to connect"; sleep 3; done' ]
+          command: [ 'sh', '-c', 'until curl -s {{ include "minio.endpoint" . }}/minio/health/live; do echo "Waiting for service minio ready to connect"; sleep 3; done; sleep 5' ]
           imagePullPolicy: {{ default "IfNotPresent" $merged.client.pullPolicy }}
       containers:
         - name: minio-client
           image: {{ $merged.client.repository }}:{{ $merged.client.tag}}
           imagePullPolicy: {{ $merged.client.pullPolicy }}
+{{/*          command: ["sleep", "3600"]*/}}
           command: ["/bin/bash", "/data/initialize.sh"]
           envFrom:
             - secretRef:

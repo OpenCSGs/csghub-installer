@@ -27,7 +27,7 @@ service:
 buckets:
   - csghub-portal
   - csghub-server
-  - gitea
+  - csghub-git
 
 ## The region where Minio will operate, useful for configuring location-specific data replication and redundancy.
 region: "cn-north-1"
@@ -57,7 +57,7 @@ persistence:
 client:
   repository: minio/mc
   pullPolicy: IfNotPresent
-  tag: "RELEASE.2024-07-15T17-46-06Z"
+  tag: "RELEASE.2024-06-01T15-03-35Z"
 
 imagePullSecrets: []
 nameOverride: ""
