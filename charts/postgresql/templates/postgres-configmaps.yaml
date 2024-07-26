@@ -38,6 +38,10 @@ data:
     {{- end }}
     {{- end }}
     SELECT pg_reload_conf();
+    -- Seed resource table
+    \c csghub_server_production
+    INSERT INTO space_resources (name, resources) VALUES ( 'CPU basic · 1 vCPU · 1 GB', '{ "cpu": { "type": "Intel", "num": "1" }, "memory": "1Gi" }' );
+    INSERT INTO space_resources (name, resources) VALUES ( 'NVIDIA A10G · 4 vCPU · 16 GB', '{"gpu": { "type": "A10", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "4" },  "memory": "16Gi" }' );
 ---
 apiVersion: v1
 kind: ConfigMap
