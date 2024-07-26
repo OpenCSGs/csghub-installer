@@ -1,0 +1,37 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.portal }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  ASSET_HOST: "http://127.0.0.1:3000"
+  RAILS_MASTER_KEY: "64f15f995b044427e43fe4897370fd66"
+  RAILS_SERVE_STATIC_FILES: "false"
+  STARHUB_BASE_URL: {{ include "csghub.external.url" . }}
+  STARHUB_TOKEN: {{ include "server.hub.api.token" . }}
+  {{- if eq "true" (include "minio.enabled" .) }}
+  ENDPOINT: {{ include "minio.endpoint" . }}
+  BUCKET_NAME: csghub-portal
+  REGION: {{ include "minio.region" . }}
+  FORCE_PATH_STYLE: "true"
+  {{- else }}
+  {{- with $merged.objectStorage }}
+  ENDPOINT: {{ .endpoint }}
+  ACCESS_ID: {{ .accessKey }}
+  ACCESS_SECRET: {{ .accessSecret }}
+  BUCKET_NAME: {{ .bucket }}
+  REGION: {{ .region }}
+  FORCE_PATH_STYLE: {{ .pathStyle }}
+  {{- end }}
+  {{- end }}
+  ON_PREMISE: "true"

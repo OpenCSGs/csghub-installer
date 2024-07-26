@@ -1,0 +1,113 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.portal }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "names.deploy" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- with $merged.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+  replicas: {{ $merged.replicas }}
+  minReadySeconds: 10
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/portal-configmaps.yaml") . | sha256sum }}
+        {{- with $merged.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $merged.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- if $merged.serviceAccount.create }}
+      serviceAccountName: {{ include "names.sa" . }}
+      automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - securityContext:
+          {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          name: {{ include "common.names.name" . }}
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command:
+            - "bash"
+            - "-c"
+            - "bundle exec rails assets:precompile && bundle exec rails db:create && bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -p 3000 -b '0.0.0.0'"
+          ports:
+            - containerPort: 3000
+              name: {{ include "common.names.name" . }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "names.cm" . }}
+          env:
+          {{- if eq "true" (include "postgresql.enabled" .) }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: csghub_portal
+            - name: DATABASE_URL
+              value: "postgresql://csghub_portal:$(PGPASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_portal_production?sslmode=disable"
+          {{- else }}
+            - name: DATABASE_URL
+              value: {{ include "portal.postgresql.dsn" . }}
+          {{- end }}
+          {{- if eq "true" (include "minio.enabled" .) }}
+            - name: ACCESS_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secret" . }}
+                  key: MINIO_ROOT_USER
+            - name: ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secret" . }}
+                  key: MINIO_ROOT_PASSWORD
+          {{- end }}
+          {{- with $merged.environments }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
