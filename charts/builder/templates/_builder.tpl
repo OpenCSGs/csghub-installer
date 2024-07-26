@@ -14,7 +14,7 @@ Define the endpoint of space builder
 Define the host of space builder
 */}}
 {{- define "builder.host" }}
-{{- printf "%s-%s-svc" .Release.Name "builder" }}
+{{- printf "%s-%s-hl-svc" .Release.Name "builder" }}
 {{- end }}
 
 {{/*

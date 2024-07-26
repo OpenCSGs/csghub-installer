@@ -43,5 +43,5 @@ data:
   daemon.json: |
     {
       "insecure-registries": ["{{ include "registry.endpoint" . }}"],
-      "registry-mirrors": ["https://registry.cn-hangzhou.aliyuncs.com"]
+      "registry-mirrors": ["https://mirror.baidubce.com", "https://hub-mirror.c.163.com"]
     }
