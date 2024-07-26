@@ -24,7 +24,7 @@ Define the root url of gitea
     {{- end }}
   {{- end }}
 {{- end }}
-{{- printf "%s/%s" $prefix (include "gitea.domain" .) -}}
+{{- printf "%s%s" $prefix (include "gitea.domain" .) -}}
 {{- end }}
 
 {{/*
