@@ -30,6 +30,9 @@ authentication:
   ## Password for Docker Registry authentication
   password: ""
 
+## Default namespace to storage images
+namespace: ""
+
 ingress:
   ## Enable ingress for the Docker Registry
   enabled: true
