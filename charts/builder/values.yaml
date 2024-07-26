@@ -1,0 +1,148 @@
+# Default values for Server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+## Server configuration section
+## This section allows you to configure the server settings for your deployment.
+## Redis configuration for the builder
+## This subsection allows you to specify the host, port, and password for Redis.
+## Enable the builder component
+enabled: true
+
+## Number of replicas for the builder
+replicas: 1
+
+image:
+  ## Repository for the builder image
+  repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub-space-builder
+  ## Tag for the builder image
+  tag: "v0.5.0"
+  ## Pull policy for the builder image
+  pullPolicy: "IfNotPresent"
+  ## Secrets for pulling the builder image from a private registry
+  pullSecret: [ ]
+
+service:
+  ## Type of service for the builder component
+  type: ClusterIP
+  ## Port for the builder service
+  port: 8080
+
+## Kubernetes namespace where the builder component will be deployed
+namespace: space
+
+ingress:
+  ## Hostname for accessing the building application externally
+  host: public.example.com
+
+internal:
+  ## Internal domain name for the builder component
+  domain: app.internal
+  ## Internal port for the builder component
+  port: 80
+
+redis:
+  ## Hostname for the Redis instance used by the builder
+  host: ""
+  ## Port for the Redis instance
+  port: ""
+  ## Password for the Redis instance
+  password: ""
+
+## Docker Registry configuration for the builder
+## This subsection allows you to specify the repository, namespace, username, and password for the Docker registry.
+## The Docker registry is where your Docker images will be stored and managed.
+registry:
+  repository: docker.io
+  namespace: csghub
+  username: ""
+  password: ""
+
+securityContext:
+  ## User ID to run the builder pod as
+  runAsUser: 0
+  ## Group ID to run the builder pod as
+  runAsGroup: 0
+  ## Filesystem group ID for the builder pod
+  fsGroup: 0
+
+podSecurityContext:
+  ## Allow the builder pod to run as privileged
+  privileged: true
+  ## Allow privilege escalation within the builder pod
+  allowPrivilegeEscalation: true
+  ## Set the root filesystem of the builder pod to read-only
+  readOnlyRootFilesystem: false
+
+persistence:
+  ## Enable persistence for the builder component
+  enabled: true
+  ## Storage class for the persistent volume claim
+  storageClass: ""
+  ## Access mode for the persistent volume
+  accessMode:
+    - ReadWriteOnce
+  ## Size of the persistent volume
+  sizes:
+    builder: "2Gi"
+    docker: "10Gi"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+# Defined environment
+environments: {}
+
+annotations: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

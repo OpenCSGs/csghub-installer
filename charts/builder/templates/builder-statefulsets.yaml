@@ -1,0 +1,188 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.builder }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ include "names.sts" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- with $merged.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+  serviceName: {{ include "names.hl.svc" . }}
+  replicas: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/builder-configmaps.yaml") . | sha256sum }}
+        {{- with $merged.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $merged.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- if $merged.serviceAccount.create }}
+      serviceAccountName: {{ include "names.sa" . }}
+      automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - name: {{ include "common.names.name" . }}
+          securityContext:
+          {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: {{ include "common.names.name" . }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "names.cm" . }}
+            - configMapRef:
+                name: {{ include "redis.cm" . }}
+            - secretRef:
+                name: {{ include "registry.secret" . }}
+            - secretRef:
+                name: {{ include "redis.secret" . }}
+          env:
+            - name: DOCKER_HOST
+              value: "tcp://{{ include "names.docker.svc" . }}:2375"
+          {{- with $merged.environments }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+        - name: docker
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          image: docker:27.0.3-dind
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          ports:
+            - containerPort: 2375
+              name: {{ include "common.names.name" . }}-docker
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "names.cm" . }}
+            - configMapRef:
+                name: {{ include "redis.cm" . }}
+            - secretRef:
+                name: {{ include "registry.secret" . }}
+            - secretRef:
+                name: {{ include "redis.secret" . }}
+          env:
+            - name: DOCKER_HOST
+              value: "tcp://localhost:2375"
+            - name: DOCKER_DRIVER
+              value: overlay2
+          {{- with $merged.environments }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 2375
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: data-docker
+              mountPath: /var/lib/docker
+              readOnly: false
+            - name: docker-daemon
+              mountPath: /etc/docker
+              readOnly: true
+            - name: docker-config
+              mountPath: /root/.docker
+              readOnly: true
+      volumes:
+        - name: docker-daemon
+          configMap:
+            name: {{ include "names.docker.cm" . }}
+        - name: docker-config
+          secret:
+            secretName: {{ include "registry.docker.secret" . }}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        namespace: {{ .Release.Namespace | quote }}
+        labels:
+          {{- include "common.labels.standard" . | nindent 10 }}
+        annotations:
+          "helm.sh/resource-policy": keep
+      spec:
+        accessModes: {{ $merged.persistence.accessMode }}
+        {{- if $merged.persistence.storageClass }}
+        storageClassName: {{ $merged.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $merged.persistence.sizes.builder }}
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data-docker
+        namespace: {{ .Release.Namespace | quote }}
+        labels:
+          {{- include "common.labels.standard" . | nindent 10 }}
+        annotations:
+          "helm.sh/resource-policy": keep
+      spec:
+        accessModes: {{ $merged.persistence.accessMode }}
+        {{- if $merged.persistence.storageClass }}
+        storageClassName: {{ $merged.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $merged.persistence.sizes.docker }}
