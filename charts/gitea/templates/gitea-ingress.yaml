@@ -33,6 +33,7 @@ metadata:
     {{- range $key, $value := (default .Values.global.ingress.annotations $merged.ingress.annotations) }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   {{- if and .Values.global.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.global.ingress.className }}
@@ -48,6 +49,18 @@ spec:
         paths:
           - path: /gitserver
             pathType: Prefix
+            backend:
+            {{- if eq $apiVersion "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "names.hl.svc" . }}
+                port:
+                  number: {{ $merged.service.ports.http }}
+            {{- else }}
+              serviceName: {{ include "names.hl.svc" . }}
+              servicePort: {{ $merged.service.ports.http }}
+            {{- end }}
+          - path: /gitserver/(.*)$
+            pathType: ImplementationSpecific
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
