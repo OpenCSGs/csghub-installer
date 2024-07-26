@@ -22,6 +22,7 @@ spec:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
   replicas: {{ $merged.replicas }}
+  revisionHistoryLimit: 1
   minReadySeconds: 10
   template:
     metadata:
