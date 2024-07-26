@@ -1,0 +1,123 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.server }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "names.deploy" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- with $merged.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+  replicas: {{ $merged.replicas }}
+  minReadySeconds: 10
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/server-configmaps.yaml") . | sha256sum }}
+        {{- with $merged.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $merged.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- if $merged.serviceAccount.create }}
+      serviceAccountName: {{ include "names.sa" . }}
+      automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - securityContext:
+          {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          name: {{ include "common.names.name" . }}
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: {{ include "common.names.name" . }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "names.cm" . }}
+          env:
+            - name: GITEA_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gitea.secret" . }}
+                  key: GITEA_ADMIN_USER
+            - name: GITEA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "gitea.secret" . }}
+                  key: GITEA_ADMIN_PASSWORD
+            - name: STARHUB_SERVER_GITSERVER_USERNAME
+              value: "$(GITEA_USERNAME)"
+            - name: STARHUB_SERVER_GITSERVER_PASSWORD
+              value: "$(GITEA_PASSWORD)"
+          {{- if eq "true" (include "postgresql.enabled" .) }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: csghub_server
+            - name: STARHUB_DATABASE_DSN
+              value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
+          {{- else }}
+            - name: STARHUB_DATABASE_DSN
+              value: {{ include "server.postgresql.dsn" . }}
+          {{- end }}
+          {{- if eq "true" (include "minio.enabled" .) }}
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secret" . }}
+                  key: MINIO_ROOT_USER
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "minio.secret" . }}
+                  key: MINIO_ROOT_PASSWORD
+          {{- end }}
+          {{- with $merged.environments }}
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

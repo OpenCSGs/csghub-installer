@@ -1,0 +1,40 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.server }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.root.url" . }}
+  STARHUB_SERVER_FRONTEND_URL: {{ include "csghub.external.url" . }}
+  STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.endpoint" . }}
+  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.callback.url" . }}
+  STARHUB_DATABASE_TIMEZONE: {{ default "UTC" $merged.timezone }}
+  GIN_MODE: release
+  STARHUB_SERVER_API_TOKEN: {{ include "server.hub.api.token" . }}
+  {{- if eq "true" (include "minio.enabled" .) }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.endpoint" . | trimPrefix "http://" }} # used to generate download links for lfs files
+  STARHUB_SERVER_S3_BUCKET: csghub-server
+  STARHUB_SERVER_S3_REGION: {{ include "minio.region" . }}
+  {{- else }}
+  {{- with $merged.objectStorage }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" }}
+  STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ .accessKey }}
+  STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ .accessSecret }}
+  STARHUB_SERVER_S3_BUCKET: {{ .bucket }}
+  STARHUB_SERVER_S3_REGION: {{ .region }}
+  {{- end }}
+  {{- end }}
+  STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.endpoint" . }}
+  STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: {{ include "runner.endpoint" . }}
+  STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: {{ include "builder.public.domain" . }} #opencsg.public:80
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.internal.domain" . }} #default.lwf.internal:30446
