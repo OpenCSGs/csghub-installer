@@ -59,19 +59,39 @@ Define the public domain of space builder
 Define the internal domain of space builder
 */}}
 {{- define "builder.internal.domain" }}
-{{- $namespace := include "runner.namespace" . }}
-{{- $domain := "csghub.internal.com" }}
-{{- $port := "80" }}
+{{- $domain := "app.internal" }}
 {{- if hasKey .Values.global "builder" }}
   {{- if hasKey .Values.global.builder "internal" }}
     {{- if hasKey .Values.global.builder.internal "domain" }}
       {{- $domain = .Values.global.builder.internal.domain }}
     {{- end }}
+  {{- end }}
+{{- end }}
+{{- $domain -}}
+{{- end }}
+
+{{/*
+Define the internal port of space builder
+*/}}
+{{- define "builder.internal.port" }}
+{{- $port := "80" }}
+{{- if hasKey .Values.global "builder" }}
+  {{- if hasKey .Values.global.builder "internal" }}
     {{- if hasKey .Values.global.builder.internal "port" }}
       {{- $port = .Values.global.builder.internal.port | toString }}
     {{- end }}
   {{- end }}
 {{- end }}
+{{- $port -}}
+{{- end }}
+
+{{/*
+Define the full internal domain of space builder
+*/}}
+{{- define "builder.full.internal.domain" }}
+{{- $namespace := include "runner.namespace" . }}
+{{- $domain := include "builder.internal.domain" . }}
+{{- $port := include "builder.internal.port" . }}
 {{- if or (eq "80" $port) (eq "443" $port) }}
 {{- printf "%s.%s" $namespace $domain -}}
 {{- else }}
