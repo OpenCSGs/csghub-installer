@@ -15,6 +15,7 @@ metadata:
     {{- include "common.labels.standard" . | nindent 4 }}
 spec:
   type: {{ $merged.service.type }}
+  clusterIP: {{ include "coredns.self.dns" . }}
   ports:
     - port: {{ $merged.service.port }}
       targetPort: 53

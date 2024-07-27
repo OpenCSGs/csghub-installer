@@ -34,11 +34,10 @@ spec:
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
     spec:
-      {{- $coreDNSClusterIP := (lookup "v1" "Service" .Release.Namespace (include "coredns.host" .)).spec.clusterIP }}
       dnsPolicy: None
       dnsConfig:
         nameservers:
-          - {{ $coreDNSClusterIP }}
+          - {{ include "coredns.self.dns" . }}
         searches:
           - {{ .Release.Namespace }}.svc.cluster.local
           - svc.cluster.local

@@ -6,8 +6,6 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $global := .Values.global.coredns }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
-{{- $kubeDNSClusterIP := (lookup "v1" "Service" "kube-system" "kube-dns").spec.clusterIP }}
-{{- $kourierDNSClusterIP := (lookup "v1" "Service" "kourier-system" "kourier-internal").spec.clusterIP }}
 {{- $internalDomain := include "builder.full.internal.domain" . }}
 apiVersion: v1
 kind: ConfigMap
@@ -20,7 +18,7 @@ data:
   corefile: |
     .:53 {
         forward space.app.internal /etc/resolv.conf
-        forward . {{ $kubeDNSClusterIP }}
+        forward . {{ include "coredns.kube.dns" . }}
         log
         errors
     }
@@ -38,4 +36,4 @@ data:
         604800     ; Expire
         86400      ; Minimum TTL
     )
-    *   3600 IN A  {{ $kourierDNSClusterIP }}
+    *   3600 IN A  {{ include "coredns.kourier.svc" . }}
