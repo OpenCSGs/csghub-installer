@@ -78,3 +78,10 @@ Define the internal domain of space builder
 {{- printf "%s.%s:%s" $namespace $domain $port -}}
 {{- end }}
 {{- end }}
+
+{{/*
+Define the host of space builder
+*/}}
+{{- define "builder.docker.cm" }}
+{{- printf "%s-%s-docker-cm" .Release.Name "builder" }}
+{{- end }}

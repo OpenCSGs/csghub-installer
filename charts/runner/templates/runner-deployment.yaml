@@ -59,9 +59,6 @@ spec:
             - containerPort: 8082
               name: {{ include "common.names.name" . }}
               protocol: TCP
-          envFrom:
-            - configMapRef:
-                name: {{ include "names.cm" . }}
           env:
             - name: STARHUB_SERVER_INTERNAL_ROOT_DOMAIN
               valueFrom:
@@ -71,7 +68,7 @@ spec:
             - name: STARHUB_SERVER_DOCKER_REG_BASE
               value: {{ include "registry.repository" . }}
             - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
-              value: {{ include "names.docker.secret" . }}
+              value: {{ include "registry.docker.secret" . }}
           {{- with $merged.environments }}
           {{- range $key, $value := . }}
             - name: {{ $key }}
@@ -88,6 +85,9 @@ spec:
           volumeMounts:
             - name: kube-config
               mountPath: /root/.kube
+              readOnly: true
+            - name: docker-daemon
+              mountPath: /etc/docker
               readOnly: true
             - name: docker-config
               mountPath: /root/.docker
@@ -108,6 +108,9 @@ spec:
         - name: kube-config
           configMap:
             name: {{ include "runner.cm" . }}
+        - name: docker-daemon
+          configMap:
+            name: {{ include "builder.docker.cm" . }}
         - name: docker-config
           secret:
             secretName: {{ include "registry.docker.secret" . }}
