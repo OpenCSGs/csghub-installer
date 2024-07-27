@@ -108,7 +108,7 @@ spec:
         {{- if $merged.ingress.tls.enabled }}
         - name: tls-certs
           secret:
-            secretName: {{ include "names.tls.secret" }}
+            secretName: {{ $merged.ingress.tls.secretName }}
         {{- end }}
   volumeClaimTemplates:
     - apiVersion: v1

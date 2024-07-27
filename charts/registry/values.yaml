@@ -40,8 +40,8 @@ ingress:
   ## Hostname for the Docker Registry ingress
   host: registry.msens.cn
   tls:
-    verify: false
     enabled: false
+    verify: false
     secretName: ""
     caSecretName: ""
     annotations: {}
