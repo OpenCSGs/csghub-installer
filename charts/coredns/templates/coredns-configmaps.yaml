@@ -1,0 +1,41 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.coredns }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- $kubeDNSClusterIP := (lookup "v1" "Service" "kube-system" "kube-dns").spec.clusterIP }}
+{{- $kourierDNSClusterIP := (lookup "v1" "Service" "kourier-system" "kourier-internal").spec.clusterIP }}
+{{- $internalDomain := include "builder.full.internal.domain" . }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  corefile: |
+    .:53 {
+        forward space.app.internal /etc/resolv.conf
+        forward . {{ $kubeDNSClusterIP }}
+        log
+        errors
+    }
+    internal {
+        file /var/opt/coredns/{{ $internalDomain }}
+        log
+        errors
+    }
+  {{ $internalDomain }}: |
+    $ORIGIN {{ $internalDomain }}.
+    @ 3600 IN SOA ns1.{{ $internalDomain }} admin.{{ $internalDomain }} (
+        2022042401 ; Serial
+        3600       ; Refresh
+        1800       ; Retry
+        604800     ; Expire
+        86400      ; Minimum TTL
+    )
+    *   3600 IN A  {{ $kourierDNSClusterIP }}

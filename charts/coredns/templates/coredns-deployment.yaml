@@ -1,0 +1,98 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.coredns }}
+{{/*{{- $local := omit .Values "global" "exports" }}*/}}
+{{- $local := .Values }}
+{{- $merged := merge $global $local }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "names.deploy" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  {{- with $merged.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" . | nindent 6 }}
+  replicas: {{ $merged.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 10
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/coredns-configmaps.yaml") . | sha256sum }}
+        {{- with $merged.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      {{- with $merged.image.pullSecret }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $merged.securityContext | nindent 8 }}
+      terminationGracePeriodSeconds: 10
+      {{- if $merged.serviceAccount.create }}
+      serviceAccountName: {{ include "names.sa" . }}
+      automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - securityContext:
+          {{- toYaml $merged.podSecurityContext | nindent 12 }}
+          name: {{ include "common.names.name" . }}
+          image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          args:
+            - "-conf"
+            - "/var/opt/coredns/corefile"
+          ports:
+            - containerPort: 53
+              name: {{ include "common.names.name" . }}-tcp
+              protocol: TCP
+            - containerPort: 53
+              name: {{ include "common.names.name" . }}-udp
+              protocol: UDP
+          {{- with $merged.environments }}
+          env:
+          {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+          resources:
+            {{- toYaml $merged.resources | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 53
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: corefile
+              mountPath: /var/opt/coredns/
+              readOnly: true
+      volumes:
+        - name: corefile
+          configMap:
+            name: {{ include "names.cm" . }}
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
