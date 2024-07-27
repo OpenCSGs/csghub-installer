@@ -19,4 +19,4 @@ data:
   STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.endpoint" . | quote }}
   STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.root.url" . | quote }}
   STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.callback.url" . | quote }}
-  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.internal.domain" . | quote }}
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.full.internal.domain" . | quote }}

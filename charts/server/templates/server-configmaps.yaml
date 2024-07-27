@@ -37,4 +37,4 @@ data:
   STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.endpoint" . }}
   STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: {{ include "runner.endpoint" . }}
   STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: {{ include "builder.public.domain" . }} #opencsg.public:80
-  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.internal.domain" . }} #default.lwf.internal:30446
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.full.internal.domain" . }} #default.lwf.internal:30446
