@@ -128,7 +128,8 @@ spec:
   {{- end }}
   {{- if .Values.global.ingress.tls.enabled }}
   tls:
-    - hosts: {{ .Values.global.ingress.external.host }}
+    - hosts:
+      - {{ .Values.global.ingress.external.host | quote }}
       secretName: {{ .Values.global.ingress.tls.secretName }}
   {{- end }}
   rules:

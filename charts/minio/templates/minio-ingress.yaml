@@ -31,7 +31,8 @@ spec:
   {{- end }}
   {{- if $merged.ingress.tls.enabled }}
   tls:
-    - hosts: {{ $merged.ingress.host | quote }}
+    - hosts:
+      - {{ $merged.ingress.host | quote }}
       secretName: {{ $merged.ingress.tls.secretName }}
   {{- end }}
   rules:
