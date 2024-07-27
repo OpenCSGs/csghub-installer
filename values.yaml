@@ -562,6 +562,9 @@ global:
       enabled: true
       ## Hostname for the Docker Registry ingress
       host: registry.msens.cn
+      tls:
+        enabled: true
+        secretName: test-registry-tls-secret
 
     persistence:
       ## Enable persistence using Persistent Volume Claims
