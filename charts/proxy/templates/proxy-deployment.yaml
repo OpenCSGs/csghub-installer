@@ -34,6 +34,15 @@ spec:
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
     spec:
+      {{- $coreDNSClusterIP := (lookup "v1" "Service" .Release.Namespace (include "coredns.host" .)).spec.clusterIP }}
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - {{ $coreDNSClusterIP }}
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
       {{- with $merged.image.pullSecret }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
