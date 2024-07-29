@@ -19,7 +19,7 @@ service:
   type: ClusterIP
   ports:
     http: 3001
-    ssh: 2222
+    ssh: 22
 
 ## Authentication details for accessing external services or registries
 ## This section is commented out by default. Uncomment and fill in your details if needed.
