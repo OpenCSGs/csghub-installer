@@ -13,5 +13,10 @@ metadata:
 {{- end }}
   name: {{ include "ingress-nginx.fullname" . }}-tcp
   namespace: {{ include "ingress-nginx.namespace" . }}
-data: {{ tpl (toYaml .Values.tcp) . | nindent 2 }}
+data:
+  {{- range $key, $port := .Values.global.ingress.service.nodePorts.tcp }}
+  {{ $key }}: {{ printf "%s/%s:%s" $.Release.Namespace (include "gitea.ssh" $) (include "gitea.ssh.port" $) }}
+  {{- else }}
+{{ tpl (toYaml .Values.tcp) . | nindent 2 }}
 {{- end }}
+  {{- end }}

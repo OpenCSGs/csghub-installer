@@ -42,6 +42,13 @@ Define the host of gitea
 {{- end }}
 
 {{/*
+Define the host of gitea
+*/}}
+{{- define "gitea.ssh" -}}
+{{- printf "%s-%s-ssh" .Release.Name "gitea" }}
+{{- end }}
+
+{{/*
 Define the port of gitea
 */}}
 {{- define "gitea.port" -}}
@@ -52,6 +59,26 @@ Define the port of gitea
       {{- if hasKey .Values.global.gitea.service.ports "http" }}
         {{- $port = .Values.global.gitea.service.ports.http }}
       {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
+{{- end }}
+
+{{/*
+Define the ssh port of gitea
+*/}}
+{{- define "gitea.ssh.port" -}}
+{{- $port := "22" }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "service" }}
+    {{- if hasKey .Values.global.ingress.service "type" }}
+      {{- $type := .Values.global.ingress.service.type }}
+        {{- if eq "NodePort" $type }}
+          {{- range $key, $nport := .Values.global.ingress.service.nodePorts.tcp }}
+            {{- $port = $nport | toString }}
+          {{- end }}
+        {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

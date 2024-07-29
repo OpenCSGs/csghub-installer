@@ -33,8 +33,13 @@ metadata:
 spec:
   clusterIP: None
   ports:
+    {{- if eq "22" (include "gitea.ssh.port" .) }}
     - port: {{ $merged.service.ports.ssh }}
-      targetPort: 22
+      targetPort: {{ include "gitea.ssh.port" . }}
+    {{- else }}
+    - port: {{ include "gitea.ssh.port" . }}
+      targetPort: {{ include "gitea.ssh.port" . }}
+    {{- end }}
       protocol: TCP
       name: {{ include "common.names.name" . }}-ssh
   selector:

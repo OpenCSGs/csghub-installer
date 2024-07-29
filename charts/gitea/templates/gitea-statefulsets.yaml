@@ -55,7 +55,7 @@ spec:
             - containerPort: 3001
               name: {{ include "common.names.name" . }}-http
               protocol: TCP
-            - containerPort: 22
+            - containerPort: {{ include "gitea.ssh.port" . }}
               name: {{ include "common.names.name" . }}-ssh
               protocol: TCP
           envFrom:

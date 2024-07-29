@@ -25,7 +25,15 @@ global:
       ## The host (domain) name for external access
       host: csghub.msens.cn
       ## The port number for external access
-      port: 80
+
+    service: &service
+      type: NodePort
+      nodePorts:
+        http: 30080
+        https: 30443
+        tcp: &tcp
+          2222: 32222
+
     tls:
       enabled: false
       verify: false
@@ -595,3 +603,9 @@ global:
       ## Image pull secrets for accessing private Docker registries
       # pullSecret: [ ]
 
+ingress-nginx:
+  controller:
+    service:
+      <<: *service
+  tcp:
+    <<: *tcp

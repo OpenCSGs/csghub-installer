@@ -43,8 +43,21 @@ Define the public domain of space builder
     {{- if hasKey .Values.global.builder.ingress "host" }}
       {{- $host = .Values.global.builder.ingress.host }}
     {{- end }}
-    {{- if hasKey .Values.global.ingress.external "port" }}
-      {{- $port = .Values.global.ingress.external.port | toString }}
+    {{- if hasKey .Values.global.ingress.service "type" }}
+        {{- $type := .Values.global.ingress.service.type }}
+        {{- if eq "NodePort" $type }}
+          {{- if .Values.global.ingress.tls.enabled }}
+            {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
+          {{- else }}
+            {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
+          {{- end }}
+        {{- else }}
+          {{- if .Values.global.ingress.tls.enabled }}
+            {{- $port = "443" | toString }}
+          {{- else }}
+            {{- $port = "80" | toString }}
+          {{- end }}
+        {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
