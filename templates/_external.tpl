@@ -42,10 +42,3 @@ Define the endpoint of gitea
 {{- end }}
 {{- printf "%s%s" $prefix (include "csghub.domain" .) -}}
 {{- end }}
-
-{{/*
-Lookup the namespace of ingress-nginx
-*/}}
-{{- define "ingress.namespace" -}}
-{{ $ingress := lookup "networking.k8s.io/v1" "Ingress" "" }}
-{{- end }}

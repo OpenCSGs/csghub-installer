@@ -25,7 +25,7 @@ global:
       ## The host (domain) name for external access
       host: csghub.msens.cn
       ## The port number for external access
-      port: 31403
+      port: 80
     tls:
       enabled: false
       verify: false
