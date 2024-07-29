@@ -21,7 +21,7 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-  serviceName: {{ include "names.hl.svc" . }}
+  serviceName: {{ include "names.http.hl.svc" . }}
   replicas: 1
   minReadySeconds: 10
   template:
@@ -55,7 +55,7 @@ spec:
             - containerPort: 3001
               name: {{ include "common.names.name" . }}-http
               protocol: TCP
-            - containerPort: 2222
+            - containerPort: 22
               name: {{ include "common.names.name" . }}-ssh
               protocol: TCP
           envFrom:

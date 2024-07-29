@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define domain of gitea with route
 */}}
 {{- define "gitea.domain" -}}
-{{- printf "%s/gitserver" (include "csghub.domain" .) }}
+{{- printf "%s/admin" (include "csghub.domain" .) }}
 {{- end }}
 
 {{/*
@@ -38,7 +38,7 @@ Return the endpoint of gitea
 Define the host of gitea
 */}}
 {{- define "gitea.host" -}}
-{{- printf "%s-%s-hl-svc" .Release.Name "gitea" }}
+{{- printf "%s-%s-http" .Release.Name "gitea" }}
 {{- end }}
 
 {{/*

@@ -39,6 +39,20 @@ Return name of headless Service
 {{- end -}}
 
 {{/*
+Return git http name of headless Service
+*/}}
+{{- define "names.http.hl.svc" -}}
+{{ printf "%s-http" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return git ssh name of headless Service
+*/}}
+{{- define "names.ssh.hl.svc" -}}
+{{ printf "%s-ssh" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
 Return name of headless Service
 */}}
 {{- define "names.docker.svc" -}}
@@ -104,8 +118,8 @@ Return name of Ingress
 {{/*
 Return name of Ingress
 */}}
-{{- define "names.gitserver.ing" -}}
-{{ printf "%s-gitserver-ing" ( include "common.names.fullname" . ) }}
+{{- define "names.gitea.admin.ing" -}}
+{{ printf "%s-gitea-admin-ing" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*

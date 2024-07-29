@@ -11,7 +11,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ $apiVersion }}
 kind: Ingress
 metadata:
-  name: {{ include "names.gitserver.ing" . }}
+  name: {{ include "names.gitea.admin.ing" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
@@ -47,28 +47,28 @@ spec:
     - host: {{ .Values.global.ingress.external.host }}
       http:
         paths:
-          - path: /gitserver
+          - path: /admin
             pathType: Prefix
             backend:
             {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.hl.svc" . }}
+                name: {{ include "names.http.hl.svc" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
             {{- else }}
-              serviceName: {{ include "names.hl.svc" . }}
+              serviceName: {{ include "names.http.hl.svc" . }}
               servicePort: {{ $merged.service.ports.http }}
             {{- end }}
-          - path: /gitserver/(.*)$
+          - path: /admin/(.*)$
             pathType: ImplementationSpecific
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.hl.svc" . }}
+                name: {{ include "names.http.hl.svc" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
               {{- else }}
-              serviceName: {{ include "names.hl.svc" . }}
+              serviceName: {{ include "names.http.hl.svc" . }}
               servicePort: {{ $merged.service.ports.http }}
               {{- end }}
 ---
@@ -141,11 +141,11 @@ spec:
             backend:
             {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.hl.svc" . }}
+                name: {{ include "names.http.hl.svc" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
             {{- else }}
-              serviceName: {{ include "names.hl.svc" . }}
+              serviceName: {{ include "names.http.hl.svc" . }}
               servicePort: {{ $merged.service.ports.http }}
             {{- end }}
 {{- end }}
