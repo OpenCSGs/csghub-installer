@@ -69,11 +69,13 @@ Define the http port of gitea
 Define the ssh port of gitea
 */}}
 {{- define "gitea.ssh.port" -}}
-{{- $port := "32222" }}
+{{- $port := "22" }}
 {{- if eq "NodePort" (include "csghub.external.service.type" .)}}
   {{- if hasKey .Values.global.ingress.service "nodePorts" }}
-    {{- if hasKey .Values.global.ingress.service.nodePorts "ssh" }}
-      {{- $port = .Values.global.ingress.service.nodePorts.ssh | toString }}
+    {{- if hasKey .Values.global.ingress.service.nodePorts "tcp" }}
+      {{- range $key, $nport := .Values.global.ingress.service.nodePorts.tcp }}
+        {{- $port = $nport | toString }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}
