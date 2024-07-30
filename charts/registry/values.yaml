@@ -43,7 +43,6 @@ ingress:
     enabled: false
     verify: false
     secretName: ""
-    caSecretName: ""
     annotations: {}
 
 persistence:

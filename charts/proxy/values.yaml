@@ -25,6 +25,13 @@ service:
   ## The port on which the proxy service is exposed within the cluster.
   port: 8083
 
+ingress:
+  ## Hostname for accessing the building application externally
+  host: public.msens.cn
+  tls:
+    enabled: false
+    secretName: ""
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

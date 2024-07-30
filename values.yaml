@@ -264,6 +264,9 @@ global:
     ingress:
       ## Hostname for accessing the building application externally
       host: public.msens.cn
+      tls:
+        enabled: "false"
+        secretName: ""
 
     internal:
       ## Internal domain name for the builder component
