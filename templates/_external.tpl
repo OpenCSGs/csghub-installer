@@ -57,3 +57,18 @@ Define the endpoint of gitea
 {{- end }}
 {{- printf "%s%s" $prefix (include "csghub.domain" .) -}}
 {{- end }}
+
+{{/*
+Define the service type of external
+*/}}
+{{- define "csghub.external.service.type" -}}
+{{- $type := "ClusterIP" }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "service" }}
+    {{- if hasKey .Values.global.ingress.service "type" }}
+      {{- $type = .Values.global.ingress.service.type }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $type -}}
+{{- end }}
