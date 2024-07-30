@@ -23,7 +23,7 @@ global:
     ## Note: The 'external' settings override the 'server' settings for domain and port.
     external:
       ## The host (domain) name for external access
-      host: csghub.msens.cn
+      host: csghub.example.com
       ## The port number for external access
 
     ## Configure this section to adjust the port exposure method.
@@ -262,10 +262,11 @@ global:
       port: 8080
 
     ingress:
+      enabled: true
       ## Hostname for accessing the building application externally
-      host: public.msens.cn
+      host: public.example.com
       tls:
-        enabled: "false"
+        enabled: false
         secretName: ""
 
     internal:
@@ -384,7 +385,7 @@ global:
       ## Enable ingress (true or false)
       enabled: true
       ## The hostname for the ingress
-      host: gitea.msens.cn
+      host: gitea.example.com
 
     ## Configuration for persistence using Persistent Volume Claims
     persistence:
@@ -541,7 +542,7 @@ global:
     ingress:
       ## Ingress configuration for accessing Minio from outside the Kubernetes cluster.
       enabled: true
-      host: minio.msens.cn
+      host: minio.example.com
 
     persistence:
       ## Persistence settings for Minio data. Ensures data is retained across pod restarts.
@@ -586,7 +587,7 @@ global:
       ## Enable ingress for the Docker Registry
       enabled: true
       ## Hostname for the Docker Registry ingress
-      host: registry.msens.cn
+      host: registry.example.com
       tls:
         enabled: true
         secretName: test-registry-tls-secret

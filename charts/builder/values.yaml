@@ -31,8 +31,14 @@ service:
 namespace: space
 
 ingress:
+  ## Ingress configuration for accessing Minio from outside the Kubernetes cluster.
+  enabled: true
+  className: "nginx"
   ## Hostname for accessing the building application externally
   host: public.example.com
+  tls:
+    enabled: false
+    secretName: ""
 
 internal:
   ## Internal domain name for the builder component

@@ -47,7 +47,7 @@ Define the public domain of space builder
         {{- $type := .Values.global.ingress.service.type }}
         {{- if eq "NodePort" $type }}
           {{- if .Values.global.ingress.tls.enabled }}
-            {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
+            {{- $port = .Values.global.ingress.service.nodePorts.https | toString }}
           {{- else }}
             {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
           {{- end }}

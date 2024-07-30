@@ -4,7 +4,8 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- $global := .Values.global.proxy }}
-{{- $local := omit .Values "global" "exports" }}
+{{/*{{- $local := omit .Values "global" "exports" }}*/}}
+{{- $local := .Values }}
 {{- $merged := merge $global $local }}
 {{- if .Values.global.ingress.enabled }}
 {{- $apiVersion := include "common.capabilities.ingress.apiVersion" . }}
@@ -60,14 +61,14 @@ spec:
   {{- if and .Values.global.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.global.ingress.className }}
   {{- end }}
-  {{- if $merged.ingress.tls.enabled }}
+  {{- if .Values.global.builder.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ printf "*.%s" $merged.ingress.host | quote }}
-      secretName: {{ $merged.ingress.tls.secretName }}
+      - {{ printf "*.%s" .Values.global.builder.ingress.host | quote }}
+      secretName: {{ .Values.global.builder.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ printf "*.%s" $merged.ingress.host | quote }}
+    - host: {{ printf "*.%s" .Values.global.builder.ingress.host | quote }}
       http:
         paths:
           - path: /
