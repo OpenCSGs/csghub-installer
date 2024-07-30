@@ -38,7 +38,7 @@ ingress:
   enabled: true
   className: "nginx"
   ## Hostname for the Docker Registry ingress
-  host: registry.msens.cn
+  host: registry.example.com
   tls:
     enabled: false
     verify: false

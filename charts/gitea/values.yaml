@@ -67,7 +67,7 @@ ingress:
   enabled: true
   className: "nginx"
   ## The hostname for the ingress
-  host: gitea.msens.cn
+  host: gitea.example.com
   tls:
     enabled: false
     annotations: {}

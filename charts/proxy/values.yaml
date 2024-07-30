@@ -27,7 +27,7 @@ service:
 
 ingress:
   ## Hostname for accessing the building application externally
-  host: public.msens.cn
+  host: public.example.com
   tls:
     enabled: false
     secretName: ""
