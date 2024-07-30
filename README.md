@@ -6,6 +6,18 @@ CSGHub is an open source, trustworthy large model asset management platform that
 
 Due to the version problem, the configuration is relatively complicated, which will be optimized in later versions. To simplify the configuration, only global parameters are defined in values.yaml. The mapping method of sub-charts in global in this helm chart is consistent with directly modifying the sub-chart configuration in the parent chart. Therefore, when modifying a subchart, you only need to add or modify the parameters of the corresponding subchart in global.
 
+#### PreCondition
+
+1. [KNative Serving](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/) should be installed.
+2. With it's configMap internal domain should be patched.
+```shell
+kubectl patch configmap/config-domain \
+  --namespace knative-serving \
+  --type merge \
+  --patch '{"data":{"app.internal":""}}'
+```
+*Hint: This operation will be integrated into the job later.*
+
 #### Configuration
 
 Currently, the following configurations are required:
