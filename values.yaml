@@ -621,6 +621,12 @@ global:
       ## Image pull secrets for accessing private Docker registries
       # pullSecret: [ ]
 
+  fluent:
+    elasticsearch:
+      host: "127.0.0.1"
+      port: 9200
+      index: "csghub"
+
 ## Just keep default
 ingress-nginx:
   controller:
