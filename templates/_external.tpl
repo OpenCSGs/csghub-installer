@@ -4,33 +4,41 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Return domain of csghub
+Return the port of csghub external
 */}}
-{{- define "csghub.domain" -}}
-{{- $host := "csghub.examle.com" }}
+{{- define "csghub.port" -}}
 {{- $port := "80" }}
 {{- if hasKey .Values.global "ingress" }}
-  {{- if hasKey .Values.global.ingress "external" }}
-    {{- if hasKey .Values.global.ingress.external "host" }}
-      {{- $host = .Values.global.ingress.external.host }}
-    {{- end }}
-  {{- end }}
   {{- if hasKey .Values.global.ingress "service" }}
     {{- if hasKey .Values.global.ingress.service "type" }}
       {{- $type := .Values.global.ingress.service.type }}
         {{- if eq "NodePort" $type }}
           {{- if .Values.global.ingress.tls.enabled }}
-            {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
+            {{- $port = .Values.global.ingress.service.nodePorts.https | toString }}
           {{- else }}
             {{- $port = .Values.global.ingress.service.nodePorts.http | toString }}
           {{- end }}
         {{- else }}
           {{- if .Values.global.ingress.tls.enabled }}
             {{- $port = "443" | toString }}
-          {{- else }}
-            {{- $port = "80" | toString }}
           {{- end }}
         {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
+{{- end }}
+
+{{/*
+Return domain of csghub
+*/}}
+{{- define "csghub.domain" -}}
+{{- $host := "csghub.example.com" }}
+{{- $port := include "csghub.port" . }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "external" }}
+    {{- if hasKey .Values.global.ingress.external "host" }}
+      {{- $host = .Values.global.ingress.external.host }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -42,7 +50,7 @@ Return domain of csghub
 {{- end }}
 
 {{/*
-Define the endpoint of gitea
+Define the endpoint of csghub external
 */}}
 {{- define "csghub.external.url" -}}
 {{- $prefix := "http://" }}
