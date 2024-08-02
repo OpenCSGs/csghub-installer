@@ -317,7 +317,9 @@ global:
       accessMode:
         - ReadWriteOnce
       ## Size of the persistent volume
-      size: 1Gi
+      sizes:
+        builder: "2Gi"
+        docker: "10Gi"
 
   ## Gitea's configuration section
   ## This section allows you to configure the Gitea settings for your deployment.

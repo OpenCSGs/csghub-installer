@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $global := .Values.global.coredns }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
-{{- $internalDomain := include "builder.full.internal.domain" . }}
+{{- $internalDomain := include "builder.internal.domain" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
