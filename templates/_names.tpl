@@ -119,7 +119,7 @@ Return name of Ingress
 Return name of Ingress
 */}}
 {{- define "names.gitea.admin.ing" -}}
-{{ printf "%s-gitea-admin-ing" ( include "common.names.fullname" . ) }}
+{{ printf "%s-gitea-gitea-ing" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*

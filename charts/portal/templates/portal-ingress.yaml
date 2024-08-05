@@ -82,6 +82,18 @@ spec:
               serviceName: {{ include "names.svc" . }}
               servicePort:  {{ $merged.service.port }}
             {{- end }}
+          - path: /admin
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq $apiVersion "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "names.svc" . }}
+                port:
+                  number: {{ $merged.service.port }}
+            {{- else }}
+              serviceName: {{ include "names.svc" . }}
+              servicePort: {{ $merged.service.port }}
+            {{- end }}
           - path: /api/
             pathType: ImplementationSpecific
             backend:
