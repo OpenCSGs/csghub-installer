@@ -6,7 +6,6 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $global := .Values.global.gitea }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
-{{- if $merged.ingress.enabled }}
 {{- $apiVersion := include "common.capabilities.ingress.apiVersion" . }}
 apiVersion: {{ $apiVersion }}
 kind: Ingress
@@ -30,7 +29,7 @@ metadata:
     {{- end }}
     {{- end }}
     {{- end }}
-    {{- range $key, $value := (default .Values.global.ingress.annotations $merged.ingress.annotations) }}
+    {{- range $key, $value := .Values.global.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
     nginx.ingress.kubernetes.io/rewrite-target: /$1
@@ -117,7 +116,7 @@ metadata:
     {{- end }}
     {{- end }}
     {{- end }}
-    {{- range $key, $value := (default .Values.global.ingress.annotations $merged.ingress.annotations) }}
+    {{- range $key, $value := .Values.global.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
     nginx.ingress.kubernetes.io/rewrite-target: /$1_$2.git/$3$4
@@ -148,4 +147,3 @@ spec:
               serviceName: {{ include "names.http.hl.svc" . }}
               servicePort: {{ $merged.service.ports.http }}
             {{- end }}
-{{- end }}

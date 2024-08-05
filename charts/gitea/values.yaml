@@ -61,17 +61,6 @@ smtp:
   user: ""
   password: ""
 
-## Configuration for ingress
-ingress:
-  ## Enable ingress (true or false)
-  enabled: true
-  className: "nginx"
-  ## The hostname for the ingress
-  host: gitea.example.com
-  tls:
-    enabled: false
-    annotations: {}
-
 ## Configuration for persistence using Persistent Volume Claims
 persistence:
   ## Enable persistence (true or false)
