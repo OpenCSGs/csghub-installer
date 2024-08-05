@@ -13,9 +13,9 @@ replicas: 1
 
 image:
   ## Repository for the builder image
-  repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub-space-builder
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
   ## Tag for the builder image
-  tag: "v0.5.0"
+  tag: v0.5.0
   ## Pull policy for the builder image
   pullPolicy: "IfNotPresent"
   ## Secrets for pulling the builder image from a private registry

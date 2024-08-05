@@ -6,10 +6,10 @@ enabled: true
 ## Gitea image configuration
 ## Here you can specify the repository, pull policy, and tag for the Gitea image.
 image:
-  repository: git-devops.opencsg.com:5050/product/starhub/bitnami-gitea # The repository where the Gitea image is stored
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_git
   pullPolicy: IfNotPresent # The pull policy for the image
   ## Overrides the image tag whose default is the chart appVersion.
-  tag: "v0.7" # The specific version tag of the Gitea image
+  tag: latest # The specific version tag of the Gitea image
   ## Image pull secrets for accessing private Docker registries
   ## This is necessary if your Gitea image is stored in a private repository that requires authentication.
   pullSecrets: []

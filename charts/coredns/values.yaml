@@ -7,9 +7,9 @@ replicaCount: 1
 
 image:
   ## The Docker Registry image repository
-  repository: coredns/coredns
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/coredns/coredns
   ## The Docker Registry image tag
-  tag: "1.11.1"
+  tag: 1.11.1
   ## The pull policy for the Docker Registry image
   pullPolicy: "IfNotPresent"
   ## Image pull secrets for accessing private Docker registries

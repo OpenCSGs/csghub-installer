@@ -21,14 +21,14 @@ controller:
   image:
     ## Keep false as default for now!
     chroot: false
-    registry: registry.k8s.io
-    image: ingress-nginx/controller
+    registry: opencsg-registry.cn-beijing.cr.aliyuncs.com
+    image: opencsg_public/ingress-nginx/controller
     ## for backwards compatibility consider setting the full image url via the repository value below
     ## use *either* current default registry/image or repository format or installing chart by providing the values.yaml will fail
     ## repository:
-    tag: "v1.11.1"
-    digest: sha256:e6439a12b52076965928e83b7b56aae6731231677b01e81818bce7fa5c60161a
-    digestChroot: sha256:7cabe4bd7558bfdf5b707976d7be56fd15ffece735d7c90fc238b6eda290fd8d
+    tag: v1.11.1
+    digest: sha256:8f0d2b5885516c9d46c836dbb158446af6a0a9307ca2fd591c21171ff0bf2a7b
+    digestChroot: sha256:8f0d2b5885516c9d46c836dbb158446af6a0a9307ca2fd591c21171ff0bf2a7b
     pullPolicy: IfNotPresent
     runAsNonRoot: true
     # www-data -> uid 101
@@ -799,13 +799,13 @@ controller:
     patch:
       enabled: true
       image:
-        registry: registry.k8s.io
-        image: ingress-nginx/kube-webhook-certgen
+        registry: opencsg-registry.cn-beijing.cr.aliyuncs.com
+        image: opencsg_public/ingress-nginx/kube-webhook-certgen
         ## for backwards compatibility consider setting the full image url via the repository value below
         ## use *either* current default registry/image or repository format or installing chart by providing the values.yaml will fail
         ## repository:
         tag: v1.4.1
-        digest: sha256:36d05b4077fb8e3d13663702fa337f124675ba8667cbd949c03a8e8ea6fa4366
+        digest: sha256:887b7f4495677473f1bef5bfb48200a1070e526183b515682a7e78e43c7d7da4
         pullPolicy: IfNotPresent
       # -- Provide a priority class name to the webhook patching job
       ##

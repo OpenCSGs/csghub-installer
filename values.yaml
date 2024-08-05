@@ -70,9 +70,9 @@ global:
 
     image:
       ## The Docker image repository
-      repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub_server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The specific image tag to use
-      tag: "v0.5.0"
+      tag: v0.5.0
       ## The image pull policy
       pullPolicy: "IfNotPresent"
       ## List of secrets used to pull images from private repositories
@@ -119,9 +119,9 @@ global:
 
     image:
       ## The repository where the portal image is stored.
-      repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub_portal
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## The specific version tag of the portal image to use.
-      tag: "v0.5.0"
+      tag: v0.5.0
       ## The pull policy for the portal image, specifying when to pull the image from the repository.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private repository. Leave empty if not required.
@@ -163,9 +163,9 @@ global:
 
     image:
       ## The repository where the runner image is stored
-      repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub_server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the runner image to use
-      tag: "v0.5.0"
+      tag: v0.5.0
       ## The pull policy for the runner image
       ## Determines when the image should be pulled from the repository
       pullPolicy: "IfNotPresent"
@@ -218,9 +218,9 @@ global:
 
     image:
       ## The repository where the proxy image is stored.
-      repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub_server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the proxy image to use.
-      tag: "v0.5.0"
+      tag: v0.5.0
       ## The pull policy for the proxy image. Determines when the image should be pulled.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private registry. Empty if not using a private registry or not required.
@@ -247,9 +247,9 @@ global:
 
     image:
       ## Repository for the builder image
-      repository: registry.cn-beijing.aliyuncs.com/opencsg_public/csghub-space-builder
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
       ## Tag for the builder image
-      tag: "v0.5.0"
+      tag: v0.5.0
       ## Pull policy for the builder image
       pullPolicy: "IfNotPresent"
       ## Secrets for pulling the builder image from a private registry
@@ -331,14 +331,13 @@ global:
     ## Gitea image configuration
     ## Here you can specify the repository, pull policy, and tag for the Gitea image.
     image:
-      repository: git-devops.opencsg.com:5050/product/starhub/bitnami-gitea # The repository where the Gitea image is stored
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_git
       pullPolicy: IfNotPresent # The pull policy for the image
       ## Overrides the image tag whose default is the chart appVersion.
-      tag: "v0.7" # The specific version tag of the Gitea image
+      tag: v0.7.0 # The specific version tag of the Gitea image
       ## Image pull secrets for accessing private Docker registries
       ## This is necessary if your Gitea image is stored in a private repository that requires authentication.
-      pullSecrets:
-        - name: csghub-registry-credential
+      pullSecrets: []
 
     service:
       type: ClusterIP
@@ -438,9 +437,9 @@ global:
 
     image:
       ## The repository from which the PostgreSQL image is pulled
-      repository: postgres
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
       ## The tag of the PostgreSQL image to use
-      tag: "15.7"
+      tag: 15.7
       ## The pull policy for the PostgreSQL image
       pullPolicy: "IfNotPresent"
       ## Image pull secrets for accessing private Docker registries
@@ -482,9 +481,9 @@ global:
 
     image:
       ## The repository of the Redis image.
-      repository: redis
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis
       ## The tag of the Redis image.
-      tag: "7.2.5"
+      tag: 7.2.5
       ## The pull policy for the Redis image.
       pullPolicy: "IfNotPresent"
       ## Image pull secrets for accessing private Docker registries.
@@ -517,8 +516,8 @@ global:
     replicas: 1
     image:
       ## The repository and tag of the Minio image to use.
-      repository: minio/minio
-      tag: "RELEASE.2024-07-15T19-02-30Z"
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/minio
+      tag: RELEASE.2024-07-15T19-02-30Z
       ## Image pull policy and secrets for accessing private Docker registries.
       pullPolicy: "IfNotPresent"
       # pullSecret: [ ]
@@ -562,9 +561,9 @@ global:
     replicas: 1
     image:
       ## The Docker Registry image repository
-      repository: registry
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry
       ## The Docker Registry image tag
-      tag: "2.8.3"
+      tag: 2.8.3
       ## The pull policy for the Docker Registry image
       pullPolicy: "IfNotPresent"
       ## Image pull secrets for accessing private Docker registries
@@ -615,9 +614,9 @@ global:
     replicas: 1
     image:
       ## The Docker Registry image repository
-      repository: coredns/coredns
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/coredns/coredns
       ## The Docker Registry image tag
-      tag: "1.11.1"
+      tag: 1.11.1
       ## The pull policy for the Docker Registry image
       pullPolicy: "IfNotPresent"
       ## Image pull secrets for accessing private Docker registries

@@ -8,9 +8,9 @@ replicas: 1
 
 image:
   ## The Docker Registry image repository
-  repository: registry
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry
   ## The Docker Registry image tag
-  tag: "2.8.3"
+  tag: 2.8.3
   ## The pull policy for the Docker Registry image
   pullPolicy: "IfNotPresent"
   ## Image pull secrets for accessing private Docker registries

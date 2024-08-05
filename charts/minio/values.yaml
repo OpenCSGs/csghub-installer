@@ -10,8 +10,8 @@ replicas: 1
 
 image:
   ## The repository and tag of the Minio image to use.
-  repository: minio/minio
-  tag: "RELEASE.2024-07-15T19-02-30Z"
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/minio
+  tag: RELEASE.2024-07-15T19-02-30Z
   ## Image pull policy and secrets for accessing private Docker registries.
   pullPolicy: "IfNotPresent"
   pullSecret: [ ]
@@ -55,9 +55,9 @@ persistence:
   size: 1Gi
 
 client:
-  repository: minio/mc
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/mc
   pullPolicy: IfNotPresent
-  tag: "RELEASE.2024-06-01T15-03-35Z"
+  tag: RELEASE.2024-06-01T15-03-35Z
 
 imagePullSecrets: []
 nameOverride: ""

@@ -9,9 +9,9 @@ replicas: 1
 
 image:
   ## The repository from which the PostgreSQL image is pulled
-  repository: postgres
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
   ## The tag of the PostgreSQL image to use
-  tag: "15.7"
+  tag: 15.7
   ## The pull policy for the PostgreSQL image
   pullPolicy: "IfNotPresent"
   ## Image pull secrets for accessing private Docker registries

@@ -9,9 +9,9 @@ replicas: 1
 
 image:
   ## The repository of the Redis image.
-  repository: redis
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis
   ## The tag of the Redis image.
-  tag: "7.2.5"
+  tag: 7.2.5
   ## The pull policy for the Redis image.
   pullPolicy: "IfNotPresent"
   ## Image pull secrets for accessing private Docker registries.
