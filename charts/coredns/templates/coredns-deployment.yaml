@@ -35,7 +35,7 @@ spec:
       labels:
         {{- include "common.labels.standard" . | nindent 8 }}
     spec:
-      {{- with $merged.image.pullSecret }}
+      {{- with (default .Values.global.imagePullSecrets $merged.image.pullSecret) }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}

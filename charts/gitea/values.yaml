@@ -12,7 +12,7 @@ image:
   tag: latest # The specific version tag of the Gitea image
   ## Image pull secrets for accessing private Docker registries
   ## This is necessary if your Gitea image is stored in a private repository that requires authentication.
-  pullSecrets: []
+  pullSecret: []
 
 # Open external listening ports
 service:
