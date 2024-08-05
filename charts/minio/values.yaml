@@ -40,8 +40,6 @@ authentication:
 ingress:
   ## Ingress configuration for accessing Minio from outside the Kubernetes cluster.
   enabled: true
-  className: "nginx"
-  host: minio.example.com
   tls:
     enabled: false
     secretName: ""

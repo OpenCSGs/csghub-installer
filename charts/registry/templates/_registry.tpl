@@ -14,9 +14,7 @@ Define the endpoint of registry
     {{- if hasKey .Values.global.registry "ingress" }}
         {{- if hasKey .Values.global.registry.ingress "enabled" }}
             {{- if .Values.global.registry.ingress.enabled }}
-              {{- if hasKey .Values.global.registry.ingress "host" }}
-                {{- $host = .Values.global.registry.ingress.host }}
-              {{- end }}
+              {{- $host = (include "external.registry.domain" .) }}
             {{- end }}
         {{- end }}
     {{- end }}

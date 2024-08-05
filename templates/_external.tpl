@@ -33,15 +33,8 @@ Return the port of csghub external
 Return domain of csghub
 */}}
 {{- define "csghub.domain" -}}
-{{- $host := "csghub.example.com" }}
+{{- $host := (include "external.csghub.domain" .) }}
 {{- $port := include "csghub.port" . }}
-{{- if hasKey .Values.global "ingress" }}
-  {{- if hasKey .Values.global.ingress "external" }}
-    {{- if hasKey .Values.global.ingress.external "host" }}
-      {{- $host = .Values.global.ingress.external.host }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 {{- if gt (len $port | toString) "4" }}
 {{- printf "%s:%s" $host $port -}}
 {{- else }}
@@ -79,4 +72,47 @@ Define the service type of external
   {{- end }}
 {{- end }}
 {{- $type -}}
+{{- end }}
+
+{{/*
+Judge if .Values.global.ingress.external.domain exists
+*/}}
+{{- define "ingress.external.domain" -}}
+{{- $host := "example.com" }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "external" }}
+    {{- if hasKey .Values.global.ingress.external "domain" }}
+      {{- $host = .Values.global.ingress.external.domain }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $host -}}
+{{- end }}
+
+{{/*
+Define the external domain for csghub
+*/}}
+{{- define "external.csghub.domain" -}}
+{{- printf "csghub.%s" (include "ingress.external.domain" .) }}
+{{- end }}
+
+{{/*
+Define the external domain for minio
+*/}}
+{{- define "external.minio.domain" -}}
+{{- printf "minio.%s" (include "ingress.external.domain" .) }}
+{{- end }}
+
+{{/*
+Define the external domain for registry
+*/}}
+{{- define "external.registry.domain" -}}
+{{- printf "registry.%s" (include "ingress.external.domain" .) }}
+{{- end }}
+
+{{/*
+Define the external domain for public
+*/}}
+{{- define "external.public.domain" -}}
+{{- printf "public.%s" (include "ingress.external.domain" .) }}
 {{- end }}

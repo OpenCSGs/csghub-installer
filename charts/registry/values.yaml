@@ -36,9 +36,6 @@ namespace: ""
 ingress:
   ## Enable ingress for the Docker Registry
   enabled: true
-  className: "nginx"
-  ## Hostname for the Docker Registry ingress
-  host: registry.example.com
   tls:
     enabled: false
     verify: false

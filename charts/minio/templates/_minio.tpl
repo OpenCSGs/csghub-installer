@@ -8,7 +8,7 @@ Define the name of minio endpoint external
 */}}
 {{- define "minio.external.endpoint" -}}
 {{- $port := include "csghub.port" . }}
-{{- printf "http://%s:%s" .Values.global.minio.ingress.host $port -}}
+{{- printf "http://%s:%s" (include "external.minio.domain" .) $port -}}
 {{- end }}
 
 {{/*

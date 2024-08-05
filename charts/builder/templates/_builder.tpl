@@ -36,13 +36,10 @@ Define the port of  space builder
 Define the public domain of space builder
 */}}
 {{- define "builder.public.domain" -}}
-{{- $host := "csghub.public.com" }}
+{{- $host := (include "external.public.domain" .) }}
 {{- $port := "80" }}
-{{- if hasKey .Values.global "builder" }}
-  {{- if hasKey .Values.global.builder "ingress" }}
-    {{- if hasKey .Values.global.builder.ingress "host" }}
-      {{- $host = .Values.global.builder.ingress.host }}
-    {{- end }}
+{{- if hasKey .Values.global "ingress" }}
+  {{- if hasKey .Values.global.ingress "service" }}
     {{- if hasKey .Values.global.ingress.service "type" }}
         {{- $type := .Values.global.ingress.service.type }}
         {{- if eq "NodePort" $type }}
