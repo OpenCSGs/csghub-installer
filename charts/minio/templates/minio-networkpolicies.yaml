@@ -24,11 +24,5 @@ spec:
       from:
         - podSelector:
             matchLabels:
-              {{- include "common.labels.standard" . | nindent 14 }}
-    - ports:
-        - port: {{ $merged.service.ports.console }}
-      from:
-        - podSelector:
-            matchLabels:
-              {{- include "common.labels.standard" . | nindent 14 }}
+              {{- include "common.labels.netpol.matchLabels" . | nindent 14 }}
 {{- end }}

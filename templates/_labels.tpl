@@ -41,3 +41,14 @@ app.kubernetes.io/name: {{ include "common.names.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Define matched labels for network policies
+*/}}
+{{- define "common.labels.netpol.matchLabels" -}}
+{{- if and (hasKey . "customLabels") (hasKey . "context") -}}
+{{ merge (pick (include "common.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "common.names.name" .context) "app.kubernetes.io/instance" .context.Release.Name ) | toYaml }}
+{{- else -}}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+{{- end -}}

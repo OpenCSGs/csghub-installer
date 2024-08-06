@@ -184,7 +184,7 @@ global:
     ## .kube/config
     kubeConfig: |
 
-    ## Proxy configuration section
+  ## Proxy configuration section
   ## This section is dedicated to configuring the proxy settings for your deployment.
   ## The proxy acts as an intermediary for requests from clients seeking resources from other servers.
   proxy:
