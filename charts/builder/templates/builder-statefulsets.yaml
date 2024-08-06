@@ -89,7 +89,7 @@ spec:
         - name: docker
           securityContext:
             {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          image: docker:27.0.3-dind
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/docker:27.0.3-dind
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
             - containerPort: 2375

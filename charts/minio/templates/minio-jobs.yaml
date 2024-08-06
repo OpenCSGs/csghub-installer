@@ -32,7 +32,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-service
-          image: curlimages/curl
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
           command: [ 'sh', '-c', 'until curl -s {{ include "minio.endpoint" . }}/minio/health/live; do echo "Waiting for service minio ready to connect"; sleep 3; done; sleep 5' ]
           imagePullPolicy: {{ default "IfNotPresent" $merged.client.pullPolicy }}
       containers:
