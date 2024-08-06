@@ -24,6 +24,8 @@ spec:
   template:
     metadata:
       name: {{ include "names.job" . }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
     spec:
       restartPolicy: OnFailure
       {{- with (default .Values.global.imagePullSecrets $merged.image.pullSecret) }}
