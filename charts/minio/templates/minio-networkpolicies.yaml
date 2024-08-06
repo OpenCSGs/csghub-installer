@@ -18,6 +18,9 @@ spec:
   podSelector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
   ingress:
     - ports:
         - port: {{ $merged.service.ports.api }}
@@ -25,4 +28,6 @@ spec:
         - podSelector:
             matchLabels:
               {{- include "common.labels.netpol.matchLabels" . | nindent 14 }}
+  egress:
+    - {}
 {{- end }}
