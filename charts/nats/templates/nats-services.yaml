@@ -1,0 +1,32 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.natsMaster }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "names.svc" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+spec:
+  type: {{ $merged.service.type }}
+  ports:
+    - port: {{ $merged.service.ports.api }}
+      targetPort: 4222
+      protocol: TCP
+      name: {{ include "common.names.name" . }}-api
+    - port: {{ $merged.service.ports.cluster }}
+      targetPort: 6222
+      protocol: TCP
+      name: {{ include "common.names.name" . }}-cluster
+    - port: {{ $merged.service.ports.monitor }}
+      targetPort: 8222
+      protocol: TCP
+      name: {{ include "common.names.name" . }}-monitor
+  selector:
+    {{- include "common.labels.matchLabels" . | nindent 4 }}

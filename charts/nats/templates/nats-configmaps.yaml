@@ -1,0 +1,54 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.natsMaster }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- $secret := (include "names.secret" .) -}}
+{{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data -}}
+
+{{- $username := "natsadmin" -}}
+{{- $password := include "nats.initPass" $username -}}
+
+{{- if $secretData }}
+{{- $username = index $secretData "NATS_USERNAME" | b64dec -}}
+{{- $password = index $secretData "NATS_PASSWORD" | b64dec -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  nats-server.conf: |
+    debug = true
+    trace = true
+
+    # Client port of 4222 on all interfaces
+    port: 4222
+
+    # HTTP monitoring port
+    monitor_port: 8222
+
+    jetstream: enabled
+
+    jetstream {
+      store_dir: /data/jetstream
+      max_mem: 8G
+      max_file: 10G
+    }
+
+    authorization {
+      ADMIN = {
+        publish = ">"
+        subscribe = ">"
+    }
+
+    users = [
+        { user: {{ $username | quote }}, password: {{ htpasswd $username $password | trimPrefix (printf "%s:" $username) }}, permissions: $ADMIN }
+      ]
+    }
