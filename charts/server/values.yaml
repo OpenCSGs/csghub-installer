@@ -12,7 +12,7 @@ image:
   ## The Docker image repository
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
   ## The specific image tag to use
-  tag: v0.5.0
+  tag: v0.7.0
   ## The image pull policy
   pullPolicy: "IfNotPresent"
   ## List of secrets used to pull images from private repositories
@@ -36,6 +36,8 @@ postgresql:
   password: ""
   ## The name of the database to connect to on the PostgreSQL server
   database: ""
+  ## Timezone
+  timezone: "Asia/Shanghai"
 
 ## Configuration for S3 storage connection
 ## Server can use S3 (or compatible) storage for repository data. Configure your S3 connection details here.

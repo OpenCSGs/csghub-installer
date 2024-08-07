@@ -71,7 +71,7 @@ global:
       ## The Docker image repository
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The specific image tag to use
-      tag: v0.5.0
+      tag: v0.7.0
       ## The image pull policy
       pullPolicy: "IfNotPresent"
       ## List of secrets used to pull images from private repositories
@@ -95,6 +95,8 @@ global:
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server
       # database: ""
+      ## Timezone
+      # timezone: ""
 
     ## Configuration for S3 storage connection
     ## Server can use S3 (or compatible) storage for repository data. Configure your S3 connection details here.
@@ -120,7 +122,7 @@ global:
       ## The repository where the portal image is stored.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## The specific version tag of the portal image to use.
-      tag: v0.5.0
+      tag: v0.7.0
       ## The pull policy for the portal image, specifying when to pull the image from the repository.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private repository. Leave empty if not required.
@@ -164,7 +166,7 @@ global:
       ## The repository where the runner image is stored
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the runner image to use
-      tag: v0.5.0
+      tag: v0.7.0
       ## The pull policy for the runner image
       ## Determines when the image should be pulled from the repository
       pullPolicy: "IfNotPresent"
@@ -198,7 +200,7 @@ global:
       ## The repository where the proxy image is stored.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the proxy image to use.
-      tag: v0.5.0
+      tag: v0.7.0
       ## The pull policy for the proxy image. Determines when the image should be pulled.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private registry. Empty if not using a private registry or not required.
@@ -227,7 +229,7 @@ global:
       ## Repository for the builder image
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
       ## Tag for the builder image
-      tag: v0.5.0
+      tag: v0.7.0
       ## Pull policy for the builder image
       pullPolicy: "IfNotPresent"
       ## Secrets for pulling the builder image from a private registry
@@ -582,6 +584,15 @@ global:
       pullPolicy: "IfNotPresent"
       ## Image pull secrets for accessing private Docker registries
       # pullSecret: [ ]
+
+  # NATS Master configuration section
+  # This section is reserved for configuring a NATS Master server if needed.
+  # NATS is a simple, secure, and high performance open source messaging system for cloud native applications, IoT messaging, and microservices architectures.
+  nats: {}
+
+  # Account configuration section
+  # This section can be used to configure account-related settings or parameters.
+  account: {}
 
   fluent:
     elasticsearch:
