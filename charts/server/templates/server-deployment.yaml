@@ -58,6 +58,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "names.cm" . }}
+            - secretRef:
+                name: {{ include "nats.secret" . }}
           env:
             - name: GITEA_USERNAME
               valueFrom:
@@ -73,6 +75,14 @@ spec:
               value: "$(GITEA_USERNAME)"
             - name: STARHUB_SERVER_GITSERVER_PASSWORD
               value: "$(GITEA_PASSWORD)"
+            - name: STARHUB_SERVER_MIRRORSERVER_USERNAME
+              value: "$(GITEA_USERNAME)"
+            - name: STARHUB_SERVER_MIRRORSERVER_PASSWORD
+              value: "$(GITEA_PASSWORD)"
+            - name: STARHUB_SERVER_MIRRORSERVER_HOST
+              value: "$(STARHUB_SERVER_GITSERVER_URL)"
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.host" . }}:{{ include "nats.ports.api" . }}"
           {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:

@@ -77,6 +77,22 @@ spec:
               value: {{ include "registry.repository" . }}
             - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
               value: {{ include "registry.docker.secret" . }}
+            {{- if eq "true" (include "postgresql.enabled" .) }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: csghub_server
+            - name: STARHUB_DATABASE_DSN
+              value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
+            - name: STARHUB_DATABASE_TIMEZONE
+              value: {{ include "postgresql.timezone" . }}
+            {{- else }}
+            - name: STARHUB_DATABASE_DSN
+              value: {{ include "server.postgresql.dsn" . }}
+            - name: STARHUB_DATABASE_TIMEZONE
+              value: {{ $merged.postgresql.timezone }}
+            {{- end }}
           {{- with $merged.environments }}
           {{- range $key, $value := . }}
             - name: {{ $key }}

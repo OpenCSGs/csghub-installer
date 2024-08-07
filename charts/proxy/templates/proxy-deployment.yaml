@@ -70,6 +70,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "names.cm" . }}
+            - secretRef:
+                name: {{ include "nats.secret" . }}
           env:
             - name: STARHUB_SERVER_GITSERVER_USERNAME
               valueFrom:
@@ -81,6 +83,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "gitea.secret" . }}
                   key: GITEA_ADMIN_PASSWORD
+            - name: STARHUB_SERVER_MIRRORSERVER_USERNAME
+              value: "$(STARHUB_SERVER_GITSERVER_USERNAME)"
+            - name: STARHUB_SERVER_MIRRORSERVER_PASSWORD
+              value: "$(STARHUB_SERVER_GITSERVER_PASSWORD)"
+            - name: STARHUB_SERVER_MIRRORSERVER_HOST
+              value: "$(STARHUB_SERVER_GITSERVER_URL)"
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.host" . }}:{{ include "nats.ports.api" . }}"
           {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -89,9 +99,13 @@ spec:
                   key: csghub_server
             - name: STARHUB_DATABASE_DSN
               value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
+            - name: STARHUB_DATABASE_TIMEZONE
+              value: {{ include "postgresql.timezone" . }}
           {{- else }}
             - name: STARHUB_DATABASE_DSN
               value: {{ include "server.postgresql.dsn" . }}
+            - name: STARHUB_DATABASE_TIMEZONE
+              value: {{ $merged.postgresql.timezone }}
           {{- end }}
           {{- with $merged.environments }}
           {{- range $key, $value := . }}
