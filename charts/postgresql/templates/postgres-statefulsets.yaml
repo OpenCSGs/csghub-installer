@@ -65,12 +65,12 @@ spec:
                 secretKeyRef:
                   name: {{ include "names.secret" . }}
                   key: postgres
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
