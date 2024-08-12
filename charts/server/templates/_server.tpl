@@ -47,33 +47,89 @@ Define url of server
 {{- end }}
 
 {{/*
-Define dsn for external postgresql
+Define the user for external postgresql
 */}}
-{{- define "server.postgresql.dsn" -}}
+{{- define "server.postgresql.user" -}}
 {{- $user := "" }}
-{{- $password := "" }}
-{{- $host := "" }}
-{{- $port := "" }}
-{{- $database := "" }}
 {{- if hasKey .Values.global "server" }}
   {{- if hasKey .Values.global.server "postgresql" }}
     {{- if hasKey .Values.global.server.postgresql "user" }}
       {{- $user = .Values.global.server.postgresql.user }}
     {{- end }}
+  {{- end }}
+{{- end }}
+{{- $user -}}
+{{- end }}
+
+{{/*
+Define the password for external postgresql
+*/}}
+{{- define "server.postgresql.password" -}}
+{{- $password := "" }}
+{{- if hasKey .Values.global "server" }}
+  {{- if hasKey .Values.global.server "postgresql" }}
     {{- if hasKey .Values.global.server.postgresql "password" }}
       {{- $password = .Values.global.server.postgresql.password }}
     {{- end }}
+  {{- end }}
+{{- end }}
+{{- $password -}}
+{{- end }}
+
+{{/*
+Define the host for external postgresql
+*/}}
+{{- define "server.postgresql.host" -}}
+{{- $host := "" }}
+{{- if hasKey .Values.global "server" }}
+  {{- if hasKey .Values.global.server "postgresql" }}
     {{- if hasKey .Values.global.server.postgresql "host" }}
       {{- $host = .Values.global.server.postgresql.host }}
     {{- end }}
+  {{- end }}
+{{- end }}
+{{- $host -}}
+{{- end }}
+
+{{/*
+Define the port for external postgresql
+*/}}
+{{- define "server.postgresql.port" -}}
+{{- $port := "" }}
+{{- if hasKey .Values.global "server" }}
+  {{- if hasKey .Values.global.server "postgresql" }}
     {{- if hasKey .Values.global.server.postgresql "port" }}
-      {{- $port = .Values.global.portal.postgresql.port }}
+      {{- $port = .Values.global.server.postgresql.port }}
     {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
+{{- end }}
+
+{{/*
+Define the port for external postgresql
+*/}}
+{{- define "server.postgresql.database" -}}
+{{- $database := "" }}
+{{- if hasKey .Values.global "server" }}
+  {{- if hasKey .Values.global.server "postgresql" }}
     {{- if hasKey .Values.global.server.postgresql "database" }}
       {{- $database = .Values.global.server.postgresql.database }}
     {{- end }}
   {{- end }}
 {{- end }}
+{{- $database -}}
+{{- end }}
+
+{{/*
+Define dsn for external postgresql
+*/}}
+{{- define "server.postgresql.dsn" -}}
+{{- $user := include "server.postgresql.user" . }}
+{{- $password := include "server.postgresql.password" . }}
+{{- $host := include "server.postgresql.host" . }}
+{{- $port := include "server.postgresql.port" . }}
+{{- $database := include "server.postgresql.database" . }}
 {{- printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user (include "postgres.password.encode" $password ) $host $port $database -}}
 {{- end }}
 

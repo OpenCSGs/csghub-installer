@@ -20,7 +20,7 @@ data:
   STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.url.root" . | quote }}
   STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback" . | quote }}
   STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.full.internal.domain" . | quote }}
+  STARHUB_SERVER_SAAS: "false"
+  STARHUB_SERVER_MIRRORSERVER_ENABLE: "false"
   STARHUB_SERVER_MIRRORSERVER_TYPE: "gitea"
-  {{/* ACCOUNTING */}}
-  OPENCSG_ACCOUNTING_SERVER_HOST: {{ printf "http://%s" (include "account.host" .) | quote }}
-  OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "account.port" . | quote }}
+  STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"

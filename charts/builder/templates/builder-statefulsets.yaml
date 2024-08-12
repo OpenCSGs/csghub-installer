@@ -67,12 +67,12 @@ spec:
           env:
             - name: DOCKER_HOST
               value: "tcp://{{ include "names.docker.svc" . }}:2375"
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
@@ -109,12 +109,12 @@ spec:
               value: "tcp://localhost:2375"
             - name: DOCKER_DRIVER
               value: overlay2
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:

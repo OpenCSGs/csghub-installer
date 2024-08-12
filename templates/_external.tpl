@@ -111,6 +111,13 @@ Define the external domain for registry
 {{- end }}
 
 {{/*
+Define the external domain for casdoor
+*/}}
+{{- define "external.domain.casdoor" -}}
+{{- printf "casdoor.%s" (include "ingress.domain.external" .) }}
+{{- end }}
+
+{{/*
 Define the external domain for public
 */}}
 {{- define "external.domain.public" -}}

@@ -594,6 +594,42 @@ global:
   # This section can be used to configure account-related settings or parameters.
   account: {}
 
+  ## This configuration file outlines the deployment settings for a comprehensive software development platform.
+  ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
+  ## Each section allows for customization to suit organizational needs, including security contexts, persistence settings, and service exposures.
+  ## Ensure to review and adjust the settings according to your deployment environment and security policies.
+  casdoor:
+    enabled: true
+    ## Number of replicas for the Docker Registry deployment
+    replicas: 1
+    image:
+      ## The Docker Registry image repository
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor
+      ## The Docker Registry image tag
+      tag: v1.571.0
+      ## The pull policy for the Docker Registry image
+      pullPolicy: "IfNotPresent"
+      ## Image pull secrets for accessing private Docker registries
+      # pullSecret: [ ]
+
+    service:
+      ## The type of service to expose the Docker Registry
+      type: ClusterIP
+      ## The port on which the Docker Registry service is exposed
+      nodePort: 8000
+
+    ingress:
+      tls:
+        enabled: false
+        secretName: ""
+
+  ## User configuration section
+  user: {}
+
+  ## This configuration file outlines the deployment settings for a comprehensive software development platform.
+  ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
+  ## Each section allows for customization to suit organizational needs, including security contexts, persistence settings, and service exposures.
+  ## Ensure to review and adjust the settings according to your deployment environment and security policies.
   fluent:
     elasticsearch:
       host: "127.0.0.1"

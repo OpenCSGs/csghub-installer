@@ -19,6 +19,7 @@ data:
   RAILS_SERVE_STATIC_FILES: "false"
   STARHUB_BASE_URL: {{ include "csghub.url.external" . }}
   STARHUB_TOKEN: {{ include "server.hub.api.token" . }}
+  STARHUB_INNER_BASE_URL: {{ include "server.url" . }}
   {{- if eq "true" (include "minio.enabled" .) }}
   ENDPOINT: "{{ include "minio.endpoint.external" . }}/csghub-git"
   BUCKET_NAME: csghub-portal
@@ -35,3 +36,5 @@ data:
   {{- end }}
   {{- end }}
   ON_PREMISE: "true"
+  OIDC_IDENTIFIER: 9994622e3fb9630c3651
+  OIDC_SECRET: a39a456aa7dcc1e3b3ea5caa2b99c8de9d770b4d

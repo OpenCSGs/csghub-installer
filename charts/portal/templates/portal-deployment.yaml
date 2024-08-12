@@ -63,7 +63,19 @@ spec:
             - configMapRef:
                 name: {{ include "names.cm" . }}
           env:
-          {{- if eq "true" (include "postgresql.enabled" .) }}
+            - name: LOGIN_URL
+              value: "{{ include "casdoor.url" . }}/login/oauth/authorize?client_id=$(OIDC_IDENTIFIER)&response_type=code&redirect_uri=$(STARHUB_BASE_URL)/api/v1/callback/casdoor&scope=read&state=casdoor"
+            - name: SIGNUP_URL
+              value: "{{ include "casdoor.url" . }}/signup/CSGHub"
+            - name: OIDC_REDIRECT_URI
+              value: "$(STARHUB_BASE_URL)/oidc/callback"
+            - name: OIDC_AUTHORIZATION_ENDPOINT
+              value: "{{ include "casdoor.url" . }}/login/oauth/authorize"
+            - name: OIDC_TOKEN_ENDPOINT
+              value: "{{ include "casdoor.url" . }}/api/login/oauth/access_token"
+            - name: OIDC_USERINFO_ENDPOINT
+              value: "{{ include "casdoor.url" . }}//api/userinfo"
+            {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
@@ -71,11 +83,11 @@ spec:
                   key: csghub_portal
             - name: DATABASE_URL
               value: "postgresql://csghub_portal:$(PGPASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_portal_production?sslmode=disable"
-          {{- else }}
+            {{- else }}
             - name: DATABASE_URL
               value: {{ include "portal.postgresql.dsn" . }}
-          {{- end }}
-          {{- if eq "true" (include "minio.enabled" .) }}
+            {{- end }}
+            {{- if eq "true" (include "minio.enabled" .) }}
             - name: ACCESS_ID
               valueFrom:
                 secretKeyRef:
@@ -86,13 +98,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "minio.secret" . }}
                   key: MINIO_ROOT_PASSWORD
-          {{- end }}
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- end }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:

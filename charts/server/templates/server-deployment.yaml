@@ -83,7 +83,7 @@ spec:
               value: "$(STARHUB_SERVER_GITSERVER_URL)"
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.host" . }}:{{ include "nats.ports.api" . }}"
-          {{- if eq "true" (include "postgresql.enabled" .) }}
+            {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -91,11 +91,11 @@ spec:
                   key: csghub_server
             - name: STARHUB_DATABASE_DSN
               value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
-          {{- else }}
+            {{- else }}
             - name: STARHUB_DATABASE_DSN
               value: {{ include "server.postgresql.dsn" . }}
-          {{- end }}
-          {{- if eq "true" (include "minio.enabled" .) }}
+            {{- end }}
+            {{- if eq "true" (include "minio.enabled" .) }}
             - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:
@@ -106,13 +106,13 @@ spec:
                 secretKeyRef:
                   name: {{ include "minio.secret" . }}
                   key: MINIO_ROOT_PASSWORD
-          {{- end }}
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- end }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
