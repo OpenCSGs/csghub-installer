@@ -72,10 +72,15 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /conf
+            - name: jwt-token
+              mountPath: /conf
       volumes:
         - name: config
           configMap:
             name: {{ include "names.cm" . }}
+        - name: jwt-token
+          secret:
+            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

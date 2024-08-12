@@ -120,6 +120,13 @@ spec:
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
+          volumeMounts:
+            - name: jwt-token
+              mountPath: /starhub-bin/casdoor/
+      volumes:
+        - name: jwt-token
+          secret:
+            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

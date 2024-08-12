@@ -17,7 +17,7 @@ data:
   STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.url.root" . }}
   STARHUB_SERVER_FRONTEND_URL: {{ include "csghub.url.external" . }}
   STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.endpoint" . }}
-  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback" . }}
+  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback.git" . }}
   STARHUB_DATABASE_TIMEZONE: {{ default "UTC" $merged.timezone }}
   GIN_MODE: release
   STARHUB_SERVER_API_TOKEN: {{ include "server.hub.api.token" . }}

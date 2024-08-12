@@ -42,3 +42,10 @@ Define oauth url for casdoor
 {{- printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" (include "server.postgresql.user" .) (include "server.postgresql.password" .) (include "server.postgresql.host" .) (include "server.postgresql.port" .) (include "server.postgresql.database" .) }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define the secret of runner
+*/}}
+{{- define "casdoor.secret" }}
+{{- printf "%s-%s-secret" .Release.Name "casdoor" }}
+{{- end }}

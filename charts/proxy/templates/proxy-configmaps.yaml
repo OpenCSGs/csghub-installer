@@ -18,7 +18,7 @@ data:
   STARHUB_DATABASE_TIMEZONE: {{ include "postgresql.timezone" . | quote }}
   STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.endpoint" . | quote }}
   STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.url.root" . | quote }}
-  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback" . | quote }}
+  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback.git" . | quote }}
   STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ include "builder.full.internal.domain" . | quote }}
   STARHUB_SERVER_SAAS: "false"
   STARHUB_SERVER_MIRRORSERVER_ENABLE: "false"

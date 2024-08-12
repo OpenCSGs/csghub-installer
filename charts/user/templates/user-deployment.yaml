@@ -78,14 +78,24 @@ spec:
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
               value: "{{ include "csghub.url.external" }}/server/callback"
             {{- if eq "true" (include "postgresql.enabled" .) }}
+            - name: POSTGRES_USER
+              value: "csghub_server"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "postgresql.secret" . }}
                   key: csghub_server
+            - name: POSTGRES_DB
+              value: "csghub_server_production"
             - name: STARHUB_DATABASE_DSN
-              value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
+              value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/$(POSTGRES_DB)?sslmode=disable"
             {{- else }}
+            - name: POSTGRES_USER
+              value: {{ include "server.postgresql.user" . }}
+            - name: POSTGRES_PASSWORD
+              value: {{ include "server.postgresql.password" . }}
+            - name: POSTGRES_DB
+              value: {{ include "server.postgresql.database" . }}
             - name: STARHUB_DATABASE_DSN
               value: {{ include "server.postgresql.dsn" . }}
             {{- end }}
@@ -102,6 +112,13 @@ spec:
               port: 8088
             initialDelaySeconds: 30
             periodSeconds: 10
+          volumeMounts:
+            - name: jwt-token
+              mountPath: /starhub-bin/casdoor/
+      volumes:
+        - name: jwt-token
+          secret:
+            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

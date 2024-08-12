@@ -33,10 +33,17 @@ Define the port of server
 {{- end }}
 
 {{/*
+Define git callback url of server
+*/}}
+{{- define "server.url.callback.git" -}}
+{{- printf "http://%s:%s/api/v1/callback/git" (include "server.host" .) (include "server.port" .) }}
+{{- end }}
+
+{{/*
 Define callback url of server
 */}}
 {{- define "server.url.callback" -}}
-{{- printf "http://%s:%s/api/v1/callback/git" (include "server.host" .) (include "server.port" .) }}
+{{- printf "%s/server/callback" (include "csghub.url.external" .) }}
 {{- end }}
 
 {{/*
