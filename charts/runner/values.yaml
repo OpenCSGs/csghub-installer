@@ -13,7 +13,7 @@ image:
   ## The repository where the runner image is stored
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
   ## The tag of the runner image to use
-  tag: v0.7.0
+  tag: v0.8.0
   ## The pull policy for the runner image
   ## Determines when the image should be pulled from the repository
   pullPolicy: "IfNotPresent"
