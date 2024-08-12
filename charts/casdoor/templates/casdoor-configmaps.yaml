@@ -1,0 +1,47 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.casdoor }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  app.conf: |
+    appname = casdoor
+    httpport = 8000
+    runmode = prod
+    copyrequestbody = true
+    driverName = postgres
+    dataSourceName = {{ include "casdoor.postgresql.datasource" . | quote }}
+    dbName =
+    tableNamePrefix =
+    showSql = false
+    redisEndpoint =
+    defaultStorageProvider =
+    isCloudIntranet = false
+    authState = "casdoor"
+    socks5Proxy = "127.0.0.1:10808"
+    verificationCodeTimeout = 10
+    initScore = 0
+    logPostOnly = true
+    origin =
+    originFrontend =
+    staticBaseUrl = "https://cdn.casbin.org"
+    isDemoMode = false
+    batchSize = 100
+    enableGzip = true
+    ldapServerPort = 389
+    radiusServerPort = 1812
+    radiusSecret = "secret"
+    quota = {"organization": -1, "user": -1, "application": -1, "provider": -1}
+    logConfig = {"filename": "logs/casdoor.log", "maxdays":99999, "perm":"0770"}
+    initDataFile = "./init_data.json"
+    frontendBaseDir = "../casdoor"
