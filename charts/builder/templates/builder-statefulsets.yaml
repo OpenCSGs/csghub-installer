@@ -138,7 +138,7 @@ spec:
             name: {{ include "names.docker.cm" . }}
         - name: docker-config
           secret:
-            secretName: {{ include "registry.docker.secret" . }}
+            secretName: {{ include "registry.secret.docker" . }}
             items:
               - key: .dockerconfigjson
                 path: config.json

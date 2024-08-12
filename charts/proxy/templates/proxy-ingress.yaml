@@ -64,11 +64,11 @@ spec:
   {{- if .Values.global.builder.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ printf "*.%s" (include "external.public.domain" .) | quote }}
+      - {{ printf "*.%s" (include "external.domain.public" .) | quote }}
       secretName: {{ .Values.global.builder.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ printf "*.%s" (include "external.public.domain" .) | quote }}
+    - host: {{ printf "*.%s" (include "external.domain.public" .) | quote }}
       http:
         paths:
           - path: /

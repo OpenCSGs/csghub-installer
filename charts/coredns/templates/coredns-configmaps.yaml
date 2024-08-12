@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $global := .Values.global.coredns }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
-{{- $internalDomain := include "builder.internal.domain" . }}
+{{- $internalDomain := include "builder.domain.internal" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -18,7 +18,7 @@ data:
   corefile: |
     .:53 {
         forward space.app.internal /etc/resolv.conf
-        forward . {{ include "coredns.kube.dns" . }}
+        forward . {{ include "coredns.dns.kube" . }}
         log
         errors
     }
@@ -36,4 +36,4 @@ data:
         604800     ; Expire
         86400      ; Minimum TTL
     )
-    *   3600 IN A  {{ include "coredns.kourier.svc" . }}
+    *   3600 IN A  {{ include "coredns.svc.kourier" . }}

@@ -37,7 +37,7 @@ spec:
       dnsPolicy: None
       dnsConfig:
         nameservers:
-          - {{ include "coredns.self.dns" . }}
+          - {{ include "coredns.dns.self" . }}
         searches:
           - {{ .Release.Namespace }}.svc.cluster.local
           - svc.cluster.local
@@ -76,7 +76,7 @@ spec:
             - name: STARHUB_SERVER_DOCKER_REG_BASE
               value: {{ include "registry.repository" . }}
             - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
-              value: {{ include "registry.docker.secret" . }}
+              value: {{ include "registry.secret.docker" . }}
             {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -134,10 +134,10 @@ spec:
             name: {{ include "runner.cm" . }}
         - name: docker-daemon
           configMap:
-            name: {{ include "builder.docker.cm" . }}
+            name: {{ include "builder.cm.docker" . }}
         - name: docker-config
           secret:
-            secretName: {{ include "registry.docker.secret" . }}
+            secretName: {{ include "registry.secret.docker" . }}
             items:
               - key: .dockerconfigjson
                 path: config.json

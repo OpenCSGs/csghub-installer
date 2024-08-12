@@ -13,7 +13,7 @@ Define domain of gitea with route
 {{/*
 Define the root url of gitea
 */}}
-{{- define "gitea.root.url" -}}
+{{- define "gitea.url.root" -}}
 {{- $prefix := "http://" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "tls" }}
@@ -31,27 +31,27 @@ Define the root url of gitea
 Return the endpoint of gitea
 */}}
 {{- define "gitea.endpoint" -}}
-{{- printf "http://%s:%s" (include "gitea.http.host" .) (include "gitea.http.port" .) }}
+{{- printf "http://%s:%s" (include "gitea.host.http" .) (include "gitea.port.http" .) }}
 {{- end }}
 
 {{/*
 Define the host of gitea
 */}}
-{{- define "gitea.http.host" -}}
+{{- define "gitea.host.http" -}}
 {{- printf "%s-%s-http" .Release.Name "gitea" }}
 {{- end }}
 
 {{/*
 Define the host of gitea
 */}}
-{{- define "gitea.ssh.host" -}}
+{{- define "gitea.host.ssh" -}}
 {{- printf "%s-%s-ssh" .Release.Name "gitea" }}
 {{- end }}
 
 {{/*
 Define the http port of gitea
 */}}
-{{- define "gitea.http.port" -}}
+{{- define "gitea.port.http" -}}
 {{- $port := "3001" }}
 {{- if hasKey .Values.global "gitea" }}
   {{- if hasKey .Values.global.gitea "service" }}
@@ -68,9 +68,9 @@ Define the http port of gitea
 {{/*
 Define the ssh port of gitea
 */}}
-{{- define "gitea.ssh.port" -}}
+{{- define "gitea.port.ssh" -}}
 {{- $port := "22" }}
-{{- if eq "NodePort" (include "csghub.external.service.type" .)}}
+{{- if eq "NodePort" (include "csghub.service.type.external" .)}}
   {{- if hasKey .Values.global.ingress.service "nodePorts" }}
     {{- if hasKey .Values.global.ingress.service.nodePorts "tcp" }}
       {{- range $key, $nport := .Values.global.ingress.service.nodePorts.tcp }}

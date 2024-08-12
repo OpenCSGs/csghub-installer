@@ -63,11 +63,11 @@ spec:
   {{- if .Values.global.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ include "external.csghub.domain" . }}
+      - {{ include "external.domain.csghub" . }}
       secretName: {{ .Values.global.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ include "external.csghub.domain" . }}
+    - host: {{ include "external.domain.csghub" . }}
       http:
         paths:
           - path: /

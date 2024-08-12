@@ -15,10 +15,10 @@ metadata:
     {{- include "common.labels.standard" . | nindent 4 }}
 data:
   GITEA_DOMAIN: {{ include "gitea.domain" . }}
-  GITEA_ROOT_URL: {{ include "gitea.root.url" . }}
+  GITEA_ROOT_URL: {{ include "gitea.url.root" . }}
   GITEA_HTTP_PORT: {{ 3001 | quote }}
-  GITEA_SSH_DOMAIN: {{ include "external.csghub.domain" . }}
-  GITEA_SSH_LISTEN_PORT: {{ include "gitea.ssh.port" . | quote }}
+  GITEA_SSH_DOMAIN: {{ include "external.domain.csghub" . }}
+  GITEA_SSH_LISTEN_PORT: {{ include "gitea.port.ssh" . | quote }}
   GITEA_APP_NAME: "CSGHub-Git: Git with a cup of tea"
   GITEA_SMTP_ENABLED: {{ $merged.smtp.enabled | quote }}
   {{- if $merged.smtp.enabled }}

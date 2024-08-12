@@ -32,11 +32,11 @@ spec:
   {{- if $merged.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ include "external.minio.domain" . }}
+      - {{ include "external.domain.minio" . }}
       secretName: {{ $merged.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ include "external.minio.domain" . }}
+    - host: {{ include "external.domain.minio" . }}
       http:
         paths:
           - path: /

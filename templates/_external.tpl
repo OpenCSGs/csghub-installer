@@ -33,7 +33,7 @@ Return the port of csghub external
 Return domain of csghub
 */}}
 {{- define "csghub.domain" -}}
-{{- $host := (include "external.csghub.domain" .) }}
+{{- $host := (include "external.domain.csghub" .) }}
 {{- $port := include "csghub.port" . }}
 {{- if gt (len $port | toString) "4" }}
 {{- printf "%s:%s" $host $port -}}
@@ -45,7 +45,7 @@ Return domain of csghub
 {{/*
 Define the endpoint of csghub external
 */}}
-{{- define "csghub.external.url" -}}
+{{- define "csghub.url.external" -}}
 {{- $prefix := "http://" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "tls" }}
@@ -62,7 +62,7 @@ Define the endpoint of csghub external
 {{/*
 Define the service type of external
 */}}
-{{- define "csghub.external.service.type" -}}
+{{- define "csghub.service.type.external" -}}
 {{- $type := "ClusterIP" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "service" }}
@@ -75,9 +75,9 @@ Define the service type of external
 {{- end }}
 
 {{/*
-Judge if .Values.global.ingress.external.domain exists
+Judge if .Values.global.ingress.domain.external exists
 */}}
-{{- define "ingress.external.domain" -}}
+{{- define "ingress.domain.external" -}}
 {{- $host := "example.com" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "external" }}
@@ -92,27 +92,27 @@ Judge if .Values.global.ingress.external.domain exists
 {{/*
 Define the external domain for csghub
 */}}
-{{- define "external.csghub.domain" -}}
-{{- printf "csghub.%s" (include "ingress.external.domain" .) }}
+{{- define "external.domain.csghub" -}}
+{{- printf "csghub.%s" (include "ingress.domain.external" .) }}
 {{- end }}
 
 {{/*
 Define the external domain for minio
 */}}
-{{- define "external.minio.domain" -}}
-{{- printf "minio.%s" (include "ingress.external.domain" .) }}
+{{- define "external.domain.minio" -}}
+{{- printf "minio.%s" (include "ingress.domain.external" .) }}
 {{- end }}
 
 {{/*
 Define the external domain for registry
 */}}
-{{- define "external.registry.domain" -}}
-{{- printf "registry.%s" (include "ingress.external.domain" .) }}
+{{- define "external.domain.registry" -}}
+{{- printf "registry.%s" (include "ingress.domain.external" .) }}
 {{- end }}
 
 {{/*
 Define the external domain for public
 */}}
-{{- define "external.public.domain" -}}
-{{- printf "public.%s" (include "ingress.external.domain" .) }}
+{{- define "external.domain.public" -}}
+{{- printf "public.%s" (include "ingress.domain.external" .) }}
 {{- end }}

@@ -14,7 +14,7 @@ Define the endpoint of registry
     {{- if hasKey .Values.global.registry "ingress" }}
         {{- if hasKey .Values.global.registry.ingress "enabled" }}
             {{- if .Values.global.registry.ingress.enabled }}
-              {{- $host = (include "external.registry.domain" .) }}
+              {{- $host = (include "external.domain.registry" .) }}
             {{- end }}
         {{- end }}
     {{- end }}
@@ -48,7 +48,7 @@ Define the secret of registry
 {{/*
 Define the docker secret of registry
 */}}
-{{- define "registry.docker.secret" -}}
+{{- define "registry.secret.docker" -}}
 {{- printf "%s-%s-docker-secret" .Release.Name "registry" -}}
 {{- end }}
 
@@ -77,7 +77,7 @@ Define the namespace of registry
 {{- $namespace := "space" }}
 {{- if hasKey .Values.global "registry" }}
   {{- if hasKey .Values.global.registry "namespace" }}
-      {{- $namespace = .Values.global.registry.namespace }}
+    {{- $namespace = .Values.global.registry.namespace }}
   {{- end }}
 {{- end }}
 {{- $namespace -}}

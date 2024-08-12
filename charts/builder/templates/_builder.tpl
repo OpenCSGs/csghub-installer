@@ -35,8 +35,8 @@ Define the port of  space builder
 {{/*
 Define the public domain of space builder
 */}}
-{{- define "builder.public.domain" -}}
-{{- $host := (include "external.public.domain" .) }}
+{{- define "builder.domain.public" -}}
+{{- $host := (include "external.domain.public" .) }}
 {{- $port := "80" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "service" }}
@@ -68,7 +68,7 @@ Define the public domain of space builder
 {{/*
 Define the internal domain of space builder
 */}}
-{{- define "builder.internal.domain" }}
+{{- define "builder.domain.internal" }}
 {{- $domain := "app.internal" }}
 {{- if hasKey .Values.global "builder" }}
   {{- if hasKey .Values.global.builder "internal" }}
@@ -100,7 +100,7 @@ Define the full internal domain of space builder
 */}}
 {{- define "builder.full.internal.domain" }}
 {{- $namespace := include "runner.namespace" . }}
-{{- $domain := include "builder.internal.domain" . }}
+{{- $domain := include "builder.domain.internal" . }}
 {{- $port := include "builder.internal.port" . }}
 {{- if or (eq "80" $port) (eq "443" $port) }}
 {{- printf "%s.%s" $namespace $domain -}}
@@ -112,6 +112,6 @@ Define the full internal domain of space builder
 {{/*
 Define the host of space builder
 */}}
-{{- define "builder.docker.cm" }}
+{{- define "builder.cm.docker" }}
 {{- printf "%s-%s-docker-cm" .Release.Name "builder" }}
 {{- end }}

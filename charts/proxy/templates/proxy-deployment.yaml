@@ -37,7 +37,7 @@ spec:
       dnsPolicy: None
       dnsConfig:
         nameservers:
-          - {{ include "coredns.self.dns" . }}
+          - {{ include "coredns.dns.self" . }}
         searches:
           - {{ .Release.Namespace }}.svc.cluster.local
           - svc.cluster.local

@@ -15,7 +15,7 @@ metadata:
   namespace: {{ include "ingress-nginx.namespace" . }}
 data:
   {{- range $key, $port := .Values.global.ingress.service.nodePorts.tcp }}
-  {{ $key }}: {{ printf "%s/%s:%s" $.Release.Namespace (include "gitea.ssh.host" $) (include "gitea.ssh.port" $) }}
+  {{ $key }}: {{ printf "%s/%s:%s" $.Release.Namespace (include "gitea.host.ssh" $) (include "gitea.port.ssh" $) }}
   {{- else }}
 {{ tpl (toYaml .Values.tcp) . | nindent 2 }}
 {{- end }}

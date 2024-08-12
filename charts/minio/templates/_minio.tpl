@@ -6,9 +6,9 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Define the name of minio endpoint external
 */}}
-{{- define "minio.external.endpoint" -}}
+{{- define "minio.endpoint.external" -}}
 {{- $port := include "csghub.port" . }}
-{{- printf "http://%s:%s" (include "external.minio.domain" .) $port -}}
+{{- printf "http://%s:%s" (include "external.domain.minio" .) $port -}}
 {{- end }}
 
 {{/*

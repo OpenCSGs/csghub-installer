@@ -40,11 +40,11 @@ spec:
   {{- if $merged.ingress.tls.enabled }}
   tls:
     - hosts:
-      - {{ include "external.registry.domain" . }}
+      - {{ include "external.domain.registry" . }}
       secretName: {{ $merged.ingress.tls.secretName }}
   {{- end }}
   rules:
-    - host: {{ include "external.registry.domain" . }}
+    - host: {{ include "external.domain.registry" . }}
       http:
         paths:
           - path: /
