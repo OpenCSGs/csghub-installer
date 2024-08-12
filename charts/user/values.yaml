@@ -1,0 +1,126 @@
+# Default values for User.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+## User configuration section
+## This section allows you to configure the User settings for your deployment.
+enabled: true
+
+## Number of User instances to deploy for handling incoming requests
+replicas: 1
+
+image:
+  ## The Docker image repository
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_User
+  ## The specific image tag to use
+  tag: v0.8.0
+  ## The image pull policy
+  pullPolicy: "IfNotPresent"
+  ## List of secrets used to pull images from private repositories
+  pullSecret: [ ]
+
+service:
+  ## The type of service to expose
+  type: ClusterIP
+  ## The port on which the User service is exposed
+  port: 8080
+
+postgresql:
+  ### PostgreSQL database connection configuration
+  ## The hostname or IP address of the PostgreSQL User
+  host: ""
+  ## The port on which the PostgreSQL User is listening
+  port: 5432
+  ## The username used to authenticate with the PostgreSQL User
+  user: ""
+  ## The password used to authenticate with the PostgreSQL User
+  password: ""
+  ## The name of the database to connect to on the PostgreSQL User
+  database: ""
+  ## Timezone
+  timezone: "Asia/Shanghai"
+
+## Configuration for S3 storage connection
+## User can use S3 (or compatible) storage for repository data. Configure your S3 connection details here.
+## Uncomment and fill in your S3 storage details.
+objectStorage:
+  type: ""
+  endpoint: ""
+  accessKey: ""
+  accessSecret: ""
+  bucket: ""
+  region: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+## Default timezone for User
+timezone: "Asia/Shanghai"
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# Defined environment
+environments: {}
+
+annotations: {}
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Additional volumes on the output Deployment definition.
+volumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+volumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
