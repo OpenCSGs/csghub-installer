@@ -32,9 +32,9 @@ Define oauth url for casdoor
 {{- define "casdoor.postgresql.datasource" -}}
 {{- $secret := (include "postgresql.secret" .) -}}
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
-{{- $password := include "postgresql.initPass" "casdoor_production" | b64enc }}
+{{- $password := include "postgresql.initPass" "casdoor_production" }}
 {{- if $secretData }}
-{{- $password = index $secretData "casdoor" }}
+{{- $password = index $secretData "casdoor" | b64dec }}
 {{- end }}
 {{- if eq "true" (include "postgresql.enabled" .) }}
 {{- printf "user=casdoor password=%s host=%s port=%s sslmode=disable dbname=casdoor_production" $password (include "postgresql.host" .) (include "postgresql.port" .) }}
@@ -48,4 +48,11 @@ Define the secret of runner
 */}}
 {{- define "casdoor.secret" }}
 {{- printf "%s-%s-secret" .Release.Name "casdoor" }}
+{{- end }}
+
+{{/*
+Define the tls configMap of runner
+*/}}
+{{- define "casdoor.cm" }}
+{{- printf "%s-%s-cm" .Release.Name "casdoor" }}
 {{- end }}

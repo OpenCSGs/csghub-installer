@@ -58,12 +58,12 @@ spec:
           env:
             - name: RUNNING_IN_DOCKER
               value: "true"
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
@@ -74,15 +74,10 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /conf
-            - name: jwt-token
-              mountPath: /conf
       volumes:
         - name: config
           configMap:
             name: {{ include "names.cm" . }}
-        - name: jwt-token
-          secret:
-            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

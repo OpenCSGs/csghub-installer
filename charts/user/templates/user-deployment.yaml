@@ -56,7 +56,7 @@ spec:
             - "user"
             - "launch"
           ports:
-            - containerPort: 8088
+            - containerPort: 8080
               name: {{ include "common.names.name" . }}
               protocol: TCP
           envFrom:
@@ -77,6 +77,8 @@ spec:
                   key: GITEA_ADMIN_PASSWORD
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
               value: "{{ include "csghub.url.external" . }}/server/callback"
+            - name: STARHUB_SERVER_CASDOOR_CERTIFICATE
+              value: "/starhub-bin/casdoor/token_jwt_key.pem"
             {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_USER
               value: "csghub_server"
@@ -109,16 +111,19 @@ spec:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: 8088
+              port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
-            - name: jwt-token
+            - name: jwt-token-crt
               mountPath: /starhub-bin/casdoor/
       volumes:
-        - name: jwt-token
-          secret:
-            secretName: {{ include "casdoor.secret" . }}
+        - name: jwt-token-crt
+          configMap:
+            name: {{ include "casdoor.cm" . }}
+            items:
+              - key: token_jwt_key.pem
+                path:  token_jwt_key.pem
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

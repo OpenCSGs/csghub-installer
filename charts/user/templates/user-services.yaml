@@ -17,7 +17,7 @@ spec:
   type: {{ $merged.service.type }}
   ports:
     - port: {{ $merged.service.port }}
-      targetPort: 8088
+      targetPort: 8080
       protocol: TCP
       name: {{ include "common.names.name" . }}
   selector:
