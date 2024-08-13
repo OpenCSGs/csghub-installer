@@ -250,9 +250,15 @@ global:
 
     internal:
       ## Internal domain name for the builder component
-      domain: app.internal
+      - domain: app.internal
       ## Internal port for the builder component
-      port: 80
+        service:
+          host: 192.168.18.8
+          port: 80
+      - domain: app2.internal
+        service:
+          host: 192.168.18.9
+          port: 30446
 
     redis:
       ## Hostname for the Redis instance used by the builder

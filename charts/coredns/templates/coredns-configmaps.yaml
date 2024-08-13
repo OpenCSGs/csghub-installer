@@ -6,7 +6,6 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $global := .Values.global.coredns }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
-{{- $internalDomain := include "builder.domain.internal" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -23,17 +22,21 @@ data:
         errors
     }
     internal {
-        file /var/opt/coredns/{{ $internalDomain }}
+        {{- range .Values.global.builder.internal }}
+        file /var/opt/coredns/{{ .domain }}
+        {{- end }}
         log
         errors
     }
-  {{ $internalDomain }}: |
-    $ORIGIN {{ $internalDomain }}.
-    @ 3600 IN SOA ns1.{{ $internalDomain }} admin.{{ $internalDomain }} (
+  {{- range .Values.global.builder.internal }}
+  {{ .domain }}: |
+    $ORIGIN {{ .domain }}.
+    @ 3600 IN SOA ns1.{{ .domain }} admin.{{ .domain }} (
         2022042401 ; Serial
         3600       ; Refresh
         1800       ; Retry
         604800     ; Expire
         86400      ; Minimum TTL
     )
-    *   3600 IN A  {{ include "coredns.svc.kourier" . }}
+    *   3600 IN A  {{ .service.host }}
+  {{- end }}

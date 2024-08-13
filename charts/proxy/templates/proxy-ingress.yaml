@@ -83,4 +83,21 @@ spec:
               serviceName: {{ include "names.svc" . }}
               servicePort:  {{ $merged.service.port }}
             {{- end }}
+    {{- range .Values.global.builder.internal }}
+    - host: {{ printf "*.%s.%s" $.Values.global.runner.namespace .domain | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              {{- if eq $apiVersion "networking.k8s.io/v1" }}
+              service:
+                name: {{ .service.host }}
+                port:
+                  number: {{ .service.port }}
+              {{- else }}
+              serviceName: {{ .service.host }}
+              servicePort: {{ .service.port }}
+              {{- end }}
+    {{- end }}
 {{- end }}
