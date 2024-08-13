@@ -10,7 +10,7 @@ replicas: 1
 
 image:
   ## The Docker image repository
-  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_User
+  repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
   ## The specific image tag to use
   tag: v0.8.0
   ## The image pull policy

@@ -9,7 +9,7 @@ image:
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_git
   pullPolicy: IfNotPresent # The pull policy for the image
   ## Overrides the image tag whose default is the chart appVersion.
-  tag: latest # The specific version tag of the Gitea image
+  tag: v0.8.0 # The specific version tag of the Gitea image
   ## Image pull secrets for accessing private Docker registries
   ## This is necessary if your Gitea image is stored in a private repository that requires authentication.
   pullSecret: []
