@@ -10,7 +10,7 @@ SPDX-License-Identifier: APACHE-2.0
 apiVersion: {{ $apiVersion }}
 kind: Ingress
 metadata:
-  name: {{ include "names.gitea.admin.ing" . }}
+  name: {{ include "names.ing.gitea.admin" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
@@ -23,7 +23,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: https
     {{- if .Values.global.ingress.tls.verify }}
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
-    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.hl.svc" . }}.{{ .Release.Namespace }}.svc
+    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.svc.hl" . }}.{{ .Release.Namespace }}.svc
     {{- if .Values.global.ingress.tls.caSecretName }}
     nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ .Values.global.ingress.tls.secretName }}
     {{- end }}
@@ -51,11 +51,11 @@ spec:
             backend:
             {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.http.hl.svc" . }}
+                name: {{ include "names.svc.hl.http" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
             {{- else }}
-              serviceName: {{ include "names.http.hl.svc" . }}
+              serviceName: {{ include "names.svc.hl.http" . }}
               servicePort: {{ $merged.service.ports.http }}
             {{- end }}
           - path: /gitea/(.*)$
@@ -63,11 +63,11 @@ spec:
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.http.hl.svc" . }}
+                name: {{ include "names.svc.hl.http" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
               {{- else }}
-              serviceName: {{ include "names.http.hl.svc" . }}
+              serviceName: {{ include "names.svc.hl.http" . }}
               servicePort: {{ $merged.service.ports.http }}
               {{- end }}
 ---
@@ -110,7 +110,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: https
     {{- if .Values.global.ingress.tls.verify }}
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
-    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.hl.svc" . }}.{{ .Release.Namespace }}.svc
+    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.svc.hl" . }}.{{ .Release.Namespace }}.svc
     {{- if .Values.global.ingress.tls.caSecretName }}
     nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ .Values.global.ingress.tls.secretName }}
     {{- end }}
@@ -120,7 +120,7 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
     nginx.ingress.kubernetes.io/rewrite-target: /$1_$2.git/$3$4
-    nginx.ingress.kubernetes.io/default-backend: {{ include "names.hl.svc" . }}
+    nginx.ingress.kubernetes.io/default-backend: {{ include "names.svc.hl" . }}
 spec:
   {{- if and .Values.global.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.global.ingress.className }}
@@ -140,10 +140,10 @@ spec:
             backend:
             {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.http.hl.svc" . }}
+                name: {{ include "names.svc.hl.http" . }}
                 port:
                   number: {{ $merged.service.ports.http }}
             {{- else }}
-              serviceName: {{ include "names.http.hl.svc" . }}
+              serviceName: {{ include "names.svc.hl.http" . }}
               servicePort: {{ $merged.service.ports.http }}
             {{- end }}

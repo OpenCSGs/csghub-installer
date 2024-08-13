@@ -48,7 +48,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: https
     {{- if .Values.global.ingress.tls.verify }}
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
-    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.hl.svc" . }}.{{ .Release.Namespace }}.svc
+    nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.svc.hl" . }}.{{ .Release.Namespace }}.svc
     {{- if .Values.global.ingress.tls.caSecretName }}
     nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ .Values.global.ingress.tls.secretName }}
     {{- end }}

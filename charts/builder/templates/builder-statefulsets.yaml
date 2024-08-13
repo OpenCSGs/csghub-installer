@@ -21,7 +21,7 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-  serviceName: {{ include "names.hl.svc" . }}
+  serviceName: {{ include "names.svc.hl" . }}
   replicas: 1
   minReadySeconds: 10
   template:
@@ -66,7 +66,7 @@ spec:
                 name: {{ include "redis.secret" . }}
           env:
             - name: DOCKER_HOST
-              value: "tcp://{{ include "names.docker.svc" . }}:2375"
+              value: "tcp://{{ include "names.svc.docker" . }}:2375"
             {{- with $merged.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
@@ -135,7 +135,7 @@ spec:
       volumes:
         - name: docker-daemon
           configMap:
-            name: {{ include "names.docker.cm" . }}
+            name: {{ include "names.cm.docker" . }}
         - name: docker-config
           secret:
             secretName: {{ include "registry.secret.docker" . }}

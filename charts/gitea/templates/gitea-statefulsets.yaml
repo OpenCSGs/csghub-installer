@@ -21,7 +21,7 @@ spec:
   selector:
     matchLabels:
       {{- include "common.labels.matchLabels" . | nindent 6 }}
-  serviceName: {{ include "names.http.hl.svc" . }}
+  serviceName: {{ include "names.svc.hl.http" . }}
   replicas: 1
   minReadySeconds: 10
   template:

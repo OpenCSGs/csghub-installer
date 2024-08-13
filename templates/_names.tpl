@@ -13,14 +13,14 @@ Return name of ConfigMap
 {{/*
 Return name of initialized ConfigMap
 */}}
-{{- define "names.init.cm" -}}
+{{- define "names.cm.init" -}}
 {{ printf "%s-init-cm" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return name of docker config ConfigMap
 */}}
-{{- define "names.docker.cm" -}}
+{{- define "names.cm.docker" -}}
 {{ printf "%s-docker-cm" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
@@ -34,35 +34,35 @@ Return name of Service
 {{/*
 Return name of headless Service
 */}}
-{{- define "names.hl.svc" -}}
+{{- define "names.svc.hl" -}}
 {{ printf "%s-hl-svc" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return git http name of headless Service
 */}}
-{{- define "names.http.hl.svc" -}}
+{{- define "names.svc.hl.http" -}}
 {{ printf "%s-http" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return git ssh name of headless Service
 */}}
-{{- define "names.ssh.hl.svc" -}}
+{{- define "names.svc.hl.ssh" -}}
 {{ printf "%s-ssh" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return name of headless Service
 */}}
-{{- define "names.docker.svc" -}}
+{{- define "names.svc.docker" -}}
 {{ printf "%s-docker-svc" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return name of external Service
 */}}
-{{- define "names.external.svc" -}}
+{{- define "names.svc.external" -}}
 {{ printf "%s-external-svc" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
@@ -97,14 +97,14 @@ Return name of Secret
 {{/*
 Return name of docker Secret
 */}}
-{{- define "names.docker.secret" -}}
+{{- define "names.secret.docker" -}}
 {{ printf "%s-docker-secret" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
 Return name of TLS Secret
 */}}
-{{- define "names.tls.secret" -}}
+{{- define "names.secret.tls" -}}
 {{ printf "%s-tls-secret" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
@@ -118,7 +118,7 @@ Return name of Ingress
 {{/*
 Return name of Ingress
 */}}
-{{- define "names.gitea.admin.ing" -}}
+{{- define "names.ing.gitea.admin" -}}
 {{ printf "%s-gitea-gitea-ing" ( include "common.names.fullname" . ) }}
 {{- end -}}
 

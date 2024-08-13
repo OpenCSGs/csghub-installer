@@ -24,5 +24,5 @@ data:
   STARHUB_SERVER_CASDOOR_ORGANIZATION_NAME: "OpenCSG"
   STARHUB_SERVER_CASDOOR_APPLICATION_NAME: "CSGHub"
   STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"
-  OPENCSG_USER_SERVER_PORT: {{ include "user.port" | quote }}
+  OPENCSG_USER_SERVER_PORT: {{ include "user.port" . | quote }}
   OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: {{ include "server.url.callback" . | quote }}

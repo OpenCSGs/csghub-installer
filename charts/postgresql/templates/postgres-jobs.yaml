@@ -36,7 +36,7 @@ spec:
         - name: wait-for-service
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
-          command: [ 'sh', '-c', 'until pg_isready -h {{ include "names.hl.svc" . }} -p {{ $merged.service.port }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done' ]
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "names.svc.hl" . }} -p {{ $merged.service.port }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done' ]
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -47,7 +47,7 @@ spec:
         - name: postgresql-client
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
-          command: [ "psql", "-h", "{{ include "names.hl.svc" . }}", "-p", "{{ $merged.service.port }}", "-U", "postgres", "-d", "postgres", "-f", "/data/initialize.sql" ]
+          command: [ "psql", "-h", "{{ include "names.svc.hl" . }}", "-p", "{{ $merged.service.port }}", "-U", "postgres", "-d", "postgres", "-f", "/data/initialize.sql" ]
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -60,5 +60,5 @@ spec:
       volumes:
         - name: initialize
           configMap:
-            name: {{ include "names.init.cm" . }}
+            name: {{ include "names.cm.init" . }}
 {{- end }}

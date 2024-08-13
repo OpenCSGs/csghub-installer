@@ -26,7 +26,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "on"
     nginx.ingress.kubernetes.io/proxy-ssl-name: {{ include "names.svc" . }}.{{ .Release.Namespace }}.svc
     {{- if $merged.ingress.tls.caSecretName }}
-    nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ include "names.tls.secret" }}
+    nginx.ingress.kubernetes.io/proxy-ssl-secret: {{ include "names.secret.tls" }}
     {{- end }}
     {{- end }}
     {{- end }}

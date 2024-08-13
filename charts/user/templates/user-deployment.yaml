@@ -76,7 +76,7 @@ spec:
                   name: {{ include "gitea.secret" . }}
                   key: GITEA_ADMIN_PASSWORD
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
-              value: "{{ include "csghub.url.external" }}/server/callback"
+              value: "{{ include "csghub.url.external" . }}/server/callback"
             {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_USER
               value: "csghub_server"

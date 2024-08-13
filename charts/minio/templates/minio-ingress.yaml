@@ -44,11 +44,11 @@ spec:
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.hl.svc" . }}
+                name: {{ include "names.svc.hl" . }}
                 port:
                   number: {{ $merged.service.ports.console }}
               {{- else }}
-              serviceName: {{ include "names.hl.svc" . }}
+              serviceName: {{ include "names.svc.hl" . }}
               servicePort: {{ $merged.service.ports.console }}
               {{- end }}
           - path: /csghub-git
@@ -56,11 +56,11 @@ spec:
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.hl.svc" . }}
+                name: {{ include "names.svc.hl" . }}
                 port:
                   number: {{ $merged.service.ports.api }}
               {{- else }}
-              serviceName: {{ include "names.hl.svc" . }}
+              serviceName: {{ include "names.svc.hl" . }}
               servicePort: {{ $merged.service.ports.api }}
               {{- end }}
 {{- end }}
