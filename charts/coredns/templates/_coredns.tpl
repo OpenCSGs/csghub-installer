@@ -14,8 +14,11 @@ Define the host of coredns
 Define the ip of coredns within kube-system
 */}}
 {{- define "coredns.dns.kube" -}}
-{{- $kubeDNSClusterIP := (lookup "v1" "Service" "kube-system" "kube-dns").spec.clusterIP }}
+{{- $kubeDNS := (lookup "v1" "Service" "kube-system" "kube-dns") }}
+{{- if $kubeDNS }}
+{{- $kubeDNSClusterIP := $kubeDNS.spec.clusterIP }}
 {{- $kubeDNSClusterIP -}}
+{{- end }}
 {{- end }}
 
 {{/*
