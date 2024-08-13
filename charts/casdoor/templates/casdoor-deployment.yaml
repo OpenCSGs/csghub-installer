@@ -55,8 +55,10 @@ spec:
             - containerPort: 8000
               name: {{ include "common.names.name" . }}
               protocol: TCP
-          {{- with $merged.environments }}
           env:
+            - name: RUNNING_IN_DOCKER
+              value: "true"
+          {{- with $merged.environments }}
           {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
