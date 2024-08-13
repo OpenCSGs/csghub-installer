@@ -11,10 +11,17 @@ Return name of ConfigMap
 {{- end -}}
 
 {{/*
-Return name of initialized ConfigMap
+Return init name of initialized ConfigMap
 */}}
 {{- define "names.cm.init" -}}
 {{ printf "%s-init-cm" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return tls name of initialized ConfigMap
+*/}}
+{{- define "names.cm.tls" -}}
+{{ printf "%s-tls-cm" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
@@ -119,7 +126,7 @@ Return name of Ingress
 Return name of Ingress
 */}}
 {{- define "names.ing.gitea.admin" -}}
-{{ printf "%s-gitea-gitea-ing" ( include "common.names.fullname" . ) }}
+{{ printf "%s-admin-ing" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
