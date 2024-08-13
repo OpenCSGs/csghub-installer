@@ -22,3 +22,16 @@ spec:
       name: {{ include "common.names.name" . }}
   selector:
     {{- include "common.labels.matchLabels" . | nindent 4 }}
+{{- range .Values.global.builder.internal }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ regexReplaceAll "\\." .domain "-" }}
+  namespace: {{ $.Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" $ | nindent 4 }}
+spec:
+  type: ExternalName
+  externalName: {{ .service.host }}
+{{- end }}

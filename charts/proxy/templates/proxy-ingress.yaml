@@ -92,11 +92,11 @@ spec:
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ .service.host }}
+                name: {{ regexReplaceAll "\\." .domain "-" }}
                 port:
                   number: {{ .service.port }}
               {{- else }}
-              serviceName: {{ .service.host }}
+              serviceName: {{ regexReplaceAll "." .domain "-" }}
               servicePort: {{ .service.port }}
               {{- end }}
     {{- end }}
