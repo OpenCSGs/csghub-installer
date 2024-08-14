@@ -36,7 +36,7 @@ spec:
         - name: wait-for-service
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
-          command: [ 'sh', '-c', 'until pg_isready -h {{ include "names.svc.hl" . }} -p {{ $merged.service.port }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done' ]
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "names.svc.hl" . }} -p {{ $merged.service.port }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
           env:
             - name: PGPASSWORD
               valueFrom:

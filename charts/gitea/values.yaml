@@ -13,6 +13,10 @@ image:
   ## Image pull secrets for accessing private Docker registries
   ## This is necessary if your Gitea image is stored in a private repository that requires authentication.
   pullSecret: []
+  init:
+    repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
+    ## The tag of the PostgreSQL image to use
+    tag: 15.7
 
 # Open external listening ports
 service:

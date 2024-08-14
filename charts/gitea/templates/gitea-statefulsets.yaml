@@ -45,6 +45,17 @@ spec:
       serviceAccountName: {{ include "names.sa" . }}
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
+      initContainers:
+        - name: wait-for-service
+          image: {{ $merged.image.init.repository }}:{{ $merged.image.init.tag }}
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.host" . }} -p {{ include "postgresql.port" . }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: postgres
       containers:
         - securityContext:
           {{- toYaml $merged.podSecurityContext | nindent 12 }}

@@ -17,6 +17,10 @@ image:
   pullPolicy: "IfNotPresent"
   ## List of secrets used to pull images from private repositories
   pullSecret: [ ]
+  init:
+    repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
+    ## The tag of the PostgreSQL image to use
+    tag: 15.7
 
 service:
   ## The type of service to expose

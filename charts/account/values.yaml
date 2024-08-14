@@ -18,6 +18,10 @@ image:
   pullPolicy: "IfNotPresent"
   ## Secrets used to pull images from a private registry. Empty if not using a private registry or not required.
   pullSecret: [ ]
+  init:
+    repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
+    ## The tag of the PostgreSQL image to use
+    tag: 15.7
 
 service:
   ## The type of service to expose the proxy. ClusterIP exposes the service on a cluster-internal IP.
