@@ -84,7 +84,7 @@ spec:
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.host" . }}:{{ include "nats.ports.api" . }}"
             - name: STARHUB_SERVER_CASDOOR_CERTIFICATE
-              value: "/starhub-bin/casdoor/token_jwt_key.pem"
+              value: "/starhub-bin/casdoor/tls.crt"
             {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
@@ -124,14 +124,11 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - name: jwt-token-crt
-              mountPath: /starhub-bin/casdoor/
+              mountPath: /starhub-bin/casdoor
       volumes:
         - name: jwt-token-crt
-          configMap:
-            name: {{ include "casdoor.cm" . }}
-            items:
-              - key: token_jwt_key.pem
-                path: token_jwt_key.pem
+          secret:
+            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

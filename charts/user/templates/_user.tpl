@@ -14,7 +14,7 @@ Define the host for component user
 Define the port for component user
 */}}
 {{- define "user.port" -}}
-{{- $port := "8088" }}
+{{- $port := "8080" }}
 {{- if hasKey .Values.global "user" }}
   {{- if hasKey .Values.global.user "service" }}
     {{- if hasKey .Values.global.user.service "port" }}

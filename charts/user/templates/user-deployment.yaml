@@ -78,7 +78,7 @@ spec:
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
               value: "{{ include "csghub.url.external" . }}/server/callback"
             - name: STARHUB_SERVER_CASDOOR_CERTIFICATE
-              value: "/starhub-bin/casdoor/token_jwt_key.pem"
+              value: "/starhub-bin/casdoor/tls.crt"
             {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_USER
               value: "csghub_server"
@@ -116,14 +116,11 @@ spec:
             periodSeconds: 10
           volumeMounts:
             - name: jwt-token-crt
-              mountPath: /starhub-bin/casdoor/
+              mountPath: /starhub-bin/casdoor
       volumes:
         - name: jwt-token-crt
-          configMap:
-            name: {{ include "casdoor.cm" . }}
-            items:
-              - key: token_jwt_key.pem
-                path:  token_jwt_key.pem
+          secret:
+            secretName: {{ include "casdoor.secret" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
