@@ -14,9 +14,10 @@ Define the host of coredns
 Define the ip of coredns within kube-system
 */}}
 {{- define "coredns.dns.kube" -}}
+{{- $kubeDNSClusterIP := "10.96.0.10"}}
 {{- $kubeDNS := (lookup "v1" "Service" "kube-system" "kube-dns") }}
 {{- if $kubeDNS }}
-{{- $kubeDNSClusterIP := $kubeDNS.spec.clusterIP }}
+{{- $kubeDNSClusterIP = $kubeDNS.spec.clusterIP }}
 {{- $kubeDNSClusterIP -}}
 {{- end }}
 {{- end }}
@@ -25,8 +26,12 @@ Define the ip of coredns within kube-system
 Define the ip of kourier service
 */}}
 {{- define "coredns.svc.kourier" -}}
-{{- $kourierDNSClusterIP := (lookup "v1" "Service" "kourier-system" "kourier-internal").spec.clusterIP }}
+{{- $kourierDNSClusterIP := "127.0.0.1" }}
+{{- $kourierDNS := (lookup "v1" "Service" "kourier-system" "kourier-internal") }}
+{{- if $kourierDNS }}
+{{- $kourierDNSClusterIP = $kourierDNS.spec.clusterIP }}
 {{- $kourierDNSClusterIP -}}
+{{- end }}
 {{- end }}
 
 {{/*
