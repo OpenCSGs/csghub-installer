@@ -11,11 +11,9 @@ Define the endpoint of registry
 {{- $port := include "registry.port" . }}
 {{- $type := "ClusterIP" }}
 {{- if hasKey .Values.global "registry" }}
-    {{- if hasKey .Values.global.registry "ingress" }}
-        {{- if hasKey .Values.global.registry.ingress "enabled" }}
-            {{- if .Values.global.registry.ingress.enabled }}
-              {{- $host = (include "external.domain.registry" .) }}
-            {{- end }}
+    {{- if hasKey .Values.global.registry "enabled" }}
+        {{- if  .Values.global.registry.enabled }}
+          {{- $host = (include "external.domain.registry" .) }}
         {{- end }}
     {{- end }}
     {{- if hasKey .Values.global.registry "service" }}
