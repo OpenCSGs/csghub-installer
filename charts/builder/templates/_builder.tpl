@@ -69,14 +69,7 @@ Define the public domain of space builder
 Define the internal domain of space builder
 */}}
 {{- define "builder.domain.internal" }}
-{{- $domain := "app.internal" }}
-{{- if hasKey .Values.global "builder" }}
-  {{- if hasKey .Values.global.builder "internal" }}
-    {{- if hasKey .Values.global.builder.internal "domain" }}
-      {{- $domain = .Values.global.builder.internal.domain }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{- $domain := "app.example" }}
 {{- $domain -}}
 {{- end }}
 
@@ -85,14 +78,7 @@ Define the internal port of space builder
 */}}
 {{- define "builder.internal.port" }}
 {{- $port := "80" }}
-{{- if hasKey .Values.global "builder" }}
-  {{- if hasKey .Values.global.builder "internal" }}
-    {{- if hasKey .Values.global.builder.internal "port" }}
-      {{- $port = .Values.global.builder.internal.port | toString }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*

@@ -45,6 +45,14 @@ spec:
       serviceAccountName: {{ include "names.sa" . }}
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
+      initContainers:
+        - name: wait-for-redis
+          image:  {{ $merged.image.init.repository }}:{{ $merged.image.init.tag }}
+          command: [ "redis-cli", "-h", "{{ include "redis.host" . }}", "-p", "{{ include "redis.port" . }}", "-a", "$(REDIS_PASSWD)", "ping" ]
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          envFrom:
+            - secretRef:
+                name: {{ include "redis.secret" . }}
       containers:
         - name: {{ include "common.names.name" . }}
           securityContext:
@@ -89,7 +97,7 @@ spec:
         - name: docker
           securityContext:
             {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/docker:27.0.3-dind
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/docker:27.1.2-dind
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
             - containerPort: 2375
@@ -123,9 +131,6 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
           volumeMounts:
-            - name: data-docker
-              mountPath: /var/lib/docker
-              readOnly: false
             - name: docker-daemon
               mountPath: /etc/docker
               readOnly: true
