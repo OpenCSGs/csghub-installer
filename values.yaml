@@ -6,8 +6,7 @@ global:
   ## This section is for configuring image pull secrets.
   ## Image pull secrets are used to pull Docker images from private repositories.
   ## You can specify multiple secrets if necessary.
-  imagePullSecrets:
-    - name: test-registry-credential
+  imagePullSecrets: []
 
   ## Ingress configuration section
   ## This section allows you to configure ingress settings for your deployment.
@@ -70,9 +69,9 @@ global:
 
     image:
       ## The Docker image repository
-      repository: git-devops.opencsg.com:5050/product/starhub/starhub-server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The specific image tag to use
-      tag: 154a7959
+      tag: v0.8.0
       ## The image pull policy
       pullPolicy: "IfNotPresent"
       ## List of secrets used to pull images from private repositories
@@ -121,9 +120,9 @@ global:
 
     image:
       ## The repository where the portal image is stored.
-      repository: git-devops.opencsg.com:5050/product/community/open-portal
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## The specific version tag of the portal image to use.
-      tag: v0.3.3
+      tag: v0.8.0
       ## The pull policy for the portal image, specifying when to pull the image from the repository.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private repository. Leave empty if not required.
@@ -165,9 +164,9 @@ global:
 
     image:
       ## The repository where the runner image is stored
-      repository: git-devops.opencsg.com:5050/product/starhub/starhub-server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the runner image to use
-      tag: 154a7959
+      tag: v0.8.0
       ## The pull policy for the runner image
       ## Determines when the image should be pulled from the repository
       pullPolicy: "IfNotPresent"
@@ -199,9 +198,9 @@ global:
 
     image:
       ## The repository where the proxy image is stored.
-      repository: git-devops.opencsg.com:5050/product/starhub/starhub-server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## The tag of the proxy image to use.
-      tag: 154a7959
+      tag: v0.8.0
       ## The pull policy for the proxy image. Determines when the image should be pulled.
       pullPolicy: "IfNotPresent"
       ## Secrets used to pull images from a private registry. Empty if not using a private registry or not required.
@@ -230,7 +229,7 @@ global:
       ## Repository for the builder image
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
       ## Tag for the builder image
-      tag: v0.8.0-pre
+      tag: v0.8.0
       ## Pull policy for the builder image
       pullPolicy: "IfNotPresent"
       ## Secrets for pulling the builder image from a private registry
@@ -254,7 +253,7 @@ global:
       - domain: app.internal
       ## Internal port for the builder component
         service:
-          host: k8s1.example.com
+          host: 10.102.119.249
           port: 80
       - domain: app2.internal
         service:
@@ -559,6 +558,7 @@ global:
       # password: ""
 
     ingress:
+      enabled: true
       tls:
         enabled: true
         secretName: test-registry-tls-secret
@@ -607,9 +607,9 @@ global:
   account:
     image:
       ## Repository for the account image
-      repository: git-devops.opencsg.com:5050/product/starhub/starhub-server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Tag for the account image
-      tag: 154a7959
+      tag: v0.8.0
 
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
   ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
@@ -644,9 +644,9 @@ global:
   user:
     image:
       ## Repository for the user image
-      repository: git-devops.opencsg.com:5050/product/starhub/starhub-server
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Tag for the user image
-      tag: 154a7959
+      tag: v0.8.0
 
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
   ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
