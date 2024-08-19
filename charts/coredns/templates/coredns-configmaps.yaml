@@ -16,7 +16,9 @@ metadata:
 data:
   corefile: |
     .:53 {
-        forward space.app.internal /etc/resolv.conf
+        {{- range .Values.global.builder.internal }}
+        forward {{ printf "%s.%s" (include "runner.namespace" $) .domain }} /etc/resolv.conf
+        {{- end }}
         forward . {{ include "coredns.dns.kube" . }}
         log
         errors
