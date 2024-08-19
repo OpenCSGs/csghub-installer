@@ -69,9 +69,9 @@ spec:
           command: [ '/bin/sh', '-c', 'until nc -z {{ include "server.host" . }} {{ include "server.port" . }}; do echo "Waiting for server ready"; sleep 2; done; sleep 3' ]
           imagePullPolicy: {{ $merged.image.pullPolicy }}
       containers:
-        - securityContext:
+        - name: {{ include "common.names.name" . }}
+          securityContext:
           {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           command:
@@ -106,7 +106,7 @@ spec:
               value: "$(STARHUB_SERVER_GITSERVER_URL)"
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.host" . }}:{{ include "nats.ports.api" . }}"
-          {{- if eq "true" (include "postgresql.enabled" .) }}
+            {{- if eq "true" (include "postgresql.enabled" .) }}
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -116,18 +116,18 @@ spec:
               value: "postgresql://csghub_server:$(POSTGRES_PASSWORD)@{{ include "postgresql.host" . }}:{{ include "postgresql.port" . }}/csghub_server_production?sslmode=disable"
             - name: STARHUB_DATABASE_TIMEZONE
               value: {{ include "postgresql.timezone" . }}
-          {{- else }}
+            {{- else }}
             - name: STARHUB_DATABASE_DSN
               value: {{ include "server.postgresql.dsn" . }}
             - name: STARHUB_DATABASE_TIMEZONE
               value: {{ $merged.postgresql.timezone }}
-          {{- end }}
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- end }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
@@ -135,6 +135,25 @@ spec:
               port: 8083
             initialDelaySeconds: 20
             periodSeconds: 10
+        - name: nginx
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/internal
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "names.cm.nginx" . }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

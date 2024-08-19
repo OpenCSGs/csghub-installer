@@ -25,10 +25,17 @@ Return tls name of initialized ConfigMap
 {{- end -}}
 
 {{/*
-Return name of docker config ConfigMap
+Return name of docker ConfigMap
 */}}
 {{- define "names.cm.docker" -}}
 {{ printf "%s-docker-cm" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return name of nginx ConfigMap
+*/}}
+{{- define "names.cm.nginx" -}}
+{{ printf "%s-nginx-cm" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
@@ -36,6 +43,13 @@ Return name of Service
 */}}
 {{- define "names.svc" -}}
 {{ printf "%s-svc" ( include "common.names.fullname" . ) }}
+{{- end -}}
+
+{{/*
+Return nginx name of Service
+*/}}
+{{- define "names.svc.nginx" -}}
+{{ printf "%s-nginx-svc" ( include "common.names.fullname" . ) }}
 {{- end -}}
 
 {{/*
