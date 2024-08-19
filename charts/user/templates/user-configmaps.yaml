@@ -14,7 +14,7 @@ metadata:
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
 data:
-  STARHUB_SERVER_API_TOKEN: {{ include "server.hub.api.token" . | quote }}
+  STARHUB_SERVER_API_TOKEN: {{ include "hub.api.token" . | quote }}
   STARHUB_DATABASE_TIMEZONE: {{ default "UTC" $merged.timezone | quote }}
   STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.endpoint" . | quote }}
   STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"

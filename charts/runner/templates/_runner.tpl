@@ -6,13 +6,6 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Define the service of runner
 */}}
-{{- define "runner.endpoint" }}
-{{- printf "http://%s:%s" (include "runner.host" .) (include "runner.port" .) }}
-{{- end }}
-
-{{/*
-Define the service of runner
-*/}}
 {{- define "runner.host" }}
 {{- printf "%s-%s-svc" .Release.Name "runner" }}
 {{- end }}
@@ -30,6 +23,13 @@ Define the port of runner
   {{- end }}
 {{- end }}
 {{- $port -}}
+{{- end }}
+
+{{/*
+Define the service of runner
+*/}}
+{{- define "runner.endpoint" }}
+{{- printf "http://%s:%s" (include "runner.host" .) (include "runner.port" .) }}
 {{- end }}
 
 {{/*

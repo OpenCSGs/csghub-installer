@@ -47,16 +47,14 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-redis
-          image:  {{ $merged.image.init.repository }}:{{ $merged.image.init.tag }}
-          command: [ "redis-cli", "-h", "{{ include "redis.host" . }}", "-p", "{{ include "redis.port" . }}", "-a", "$(REDIS_PASSWD)", "ping" ]
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis:latest
           imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ "redis-cli", "-h", "{{ include "redis.host" . }}", "-p", "{{ include "redis.port" . }}", "-a", "$(REDIS_PASSWD)", "ping" ]
           envFrom:
             - secretRef:
                 name: {{ include "redis.secret" . }}
       containers:
         - name: {{ include "common.names.name" . }}
-          securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
@@ -88,6 +86,8 @@ spec:
               port: 8080
             initialDelaySeconds: 10
             periodSeconds: 5
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /opt/data
@@ -95,8 +95,6 @@ spec:
               mountPath: /root/.docker
               readOnly: true
         - name: docker
-          securityContext:
-            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/docker:27.1.2-dind
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
@@ -130,6 +128,8 @@ spec:
               port: 2375
             initialDelaySeconds: 10
             periodSeconds: 5
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: docker-daemon
               mountPath: /etc/docker

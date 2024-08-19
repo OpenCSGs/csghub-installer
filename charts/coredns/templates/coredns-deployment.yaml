@@ -46,9 +46,7 @@ spec:
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
       containers:
-        - securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
+        - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           args:
@@ -63,18 +61,20 @@ spec:
               protocol: UDP
           {{- with $merged.environments }}
           env:
-          {{- range $key, $value := . }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
+            {{- end }}
           {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
             tcpSocket:
               port: 53
-            initialDelaySeconds: 30
+            initialDelaySeconds: 20
             periodSeconds: 10
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: corefile
               mountPath: /var/opt/coredns/

@@ -4,8 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- $global := .Values.global.proxy }}
-{{/*{{- $local := omit .Values "global" "exports" }}*/}}
-{{- $local := .Values }}
+{{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
 {{- if .Values.global.ingress.enabled }}
 {{- $apiVersion := include "common.capabilities.ingress.apiVersion" . }}

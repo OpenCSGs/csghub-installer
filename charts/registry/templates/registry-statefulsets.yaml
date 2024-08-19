@@ -47,9 +47,7 @@ spec:
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
       containers:
-        - securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
+        - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
@@ -79,6 +77,8 @@ spec:
               port: 5000
             initialDelaySeconds: 10
             periodSeconds: 5
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/registry
@@ -89,6 +89,15 @@ spec:
             - name: tls-certs
               mountPath: /opt/certs/x509
             {{- end }}
+      volumes:
+        - name: basic-auth
+          secret:
+            secretName: {{ include "names.secret" . }}
+        {{- if $merged.ingress.tls.enabled }}
+        - name: tls-certs
+          secret:
+            secretName: {{ $merged.ingress.tls.secretName }}
+        {{- end }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -101,15 +110,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      volumes:
-        - name: basic-auth
-          secret:
-            secretName: {{ include "names.secret" . }}
-        {{- if $merged.ingress.tls.enabled }}
-        - name: tls-certs
-          secret:
-            secretName: {{ $merged.ingress.tls.secretName }}
-        {{- end }}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim

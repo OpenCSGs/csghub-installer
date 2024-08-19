@@ -15,10 +15,6 @@ image:
   pullPolicy: "IfNotPresent"
   ## Secrets used to pull images from a private repository. Leave empty if not required.
   pullSecret: [ ]
-  init:
-    repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres
-    ## The tag of the PostgreSQL image to use
-    tag: 15.7
 
 # Open external listening ports
 service:

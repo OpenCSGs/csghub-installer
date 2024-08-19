@@ -14,7 +14,7 @@ metadata:
   labels:
     {{- include "common.labels.standard" . | nindent 4 }}
 data:
-  STARHUB_SERVER_API_TOKEN: {{ include "server.hub.api.token" . | quote }}
+  STARHUB_SERVER_API_TOKEN: {{ include "hub.api.token" . | quote }}
   OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "account.port" . | quote }}
   OPENCSG_ACCOUNTING_FEE_EVENT_SUBJECT: "accounting.fee.>"
   OPENCSG_ACCOUNTING_NOTIFY_NOBALANCE_SUBJECT: "accounting.notify.nobalance"

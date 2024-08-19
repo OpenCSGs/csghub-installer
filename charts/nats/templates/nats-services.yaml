@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- $global := .Values.global.natsMaster }}
+{{- $global := .Values.global.nats }}
 {{- $local := omit .Values "global" "exports" }}
 {{- $merged := merge $global $local }}
 apiVersion: v1

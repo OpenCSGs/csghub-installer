@@ -18,7 +18,7 @@ data:
   RAILS_MASTER_KEY: "64f15f995b044427e43fe4897370fd66"
   RAILS_SERVE_STATIC_FILES: "false"
   STARHUB_BASE_URL: {{ include "csghub.url.external" . }}
-  STARHUB_TOKEN: {{ include "server.hub.api.token" . }}
+  STARHUB_TOKEN: {{ include "hub.api.token" . }}
   STARHUB_INNER_BASE_URL: {{ include "server.url" . }}
   {{- if eq "true" (include "minio.enabled" .) }}
   ENDPOINT: "{{ include "minio.endpoint.external" . }}/csghub-git"

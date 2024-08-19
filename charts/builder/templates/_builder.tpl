@@ -18,7 +18,7 @@ Define the host of space builder
 {{- end }}
 
 {{/*
-Define the port of  space builder
+Define the port of space builder
 */}}
 {{- define "builder.port" }}
 {{- $port := "8080" }}
@@ -96,7 +96,7 @@ Define the full internal domain of space builder
 {{- end }}
 
 {{/*
-Define the host of space builder
+Define the docker config of space builder
 */}}
 {{- define "builder.cm.docker" }}
 {{- printf "%s-%s-docker-cm" .Release.Name "builder" }}

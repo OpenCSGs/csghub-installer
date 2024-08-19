@@ -20,7 +20,7 @@ data:
   STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "server.url.callback.git" . }}
   STARHUB_DATABASE_TIMEZONE: {{ default "UTC" $merged.timezone }}
   GIN_MODE: release
-  STARHUB_SERVER_API_TOKEN: {{ include "server.hub.api.token" . }}
+  STARHUB_SERVER_API_TOKEN: {{ include "hub.api.token" . }}
   {{- if eq "true" (include "minio.enabled" .) }}
   STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.endpoint.external" . | trimPrefix "http://" }} # used to generate download links for lfs files
   STARHUB_SERVER_S3_BUCKET: csghub-git

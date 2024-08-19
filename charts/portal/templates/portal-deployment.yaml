@@ -46,8 +46,8 @@ spec:
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-service
-          image: {{ $merged.image.init.repository }}:{{ $merged.image.init.tag }}
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:latest
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.host" . }} -p {{ include "postgresql.port" . }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
           env:
@@ -57,9 +57,7 @@ spec:
                   name: {{ include "postgresql.secret" . }}
                   key: postgres
       containers:
-        - securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
+        - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           command:
@@ -123,6 +121,8 @@ spec:
               port: 3000
             initialDelaySeconds: 30
             periodSeconds: 10
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

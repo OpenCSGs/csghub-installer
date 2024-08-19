@@ -54,8 +54,8 @@ spec:
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-service
-          image: {{ $merged.image.init.repository }}:{{ $merged.image.init.tag }}
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:latest
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.host" . }} -p {{ include "postgresql.port" . }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
           env:
@@ -66,12 +66,10 @@ spec:
                   key: postgres
         - name: wait-for-server
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
-          command: [ '/bin/sh', '-c', 'until nc -z {{ include "server.host" . }} {{ include "server.port" . }}; do echo "Waiting for server ready"; sleep 2; done; sleep 3' ]
           imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ '/bin/sh', '-c', 'until nc -z {{ include "server.host" . }} {{ include "server.port" . }}; do echo "Waiting for server ready"; sleep 2; done; sleep 3' ]
       containers:
-        - securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
+        - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           command:
@@ -108,12 +106,12 @@ spec:
             - name: STARHUB_DATABASE_TIMEZONE
               value: {{ $merged.postgresql.timezone }}
             {{- end }}
-          {{- with $merged.environments }}
-          {{- range $key, $value := . }}
+            {{- with $merged.environments }}
+            {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
-          {{- end }}
-          {{- end }}
+            {{- end }}
+            {{- end }}
           resources:
             {{- toYaml $merged.resources | nindent 12 }}
           livenessProbe:
@@ -121,6 +119,8 @@ spec:
               port: 8082
             initialDelaySeconds: 20
             periodSeconds: 10
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: kube-config
               mountPath: /root/.kube
@@ -131,18 +131,6 @@ spec:
             - name: docker-config
               mountPath: /root/.docker
               readOnly: true
-      {{- with $merged.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with $merged.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with $merged.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       volumes:
         - name: kube-config
           configMap:
@@ -156,3 +144,15 @@ spec:
             items:
               - key: .dockerconfigjson
                 path: config.json
+      {{- with $merged.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $merged.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -20,9 +20,6 @@ image:
   pullPolicy: "IfNotPresent"
   ## Secrets for pulling the builder image from a private registry
   pullSecret: [ ]
-  init:
-    repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis
-    tag: 7.2.5
 
 service:
   ## Type of service for the builder component

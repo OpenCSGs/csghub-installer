@@ -4,13 +4,6 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define global unique HUB_SERVER_API_TOKEN
-*/}}
-{{- define "server.hub.api.token" }}
-{{- printf "%s%s" (.Release.Namespace | sha256sum) (.Release.Name | sha256sum) }}
-{{- end }}
-
-{{/*
 Define the host of server
 */}}
 {{- define "server.host" }}
@@ -33,10 +26,10 @@ Define the port of server
 {{- end }}
 
 {{/*
-Define git callback url of server
+Define url of server
 */}}
-{{- define "server.url.callback.git" -}}
-{{- printf "http://%s:%s/api/v1/callback/git" (include "server.host" .) (include "server.port" .) }}
+{{- define "server.url" -}}
+{{- printf "http://%s:%s" (include "server.host" .) (include "server.port" .) }}
 {{- end }}
 
 {{/*
@@ -47,10 +40,10 @@ Define callback url of server
 {{- end }}
 
 {{/*
-Define url of server
+Define git callback url of server
 */}}
-{{- define "server.url" -}}
-{{- printf "http://%s:%s" (include "server.host" .) (include "server.port" .) }}
+{{- define "server.url.callback.git" -}}
+{{- printf "http://%s:%s/api/v1/callback/git" (include "server.host" .) (include "server.port" .) }}
 {{- end }}
 
 {{/*

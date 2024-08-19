@@ -4,23 +4,6 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the name of minio endpoint external
-*/}}
-{{- define "minio.endpoint.external" -}}
-{{- $port := include "csghub.port" . }}
-{{- printf "http://%s:%s" (include "external.domain.minio" .) $port -}}
-{{- end }}
-
-{{/*
-Define the name of minio endpoint
-*/}}
-{{- define "minio.endpoint" -}}
-{{- $host := include "minio.host" . }}
-{{- $port := include "minio.ports.api" . }}
-{{- printf "http://%s:%s" $host $port -}}
-{{- end }}
-
-{{/*
 Define the host of minio
 */}}
 {{- define "minio.host" -}}
@@ -28,7 +11,7 @@ Define the host of minio
 {{- end }}
 
 {{/*
-Define the port of minio api
+Define the api port of minio
 */}}
 {{- define "minio.ports.api" -}}
 {{- $port := "9000" }}
@@ -45,7 +28,7 @@ Define the port of minio api
 {{- end }}
 
 {{/*
-Define the port of minio console
+Define the console port of minio
 */}}
 {{- define "minio.ports.console" -}}
 {{- $port := "9001" }}
@@ -62,7 +45,24 @@ Define the port of minio console
 {{- end }}
 
 {{/*
-Define the region of server
+Define the external endpoint of minio
+*/}}
+{{- define "minio.endpoint.external" -}}
+{{- $port := include "csghub.port" . }}
+{{- printf "http://%s:%s" (include "external.domain.minio" .) $port -}}
+{{- end }}
+
+{{/*
+Define the internal endpoint of minio
+*/}}
+{{- define "minio.endpoint" -}}
+{{- $host := include "minio.host" . }}
+{{- $port := include "minio.ports.api" . }}
+{{- printf "http://%s:%s" $host $port -}}
+{{- end }}
+
+{{/*
+Define the region of minio
 */}}
 {{- define "minio.region" -}}
 {{- $region := "cn-north-1" }}

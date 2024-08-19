@@ -4,14 +4,14 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the host of account
+Define the host of account component
 */}}
 {{- define "account.host" -}}
 {{- printf "%s-%s-svc" .Release.Name "account" }}
 {{- end }}
 
 {{/*
-Define the api port of account
+Define the api port of account component
 */}}
 {{- define "account.port" }}
 {{- $port := "8086" }}

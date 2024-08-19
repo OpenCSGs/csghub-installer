@@ -18,13 +18,6 @@ Define the host of nats
 {{- end }}
 
 {{/*
-Define the secret of nats
-*/}}
-{{- define "nats.secret" -}}
-{{- printf "%s-%s-secret" .Release.Name "nats" }}
-{{- end }}
-
-{{/*
 Define the api port of nats
 */}}
 {{- define "nats.ports.api" }}
@@ -73,4 +66,11 @@ Define the monitor port of nats
   {{- end }}
 {{- end }}
 {{- $port -}}
+{{- end }}
+
+{{/*
+Define the secret of nats
+*/}}
+{{- define "nats.secret" -}}
+{{- printf "%s-%s-secret" .Release.Name "nats" }}
 {{- end }}

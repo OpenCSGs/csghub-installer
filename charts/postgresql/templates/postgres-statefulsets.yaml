@@ -47,9 +47,7 @@ spec:
       automountServiceAccountToken: {{ $merged.serviceAccount.automount }}
       {{- end }}
       containers:
-        - securityContext:
-          {{- toYaml $merged.podSecurityContext | nindent 12 }}
-          name: {{ include "common.names.name" . }}
+        - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
           imagePullPolicy: {{ $merged.image.pullPolicy }}
           ports:
@@ -84,6 +82,8 @@ spec:
                 - /bin/sh
                 - -c
                 - exec pg_isready -U postgres -d postgres -h 127.0.0.1 -p 5432
+          securityContext:
+            {{- toYaml $merged.podSecurityContext | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data

@@ -4,15 +4,6 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the endpoint of redis
-*/}}
-{{- define "redis.endpoint" -}}
-{{- $host := include "redis.host" . }}
-{{- $port := include "redis.port" . }}
-{{- printf "%s:%s" $host $port -}}
-{{- end }}
-
-{{/*
 Define the host of redis
 */}}
 {{- define "redis.host" -}}
@@ -35,14 +26,23 @@ Define the port of redis
 {{- end }}
 
 {{/*
-Define the configmap of redis
+Define the endpoint of redis
+*/}}
+{{- define "redis.endpoint" -}}
+{{- $host := include "redis.host" . }}
+{{- $port := include "redis.port" . }}
+{{- printf "%s:%s" $host $port -}}
+{{- end }}
+
+{{/*
+Define the configMap of redis
 */}}
 {{- define "redis.cm" -}}
 {{- printf "%s-%s-cm" .Release.Name "redis" -}}
 {{- end }}
 
 {{/*
-Define the configmap of redis
+Define the secret of redis
 */}}
 {{- define "redis.secret" -}}
 {{- printf "%s-%s-secret" .Release.Name "redis" -}}

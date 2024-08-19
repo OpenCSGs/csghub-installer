@@ -49,3 +49,10 @@ Define a custom urlencode function.
 {{- $value := . -}}
 {{- $value | replace "@" "%40" | replace ":" "%3A" -}}
 {{- end -}}
+
+{{/*
+Define global unique HUB_SERVER_API_TOKEN
+*/}}
+{{- define "hub.api.token" }}
+{{- printf "%s%s" (.Release.Namespace | sha256sum) (.Release.Name | sha256sum) }}
+{{- end }}

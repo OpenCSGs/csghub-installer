@@ -3,7 +3,7 @@ name: csghub
 description: CSGHub is an open source, trustworthy large model asset management platform that can assist users in governing the assets involved in the lifecycle of LLM and LLM applications (datasets, model files, codes, etc).
 home: https://opencsg.com
 sources:
-  - https://github.com/OpenCSGs/CSGHub
+  - https://github.com/OpenCSGs/CSGHub-helm
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -17,21 +17,10 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.8.0
+version: 0.8.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "v0.8.0"
-
-## This section lists dependencies required by this chart. Each dependency is specified by name,
-## the repository from which it can be retrieved, and its version. Dependencies are automatically
-## downloaded, packaged, and installed as part of the chart installation process.
-#dependencies:
-#  # This section defines the dependencies of your Helm chart.
-#  - name: common
-#    repository: oci://registry-1.docker.io/bitnamicharts
-#    tags:
-#      - bitnami-common
-#    version: 2.x.x

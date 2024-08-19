@@ -11,6 +11,21 @@ Define the host of coredns
 {{- end }}
 
 {{/*
+Define the port of coredns
+*/}}
+{{- define "coredns.port" }}
+{{- $port := "53" }}
+{{- if hasKey .Values.global "coredns" }}
+  {{- if hasKey .Values.global.coredns "service" }}
+    {{- if hasKey .Values.global.coredns.service "port" }}
+      {{- $port = .Values.global.coredns.service.port }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $port -}}
+{{- end }}
+
+{{/*
 Define the ip of coredns within kube-system
 */}}
 {{- define "coredns.dns.kube" -}}

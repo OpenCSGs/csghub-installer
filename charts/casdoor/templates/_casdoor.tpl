@@ -4,7 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define url for casdoor
+Define access url for casdoor
 */}}
 {{- define "casdoor.url" -}}
 {{- $domain := include "external.domain.casdoor" . }}
@@ -44,14 +44,14 @@ Define oauth url for casdoor
 {{- end }}
 
 {{/*
-Define the secret of runner
+Define the secret of casdoor
 */}}
 {{- define "casdoor.secret" }}
 {{- printf "%s-%s-secret" .Release.Name "casdoor" }}
 {{- end }}
 
 {{/*
-Define the tls configMap of runner
+Define the tls configMap of casdoor
 */}}
 {{- define "casdoor.cm" }}
 {{- printf "%s-%s-cm" .Release.Name "casdoor" }}
