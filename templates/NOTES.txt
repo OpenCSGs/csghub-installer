@@ -1,0 +1,43 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+Thank you for installing CSGHub!
+
+To access the CSGHub Portal®, please navigate to the following URL:
+
+    {{ include "csghub.url.external" . }}
+
+    There are no users in the portal by default, so you need to register yourself first.
+
+To access the Casdoor, please navigate to the following URL:
+
+     {{ include "casdoor.url" . }}
+
+To access the Gitea management interface, please navigate to the following URL:
+
+     {{ include "gitea.url.root" . }}
+
+You can use the following admin credentials to log in:
+
+    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "gitea.secret" . }} -o jsonpath="{.data.GITEA_ADMIN_USER}" | base64 -d)
+    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "gitea.secret" . }} -o jsonpath="{.data.GITEA_ADMIN_PASSWORD}" | base64 -d)
+
+To access the MinIO management interface, please navigate to the following URL:
+
+    {{ include "minio.url.external" . }}
+
+You can use the following admin credentials to log in:
+
+    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
+    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
+
+Registry&reg; this is not a container registry suitable for production environments.
+you can only do pull/push images from this registry.To access registry using docker-cli:
+
+        docker pull {{ include "registry.endpoint" . }}/test:latest
+        docker push {{ include "registry.endpoint" . }}/test:latest
+
+For more detailed documentation, visit:
+
+    https://github.com/OpenCSGs/CSGHub-helm
