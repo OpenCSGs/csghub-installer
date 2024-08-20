@@ -22,7 +22,7 @@ data:
   GIN_MODE: release
   STARHUB_SERVER_API_TOKEN: {{ include "hub.api.token" . }}
   {{- if eq "true" (include "minio.enabled" .) }}
-  STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.endpoint.external" . | trimPrefix "http://" }} # used to generate download links for lfs files
+  STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.url.external" . | trimPrefix "http://" }} # used to generate download links for lfs files
   STARHUB_SERVER_S3_BUCKET: csghub-git
   STARHUB_SERVER_S3_REGION: {{ include "minio.region" . }}
   {{- else }}

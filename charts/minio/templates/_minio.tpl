@@ -47,7 +47,7 @@ Define the console port of minio
 {{/*
 Define the external endpoint of minio
 */}}
-{{- define "minio.endpoint.external" -}}
+{{- define "minio.url.external" -}}
 {{- $port := include "csghub.port" . }}
 {{- printf "http://%s:%s" (include "external.domain.minio" .) $port -}}
 {{- end }}

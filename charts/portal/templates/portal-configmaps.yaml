@@ -21,7 +21,7 @@ data:
   STARHUB_TOKEN: {{ include "hub.api.token" . }}
   STARHUB_INNER_BASE_URL: {{ include "server.url" . }}
   {{- if eq "true" (include "minio.enabled" .) }}
-  ENDPOINT: "{{ include "minio.endpoint.external" . }}/csghub-git"
+  ENDPOINT: "{{ include "minio.url.external" . }}/csghub-git"
   BUCKET_NAME: csghub-portal
   REGION: {{ include "minio.region" . }}
   FORCE_PATH_STYLE: "true"
