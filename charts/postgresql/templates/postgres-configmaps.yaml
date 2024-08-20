@@ -38,7 +38,6 @@ data:
     {{- end }}
     {{- end }}
     SELECT pg_reload_conf();
-    {{ .Files.Get "initialize.sql" | nindent 4 }}
 ---
 apiVersion: v1
 kind: ConfigMap

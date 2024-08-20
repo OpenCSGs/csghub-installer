@@ -52,3 +52,14 @@ data:
   OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "account.port" . | quote }}
   OPENCSG_USER_SERVER_HOST: {{ printf "http://%s" (include "user.host" .) | quote }}
   OPENCSG_USER_SERVER_PORT: {{ include "user.port" . | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "names.cm.init" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+data:
+  initialize.sql: |
+    {{ .Files.Get "initialize.sql" | nindent 4 }}

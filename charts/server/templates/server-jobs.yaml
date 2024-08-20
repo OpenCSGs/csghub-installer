@@ -1,0 +1,68 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $global := .Values.global.postgresql }}
+{{- $local := omit .Values "global" "exports" }}
+{{- $merged := merge $global $local }}
+{{- if $merged.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "names.job" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "common.labels.standard" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install, post-upgrade
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 3
+  activeDeadlineSeconds: 60
+  template:
+    metadata:
+      name: {{ include "names.job" . }}
+      labels:
+        {{- include "common.labels.standard" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (default .Values.global.imagePullSecrets $merged.image.pullSecret) }}
+      imagePullSecrets:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:latest
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.host" . }} -p {{ include "postgresql.port" . }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: postgres
+        - name: wait-for-server
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ '/bin/sh', '-c', 'until nc -z {{ include "server.host" . }} {{ include "server.port" . }}; do echo "Waiting for server ready"; sleep 2; done; sleep 3' ]
+      containers:
+        - name: postgresql-client
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:latest
+          imagePullPolicy: {{ $merged.image.pullPolicy }}
+          command: [ "psql", "-h", "{{ include "postgresql.host" . }}", "-p", "{{ include "postgresql.port" . }}", "-U", "postgres", "-d", "postgres", "-f", "/data/initialize.sql" ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secret" . }}
+                  key: postgres
+          volumeMounts:
+            - name: initialize
+              mountPath: /data
+      volumes:
+        - name: initialize
+          configMap:
+            name: {{ include "names.cm.init" . }}
+{{- end }}
