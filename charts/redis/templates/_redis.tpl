@@ -14,7 +14,7 @@ Define the host of redis
 Define the port of redis
 */}}
 {{- define "redis.port" -}}
-{{- $port := "6379" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "redis" }}
   {{- if hasKey .Values.global.redis "service" }}
     {{- if hasKey .Values.global.redis.service "port" }}
@@ -22,7 +22,7 @@ Define the port of redis
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "6379" -}}
 {{- end }}
 
 {{/*

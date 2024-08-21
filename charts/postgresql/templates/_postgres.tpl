@@ -21,7 +21,7 @@ Define the host of postgresql
 Define the port of postgresql
 */}}
 {{- define "postgresql.port" -}}
-{{- $port := "5432" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "postgresql" }}
   {{- if hasKey .Values.global.postgresql "service" }}
     {{- if hasKey .Values.global.postgresql.service "port" }}
@@ -29,7 +29,7 @@ Define the port of postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "5432" -}}
 {{- end }}
 
 {{/*
@@ -43,7 +43,7 @@ Define the secret of postgresql
 Define the timezone of postgresql
 */}}
 {{- define "postgresql.timezone" -}}
-{{- $timezone := "UTC" }}
+{{- $timezone := "" }}
 {{- if hasKey .Values.global "postgresql" }}
   {{- if hasKey .Values.global.postgresql "parameters" }}
     {{- if hasKey .Values.global.postgresql.parameters "timezone" }}
@@ -51,5 +51,5 @@ Define the timezone of postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $timezone -}}
+{{- $timezone | default "UTC" -}}
 {{- end }}

@@ -14,7 +14,7 @@ Define the host of account component
 Define the api port of account component
 */}}
 {{- define "account.port" }}
-{{- $port := "8086" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "account" }}
   {{- if hasKey .Values.global.account "service" }}
     {{- if hasKey .Values.global.account.service "port" }}
@@ -22,5 +22,5 @@ Define the api port of account component
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "8086" -}}
 {{- end }}

@@ -21,7 +21,7 @@ Define the host of nats
 Define the api port of nats
 */}}
 {{- define "nats.ports.api" }}
-{{- $port := "4222" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "nats" }}
   {{- if hasKey .Values.global.nats "service" }}
     {{- if hasKey .Values.global.nats.service "ports" }}
@@ -31,14 +31,14 @@ Define the api port of nats
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "4222" -}}
 {{- end }}
 
 {{/*
 Define the cluster port of nats
 */}}
 {{- define "nats.ports.cluster" }}
-{{- $port := "6222" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "nats" }}
   {{- if hasKey .Values.global.nats "service" }}
     {{- if hasKey .Values.global.nats.service "ports" }}
@@ -48,14 +48,14 @@ Define the cluster port of nats
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "6222" -}}
 {{- end }}
 
 {{/*
 Define the monitor port of nats
 */}}
 {{- define "nats.ports.monitor" }}
-{{- $port := "8222" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "nats" }}
   {{- if hasKey .Values.global.nats "service" }}
     {{- if hasKey .Values.global.nats.service "ports" }}
@@ -65,7 +65,7 @@ Define the monitor port of nats
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "8222" -}}
 {{- end }}
 
 {{/*

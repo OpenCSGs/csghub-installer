@@ -14,7 +14,7 @@ Define the service of runner
 Define the port of runner
 */}}
 {{- define "runner.port" }}
-{{- $port := "8082" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "runner" }}
   {{- if hasKey .Values.global.runner "service" }}
     {{- if hasKey .Values.global.runner.service "port" }}
@@ -22,7 +22,7 @@ Define the port of runner
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "8082" -}}
 {{- end }}
 
 {{/*
@@ -36,13 +36,13 @@ Define the service of runner
 Define namespace of kubernetes for space application
 */}}
 {{- define "runner.namespace" -}}
-{{- $namespace := "space" }}
+{{- $namespace := "" }}
 {{- if hasKey .Values.global "runner" }}
   {{- if hasKey .Values.global.runner "namespace" }}
     {{- $namespace = .Values.global.runner.namespace }}
   {{- end }}
 {{- end }}
-{{- $namespace -}}
+{{- $namespace | default "space" -}}
 {{- end }}
 
 {{/*

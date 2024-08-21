@@ -22,7 +22,7 @@ Define the ssh host of gitea
 Define the http port of gitea
 */}}
 {{- define "gitea.port.http" -}}
-{{- $port := "3001" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "gitea" }}
   {{- if hasKey .Values.global.gitea "service" }}
     {{- if hasKey .Values.global.gitea.service "ports" }}
@@ -32,14 +32,14 @@ Define the http port of gitea
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "3001" -}}
 {{- end }}
 
 {{/*
 Define the ssh port of gitea
 */}}
 {{- define "gitea.port.ssh" -}}
-{{- $port := "22" }}
+{{- $port := "" }}
 {{- if eq "NodePort" (include "csghub.service.type.external" .)}}
   {{- if hasKey .Values.global.ingress.service "nodePorts" }}
     {{- if hasKey .Values.global.ingress.service.nodePorts "tcp" }}
@@ -49,7 +49,7 @@ Define the ssh port of gitea
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "22" -}}
 {{- end }}
 
 {{/*

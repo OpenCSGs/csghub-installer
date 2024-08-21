@@ -14,7 +14,7 @@ Define the host of coredns
 Define the port of coredns
 */}}
 {{- define "coredns.port" }}
-{{- $port := "53" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "coredns" }}
   {{- if hasKey .Values.global.coredns "service" }}
     {{- if hasKey .Values.global.coredns.service "port" }}
@@ -22,7 +22,7 @@ Define the port of coredns
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "53" -}}
 {{- end }}
 
 {{/*

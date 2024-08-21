@@ -14,7 +14,7 @@ Define the host of registry
 Define the port of registry
 */}}
 {{- define "registry.port" -}}
-{{- $port := "5000" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "registry" }}
   {{- if hasKey .Values.global.registry "service" }}
     {{- if hasKey .Values.global.registry.service "port" }}
@@ -25,7 +25,7 @@ Define the port of registry
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "5000" -}}
 {{- end }}
 
 {{/*
@@ -72,13 +72,13 @@ Define the docker secret of registry
 Define the namespace of registry
 */}}
 {{- define "registry.namespace" -}}
-{{- $namespace := "space" }}
+{{- $namespace := "" }}
 {{- if hasKey .Values.global "registry" }}
   {{- if hasKey .Values.global.registry "namespace" }}
     {{- $namespace = .Values.global.registry.namespace }}
   {{- end }}
 {{- end }}
-{{- $namespace -}}
+{{- $namespace | default "space" -}}
 {{- end }}
 
 {{/*

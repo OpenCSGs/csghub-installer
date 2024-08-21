@@ -14,7 +14,7 @@ Define the host of minio
 Define the api port of minio
 */}}
 {{- define "minio.ports.api" -}}
-{{- $port := "9000" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "minio" }}
   {{- if hasKey .Values.global.minio "service" }}
     {{- if hasKey .Values.global.minio.service "ports" }}
@@ -24,14 +24,14 @@ Define the api port of minio
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "9000" -}}
 {{- end }}
 
 {{/*
 Define the console port of minio
 */}}
 {{- define "minio.ports.console" -}}
-{{- $port := "9001" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "minio" }}
   {{- if hasKey .Values.global.minio "service" }}
     {{- if hasKey .Values.global.minio.service "ports" }}
@@ -41,7 +41,7 @@ Define the console port of minio
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "9001" -}}
 {{- end }}
 
 {{/*
@@ -65,13 +65,13 @@ Define the internal endpoint of minio
 Define the region of minio
 */}}
 {{- define "minio.region" -}}
-{{- $region := "cn-north-1" }}
+{{- $region := "" }}
 {{- if hasKey .Values.global "minio" }}
   {{- if hasKey .Values.global.minio "region" }}
     {{- $region = .Values.global.minio.region }}
   {{- end }}
 {{- end }}
-{{- $region -}}
+{{- $region | default "cn-north-1" -}}
 {{- end }}
 
 {{/*

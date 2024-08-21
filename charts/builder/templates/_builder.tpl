@@ -21,7 +21,7 @@ Define the host of space builder
 Define the port of space builder
 */}}
 {{- define "builder.port" }}
-{{- $port := "8080" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "builder" }}
   {{- if hasKey .Values.global.builder "service" }}
     {{- if hasKey .Values.global.builder.service "port" }}
@@ -29,15 +29,15 @@ Define the port of space builder
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "8080" -}}
 {{- end }}
 
 {{/*
 Define the public domain of space builder
 */}}
 {{- define "builder.domain.public" -}}
-{{- $host := (include "external.domain.public" .) }}
-{{- $port := "80" }}
+{{- $host := "" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "ingress" }}
   {{- if hasKey .Values.global.ingress "service" }}
     {{- if hasKey .Values.global.ingress.service "type" }}
@@ -57,6 +57,12 @@ Define the public domain of space builder
         {{- end }}
     {{- end }}
   {{- end }}
+{{- end }}
+{{- if empty $host }}
+{{- $host = (include "external.domain.public" .) }}
+{{- end }}
+{{- if empty $port }}
+{{- $port = "80" }}
 {{- end }}
 {{- if or (eq "80" $port) (eq "443" $port) }}
 {{- $host -}}
