@@ -1,4 +1,4 @@
---
+ --
 -- PostgreSQL database dump
 --
 
@@ -181,3 +181,39 @@ CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
     AFTER INSERT ON public.users
     FOR EACH ROW
 EXECUTE FUNCTION promote_root_to_admin();
+
+--
+-- Create a trigger function to automatically enable LLaMA-Factory model fine-tuning for the model
+-- Types:
+-- 	SpaceType     = 0
+-- 	InferenceType = 1
+-- 	FinetuneType  = 2
+--
+-- Hint: Only used as a test environment, please choose the enterprise version for production environment
+--
+
+CREATE OR REPLACE FUNCTION enable_model_fine_tuning()
+    RETURNS trigger AS $$
+BEGIN
+    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+    SELECT
+        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
+        NEW.repository_id,
+        2
+    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory') IS NOT NULL;
+
+    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+    SELECT
+        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
+        NEW.repository_id,
+        1
+    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_enable_model_fine_tuning
+    AFTER INSERT ON public.models
+    FOR EACH ROW
+EXECUTE PROCEDURE enable_model_fine_tuning();

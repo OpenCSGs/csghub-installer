@@ -96,7 +96,7 @@ BEGIN
 
     INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
     SELECT
-        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
+        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
         NEW.repository_id,
         1
     WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
