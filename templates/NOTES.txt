@@ -10,7 +10,7 @@ To access the CSGHub Portal®, please navigate to the following URL:
 
 You can use the following admin credentials to log in:
      Username: root
-     Password: Root@123456
+     Password: {{ include "server.password.root" . }}
 
 To access the Casdoor, please navigate to the following URL:
 

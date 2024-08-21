@@ -420,7 +420,7 @@ data:
         {
           "owner": "OpenCSG",
           "name": "root",
-          "password": "de906bf75401a143ebab6a0a4e5f69a4724be794cb8df0eca2faac88224106494022894b5d3cf45967a87ed9b36266bc47c2a503a516b20fe4f942dac275722e",
+          "password": "82c5477f99a6624ec04632dd57f970d91e52c69864d010da5b01114331988ba840037273031740dc0a268994f095ef25f209a450d4a6960e43fe30c1e042e5cf",
           "passwordSalt": "OpenCSG",
           "passwordType": "sha512-salt",
           "displayName": "root",
