@@ -52,11 +52,11 @@ spec:
             backend:
               {{- if eq $apiVersion "networking.k8s.io/v1" }}
               service:
-                name: {{ include "names.svc" . }}
+                name: {{ include "names.svc.hl" . }}
                 port:
                   number: {{ $merged.service.port }}
               {{- else }}
-              serviceName: {{ include "names.svc" . }}
+              serviceName: {{ include "names.svc.hl" . }}
               servicePort: {{ $merged.service.port }}
               {{- end }}
 {{- end }}
