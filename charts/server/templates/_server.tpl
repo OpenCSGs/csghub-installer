@@ -14,7 +14,7 @@ Define the host of server
 Define the port of server
 */}}
 {{- define "server.port" }}
-{{- $port := "8080" }}
+{{- $port := "" }}
 {{- if hasKey .Values.global "server" }}
   {{- if hasKey .Values.global.server "service" }}
     {{- if hasKey .Values.global.server.service "port" }}
@@ -22,7 +22,7 @@ Define the port of server
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default "8080" -}}
 {{- end }}
 
 {{/*
@@ -58,7 +58,7 @@ Define the user for external postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $user -}}
+{{- $user | default "csghub_server" -}}
 {{- end }}
 
 {{/*
@@ -88,7 +88,7 @@ Define the host for external postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $host -}}
+{{- $host | default (include "postgresql.host" .) -}}
 {{- end }}
 
 {{/*
@@ -103,7 +103,7 @@ Define the port for external postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | default (include "postgresql.port" .) -}}
 {{- end }}
 
 {{/*
@@ -118,7 +118,7 @@ Define the port for external postgresql
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $database -}}
+{{- $database | default "csghub_server_production" -}}
 {{- end }}
 
 {{/*
@@ -138,4 +138,11 @@ Define the configmap of server
 */}}
 {{- define "server.cm" }}
 {{- printf "%s-%s-cm" .Release.Name "server" -}}
+{{- end }}
+
+{{/*
+Define the password of root
+*/}}
+{{- define "server.password.root" }}
+{{- "Root@123456" | b64enc -}}
 {{- end }}
