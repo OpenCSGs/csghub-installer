@@ -6978,7 +6978,7 @@ metadata:
 spec:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:56142833a9f87213e055045f0ea59c3f00f024d095c052f7669f7b9d77c55e54
+  image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/queue:v1.15.2
 
 ---
 # Copyright 2018 The Knative Authors
@@ -7445,7 +7445,7 @@ metadata:
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
-  queue-sidecar-image: gcr.io/knative-releases/knative.dev/serving/cmd/queue@sha256:56142833a9f87213e055045f0ea59c3f00f024d095c052f7669f7b9d77c55e54
+  queue-sidecar-image: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/queue:v1.15.2"
   _example: |-
     ################################
     #                              #
@@ -8564,7 +8564,7 @@ spec:
         - name: activator
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/activator@sha256:ee130d9e7e217b4cb4d844881491688e20f3a91a0e4de750eb663ec5db30a162
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/activator:v1.15.2
           # The numbers are based on performance test results from
           # https://github.com/knative/serving/issues/1625#issuecomment-511930023
           resources:
@@ -8723,7 +8723,7 @@ spec:
         - name: autoscaler
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/autoscaler@sha256:2c6f0796b2f5c387079a4476c1bf04faae452dccb56157a43cb2a8791559fff6
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/autoscaler:v1.15.2
           resources:
             requests:
               cpu: 100m
@@ -8851,7 +8851,7 @@ spec:
         - name: controller
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/controller@sha256:b2134eada0ef0105acb0d824f5a1803d25f0ec6079cb0dd2c2ad2296b4697d89
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/controller:v1.15.2
           resources:
             requests:
               cpu: 100m
@@ -9037,7 +9037,7 @@ spec:
         - name: webhook
           # This is the Go import path for the binary that is containerized
           # and substituted here.
-          image: gcr.io/knative-releases/knative.dev/serving/cmd/webhook@sha256:d138fd82b127b11216c46b8afc83d6bf97d63b9828894255211c4d6afd5a0a93
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/serving/cmd/webhook:v1.15.2
           resources:
             requests:
               cpu: 100m

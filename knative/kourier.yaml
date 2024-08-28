@@ -349,7 +349,7 @@ spec:
         app: net-kourier-controller
     spec:
       containers:
-        - image: gcr.io/knative-releases/knative.dev/net-kourier/cmd/kourier@sha256:0f345516b3d172dac408c08e58f1318056e8461861ba15f1a0215370ddd6e685
+        - image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/net-kourier/cmd/kourier:v1.15.1
           name: controller
           env:
             - name: CERTS_SECRET_NAMESPACE
@@ -491,7 +491,7 @@ spec:
           env:
             - name: DRAIN_TIME_SECONDS
               value: "15"
-          image: docker.io/envoyproxy/envoy:v1.26-latest
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/envoyproxy/envoy:v1.26-latest
           name: kourier-gateway
           ports:
             - name: http2-external
