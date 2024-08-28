@@ -8,6 +8,15 @@ global:
   ## You can specify multiple secrets if necessary.
   imagePullSecrets: []
 
+  ## This section configures Pod Disruption Budgets (PDBs).
+  ## PDBs ensure that a minimum number of pods are available during voluntary disruptions.
+  pdb:
+    create: true
+    ## minAvailable specifies the minimum number of pods that must be available after the eviction.
+    minAvailable: 1
+    ## maxUnavailable specifies the maximum number of pods that may be made unavailable after the eviction.
+    # maxUnavailable: 1
+
   ## Ingress configuration section
   ## This section allows you to configure ingress settings for your deployment.
   ## Ingress exposes HTTP and HTTPS routes from outside the cluster to services within the cluster.
@@ -83,12 +92,12 @@ global:
       ## The port on which the server service is exposed
       port: 8080
 
-    postgresql:
+    postgresql: {}
       ### PostgreSQL database connection configuration
       ## The hostname or IP address of the PostgreSQL server
       # host: ""
       ## The port on which the PostgreSQL server is listening
-      port: 5432
+      # port: 5432
       ## The username used to authenticate with the PostgreSQL server
       # user: ""
       ## The password used to authenticate with the PostgreSQL server
@@ -129,11 +138,11 @@ global:
       pullSecret: [ ]
 
     ## Configuration for the PostgreSQL database connection.
-    postgresql:
+    postgresql: {}
       ## The hostname or IP address of the PostgreSQL server.
       # host: ""
       ## The port on which the PostgreSQL server is listening.
-      port: 5432
+      # port: 5432
       ## The username for authenticating with the PostgreSQL database.
       # user: ""
       ## The password for authenticating with the PostgreSQL database.
@@ -251,7 +260,6 @@ global:
     internal:
       ## Internal domain name for the builder component
       - domain: app.internal
-      ## Internal port for the builder component
         service:
           host: 10.102.119.249
           port: 80

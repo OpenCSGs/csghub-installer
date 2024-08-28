@@ -163,3 +163,10 @@ Return name of Deployment
 {{- define "names.deploy" -}}
 {{ printf "%s-deploy" ( include "common.names.fullname" . ) }}
 {{- end -}}
+
+{{/*
+Return name of PodDisruptionBudget
+*/}}
+{{- define "names.pdb" -}}
+{{ printf "%s-pdb" ( include "common.names.fullname" . ) }}
+{{- end -}}
