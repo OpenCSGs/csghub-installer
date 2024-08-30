@@ -382,7 +382,6 @@ data:
             "id_token"
           ],
           "redirectUris": [
-            "http://csghub.msens.cn:30080/oidc/callback",
             "http://csghub.msens.cn:30080/api/v1/callback/casdoor"
           ],
           "tokenFormat": "JWT",
