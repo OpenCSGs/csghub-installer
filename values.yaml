@@ -193,7 +193,8 @@ global:
       port: 8082
 
     ## .kube/config
-    kubeConfig: |
+    kubeConfig:
+      secretName: kube-configs
 
   ## Proxy configuration section
   ## This section is dedicated to configuring the proxy settings for your deployment.

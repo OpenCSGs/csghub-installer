@@ -27,7 +27,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/runner-configmaps.yaml") . | sha256sum }}
         {{- with $merged.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -136,8 +135,8 @@ spec:
               readOnly: true
       volumes:
         - name: kube-config
-          configMap:
-            name: {{ include "runner.cm" . }}
+          secret:
+            secretName: {{ include "kube.configs" . }}
         - name: docker-daemon
           configMap:
             name: {{ include "builder.cm.docker" . }}
