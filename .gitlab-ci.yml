@@ -1,0 +1,34 @@
+default:
+  tags:
+    - external
+
+stages:
+  - package
+  - publish
+
+variables:
+  CHART_NAME: "csghub"
+  CHART_PATH: "./charts/csghub"
+  PACKAGE_VERSION: "$CI_COMMIT_TAG"
+  HELM_REGISTRY: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable"
+
+package_chart:
+  stage: package
+  image: alpine/helm:3.4.1 # 使用带有 Helm 的镜像
+  script:
+    - helm package $CHART_PATH -d ./
+  artifacts:
+    paths:
+      - "*.tgz"
+    expire_in: 1 week
+
+publish_chart:
+  stage: publish
+  image: alpine/helm:3.4.1
+  dependencies:
+    - package_chart
+  script:
+    - helm repo add --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CHART_NAME $HELM_REGISTRY
+    - helm cm-push *.tgz $CHART_NAME
+  only:
+    - main
