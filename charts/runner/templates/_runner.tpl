@@ -51,3 +51,22 @@ Define the configmap of runner
 {{- define "runner.cm" }}
 {{- printf "%s-%s-cm" .Release.Name "runner" }}
 {{- end }}
+
+{{/*
+Get the secret of kube config
+*/}}
+{{- define "kube.configs" }}
+{{- $secretName := "" }}
+{{- if hasKey .Values.global "runner" }}
+  {{- if hasKey .Values.global.runner "kubeConfig" }}
+    {{- if hasKey .Values.global.runner.kubeConfig "secretName" }}
+      {{- if .Values.global.runner.kubeConfig.secretName }}
+        {{- $secretName = .Values.global.runner.kubeConfig.secretName }}
+      {{- else }}
+        {{ fail "A valid secret containing .kube/config must be provided" }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $secretName }}
+{{- end }}

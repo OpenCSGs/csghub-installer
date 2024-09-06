@@ -46,6 +46,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# Add .kube/config(s) by specify secret pre-created
+kubeConfig:
+  secretName: ""
+
 podAnnotations: {}
 podLabels: {}
 
