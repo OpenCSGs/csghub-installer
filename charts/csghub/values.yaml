@@ -15,7 +15,7 @@ global:
     ## minAvailable specifies the minimum number of pods that must be available after the eviction.
     minAvailable: 1
     ## maxUnavailable specifies the maximum number of pods that may be made unavailable after the eviction.
-    # maxUnavailable: 1
+    # maxUnavailable: 0
 
   ## Ingress configuration section
   ## This section allows you to configure ingress settings for your deployment.
@@ -29,10 +29,7 @@ global:
     ## This section allows you to configure external access settings.
     ## Here, you can specify the host (domain) and port for external access to your deployment.
     ## Note: The 'external' settings override the 'server' settings for domain and port.
-    external:
-      ## The host (domain) name for external access
-      domain: example.com
-      ## The port number for external access
+    hosts: example.com
 
     ## Configure this section to adjust the port exposure method.
     ## The optional methods are NodePort or LoadBalancer.
