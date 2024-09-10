@@ -382,7 +382,7 @@ data:
             "id_token"
           ],
           "redirectUris": [
-            "http://csghub.msens.cn:{{ include "csghub.port" . }}/api/v1/callback/casdoor"
+            "http://{{ include "external.domain.csghub" .}}:{{ include "csghub.port" . }}/api/v1/callback/casdoor"
           ],
           "tokenFormat": "JWT",
           "tokenFields": [],
