@@ -23,6 +23,9 @@ spec:
   ingress:
     - ports:
         - port: {{ $merged.service.port }}
+          protocol: TCP
+        - port: {{ $merged.service.port }}
+          protocol: UDP
       from:
         - podSelector:
             matchLabels:

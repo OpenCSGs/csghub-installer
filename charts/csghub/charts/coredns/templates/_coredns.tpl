@@ -54,6 +54,6 @@ Define the ip of coredns self-managed
 */}}
 {{- define "coredns.dns.self" -}}
 {{- $ip := include "coredns.dns.kube" . }}
-{{- $newIP := regexReplaceAll "[0-9]+$" $ip "100" }}
+{{- $newIP := regexReplaceAll "[0-9]+$" $ip "11" }}
 {{- $newIP -}}
 {{- end }}
