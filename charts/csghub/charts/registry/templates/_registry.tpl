@@ -85,5 +85,9 @@ Define the namespace of registry
 Define the repository of registry
 */}}
 {{- define "registry.repository" -}}
+{{- if eq "true" (include "registry.enabled" .) }}
 {{- printf "%s/%s/" (include "registry.endpoint" .) (include "registry.namespace" .) -}}
+{{- else }}
+{{- printf "%s/%s/" .Values.global.builder.registry.repository .Values.global.builder.registry.namespace -}}
+{{- end }}
 {{- end }}

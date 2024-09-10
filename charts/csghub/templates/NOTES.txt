@@ -34,7 +34,7 @@ You can use the following admin credentials to log in:
     Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
     Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
 
-Registry&reg; this is not a container registry suitable for production environments.
+Registry: this is not a container registry suitable for production environments.
 you can only do pull/push images from this registry.To access registry using docker-cli:
 
         docker pull {{ include "registry.endpoint" . }}/test:latest
