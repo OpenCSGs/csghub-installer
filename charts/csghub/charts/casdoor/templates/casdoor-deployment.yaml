@@ -49,13 +49,17 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:latest
           imagePullPolicy: {{ $merged.image.pullPolicy }}
-          command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.host" . }} -p {{ include "postgresql.port" . }} -U postgres; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
+          command: [ 'sh', '-c', 'until pg_isready -h {{ include "postgresql.hybrid.host" . }} -p {{ include "postgresql.hybrid.port" . }} -U {{ include "postgresql.hybrid.user" . }} ; do echo "Waiting for PostgreSQL"; sleep 3; done; sleep 3' ]
           env:
             - name: PGPASSWORD
+              {{- if eq "true" (include "postgresql.enabled" .)}}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "postgresql.secret" . }}
-                  key: postgres
+                  key: csghub_server
+              {{- else }}
+              value: {{ .Values.global.server.postgresql.password }}
+              {{- end }}
       containers:
         - name: {{ include "common.names.name" . }}
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}

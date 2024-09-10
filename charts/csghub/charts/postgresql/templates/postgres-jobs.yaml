@@ -42,7 +42,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ include "names.secret" . }}
-                  key: postgres
+                  key: csghub_server
       containers:
         - name: postgresql-client
           image: {{ $merged.image.repository }}:{{ $merged.image.tag }}
