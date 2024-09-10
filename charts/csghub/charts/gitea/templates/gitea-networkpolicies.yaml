@@ -28,7 +28,7 @@ spec:
             matchLabels:
               {{- include "common.labels.netpol.matchLabels" . | nindent 14 }}
     - ports:
-        - port: {{ $merged.service.ports.ssh }}
+        - port: {{ include "gitea.port.ssh" . }}
       from:
         - podSelector:
             matchLabels:
