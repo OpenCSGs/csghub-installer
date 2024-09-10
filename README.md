@@ -6,6 +6,11 @@ CSGHub is an open source, trustworthy large model asset management platform that
 
 Due to the version problem, the configuration is relatively complicated, which will be optimized in later versions. To simplify the configuration, only global parameters are defined in values.yaml. The mapping method of sub-charts in global in this helm chart is consistent with directly modifying the sub-chart configuration in the parent chart. Therefore, when modifying a subchart, you only need to add or modify the parameters of the corresponding subchart in global.
 
+## Prerequisites
+- Kubernetes 1.20+
+- Helm 3.8+
+- PV Dynamic Provisioning 
+
 ## Install KNative Serving
 
 > - Reference：[Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
@@ -96,7 +101,8 @@ Also, because CSGHub needs to be able to connect to multiple Kubernetes clusters
 Before creating, please place the config files of all your connected Kubernetes clusters under the target file, such as the .kube directory. You can use different config file names, such as numbering the file names.
 
 ```shell
-kubectl create secret generic kube-configs --from-file=~/.kube
+kubectl create namespace csghub
+kubectl create secret generic kube-configs --from-file=/root/.kube --namespace=csghub
 ```
 
 The above command will create all config files in the .kube directory into the `kube-configs` Secret resource. You can use .Values.global.runner.kubeConfig.secretName to execute non-default secret files.
@@ -109,6 +115,7 @@ Before performing the following operations, you must be ready for the above oper
 
     ```shell
     helm repo add csghub https://opencsgs.github.io/CSGHub-helm
+    helm repo update
     ```
 
 - Install Chart
@@ -116,16 +123,22 @@ Before performing the following operations, you must be ready for the above oper
   > The default service exposure uses NodePort because most local test environments do not have LoadBalancer capabilities.
 
     ```shell
+    # global.ingress.hosts: Replace with your own second-level domain name
+    # global.builder.internal[0].domain: The internal domain name configured above
+    # global.builder.internal[0].service.host: The external address of the kourier service
+    # global.builder.internal[0].service.port: Kourier service external port
     helm install csghub csghub/csghub \
     	--namespace csghub \
-    	--version 0.8.2 \
-    	--set global.ingress.hosts=example.com \ # Replace with your own second-level domain name
-    	--set global.builder.internal[0].domain=app.internal \ # The internal domain name configured above
-    	--set global.builder.internal[0].service.host=192.168.18.18 \ # The external address of the kourier service
-    	--set global.builder.internal[0].service.port=30463 \ # Kourier service external port
+        --create-namespace \
+    	--set global.ingress.hosts=example.com \ 
+    	--set global.builder.internal[0].domain=app.internal \ 
+    	--set global.builder.internal[0].service.host=192.168.18.18 \ 
+    	--set global.builder.internal[0].service.port=30463  
     ```
   
-  After the resources are ready, you can **log in to csghub according to the helm output prompt**. It should be further explained that some functions are not ready in the current helm chart due to the complexity of enabling them. For example, model inference and model fine-tuning have been enabled, but some configuration may still be required to run the instance normally.
+  After the resources are ready, you can **log in to csghub according to the helm output prompt**. It should be further explained that some functions are not ready in the current helm chart due to the complexity of enabling them. For example, model inference and model fine-tuning have been enabled, but some configuration may still be required to run the instance normally. 
+
+  *Hint: You need to configure the corresponding third-level domain name to DNS according to the prompts after installation.*
 
 ## Post-installation configuration
 
