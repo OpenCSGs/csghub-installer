@@ -45,8 +45,6 @@ ingress:
     secretName: ""
 
 persistence:
-  ## Persistence settings for Minio data. Ensures data is retained across pod restarts.
-  enabled: true
   storageClass: ""
   accessMode:
     - ReadWriteOnce
@@ -109,19 +107,6 @@ autoscaling:
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
-
-# Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
-# Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
 
 nodeSelector: {}
 
