@@ -38,6 +38,7 @@ ingress:
   enabled: true
   tls:
     enabled: false
+    autoGenerate: false
     verify: false
     secretName: ""
     annotations: {}

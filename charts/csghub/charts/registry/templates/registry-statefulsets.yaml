@@ -29,6 +29,7 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/registry-configmaps.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/registry-secrets.yaml") . | sha256sum }}
         {{- with $merged.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -86,7 +87,7 @@ spec:
               mountPath: /auth
               readOnly: false
             {{- if $merged.ingress.tls.enabled }}
-            - name: tls-certs
+            - name: registry-tls-certs
               mountPath: /opt/certs/x509
             {{- end }}
       volumes:
@@ -94,9 +95,13 @@ spec:
           secret:
             secretName: {{ include "names.secret" . }}
         {{- if $merged.ingress.tls.enabled }}
-        - name: tls-certs
+        - name: registry-tls-certs
           secret:
+            {{- if $merged.ingress.tls.autoGenerate }}
+            secretName: {{ include "names.secret.tls" . }}
+            {{- else }}
             secretName: {{ $merged.ingress.tls.secretName }}
+            {{- end }}
         {{- end }}
       {{- with $merged.nodeSelector }}
       nodeSelector:
