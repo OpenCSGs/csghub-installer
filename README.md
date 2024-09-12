@@ -26,7 +26,7 @@ KNative Serving is a necessary component for CSGHub to create Space and other ap
     ```shell
     kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-crds.yaml
     
-    # If you have trouble pulling the docker.io image, use the following command
+    # If you have trouble pulling the gcr.io image, use the following command
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-crds.yaml
     ```
 
@@ -35,7 +35,7 @@ KNative Serving is a necessary component for CSGHub to create Space and other ap
     ```shell
     kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-core.yaml
     
-    # If you have trouble pulling the docker.io image, use the following command
+    # If you have trouble pulling the gcr.io image, use the following command
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-core.yaml
     ```
 
@@ -48,7 +48,7 @@ Here choosing `Kourier` as default. If you want to use other network components,
     ```shell
     kubectl apply -f https://github.com/knative/net-kourier/releases/download/knative-v1.15.1/kourier.yaml
     
-    # If you have trouble pulling the docker.io image, use the following command
+    # If you have trouble pulling the gcr.io image, use the following command
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/kourier.yaml
     ```
 
@@ -90,7 +90,7 @@ kubectl patch configmap/config-domain \
 ```shell
 kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-hpa.yaml
 
-# If you have trouble pulling the docker.io image, use the following command
+# If you have trouble pulling the gcr.io image, use the following command
 kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-hpa.yaml
 ```
 

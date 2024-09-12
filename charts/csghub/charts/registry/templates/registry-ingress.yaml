@@ -41,7 +41,11 @@ spec:
   tls:
     - hosts:
       - {{ include "external.domain.registry" . }}
+      {{- if $merged.ingress.tls.autoGenerate }}
+      secretName: {{ include "names.secret.tls" . }}
+      {{- else }}
       secretName: {{ $merged.ingress.tls.secretName }}
+      {{- end }}
   {{- end }}
   rules:
     - host: {{ include "external.domain.registry" . }}
