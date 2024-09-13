@@ -1,4 +1,3 @@
-charts/csghub/charts/registry/templates/registry-statefulsets.yaml
 {{- /*
 Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
