@@ -20,7 +20,7 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   backoffLimit: 3
-  activeDeadlineSeconds: 120
+  activeDeadlineSeconds: 300
   template:
     metadata:
       name: {{ include "names.job" . }}
