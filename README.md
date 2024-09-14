@@ -6,12 +6,26 @@ CSGHub is an open source, trustworthy large model asset management platform that
 
 Due to the version problem, the configuration is relatively complicated, which will be optimized in later versions. To simplify the configuration, only global parameters are defined in values.yaml. The mapping method of sub-charts in global in this helm chart is consistent with directly modifying the sub-chart configuration in the parent chart. Therefore, when modifying a subchart, you only need to add or modify the parameters of the corresponding subchart in global.
 
-## Prerequisites
+## Quick deployment
+
+You can use quick deployment to pull up a usable csghub environment in minutes.
+
+Recommended operating system:
+- Ubuntu >= 20.04 / Debian >=10 / CentOS 7  
+- Hardware >= 4c8g
+
+```shell
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/install.sh | bash
+```
+
+## Manual deployment
+
+### Prerequisites
 - Kubernetes 1.20+
 - Helm 3.8+
 - PV Dynamic Provisioning 
 
-## Install KNative Serving
+### Install KNative Serving
 
 > - Reference：[Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
 >
@@ -19,7 +33,7 @@ Due to the version problem, the configuration is relatively complicated, which w
 
 KNative Serving is a necessary component for CSGHub to create Space and other applications. If you are in a cloud environment, you can consider using similar components provided by the cloud.
 
-### Install the Knative Serving component
+#### Install the Knative Serving component
 
 1. Install the required custom resources
 
@@ -39,7 +53,7 @@ KNative Serving is a necessary component for CSGHub to create Space and other ap
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-core.yaml
     ```
 
-### Install a networking layer
+#### Install a networking layer
 
 Here choosing `Kourier` as default. If you want to use other network components, please refer to the [Knative documentation](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer) for details
 
@@ -85,7 +99,7 @@ kubectl patch configmap/config-domain \
   --patch '{"data":{"app.internal":""}}' 
 ```
 
-### Install optional Serving extensions
+#### Install optional Serving extensions
 
 ```shell
 kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-hpa.yaml
@@ -107,7 +121,7 @@ kubectl create secret generic kube-configs --from-file=/root/.kube --namespace=c
 
 The above command will create all config files in the .kube directory into the `kube-configs` Secret resource. You can use .Values.global.runner.kubeConfig.secretName to execute non-default secret files.
 
-## Install CSGHub Helm Chart
+### Install CSGHub Helm Chart
 
 Before performing the following operations, you must be ready for the above operations.
 
@@ -140,7 +154,7 @@ Before performing the following operations, you must be ready for the above oper
 
   *Hint: You need to configure the corresponding third-level domain name to DNS according to the prompts after installation.*
 
-## Post-installation configuration
+### Post-installation configuration
 
   Although this helm chart has a simple Container Registry program built in for testing, it does not provide reliable encrypted access. You still need to go through [more configuration](https://github.com/containerd/containerd/blob/main/docs/hosts.md) to pull images from the Registry normally. Please prepare the Registry yourself for the production environment.
 
