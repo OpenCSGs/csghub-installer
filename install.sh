@@ -165,7 +165,8 @@ fi
 
 # Copy the kube config file to the user's home directory
 log  "INFO" "Copying kube config file to the user's home directory."
-mkdir ~/.kube &>/dev/null || cp /etc/rancher/k3s/k3s.yaml ~/.kube/config &>/dev/null || chmod 0400 ~/.kube/config
+mkdir ~/.kube &>/dev/null
+cp -f /etc/rancher/k3s/k3s.yaml ~/.kube/config && chmod 0400 ~/.kube/config
 sed -i "s/127.0.0.1/${IP_ADDRESS}/g" ~/.kube/config
 
 # Install Helm3
@@ -367,9 +368,9 @@ log "INFO" "Creating kube-configs secrets."
 if ! kubectl get ns csghub &>/dev/null; then
   retry kubectl create ns csghub
 fi
-if ! kubectl -n csghub get secret kube-configs &>/dev/null; then
-  retry kubectl create secret generic kube-configs --from-file=/root/.kube/ --namespace=csghub
-fi
+kubectl -n csghub delete secret kube-configs &>/dev/null
+retry kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
+
 if [ $? -ne 0 ]; then
     log "ERRO" "Failed to create kube configs secrets."
     exit 1

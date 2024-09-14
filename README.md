@@ -129,7 +129,7 @@ Before performing the following operations, you must be ready for the above oper
     # global.builder.internal[0].service.port: Kourier service external port
     helm install csghub csghub/csghub \
     	--namespace csghub \
-        --create-namespace \
+    	--create-namespace \
     	--set global.ingress.hosts=example.com \ 
     	--set global.builder.internal[0].domain=app.internal \ 
     	--set global.builder.internal[0].service.host=192.168.18.18 \ 
