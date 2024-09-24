@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- $conf := merge .Values.global.portal (omit .Values "global" "exports") }}
+{{- $ingress := merge .Values.global.ingress .Values.ingress }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -44,5 +45,8 @@ data:
   REGION: {{ .region }}
   FORCE_PATH_STYLE: {{ .pathStyle }}
   {{- end }}
+  {{- end }}
+  {{- if $ingress.tls.enabled }}
+  ENABLE_HTTPS: "true"
   {{- end }}
 

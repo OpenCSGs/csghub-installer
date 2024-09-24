@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- $conf := merge .Values.global.proxy (omit .Values "global" "exports") }}
+{{- $ingress := merge .Values.global.ingress .Values.ingress }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -98,6 +99,10 @@ spec:
               {{- end }}
             - name: STARHUB_DATABASE_DSN
               value: "postgresql://$(STARHUB_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(STARHUB_DATABASE_HOST):$(STARHUB_DATABASE_PORT)/$(STARHUB_DATABASE_NAME)?sslmode=disable"
+            {{- if $ingress.tls.enabled }}
+            - name: STARHUB_SERVER_ENABLE_HTTPS
+              value: "true"
+            {{- end }}
             {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
