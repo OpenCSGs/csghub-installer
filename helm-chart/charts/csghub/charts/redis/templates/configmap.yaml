@@ -1,0 +1,19 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.redis (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  REDIS_HOST: {{ include "common.names.custom" . | quote }}
+  REDIS_PORT: {{ $conf.service.port | quote }}
+  REDIS_ENDPOINT: {{ include "redis.internal.endpoint" . | trimPrefix "http://" }}
+{{- end }}

@@ -1,5 +1,6 @@
 .idea
 .kube
-tls*
+tls.*
 *.crt
 *.key
+.DS_Store

@@ -1,76 +1,84 @@
-# Default values for Server.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-## Server configuration section
-## This section allows you to configure the server settings for your deployment.
-## Redis configuration for the builder
-## This subsection allows you to specify the host, port, and password for Redis.
-## Enable the builder component
+## Default values for Builder.
+## This is a YAML-formatted file.
+## Declare variables to be passed into your templates.
 enabled: true
 
-## Number of replicas for the builder
+## Number of Builder replicas to be deployed.
+## This allows you to scale the Builder component according to your needs.
 replicas: 1
 
+## List of image pull secrets.
+## Used to pull Docker images from private repositories.
+## This array is empty by default, meaning no secrets are required by default.
+imagePullSecrets: [ ]
+
 image:
-  ## Repository for the builder image
+  ## Specifies the location of the Builder Docker image in the Builder.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
-  ## Tag for the builder image
-  tag: v0.8.0
-  ## Pull policy for the builder image
+  ## Defines the specific version of the Builder image to use.
+  tag: v0.9.0
+  ## Determines how the image should be pulled from the Builder.
   pullPolicy: "IfNotPresent"
-  ## Secrets for pulling the builder image from a private registry
-  pullSecret: [ ]
 
 service:
-  ## Type of service for the builder component
+  ## This determines how the Builder service is accessed within the cluster or from external sources.
   type: ClusterIP
-  ## Port for the builder service
+  ## This is the network port where the Builder service will listen for connections.
   port: 8080
 
-## Kubernetes namespace where the builder component will be deployed
-namespace: space
-
-ingress:
-  ## Ingress configuration for accessing Minio from outside the Kubernetes cluster.
-  enabled: true
-  className: "nginx"
-  ## Hostname for accessing the building application externally
-  host: public.example.com
-  tls:
-    enabled: false
-    secretName: ""
-
-internal:
-  ## Internal domain name for the builder component
-  domain: app.internal
-  ## Internal port for the builder component
-  port: 80
-
+## External Redis configuration.
+## This section is required if an internal Redis is not enabled.
 redis:
-  ## Hostname for the Redis instance used by the builder
-  host: ""
-  ## Port for the Redis instance
-  port: ""
-  ## Password for the Redis instance
+  ## Specifies the hostname or IP address of the Redis server.
+  endpoint: redis.example.com
+  ## Defines the port on which the Redis server is listening.
+  port: 6379
+  ## Provides the password for authenticating with the Redis server.
+  ## Leave this empty if no authentication is required.
   password: ""
 
+## External Registry configuration.
 ## Docker Registry configuration for the builder
 ## This subsection allows you to specify the repository, namespace, username, and password for the Docker registry.
-## The Docker registry is where your Docker images will be stored and managed.
 registry:
-  repository: docker.io
+  repository: registry.example.com
   namespace: csghub
   username: ""
   password: ""
 
-securityContext:
-  ## User ID to run the builder pod as
-  runAsUser: 0
-  ## Group ID to run the builder pod as
-  runAsGroup: 0
-  ## Filesystem group ID for the builder pod
-  fsGroup: 0
+## Persistence settings for the Minio data.
+persistence:
+  ## Specifies the StorageClass used for provisioning the volume.
+  ## An empty value means the default StorageClass is used.
+  ## StorageClass defines the type of storage used and can affect performance and cost.
+  storageClass: ""
+  ## Defines the access modes of the volume.
+  ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+  ## This is suitable for most use cases where a single instance of Minio is running.
+  accessMode: ["ReadWriteOnce"]
+  ## Specifies the size of the persistent volume.
+  ## This should be adjusted based on expected usage and data growth over time.
+  size: 20Gi
 
+## Determines whether a service account should be created.
+serviceAccount:
+  ## Determines whether a service account should be created.
+  create: false
+  ## Controls whether the service account token should be automatically mounted.
+  automount: false
+  ## Allows for annotations to be added to the service account.
+  annotations: {}
+
+## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+podAnnotations: {}
+
+## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+podLabels: {}
+
+## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+## IDs that processes run as, and privilege and access control settings.
 podSecurityContext:
   ## Allow the builder pod to run as privileged
   privileged: true
@@ -79,60 +87,77 @@ podSecurityContext:
   ## Set the root filesystem of the builder pod to read-only
   readOnlyRootFilesystem: false
 
-persistence:
-  ## Storage class for the persistent volume claim
-  storageClass: ""
-  ## Access mode for the persistent volume
-  accessMode:
-    - ReadWriteOnce
-  ## Size of the persistent volume
-  sizes:
-    builder: "2Gi"
-    docker: "10Gi"
+## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
+  # capabilities:
+  #   drop:
+  #   - ALL
+# readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
 
-nameOverride: ""
-fullnameOverride: ""
-
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: false
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: false
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
-podAnnotations: {}
-podLabels: {}
-
-# Defined environment
+## environments: This section is reserved for defining environment variables for the Builder container.
+## Environment variables can be used to customize the behavior of the Builder instance.
+## For example, you might use environment variables to configure logging levels or to enable certain Builder features.
+## This section is currently empty, indicating that no environment variables have been explicitly set.
 environments: {}
 
+## annotations: This section allows you to add annotations to the Builder deployment.
+## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+## information about your Builder instance.
+## Like the environments section, this is also currently empty.
 annotations: {}
 
+## The 'resources' section is used to define the compute resource requirements for the Builder container.
+## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+## Leaving this section empty means that no specific resource limits or requests are set for the Builder container.
+## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+## where you might not want to enforce strict resource constraints.
+## However, for production environments, it's recommended to uncomment and set these values to ensure that the Builder container
+## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+## 'limits' specify the maximum amount of CPU and memory the container can use.
+## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
 resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
 
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
-
+## nodeSelector: This section allows you to specify node labels for pod assignment.
+## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
 nodeSelector: {}
 
+## tolerations: This section allows you to specify tolerations for the pods.
+## Tolerations enable the pods to schedule onto nodes with matching taints.
+## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
 tolerations: []
 
+## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+## including labels of pods that are already running on the node.
+## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+## spread pods across nodes or zones for high availability.
 affinity: {}
+
+## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Builder deployment.
+## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+## set based on observed CPU utilization.
+autoscaling:
+  ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+  enabled: false
+  ## The minimum number of replicas. The autoscaler will not scale below this number.
+  minReplicas: 1
+  ## The maximum number of replicas. The autoscaler will not scale above this number.
+  maxReplicas: 100
+  ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+  ## exceeds this threshold, the HPA will scale up.
+  targetCPUUtilizationPercentage: 80
+  ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+  # targetMemoryUtilizationPercentage: 80

@@ -1,0 +1,155 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.gitea (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  serviceName: {{ include "common.names.custom" . }}
+  replicas: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "sh", "-c", "until pg_isready -h $(GITEA_DATABASE_HOST) -p $(GITEA_DATABASE_PORT_NUMBER) -d $(GITEA_DATABASE_NAME) -U $(GITEA_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include  "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            - name: PGPASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_git)"
+              {{- else }}
+              value: "$(GITEA_DATABASE_PASSWORD)"
+              {{- end }}
+      containers:
+        - name: gitea
+          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+            - containerPort: 22
+              name: ssh
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            - secretRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            {{- if .Values.global.postgresql.enabled }}
+            - name: GITEA_DATABASE_PASSWORD
+              value: "$(csghub_git)"
+            {{- end }}
+            {{- if .Values.global.minio.enabled }}
+            - name: GITEA_LFS_MINIO_ACCESS_KEY_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: GITEA_LFS_MINIO_SECRET_ACCESS_KEY
+              value: "$(MINIO_ROOT_PASSWORD)"
+            {{- end }}
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /api/healthz
+              port: 3001
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /bitnami/gitea
+              readOnly: false
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        namespace: {{ .Release.Namespace }}
+        labels:
+          {{- include "common.labels" . | nindent 10 }}
+        annotations:
+          helm.sh/resource-policy: keep
+          {{- with $conf.annotations }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+      spec:
+        accessModes: {{ $conf.persistence.accessMode }}
+        {{- if $conf.persistence.storageClass }}
+        storageClassName: {{ $conf.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ $conf.persistence.size }}
+{{- end }}

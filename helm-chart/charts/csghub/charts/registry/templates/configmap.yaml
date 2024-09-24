@@ -1,0 +1,19 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.registry (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  REGISTRY_AUTH: "htpasswd"
+  REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+  REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+{{- end }}

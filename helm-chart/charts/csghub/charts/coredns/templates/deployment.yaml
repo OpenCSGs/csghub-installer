@@ -1,0 +1,93 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.coredns (omit .Values "global" "exports") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ $conf.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - name: coredns
+          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          args: ["-conf", "/var/opt/coredns/corefile"]
+          ports:
+            - containerPort: 53
+              name: coredns-tcp
+              protocol: TCP
+            - containerPort: 53
+              name: coredns-udp
+              protocol: UDP
+          {{- with $conf.environments }}
+          env:
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 53
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: corefile
+              mountPath: /var/opt/coredns
+              readOnly: true
+      volumes:
+        - name: corefile
+          configMap:
+            name: {{ include "common.names.custom" . }}
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

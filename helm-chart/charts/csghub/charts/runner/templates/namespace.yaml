@@ -1,0 +1,13 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.runner (omit .Values "global" "exports") }}
+{{- $exists := (lookup "v1" "Namespace" "" $conf.namespace) }}
+{{- if not $exists -}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $conf.namespace }}
+{{- end }}

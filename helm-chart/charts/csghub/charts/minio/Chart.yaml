@@ -4,7 +4,7 @@ description: Object storage server built for cloud applications and devops.
 home: https://minio.io
 icon: https://www.minio.io/img/logo_160x160.png
 sources:
-- https://github.com/minio/minio
+  - https://github.com/minio/minio
 maintainers:
   - name: OpenCSG Inc.
     email: support@opencsg.com
@@ -22,7 +22,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.8.0
+version: 0.1.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to

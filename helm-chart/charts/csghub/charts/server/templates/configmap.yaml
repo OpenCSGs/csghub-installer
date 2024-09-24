@@ -1,0 +1,79 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.server (omit .Values "global" "exports") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  GIN_MODE: release
+  STARHUB_SERVER_SAAS: "false"
+  STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.external.endpoint" . }}
+  STARHUB_SERVER_FRONTEND_URL: {{ include "csghub.external.endpoint" . }}
+  STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.internal.endpoint" . }}
+  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "csghub.callback.git" . }}
+  {{- if .Values.global.postgresql.enabled }}
+  STARHUB_DATABASE_HOST: {{ include "postgresql.internal.domain" . }}
+  STARHUB_DATABASE_PORT: {{ include "postgresql.internal.port" . | quote }}
+  STARHUB_DATABASE_USERNAME: "csghub_server"
+  STARHUB_DATABASE_NAME: "csghub_server"
+  STARHUB_DATABASE_TIMEZONE: "Asia/Shanghai"
+  {{- else }}
+  {{- with $conf.postgresql }}
+  STARHUB_DATABASE_HOST: {{ default "127.0.0.1" .host }}
+  STARHUB_DATABASE_PORT: {{ default "5432" .port | quote }}
+  STARHUB_DATABASE_USERNAME: {{ default "postgres" .user }}
+  STARHUB_DATABASE_PASSWORD: {{ .password }}
+  STARHUB_DATABASE_NAME: {{ default "postgres" .database }}
+  STARHUB_DATABASE_TIMEZONE: {{ default "UTC" .timezone }}
+  {{- end }}
+  {{- end }}
+  STARHUB_SERVER_API_TOKEN: {{ include "server.api.token" . }}
+  {{- if .Values.global.minio.enabled }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }} # used to generate download links for lfs files
+  STARHUB_SERVER_S3_BUCKET: "csghub-git"
+  STARHUB_SERVER_S3_REGION: "cn-north-1"
+  {{- else }}
+  {{- with $conf.objectStore }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" | trimPrefix "https://" }}
+  STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ .accessKey }}
+  STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ .accessSecret }}
+  STARHUB_SERVER_S3_BUCKET: {{ .bucketName }}
+  STARHUB_SERVER_S3_REGION: {{ .region }}
+  {{- else }}
+  {{- end }}
+  {{- end }}
+  STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.internal.endpoint" . }}
+  STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: {{ include "runner.internal.endpoint" . }}
+  STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: {{ include "public.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: "space.app.internal:30446" # Deprecated
+  STARHUB_SERVER_MODEL_DOWNLOAD_ENDPOINT: {{ include "csghub.external.endpoint" . }}
+  STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"
+  STARHUB_SERVER_CASDOOR_CLIENT_SECRET: "33bd85106818efd90c57fb35ffc787aabbff6f7a"
+  STARHUB_SERVER_CASDOOR_ENDPOINT: {{ include "casdoor.external.endpoint" . }}
+  STARHUB_SERVER_CASDOOR_ORGANIZATION_NAME: "OpenCSG"
+  STARHUB_SERVER_CASDOOR_APPLICATION_NAME: "CSGHub"
+  STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"
+  STARHUB_SERVER_MIRRORSERVER_ENABLE: "false"
+  STARHUB_SERVER_MIRRORSERVER_TYPE: "gitea"
+  OPENCSG_ACCOUNTING_SERVER_HOST: {{ printf "http://%s" (include "accounting.internal.domain" .) }}
+  OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "accounting.internal.port" . | quote }}
+  OPENCSG_USER_SERVER_HOST: {{ printf "http://%s" (include "user.internal.domain" .) }}
+  OPENCSG_USER_SERVER_PORT: {{ include "user.internal.port" . | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" (list . "server-init") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  initialize.sql: |
+    {{ .Files.Get "initialize.sql" | nindent 4 }}

@@ -1,0 +1,146 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.runner (omit .Values "global" "exports") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ $conf.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - {{ include "coredns.csghub" . }}
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-server
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
+      containers:
+        - name: runner
+          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/starhub-bin/starhub", "deploy", "runner" ]
+          ports:
+            - containerPort: 8082
+              name: runner
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "builder") }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            - name: STARHUB_SERVER_DOCKER_REG_BASE
+              value: "$(REGISTRY_ADDRESS)/$(REGISTRY_NAMESPACE)"
+            - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
+              value: {{ include "common.names.custom" (list . "runner-docker-config") }}
+            - name: POSTGRES_PASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_server)"
+              {{- else }}
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+              {{- end }}
+            - name: STARHUB_DATABASE_DSN
+              value: "postgresql://$(STARHUB_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(STARHUB_DATABASE_HOST):$(STARHUB_DATABASE_PORT)/$(STARHUB_DATABASE_NAME)?sslmode=disable"
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8082
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: kube-configs
+              mountPath: /root/.kube
+              readOnly: true
+            - name: docker-daemon
+              mountPath: /etc/docker
+              readOnly: true
+            - name: docker-config
+              mountPath: /root/.docker
+              readOnly: true
+      volumes:
+        - name: kube-configs
+          secret:
+            {{- $exists := lookup "v1" "Secret" .Release.Namespace .Values.global.runner.kubeConfig.secretName }}
+            {{- if $exists }}
+            secretName: {{ .Values.global.runner.kubeConfig.secretName }}
+            {{- else }}
+              {{ fail "You must specify a kube config secret (you need to create it yourself)" }}
+            {{- end }}
+        - name: docker-daemon
+          configMap:
+            name: {{ include "common.names.custom" (list . "builder-docker-daemon") }}
+        - name: docker-config
+          secret:
+            secretName: {{ include "common.names.custom" (list . "registry-docker-config") }}
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

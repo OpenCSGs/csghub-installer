@@ -1,0 +1,83 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.server (omit .Values "global" "exports") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation, hook-succeeded
+    {{- with $conf.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include  "common.names.custom" (list . "postgresql") }}
+            {{- end  }}
+          env:
+            - name: PGPASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_server)"
+              {{- else }}
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+              {{- end }}
+        - name: wait-for-server
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
+      containers:
+        - name: psql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "psql", "-h", "$(STARHUB_DATABASE_HOST)", "-p", "$(STARHUB_DATABASE_PORT)", "-U", "$(STARHUB_DATABASE_USERNAME)", "-d", "$(STARHUB_DATABASE_NAME)", "-f", "/data/initialize.sql" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include  "common.names.custom" (list . "postgresql") }}
+            {{- end  }}
+          env:
+            - name: PGPASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_server)"
+              {{- else }}
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+              {{- end }}
+          volumeMounts:
+            - name: init
+              mountPath: /data
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" (list . "server-init") }}

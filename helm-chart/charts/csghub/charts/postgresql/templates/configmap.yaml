@@ -1,0 +1,41 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.postgresql (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  POSTGRES_USER: "postgres"
+  POSTGRES_DB: "postgres"
+  PGDATA: "/var/lib/postgresql/data"
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" .)).data }}
+  initialize.sql: |
+    {{- range $username := $conf.databases }}
+    {{- if ne $username "postgres" }}
+    {{- $database := $username }}
+    {{- $password := include "postgresql.initPass" $database }}
+    {{- if $secretData }}
+    {{- $password = index $secretData $username | b64dec }}
+    {{- end }}
+    -- Create database {{ $database }} owner {{ $username }}
+    CREATE USER {{ $username | quote }} WITH ENCRYPTED PASSWORD {{ $password | squote }} CREATEDB;
+    CREATE DATABASE {{ $database }} ENCODING 'UTF-8' OWNER {{ $username | quote }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ $database }} TO {{ $username | quote }};
+    {{- end }}
+    {{- end }}
+    -- Update database parameters
+    {{- range $param, $value := $conf.parameters }}
+    {{- if and $param $value }}
+    ALTER SYSTEM SET {{ $param }} TO {{ $value | squote }};
+    {{- end }}
+    {{- end }}
+    SELECT pg_reload_conf();
+{{- end }}

@@ -1,7 +1,7 @@
 --
 -- PostgreSQL database dump
 --
-
+SET exit_on_error = on;
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -54,16 +54,16 @@ ON CONFLICT (name)
 --
 
 INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('1', 'VLLM', '2.7', 'vllm-local:2.7', 'vllm-cpu:2.3', 1, 8000, 1);
+INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('2', 'LLaMA-Factory', '1.11', 'llama-factory:1.18-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
 INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('3', 'TGI', '2.1', 'tgi:2.1', '', 1, 8000, 1);
 INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('4', 'FastChat', '1.2', ' ', '', 1, 8000, 1);
-INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('6', 'MindIE', '1.0', ' ', '', 1, 8000, 1);
-INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('2', 'LLaMA-Factory', '1.11', 'llama-factory:1.18-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
+INSERT INTO public.runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('5', 'MindIE', '1.0', ' ', '', 1, 8000, 1);
 
 --
 -- Name: runtime_frameworks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.runtime_frameworks_id_seq', 4, true);
+SELECT pg_catalog.setval('public.runtime_frameworks_id_seq', 5, true);
 
 --
 -- Seed Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres

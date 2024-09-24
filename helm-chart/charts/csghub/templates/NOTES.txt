@@ -6,39 +6,39 @@ Thank you for installing CSGHub!
 
 To access the CSGHub Portal®, please navigate to the following URL:
 
-    {{ include "csghub.url.external" . }}
+    {{ include "csghub.external.endpoint" . }}
 
 You can use the following admin credentials to log in:
      Username: root
-     Password: {{ include "server.password.root" . }}
+     Password: {{ include "user.password" . }}
 
 To access the Casdoor, please navigate to the following URL:
 
-     {{ include "casdoor.url" . }}
+     {{ include "casdoor.external.endpoint" . }}
 
 To access the Gitea management interface, please navigate to the following URL:
 
-     {{ include "gitea.url.root" . }}
+     {{ include "gitea.external.endpoint" . }}
 
 You can use the following admin credentials to log in:
 
-    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "gitea.secret" . }} -o jsonpath="{.data.GITEA_ADMIN_USER}" | base64 -d)
-    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "gitea.secret" . }} -o jsonpath="{.data.GITEA_ADMIN_PASSWORD}" | base64 -d)
+    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "gitea") }} -o jsonpath="{.data.GITEA_ADMIN_USER}" | base64 -d)
+    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "gitea") }} -o jsonpath="{.data.GITEA_ADMIN_PASSWORD}" | base64 -d)
 
 To access the MinIO management interface, please navigate to the following URL:
 
-    {{ include "minio.url.external" . }}
+    {{ include "minio.external.endpoint" . }}
 
 You can use the following admin credentials to log in:
 
-    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
-    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "minio.secret" . }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
+    Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
+    Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
 
 Registry: this is not a container registry suitable for production environments.
 you can only do pull/push images from this registry.To access registry using docker-cli:
 
-        docker pull {{ include "registry.endpoint" . }}/test:latest
-        docker push {{ include "registry.endpoint" . }}/test:latest
+        docker pull {{ include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}/test:latest
+        docker push {{ include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}/test:latest
 
 For more detailed documentation, visit:
 

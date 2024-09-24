@@ -1,0 +1,46 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.coredns (omit .Values "global" "exports") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  corefile: |
+    .:53 {
+        {{- range .Values.global.runner.internalDomain }}
+        forward {{ printf "%s.%s." $.Values.global.runner.namespace .domain }} /etc/resolv.conf
+        {{- end  }}
+        forward . {{ include "coredns.system" . }}
+        log
+        errors
+        cache 30
+        reload
+        loadbalance
+    }
+    {{- range .Values.global.runner.internalDomain }}
+    {{ .domain }}:53 {
+        file /var/opt/coredns/{{ .domain }}
+        log
+        errors
+    }
+    {{- end }}
+  {{- range .Values.global.runner.internalDomain }}
+  {{ .domain }}: |
+    {{- $domain := (printf "%s.%s." $.Values.global.runner.namespace .domain) }}
+    $ORIGIN {{ $domain }}
+    @ 3600 IN SOA ns1.{{ $domain }} admin.{{ $domain }} (
+        2022042401 ; Serial
+        3600       ; Refresh
+        1800       ; Retry
+        604800     ; Expire
+        86400      ; Minimum TTL
+    )
+    *   3600 IN A  {{ include "proxy.nginx.ip" . }}
+  {{- end }}

@@ -21,14 +21,14 @@ controller:
   image:
     ## Keep false as default for now!
     chroot: false
-    registry: opencsg-registry.cn-beijing.cr.aliyuncs.com
-    image: opencsg_public/ingress-nginx/controller
+    registry: registry.k8s.io
+    image: ingress-nginx/controller
     ## for backwards compatibility consider setting the full image url via the repository value below
     ## use *either* current default registry/image or repository format or installing chart by providing the values.yaml will fail
     ## repository:
-    tag: v1.11.1
-    digest: sha256:8f0d2b5885516c9d46c836dbb158446af6a0a9307ca2fd591c21171ff0bf2a7b
-    digestChroot: sha256:8f0d2b5885516c9d46c836dbb158446af6a0a9307ca2fd591c21171ff0bf2a7b
+    tag: "v1.11.1"
+    digest: sha256:e6439a12b52076965928e83b7b56aae6731231677b01e81818bce7fa5c60161a
+    digestChroot: sha256:7cabe4bd7558bfdf5b707976d7be56fd15ffece735d7c90fc238b6eda290fd8d
     pullPolicy: IfNotPresent
     runAsNonRoot: true
     # www-data -> uid 101
@@ -495,14 +495,14 @@ controller:
     loadBalancerClass: ""
     # -- Enable node port allocation for the external controller service or not. Applies to type `LoadBalancer` only.
     # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-nodeport-allocation
-    # allocateLoadBalancerNodePorts: true
+    allocateLoadBalancerNodePorts: true
 
     # -- External traffic policy of the external controller service. Set to "Local" to preserve source IP on providers supporting it.
     # Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
     externalTrafficPolicy: ""
     # -- Session affinity of the external controller service. Must be either "None" or "ClientIP" if set. Defaults to "None".
     # Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#session-affinity
-    sessionAffinity: ""
+    sessionAffinitinclude "common.names.custom" (list . "gitea")y: ""
     # -- Specifies the health check node port (numeric port number) for the external controller service.
     # If not specified, the service controller allocates a port from your cluster's node port range.
     # Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
@@ -535,14 +535,15 @@ controller:
     appProtocol: true
     nodePorts:
       # -- Node port allocated for the external HTTP listener. If left empty, the service controller allocates one from the configured node port range.
-      http: ""
+      http: "30080"
       # -- Node port allocated for the external HTTPS listener. If left empty, the service controller allocates one from the configured node port range.
-      https: ""
+      https: "30443"
       # -- Node port mapping for external TCP listeners. If left empty, the service controller allocates them from the configured node port range.
       # Example:
       # tcp:
       #   8080: 30080
-      tcp: {}
+      tcp:
+        22: "30022"
       # -- Node port mapping for external UDP listeners. If left empty, the service controller allocates them from the configured node port range.
       # Example:
       # udp:
@@ -575,7 +576,7 @@ controller:
       loadBalancerClass: ""
       # -- Enable node port allocation for the internal controller service or not. Applies to type `LoadBalancer` only.
       # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#load-balancer-nodeport-allocation
-      # allocateLoadBalancerNodePorts: true
+      allocateLoadBalancerNodePorts: true
 
       # -- External traffic policy of the internal controller service. Set to "Local" to preserve source IP on providers supporting it.
       # Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip
@@ -617,14 +618,15 @@ controller:
       appProtocol: true
       nodePorts:
         # -- Node port allocated for the internal HTTP listener. If left empty, the service controller allocates one from the configured node port range.
-        http: ""
+        http: "30080"
         # -- Node port allocated for the internal HTTPS listener. If left empty, the service controller allocates one from the configured node port range.
-        https: ""
+        https: "30443"
         # -- Node port mapping for internal TCP listeners. If left empty, the service controller allocates them from the configured node port range.
         # Example:
         # tcp:
         #   8080: 30080
-        tcp: {}
+        tcp:
+          22: 30022
         # -- Node port mapping for internal UDP listeners. If left empty, the service controller allocates them from the configured node port range.
         # Example:
         # udp:
@@ -799,13 +801,13 @@ controller:
     patch:
       enabled: true
       image:
-        registry: opencsg-registry.cn-beijing.cr.aliyuncs.com
-        image: opencsg_public/ingress-nginx/kube-webhook-certgen
+        registry: registry.k8s.io
+        image: ingress-nginx/kube-webhook-certgen
         ## for backwards compatibility consider setting the full image url via the repository value below
         ## use *either* current default registry/image or repository format or installing chart by providing the values.yaml will fail
         ## repository:
         tag: v1.4.1
-        digest: sha256:887b7f4495677473f1bef5bfb48200a1070e526183b515682a7e78e43c7d7da4
+        digest: sha256:36d05b4077fb8e3d13663702fa337f124675ba8667cbd949c03a8e8ea6fa4366
         pullPolicy: IfNotPresent
       # -- Provide a priority class name to the webhook patching job
       ##
@@ -1172,7 +1174,8 @@ imagePullSecrets: []
 # -- TCP service key-value pairs
 ## Ref: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/exposing-tcp-udp-services.md
 ##
-tcp: {}
+tcp:
+  "22": "22"
 #  "8080": "default/example-tcp-svc:9000"
 
 # -- UDP service key-value pairs

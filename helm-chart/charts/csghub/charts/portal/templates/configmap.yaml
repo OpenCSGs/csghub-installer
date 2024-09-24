@@ -1,0 +1,48 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.portal (omit .Values "global" "exports") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  ON_PREMISE: "false"
+  ASSET_HOST: "http://127.0.0.1:3000"
+  RAILS_MASTER_KEY: "64f15f995b044427e43fe4897370fd66"
+  RAILS_SERVE_STATIC_FILES: "false"
+  {{- if .Values.global.postgresql.enabled }}
+  PORTAL_DATABASE_HOST: {{ include "postgresql.internal.domain" . }}
+  PORTAL_DATABASE_PORT: {{ include "postgresql.internal.port" . | quote }}
+  PORTAL_DATABASE_USERNAME: "csghub_portal"
+  PORTAL_DATABASE_NAME: "csghub_portal"
+  {{- else }}
+  {{- with $conf.postgresql }}
+  PORTAL_DATABASE_HOST: {{ default "127.0.0.1" .host }}
+  PORTAL_DATABASE_PORT: {{ default "5432" .port | quote }}
+  PORTAL_DATABASE_USERNAME: {{ default "postgres" .user }}
+  PORTAL_DATABASE_PASSWORD: {{ .password }}
+  PORTAL_DATABASE_NAME: {{ default "postgres" .database }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.global.minio.enabled }}
+  ENDPOINT: "{{ include "minio.external.endpoint" . }}"
+  BUCKET_NAME: "csghub-portal"
+  REGION: "cn-north-1"
+  FORCE_PATH_STYLE: "true"
+  {{- else }}
+  {{- with $conf.objectStore }}
+  ENDPOINT: {{ .endpoint }}
+  ACCESS_ID: {{ .accessKey }}
+  ACCESS_SECRET: {{ .accessSecret }}
+  BUCKET_NAME: {{ .bucketName }}
+  REGION: {{ .region }}
+  FORCE_PATH_STYLE: {{ .pathStyle }}
+  {{- end }}
+  {{- end }}
+

@@ -1,0 +1,178 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.portal (omit .Values "global" "exports") }}
+{{- $ingress := merge .Values.global.ingress .Values.ingress }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ $conf.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "sh", "-c", "until pg_isready -h $(PORTAL_DATABASE_HOST) -p $(PORTAL_DATABASE_PORT) -d $(PORTAL_DATABASE_NAME) -U $(PORTAL_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            - name: PGPASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_portal)"
+              {{- else }}
+              value: "$(PORTAL_DATABASE_PASSWORD)"
+              {{- end }}
+        - name: wait-for-server
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
+      containers:
+        - name: portal
+          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "bash", "-c", "update-ca-certificates && bundle exec rails assets:precompile && bundle exec rails db:create && bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -p 3000 -b '0.0.0.0'" ]
+          ports:
+            - containerPort: 3000
+              name: portal
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "casdoor") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
+            {{- if .Values.global.gitea.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "gitea") }}
+            {{- end }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
+          env:
+            - name: STARHUB_BASE_URL
+              value: "$(STARHUB_SERVER_FRONTEND_URL)"
+            - name: STARHUB_TOKEN
+              value: "$(STARHUB_SERVER_API_TOKEN)"
+            - name: STARHUB_INNER_BASE_URL
+              value: {{ include "server.internal.endpoint" . }}
+            - name: OIDC_IDENTIFIER
+              value: "$(STARHUB_SERVER_CASDOOR_CLIENT_ID)"
+            - name: OIDC_SECRET
+              value: "$(STARHUB_SERVER_CASDOOR_CLIENT_SECRET)"
+            - name: LOGIN_URL
+              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize?client_id=$(OIDC_IDENTIFIER)&response_type=code&redirect_uri=$(STARHUB_BASE_URL)/api/v1/callback/casdoor&scope=read&state=casdoor"
+            - name: SIGNUP_URL
+              value: "{{ include "casdoor.external.endpoint" . }}/signup/CSGHub"
+            - name: OIDC_REDIRECT_URI
+              value: "$(STARHUB_BASE_URL)/oidc/callback"
+            - name: OIDC_AUTHORIZATION_ENDPOINT
+              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize"
+            - name: OIDC_TOKEN_ENDPOINT
+              value: "{{ include "casdoor.external.endpoint" . }}/api/login/oauth/access_token"
+            - name: OIDC_USERINFO_ENDPOINT
+              value: "{{ include "casdoor.external.endpoint" . }}//api/userinfo"
+            - name: POSTGRES_PASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_portal)"
+              {{- else }}
+              value: "$(PORTAL_DATABASE_PASSWORD)"
+              {{- end }}
+            - name: DATABASE_URL
+              value: "postgresql://$(PORTAL_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(PORTAL_DATABASE_HOST):$(PORTAL_DATABASE_PORT)/$(PORTAL_DATABASE_NAME)?sslmode=disable"
+            {{- if .Values.global.minio.enabled }}
+            - name: ACCESS_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: ACCESS_SECRET
+              value: "$(MINIO_ROOT_PASSWORD)"
+            {{- end }}
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+          {{- if $ingress.tls.enabled }}
+          volumeMounts:
+            - name: certs
+              mountPath: /usr/local/share/ca-certificates
+          {{- end }}
+      volumes:
+        {{- if $ingress.tls.enabled }}
+        - name: certs
+          secret:
+            {{- if $ingress.tls.autoGenerated }}
+            secretName: {{ include "common.names.custom" (list . "proxy-certs") }}
+            {{- else }}
+            secretName: {{ $ingress.tls.secretName }}
+            {{- end }}
+        {{- end }}
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

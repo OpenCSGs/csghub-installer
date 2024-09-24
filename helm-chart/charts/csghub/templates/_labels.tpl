@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Kubernetes standard labels
 */}}
-{{- define "common.labels.standard" -}}
+{{- define "common.labels" -}}
 {{- if and (hasKey . "customLabels") (hasKey . "context") -}}
 {{- $default := dict "app.kubernetes.io/name" (include "common.names.name" .context) "helm.sh/chart" (include "common.names.chart" .context) "app.kubernetes.io/instance" .context.Release.Name "app.kubernetes.io/managed-by" .context.Release.Service -}}
 {{- with .context.Chart.AppVersion -}}
@@ -33,7 +33,7 @@ since it's very likely that it will break deployments, services, etc.
 However, it's important to overwrite the standard labels if the user
 overwrote them on metadata.labels fields.
 */}}
-{{- define "common.labels.matchLabels" -}}
+{{- define "common.labels.selector" -}}
 {{- if and (hasKey . "customLabels") (hasKey . "context") -}}
 {{ merge (pick (include "common.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "common.names.name" .context) "app.kubernetes.io/instance" .context.Release.Name ) | toYaml }}
 {{- else -}}
@@ -45,10 +45,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{/*
 Define matched labels for network policies
 */}}
-{{- define "common.labels.netpol.matchLabels" -}}
-{{- if and (hasKey . "customLabels") (hasKey . "context") -}}
-{{ merge (pick (include "common.tplvalues.render" (dict "value" .customLabels "context" .context) | fromYaml) "app.kubernetes.io/name" "app.kubernetes.io/instance") (dict "app.kubernetes.io/name" (include "common.names.name" .context) "app.kubernetes.io/instance" .context.Release.Name ) | toYaml }}
-{{- else -}}
+{{- define "common.labels.selector.netpol" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end -}}
+app.kubernetes.io/name: ingress-nginx
 {{- end -}}

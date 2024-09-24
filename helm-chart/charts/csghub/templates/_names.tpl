@@ -4,169 +4,55 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Return name of ConfigMap
+Expand the name of the chart.
 */}}
-{{- define "names.cm" -}}
-{{ printf "%s-cm" ( include "common.names.fullname" . ) }}
+{{- define "common.names.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Return init name of initialized ConfigMap
+Create chart name and version as used by the chart label.
 */}}
-{{- define "names.cm.init" -}}
-{{ printf "%s-init-cm" ( include "common.names.fullname" . ) }}
+{{- define "common.names.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
-Return tls name of initialized ConfigMap
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
 */}}
-{{- define "names.cm.tls" -}}
-{{ printf "%s-tls-cm" ( include "common.names.fullname" . ) }}
+{{- define "common.names.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
-{{/*
-Return name of docker ConfigMap
-*/}}
-{{- define "names.cm.docker" -}}
-{{ printf "%s-docker-cm" ( include "common.names.fullname" . ) }}
+{{- define "common.names.custom" -}}
+{{- if eq (kindOf .) "slice" -}}
+  {{- if gt (len .) 0 -}}
+    {{- $context := index . 0 -}}
+    {{- $defaultName := printf "%s-%s" $context.Release.Name $context.Chart.Name -}}
+    {{- if gt (len .) 1 -}}
+      {{- $overrideName := printf "%s-%s" $context.Release.Name (index . 1) -}}
+      {{- $overrideName | trunc 63 | trimSuffix "-" -}}
+    {{- else -}}
+      {{- $defaultName | trunc 63 | trimSuffix "-" -}}
+    {{- end -}}
+  {{- else -}}
+    {{- "Error: No context provided" -}}
+  {{- end -}}
+{{- else -}}
+  {{- $defaultName := printf "%s-%s" .Release.Name .Chart.Name -}}
+  {{- $defaultName | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 
-{{/*
-Return name of nginx ConfigMap
-*/}}
-{{- define "names.cm.nginx" -}}
-{{ printf "%s-nginx-cm" ( include "common.names.fullname" . ) }}
-{{- end -}}
 
-{{/*
-Return name of Service
-*/}}
-{{- define "names.svc" -}}
-{{ printf "%s-svc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return nginx name of Service
-*/}}
-{{- define "names.svc.nginx" -}}
-{{ printf "%s-nginx-svc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of headless Service
-*/}}
-{{- define "names.svc.hl" -}}
-{{ printf "%s-hl-svc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return git http name of headless Service
-*/}}
-{{- define "names.svc.hl.http" -}}
-{{ printf "%s-http" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return git ssh name of headless Service
-*/}}
-{{- define "names.svc.hl.ssh" -}}
-{{ printf "%s-ssh" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of headless Service
-*/}}
-{{- define "names.svc.docker" -}}
-{{ printf "%s-docker-svc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of external Service
-*/}}
-{{- define "names.svc.external" -}}
-{{ printf "%s-external-svc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of PersistentVolumeClaim
-*/}}
-{{- define "names.pvc" -}}
-{{ printf "%s-pvc" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of NetworkPolicy
-*/}}
-{{- define "names.netpol" -}}
-{{ printf "%s-netpol" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of Job to create buckets
-*/}}
-{{- define "names.job" -}}
-{{ printf "%s-job" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of Secret
-*/}}
-{{- define "names.secret" -}}
-{{ printf "%s-secret" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of docker Secret
-*/}}
-{{- define "names.secret.docker" -}}
-{{ printf "%s-docker-secret" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of TLS Secret
-*/}}
-{{- define "names.secret.tls" -}}
-{{ printf "%s-tls-secret" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of Ingress
-*/}}
-{{- define "names.ing" -}}
-{{ printf "%s-ing" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of Ingress
-*/}}
-{{- define "names.ing.gitea.admin" -}}
-{{ printf "%s-admin-ing" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of ServiceAccount
-*/}}
-{{- define "names.sa" -}}
-{{ printf "%s-sa" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of StatefulSet
-*/}}
-{{- define "names.sts" -}}
-{{ printf "%s-sts" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of Deployment
-*/}}
-{{- define "names.deploy" -}}
-{{ printf "%s-deploy" ( include "common.names.fullname" . ) }}
-{{- end -}}
-
-{{/*
-Return name of PodDisruptionBudget
-*/}}
-{{- define "names.pdb" -}}
-{{ printf "%s-pdb" ( include "common.names.fullname" . ) }}
-{{- end -}}
