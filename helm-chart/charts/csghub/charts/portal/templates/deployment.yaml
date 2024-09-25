@@ -133,6 +133,7 @@ spec:
           volumeMounts:
             - name: certs
               mountPath: /usr/local/share/ca-certificates
+              readOnly: false
           {{- end }}
       volumes:
         {{- if $ingress.tls.enabled }}
