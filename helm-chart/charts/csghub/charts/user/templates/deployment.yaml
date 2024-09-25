@@ -70,8 +70,7 @@ spec:
         - name: user
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "bash", "-c" ]
-          args: [ "update-ca-certificates && /starhub-bin/starhub user launch" ]
+          command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub user launch" ]
           ports:
             - containerPort: 8080
               name: user

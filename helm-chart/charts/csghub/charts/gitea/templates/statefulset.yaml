@@ -49,7 +49,7 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until pg_isready -h $(GITEA_DATABASE_HOST) -p $(GITEA_DATABASE_PORT_NUMBER) -d $(GITEA_DATABASE_NAME) -U $(GITEA_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -h $(GITEA_DATABASE_HOST) -p $(GITEA_DATABASE_PORT_NUMBER) -d $(GITEA_DATABASE_NAME) -U $(GITEA_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}

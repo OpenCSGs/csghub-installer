@@ -47,7 +47,7 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "server") }}
@@ -70,7 +70,7 @@ spec:
         - name: accounting
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: ["/starhub-bin/starhub", "accounting", "launch"]
+          command: [ "/starhub-bin/starhub", "accounting", "launch" ]
           ports:
             - containerPort: 8086
               name: accounting

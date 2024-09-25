@@ -48,7 +48,7 @@ spec:
         - name: gitaly
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "bash", "-c", "/scripts/process-wrapper" ]
+          command: [ "/bin/sh", "-c", "/scripts/process-wrapper" ]
           ports:
             - containerPort: 8075
               name: gitaly

@@ -57,8 +57,7 @@ spec:
         - name: gitlab-shell
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "bash", "-c" ]
-          args: [ "cp /opt/gitlab-shell/{config.yml,.gitlab_shell_secret} /srv/gitlab-shell/ && /scripts/process-wrapper" ]
+          command: [ "/bin/bash", "-c", "cp /opt/gitlab-shell/{config.yml,.gitlab_shell_secret} /srv/gitlab-shell/ && /scripts/process-wrapper" ]
           ports:
             - containerPort: 22
               name: gitlab-shell

@@ -47,7 +47,7 @@ spec:
         - name: coredns
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          args: ["-conf", "/var/opt/coredns/corefile"]
+          args: [ "-conf", "/var/opt/coredns/corefile" ]
           ports:
             - containerPort: 53
               name: coredns-tcp

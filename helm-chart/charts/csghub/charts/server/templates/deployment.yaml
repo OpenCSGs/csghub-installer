@@ -77,8 +77,7 @@ spec:
         - name: server
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/bash", "-c" ]
-          args: [ "update-ca-certificates && /starhub-bin/scripts/init.sh" ]
+          command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/scripts/init.sh" ]
           ports:
             - containerPort: 8080
               name: server
