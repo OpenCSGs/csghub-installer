@@ -14,7 +14,6 @@ metadata:
 data:
   STARHUB_SERVER_API_TOKEN: {{ include "server.api.token" . | quote }}
   STARHUB_DATABASE_TIMEZONE: {{ default "UTC" $conf.timezone | quote }}
-  STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.internal.endpoint" . | quote }}
   STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"
   OPENCSG_USER_SERVER_PORT: {{ include "user.internal.port" . | quote }}
   OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: {{ include "csghub.callback.user" . | quote }}

@@ -14,7 +14,7 @@ Define the internal domain for user
 Define the internal port for user
 */}}
 {{- define "user.internal.port" -}}
-{{- $port := "8080" }}
+{{- $port := "8088" }}
 {{- if hasKey .Values.global "user" }}
   {{- if hasKey .Values.global.user "service" }}
     {{- if hasKey .Values.global.user.service "port" }}

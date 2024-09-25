@@ -70,7 +70,7 @@ spec:
         - name: user
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: ["/bin/bash", "-c"]
+          command: [ "bash", "-c" ]
           args: [ "update-ca-certificates && /starhub-bin/starhub user launch" ]
           ports:
             - containerPort: 8080
@@ -83,6 +83,10 @@ spec:
                 name: {{ include  "common.names.custom" (list . "casdoor") }}
             - configMapRef:
                 name: {{ include  "common.names.custom" (list . "server") }}
+            {{- if .Values.global.gitaly.enabled }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "gitaly") }}
+            {{- end }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
             {{- if .Values.global.gitea.enabled }}
@@ -94,10 +98,12 @@ spec:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
             {{- end }}
           env:
+            {{- if .Values.global.gitea.enabled }}
             - name: STARHUB_SERVER_GITSERVER_USERNAME
               value: "$(GITEA_ADMIN_USER)"
             - name: STARHUB_SERVER_GITSERVER_PASSWORD
               value: "$(GITEA_ADMIN_PASSWORD)"
+            {{- end }}
             - name: POSTGRES_DB
               value: "$(STARHUB_DATABASE_NAME)"
             - name: POSTGRES_USER
@@ -105,7 +111,6 @@ spec:
             - name: POSTGRES_PASSWORD
               {{- if .Values.global.postgresql.enabled }}
               value: "$(csghub_server)"
-
               {{- else }}
               value: "$(STARHUB_DATABASE_PASSWORD)"
               {{- end }}
