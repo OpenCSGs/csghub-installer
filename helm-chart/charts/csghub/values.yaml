@@ -94,7 +94,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.8.5
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -118,7 +118,7 @@ global:
       ## The name of the database to connect to on the PostgreSQL server.
       # database: "server"
       ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
-      # timezone: "Asia/Shanghai"
+    # timezone: "Asia/Shanghai"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -132,12 +132,78 @@ global:
       ## The name of the bucket within the object storage service to be used.
       # bucketName: "csghub-server"
       ## The region where the bucket is located within the object storage service.
-      # region: "cn-north-1"
+    # region: "cn-north-1"
+
+  ## GitLab Shell configuration
+  ## GitLab Shell is a SSH access and repository management software developed for GitLab.
+  gitlabShell:
+    ## Specify whether to enable GitLab Shell within the deployment.
+    enabled: true
+    image:
+      ## Specifies the location of the Gitlab-Shell Docker image in the Gitlab-Shell.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitlab-shell
+      ## Defines the specific version of the Gitlab-Shell image to use.
+      tag: v16.4.6
+      ## Determines how the image should be pulled from the Gitlab-Shell.
+      pullPolicy: "IfNotPresent"
+    ## List of image pull secrets.
+    imagePullSecrets: [ ]
+    service:
+      ## This determines how the Gitlab-Shell service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Gitlab-Shell service will listen for connections.
+      port: 22
+    ## Persistence settings for the Minio data.
+    persistence:
+      ## Specifies the StorageClass used for provisioning the volume.
+      ## An empty value means the default StorageClass is used.
+      ## StorageClass defines the type of storage used and can affect performance and cost.
+      # storageClass: ""
+      ## Defines the access modes of the volume.
+      ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+      ## This is suitable for most use cases where a single instance of Minio is running.
+      accessMode: [ "ReadWriteOnce" ]
+      ## Specifies the size of the persistent volume.
+      ## This should be adjusted based on expected usage and data growth over time.
+      size: 1Gi
+
+  ## Gitaly configuration
+  ## Gitaly is a Git RPC service for handling all the git calls made by GitLab.
+  gitaly:
+    ## Specify whether to enable Gitaly within the deployment.
+    enabled: true
+    image:
+      ## Specifies the location of the Gitaly Docker image in the Gitaly.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitaly
+      ## Defines the specific version of the Gitaly image to use.
+      tag: v16.4.6
+      ## Determines how the image should be pulled from the Gitaly.
+      pullPolicy: "IfNotPresent"
+    ## List of image pull secrets.
+    imagePullSecrets: [ ]
+    service:
+      ## This determines how the Gitaly service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Gitaly service will listen for connections.
+      port: 8075
+    ## Persistence settings for the Minio data.
+    persistence:
+      ## Specifies the StorageClass used for provisioning the volume.
+      ## An empty value means the default StorageClass is used.
+      ## StorageClass defines the type of storage used and can affect performance and cost.
+      # storageClass: ""
+      ## Defines the access modes of the volume.
+      ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+      ## This is suitable for most use cases where a single instance of Minio is running.
+      accessMode: [ "ReadWriteOnce" ]
+      ## Specifies the size of the persistent volume.
+      ## This should be adjusted based on expected usage and data growth over time.
+      size: 10Gi
 
   ## Gitea's configuration
   ## Enables the Gitea service and specifies the Docker image version and persistence storage size.
   gitea:
-    enabled: true  # Enables Gitea service
+    enabled: false  # Enables Gitea service
     image:
       ## Specifies the location of the Gitea Docker image in the Gitea.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_git
@@ -152,8 +218,8 @@ global:
       type: ClusterIP
       ## This is the network port where the Gitea service will listen for connections.
       ports:
-       http: 3001
-       ssh: 22
+        http: 3001
+        ssh: 22
     ## Specifies the location and credentials for accessing the external PostgreSQL database.
     postgresql: { }
       ## Specifies the host address of the PostgreSQL database server.
@@ -166,7 +232,7 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-      # database: "gitea"
+    # database: "gitea"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -180,7 +246,7 @@ global:
       ## The name of the bucket within the object storage service to be used.
       # bucketName: "csghub-server"
       ## The region where the bucket is located within the object storage service.
-      # region: "cn-north-1"
+    # region: "cn-north-1"
     ## Configure SMTP to support email sending
     ## Gitea can send emails for notifications, account recovery, etc. Configure your SMTP Gitea details here.
     smtp: { }
@@ -195,7 +261,7 @@ global:
       ## The username for authenticating with the SMTP Gitea, if authentication is required.
       # user: ""
       ## The password for authenticating with the SMTP Gitea. Ensure this is kept secure.
-      # password: ""
+    # password: ""
     ## Persistence settings for the Gitea data.
     persistence:
       ## Specifies the StorageClass used for provisioning the volume.
@@ -215,7 +281,7 @@ global:
       ## Specifies the location of the Builder Docker image in the Builder.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
       ## Defines the specific version of the Builder image to use.
-      tag: v0.8.0
+      tag: v0.9.0
       ## Determines how the image should be pulled from the Builder.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -234,14 +300,14 @@ global:
       # port: 6379
       ## Provides the password for authenticating with the Redis server.
       ## Leave this empty if no authentication is required.
-      # password: ""
+    # password: ""
     ## External Registry configuration.
     ## Docker Registry configuration for the builder
     registry: { }
-       # repository: registry.example.com
-       # namespace: csghub
-       # username: ""
-       # password: ""
+      # repository: registry.example.com
+      # namespace: csghub
+      # username: ""
+    # password: ""
     ## Persistence settings for the Builder data.
     persistence:
       ## Specifies the StorageClass used for provisioning the volume.
@@ -261,7 +327,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.8.5
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -291,7 +357,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## Defines the specific version of the Runner image to use.
-      tag: v0.8.1
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -300,7 +366,7 @@ global:
       ## This determines how the Runner service is accessed within the cluster or from external sources.
       type: ClusterIP
       ## This is the network port where the Runner service will listen for connections.
-      port: 3000
+      port: 8090
     ## Specifies the location and credentials for accessing the external PostgreSQL database.
     postgresql: { }
       ## Specifies the host address of the PostgreSQL database server.
@@ -313,7 +379,7 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-      # database: "portal"
+    # database: "portal"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -328,6 +394,8 @@ global:
       # bucketName: "csghub-portal"
       ## The region where the bucket is located within the object storage service.
       # region: "cn-north-1"
+      ## Indicates whether SSL should be used when connecting to the object storage service.
+      # ssl: "false"
 
   ## Proxy configuration
   ## This section allows for the configuration of a proxy server, which can be used to route traffic or handle connections in specific ways.
@@ -338,7 +406,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.8.5
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -389,7 +457,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.8.5
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -409,7 +477,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
-      tag: v0.8.5
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -437,13 +505,13 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-      # database: "casdoor"
+    # database: "casdoor"
 
   ## CoreDNS configuration
   ## This section is reserved for configuring CoreDNS, a flexible and extensible DNS server with a focus on service discovery.
   ## Currently, this section is left empty, indicating no specific configurations are applied to CoreDNS.
   coredns: { }
-    # replicas: 1
+  # replicas: 1
 
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
   ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
