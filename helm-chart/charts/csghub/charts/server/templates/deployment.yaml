@@ -47,7 +47,7 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
@@ -62,10 +62,17 @@ spec:
               {{- else }}
               value: "$(STARHUB_DATABASE_PASSWORD)"
               {{- end }}
+        {{- if .Values.global.gitaly.enabled }}
+        - name: wait-for-gitaly
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "gitaly.internal.domain" . }} {{ include "gitaly.internal.port" . }}; do echo 'Waiting for gitea can be connected'; sleep 2; done" ]
+        {{- else }}
         - name: wait-for-gitea
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until curl -s {{ include "gitea.internal.endpoint" . }}/api/healthz; do echo 'Waiting for gitea can be connected'; sleep 2; done" ]
+        {{- end }}
       containers:
         - name: server
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
@@ -110,8 +117,6 @@ spec:
               value: "$(STARHUB_SERVER_GITSERVER_URL)"
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
-            - name: STARHUB_SERVER_CASDOOR_CERTIFICATE
-              value: "/starhub-bin/casdoor/tls.crt"
             - name: POSTGRES_PASSWORD
               {{- if .Values.global.postgresql.enabled }}
               value: "$(csghub_server)"
