@@ -25,6 +25,15 @@ global:
       ## The optional methods are `NodePort` or `LoadBalancer`.
       type: LoadBalancer
 
+  ## This section configures Pod Disruption Budgets (PDBs).
+  ## PDBs ensure that a minimum number of pods are available during voluntary disruptions.
+  pdb:
+    create: true
+    ## minAvailable specifies the minimum number of pods that must be available after the eviction.
+    minAvailable: 1
+    ## maxUnavailable specifies the maximum number of pods that may be made unavailable after the eviction.
+    # maxUnavailable: 0
+
   ## Specify whether to enable internal redis.
   ## If not, please specify external redis connection information in subsequent configurations.
   redis:
