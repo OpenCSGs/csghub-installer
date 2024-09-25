@@ -15,7 +15,7 @@ spec:
   type: {{ $conf.service.type }}
   ports:
     - port: {{ $conf.service.port }}
-      targetPort: 3000
+      targetPort: 8090
       protocol: TCP
       name: portal
   selector:

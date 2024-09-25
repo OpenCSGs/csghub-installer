@@ -48,7 +48,7 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until pg_isready -h $(PORTAL_DATABASE_HOST) -p $(PORTAL_DATABASE_PORT) -d $(PORTAL_DATABASE_NAME) -U $(PORTAL_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "sh", "-c", "until pg_isready -h $(CSGHUB_PORTAL_DATABASE_HOST) -p $(CSGHUB_PORTAL_DATABASE_PORT) -d $(CSGHUB_PORTAL_DATABASE_NAME) -U $(CSGHUB_PORTAL_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
@@ -61,7 +61,7 @@ spec:
               {{- if .Values.global.postgresql.enabled }}
               value: "$(csghub_portal)"
               {{- else }}
-              value: "$(PORTAL_DATABASE_PASSWORD)"
+              value: "$(CSGHUB_CSGHUB_PORTAL_DATABASE_PASSWORD)"
               {{- end }}
         - name: wait-for-server
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
@@ -71,9 +71,9 @@ spec:
         - name: portal
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "bash", "-c", "update-ca-certificates && bundle exec rails assets:precompile && bundle exec rails db:create && bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -p 3000 -b '0.0.0.0'" ]
+          command: [ "bash", "-c", "apt update && apt install -y ca-certificates && update-ca-certificates && /myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
           ports:
-            - containerPort: 3000
+            - containerPort: 8090
               name: portal
               protocol: TCP
           envFrom:
@@ -98,40 +98,20 @@ spec:
                 name: {{ include "common.names.custom" (list . "minio") }}
             {{- end }}
           env:
-            - name: STARHUB_BASE_URL
-              value: "$(STARHUB_SERVER_FRONTEND_URL)"
-            - name: STARHUB_TOKEN
-              value: "$(STARHUB_SERVER_API_TOKEN)"
-            - name: STARHUB_INNER_BASE_URL
-              value: {{ include "server.internal.endpoint" . }}
-            - name: OIDC_IDENTIFIER
-              value: "$(STARHUB_SERVER_CASDOOR_CLIENT_ID)"
-            - name: OIDC_SECRET
-              value: "$(STARHUB_SERVER_CASDOOR_CLIENT_SECRET)"
-            - name: LOGIN_URL
-              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize?client_id=$(OIDC_IDENTIFIER)&response_type=code&redirect_uri=$(STARHUB_BASE_URL)/api/v1/callback/casdoor&scope=read&state=casdoor"
-            - name: SIGNUP_URL
-              value: "{{ include "casdoor.external.endpoint" . }}/signup/CSGHub"
-            - name: OIDC_REDIRECT_URI
-              value: "$(STARHUB_BASE_URL)/oidc/callback"
-            - name: OIDC_AUTHORIZATION_ENDPOINT
-              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize"
-            - name: OIDC_TOKEN_ENDPOINT
-              value: "{{ include "casdoor.external.endpoint" . }}/api/login/oauth/access_token"
-            - name: OIDC_USERINFO_ENDPOINT
-              value: "{{ include "casdoor.external.endpoint" . }}//api/userinfo"
+            - name: CSGHUB_PORTAL_LOGIN_URL
+              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize?client_id=$(STARHUB_SERVER_CASDOOR_CLIENT_ID)&response_type=code&redirect_uri=$(CSGHUB_PORTAL_STARHUB_BASE_URL)/api/v1/callback/casdoor&scope=read&state=casdoor"
             - name: POSTGRES_PASSWORD
               {{- if .Values.global.postgresql.enabled }}
               value: "$(csghub_portal)"
               {{- else }}
-              value: "$(PORTAL_DATABASE_PASSWORD)"
+              value: "$(CSGHUB_PORTAL_DATABASE_PASSWORD)"
               {{- end }}
-            - name: DATABASE_URL
-              value: "postgresql://$(PORTAL_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(PORTAL_DATABASE_HOST):$(PORTAL_DATABASE_PORT)/$(PORTAL_DATABASE_NAME)?sslmode=disable"
+            - name: CSGHUB_PORTAL_DATABASE_DSN
+              value: "postgresql://$(CSGHUB_PORTAL_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(CSGHUB_PORTAL_DATABASE_HOST):$(CSGHUB_PORTAL_DATABASE_PORT)/$(CSGHUB_PORTAL_DATABASE_NAME)?sslmode=disable"
             {{- if .Values.global.minio.enabled }}
-            - name: ACCESS_ID
+            - name: CSGHUB_PORTAL_S3_ACCESS_KEY_ID
               value: "$(MINIO_ROOT_USER)"
-            - name: ACCESS_SECRET
+            - name: CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET
               value: "$(MINIO_ROOT_PASSWORD)"
             {{- end }}
             {{- with $conf.environments }}
@@ -144,7 +124,7 @@ spec:
             {{- $conf.resources | toYaml | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: 3000
+              port: 8090
             initialDelaySeconds: 20
             periodSeconds: 10
           securityContext:

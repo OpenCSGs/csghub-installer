@@ -37,7 +37,7 @@ service:
   ## This determines how the Runner service is accessed within the cluster or from external sources.
   type: ClusterIP
   ## This is the network port where the Runner service will listen for connections.
-  port: 3000
+  port: 8090
 
 ## Configuration for the PostgreSQL database connection.
 postgresql:
@@ -66,9 +66,10 @@ objectStore:
   bucketName: "csghub-portal"
   ## The region where the bucket is located within the object storage service.
   region: "cn-north-1"
-  ## Specifies whether to use path-style access for the database connection.
-  ## Path-style access can be necessary for certain database configurations.
-  pathStyle: "true"
+  ## Indicates whether SSL should be used for connections to the object storage service.
+  ## Set to "false" by default, meaning connections are not encrypted.
+  ## Change to "true" if you want to enable SSL encryption for added security.
+  ssl: "false"
 
 serviceAccount:
   ## Determines whether a service account should be created.

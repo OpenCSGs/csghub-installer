@@ -43,6 +43,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: http
     nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
     nginx.ingress.kubernetes.io/server-snippet: |
+    {{- if .Values.global.gitea.enabled }}
       location ~* ^/(datasets|models|codes|spaces)/(.*)\.git/(info|git-upload-pack|git-receive-pack|HEAD|objects)(.*)$ {
         rewrite ^/(datasets|models|codes|spaces)/(.*)\.git/(info|git-upload-pack|git-receive-pack|HEAD|objects)(.*)$ /$1_$2.git/$3$4 break;
         proxy_pass http://{{ include "gitea.internal.domain" . }}:{{ include "gitea.internal.port" . }};
@@ -50,6 +51,25 @@ metadata:
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto http;
       }
+    {{- else }}
+      location /endpoint/ {
+        proxy_pass {{ include "proxy.internal.endpoint" . }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_cookie_flags ~ nosecure samesite=lax;
+      }
+      location ~* \.git(/.*)?$ {
+        proxy_pass {{ include "server.internal.endpoint" . }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto http;
+      }
+    {{- end }}
     {{- with $conf.ingress.annotations }}
     {{- toYaml . | nindent 4  }}
     {{- end  }}
