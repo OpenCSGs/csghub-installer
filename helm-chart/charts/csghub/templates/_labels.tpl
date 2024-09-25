@@ -47,5 +47,4 @@ Define matched labels for network policies
 */}}
 {{- define "common.labels.selector.netpol" -}}
 app.kubernetes.io/instance: {{ .Release.Name }}
-app.kubernetes.io/name: ingress-nginx
 {{- end -}}
