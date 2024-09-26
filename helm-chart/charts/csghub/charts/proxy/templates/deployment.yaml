@@ -64,7 +64,7 @@ spec:
         - name: proxy
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/starhub-bin/starhub", "start", "rproxy" ]
+          command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub start rproxy" ]
           ports:
             - containerPort: 8083
               name: proxy
@@ -121,6 +121,7 @@ spec:
         - name: nginx
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
           ports:
             - containerPort: 80
               name: proxy-nginx
@@ -144,10 +145,16 @@ spec:
             - name: nginx-config
               mountPath: /etc/nginx/conf.d
               readOnly: false
+            - name: proxy-certs
+              mountPath: /usr/local/share/ca-certificates
+              readOnly: false
       volumes:
         - name: nginx-config
           configMap:
             name: {{ include "common.names.custom" . }}
+        - name: proxy-certs
+          secret:
+            secretName: {{ include "common.names.custom" (list . "proxy-certs") }}
       {{- with $conf.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

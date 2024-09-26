@@ -14,13 +14,43 @@ metadata:
 data:
   {{- range .Values.global.runner.internalDomain }}
   {{ .domain }}.conf: |
+    {{- if not $.Values.global.ingress.tls.enabled }}
     server {
+      listen 80;
+      server_name {{ printf "*.%s.%s" $.Values.global.runner.namespace .domain }};
+      return 301 https://$host$request_uri;
+    }
+    {{- end }}
+
+    server {
+        {{- if $.Values.global.ingress.tls.enabled }}
+        listen 443;
+        ssl_trusted_certificate /usr/local/share/ca-certificates/ca.crt;
+        ssl_certificate /usr/local/share/ca-certificates/tls.crt;
+        ssl_certificate_key /usr/local/share/ca-certificates/tls.key;
+        {{- else }}
         listen 80;
+        {{- end }}
         server_name {{ printf "*.%s.%s" $.Values.global.runner.namespace .domain }};
 
         location / {
             proxy_http_version 1.1;
             proxy_pass http://{{ .host }}:{{ .port }};
+
+            # 设置 CORS 头部
+            add_header 'Access-Control-Allow-Origin' '*';  # 或者指定特定的源，例如 'https://example.com'
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';  # 允许的请求方法
+            add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept, Authorization';  # 允许的请求头
+
+            # 处理预检请求
+            if ($request_method = OPTIONS) {
+                add_header 'Access-Control-Allow-Origin' '*';  # 或者指定特定的源
+                add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS';
+                add_header 'Access-Control-Allow-Headers' 'Origin, X-Requested-With, Content-Type, Accept, Authorization';
+                add_header 'Content-Length' 0;
+                return 204;  # 返回204 No Content
+            }
+
             proxy_set_header Host $host;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header X-Real-IP $remote_addr;
