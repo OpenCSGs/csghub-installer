@@ -16,13 +16,13 @@ Define the external endpoint for registry
 {{- define "registry.external.endpoint" -}}
 {{- $domain := include "registry.external.domain" . }}
 {{- if eq .Values.global.ingress.service.type "NodePort" }}
-{{- if .Values.global.ingress.tls.enabled -}}
+{{- if .Values.global.registry.ingress.tls.enabled -}}
 {{- printf "https://%s:%s" $domain "30443" -}}
 {{- else }}
 {{- printf "http://%s:%s" $domain "30080" -}}
 {{- end }}
 {{- else }}
-{{- if .Values.global.ingress.tls.enabled -}}
+{{- if .Values.global.registry.ingress.tls.enabled -}}
 {{- printf "https://%s" $domain -}}
 {{- else }}
 {{- printf "http://%s" $domain -}}
