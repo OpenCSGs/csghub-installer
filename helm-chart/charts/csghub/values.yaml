@@ -382,7 +382,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.2
+      tag: v0.9.1
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
