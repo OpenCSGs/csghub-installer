@@ -12,6 +12,7 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations: {{ $conf.annotations | toYaml | nindent 4 }}
 data:
+  STARHUB_SERVER_MULTI_SYNC_ENABLED: "true"
   {{- if .Values.global.redis.enabled }}
   STARHUB_SERVER_REDIS_ENDPOINT: {{ include "redis.internal.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
   {{- else }}
