@@ -62,7 +62,7 @@ data:
   # Deprecated
   STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
   # Deprecated
-  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:30446" .Values.global.runner.namespace }}
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.runner.namespace (include "proxy.internal.port" .) }}
   STARHUB_SERVER_MODEL_DOWNLOAD_ENDPOINT: {{ include "csghub.external.endpoint" . }}
   STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"
   OPENCSG_ACCOUNTING_SERVER_HOST: {{ printf "http://%s" (include "accounting.internal.domain" .) }}
