@@ -283,8 +283,8 @@ fi
 
 # Install Knative Serving
 log "INFO" "Install the Knative Serving component."
-retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-crds.yaml
-retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-core.yaml
+retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
+retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-core.yaml
 retry kubectl patch cm config-autoscaler -n knative-serving -p='{"data":{"enable-scale-to-zero":"false"}}'
 
 # Verify if KNative serving resources created successful
@@ -296,7 +296,7 @@ else
 fi
 
 log "INFO" "Install a networking layer."
-retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/kourier.yaml
+retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/kourier.yaml
 # Verify if networking layer installed
 if [ $? -ne 0 ]; then
     log "ERRO" "Failed to install kourier networking layer."
@@ -315,7 +315,7 @@ if [ $? -ne 0 ]; then
 fi
 
 log "INFO" "Configure Kourier to use service with NodePort."
-retry kubectl patch service kourier -n kourier-system -p '{"spec": {"type": "NodePort"}}'
+retry kubectl -n kourier-system patch service kourier -p '{"spec": {"type": "NodePort"}}'
 
 # Verify if Kourier patched with service type NodePort
 if [ $? -ne 0 ]; then
@@ -377,7 +377,7 @@ if [ $? -ne 0 ]; then
 fi
 
 log "INFO" "Add CSGHUB helm repository."
-retry helm repo add csghub https://opencsgs.github.io/CSGHub-helm --force-update && helm repo update
+retry helm repo add csghub https://opencsgs.github.io/CSGHub-Installer --force-update && helm repo update
 if [ $? -ne 0 ]; then
     log "ERRO" "Failed to add csghub helm repository."
     exit 1
@@ -387,7 +387,7 @@ log "INFO" "Installing CSGHub helm chart..."
 NODE_PORT=$(kubectl get svc/kourier -n kourier-system -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 CHART_VERSION=$(helm search repo csghub -l | sort --version-sort -r | awk 'NR==1{print $2}')
 rm -rf csghub-${CHART_VERSION}.tgz &>/dev/null
-retry wget "https://ghp.ci/https://github.com/OpenCSGs/CSGHub-helm/releases/download/csghub-${CHART_VERSION}/csghub-${CHART_VERSION}.tgz"
+retry wget "https://ghp.ci/https://github.com/OpenCSGs/CSGHub-Installer/releases/download/csghub-${CHART_VERSION}/csghub-${CHART_VERSION}.tgz"
 if [ $? -ne 0 ]; then
     log "ERRO" "Failed to download csghub helm chart latest version."
     exit 1
@@ -397,10 +397,10 @@ fi
 retry helm upgrade --install csghub ./csghub-${CHART_VERSION}.tgz \
 	--namespace csghub \
 	--create-namespace \
-	--set global.ingress.hosts=${DOMAIN} \
-	--set global.builder.internal[0].domain=app.internal \
-	--set global.builder.internal[0].service.host=${IP_ADDRESS} \
-	--set global.builder.internal[0].service.port=${NODE_PORT} | tee ./login.txt
+	--set global.domain=${DOMAIN} \
+	--set global.runner.internalDomain[0].domain=app.internal \
+	--set global.runner.internalDomain[0].host=${IP_ADDRESS} \
+	--set global.runner.internalDomain[0].port=${NODE_PORT} | tee ./login.txt
 
 # Verify if csghub helm chart installed
 if [ $? -ne 0 ]; then
@@ -408,8 +408,11 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
+log "INFO" "Patching ingress service to NodePort."
+retry kubectl -n csghub patch service csghub-ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
+
 log "INFO" "Get the registry self-signed ca certificate."
-retry kubectl -n csghub get secret csghub-registry-tls-secret -ojsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
+retry kubectl -n csghub get secret csghub-certs -ojsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
 # Verify if registry tls secret fetched
 if [ $? -ne 0 ]; then
     log "ERRO" "Failed to get registry ca certificate."
@@ -417,8 +420,8 @@ if [ $? -ne 0 ]; then
 fi
 
 log "INFO" "Patching Knative Serving controller."
-kubectl -n knative-serving delete secret registry-custom-ca &>/dev/null
-retry kubectl -n knative-serving create secret generic registry-custom-ca --from-file=ca.crt=./ca.crt
+kubectl -n knative-serving delete secret csghub-registry-certs-ca &>/dev/null
+retry kubectl -n knative-serving create secret generic csghub-registry-certs-ca --from-file=ca.crt=./ca.crt
 retry kubectl -n knative-serving patch deployment.apps/controller --type=json -p='[
   {
     "op": "add",
@@ -435,7 +438,7 @@ retry kubectl -n knative-serving patch deployment.apps/controller --type=json -p
       {
         "name": "custom-certs",
         "secret": {
-          "secretName": "registry-custom-ca"
+          "secretName": "csghub-registry-certs-ca"
         }
       }
     ]
@@ -459,7 +462,7 @@ if [ $? -ne 0 ]; then
 fi
 
 log "INFO" "Adding insecure registry to k3s."
-SECRET_JSON=$(kubectl -n csghub get secret csghub-registry-docker-secret -ojsonpath='{.data.\.dockerconfigjson}' | base64 -d)
+SECRET_JSON=$(kubectl -n csghub get secret csghub-registry-docker-config -ojsonpath='{.data.\.dockerconfigjson}' | base64 -d)
 REGISTRY=$(echo "$SECRET_JSON" | jq -r '.auths | keys[]')
 RUSERNAME=$(echo "$SECRET_JSON" | jq -r '.auths | to_entries[] | .value | .username')
 RPASSWORD=$(echo  "$SECRET_JSON" | jq -r '.auths | to_entries[] | .value | .password')
@@ -494,3 +497,4 @@ else
 fi
 
 log "INFO" "Environment is ready, login info at login.txt."
+log "INFO" "Next you need to configure DNS domain name resolution yourself."
