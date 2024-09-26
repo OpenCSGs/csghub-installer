@@ -54,7 +54,7 @@ Define the external endpoint for portal
 {{- if .Values.global.ingress.tls.enabled -}}
 {{- printf "https://%s" $domain -}}
 {{- else }}
-{{- printf "htts://%s" $domain -}}
+{{- printf "http://%s" $domain -}}
 {{- end }}
 {{- end }}
 {{- end }}
