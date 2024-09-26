@@ -12,7 +12,7 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations: {{ $conf.annotations | toYaml | nindent 4 }}
 data:
-  CSGHUB_PORTAL_ON_PREMISE: "false"
+  CSGHUB_PORTAL_ON_PREMISE: "true"
   CSGHUB_PORTAL_SENSITIVE_CHECK: "false"
   CSGHUB_PORTAL_STARHUB_BASE_URL: {{ include "csghub.external.endpoint" . }}
   CSGHUB_PORTAL_STARHUB_API_KEY: {{ include "server.api.token" . }}

@@ -82,7 +82,13 @@ spec:
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
             {{- end }}
+            {{- if .Values.global.redis.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
           env:
+            - name: STARHUB_SERVER_REDIS_PASSWORD
+              value: "$(REDIS_PASSWD)"
             - name: STARHUB_SERVER_SPACE_SESSION_SECRET_KEY
               value: {{ sha256sum .Release.Name | trunc 32 | quote }}
             - name: STARHUB_SERVER_GITSERVER_USERNAME

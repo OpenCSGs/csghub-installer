@@ -99,7 +99,13 @@ spec:
             - secretRef:
                 name: {{ include "common.names.custom" (list . "minio") }}
             {{- end }}
+            {{- if .Values.global.redis.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
           env:
+            - name: STARHUB_SERVER_REDIS_PASSWORD
+              value: "$(REDIS_PASSWD)"
             - name: GITEA_USERNAME
               value: "$(GITEA_ADMIN_USER)"
             - name: GITEA_PASSWORD
