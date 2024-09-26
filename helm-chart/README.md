@@ -15,7 +15,8 @@ Recommended operating system:
 - Hardware >= 4c8g
 
 ```shell
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash
+# <domain>: like example.com
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
 ```
 
 ## Manual deployment
@@ -128,7 +129,7 @@ Before performing the following operations, you must be ready for the above oper
 - Add helm repository
 
     ```shell
-    helm repo add csghub https://opencsgs.github.io/CSGHub-helm
+    helm repo add csghub https://opencsgs.github.io/CSGHub-Installer
     helm repo update
     ```
 
@@ -145,9 +146,50 @@ Before performing the following operations, you must be ready for the above oper
     	--namespace csghub \
     	--create-namespace \
     	--set global.ingress.hosts=example.com \ 
-    	--set global.builder.internal[0].domain=app.internal \ 
-    	--set global.builder.internal[0].service.host=192.168.18.18 \ 
-    	--set global.builder.internal[0].service.port=30463  
+        --set global.ingress.service.type=NodePort \
+        --set global.portal.image.tag=v0.9.2 \
+    	--set global.builder.internalDomain[0].domain=app.internal \ 
+    	--set global.builder.internalDomain[0].service.host=192.168.18.18 \ 
+    	--set global.builder.internalDomain[0].service.port=30463  
+  
+    # Patch ingress svc type to NodePort
+    kubectl -n csghub patch service csghub-ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
+  
+    # Patch knative serving
+    kubectl -n csghub get secret csghub-certs -ojsonpath='{.data.ca\.crt}' | base64 -d > ca.crt
+    kubectl -n knative-serving create secret generic csghub-registry-certs-ca --from-file=ca.crt=./ca.crt
+    kubectl -n knative-serving patch deployment.apps/controller --type=json -p='[
+      {
+        "op": "add",
+        "path": "/spec/template/spec/containers/0/env/-",
+        "value": {
+          "name": "SSL_CERT_DIR",
+          "value": "/opt/certs/x509"
+        }
+      },
+      {
+        "op": "add",
+        "path": "/spec/template/spec/volumes",
+        "value": [
+          {
+            "name": "custom-certs",
+            "secret": {
+              "secretName": "csghub-registry-certs-ca"
+            }
+          }
+        ]
+      },
+      {
+        "op": "add",
+        "path": "/spec/template/spec/containers/0/volumeMounts",
+        "value": [
+          {
+            "name": "custom-certs",
+            "mountPath": "/opt/certs/x509"
+          }
+        ]
+      }
+    ]'
     ```
   
   After the resources are ready, you can **log in to csghub according to the helm output prompt**. It should be further explained that some functions are not ready in the current helm chart due to the complexity of enabling them. For example, model inference and model fine-tuning have been enabled, but some configuration may still be required to run the instance normally. 
