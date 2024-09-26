@@ -71,7 +71,7 @@ spec:
         - name: portal
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "apt update && apt install -y ca-certificates && update-ca-certificates && /myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
+          command: [ "/bin/sh", "-c", "sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list.d/debian.sources && apt update && apt install -y ca-certificates && update-ca-certificates && /myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
           ports:
             - containerPort: 8090
               name: portal
