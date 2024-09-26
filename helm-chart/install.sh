@@ -398,6 +398,7 @@ retry helm upgrade --install csghub ./csghub-${CHART_VERSION}.tgz \
 	--namespace csghub \
 	--create-namespace \
 	--set global.domain=${DOMAIN} \
+	--set global.ingress.service.type=NodePort \
 	--set global.runner.internalDomain[0].domain=app.internal \
 	--set global.runner.internalDomain[0].host=${IP_ADDRESS} \
 	--set global.runner.internalDomain[0].port=${NODE_PORT} | tee ./login.txt
@@ -407,6 +408,7 @@ if [ $? -ne 0 ]; then
   log "ERRO" "Failed to install csghub helm chart."
   exit 1
 fi
+
 
 log "INFO" "Patching ingress service to NodePort."
 retry kubectl -n csghub patch service csghub-ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
