@@ -8,7 +8,7 @@ stages:
 
 variables:
   CHART_NAME: "csghub"
-  CHART_PATH: "./charts/csghub"
+  CHART_PATH: "./helm-chart/charts/csghub"
   HELM_REGISTRY: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable"
 
 before_script:
