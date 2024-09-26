@@ -399,6 +399,7 @@ retry helm upgrade --install csghub ./csghub-${CHART_VERSION}.tgz \
 	--create-namespace \
 	--set global.domain=${DOMAIN} \
 	--set global.ingress.service.type=NodePort \
+	--set global.portal.image.tag=v0.9.2 \
 	--set global.runner.internalDomain[0].domain=app.internal \
 	--set global.runner.internalDomain[0].host=${IP_ADDRESS} \
 	--set global.runner.internalDomain[0].port=${NODE_PORT} | tee ./login.txt
