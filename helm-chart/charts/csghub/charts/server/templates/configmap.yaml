@@ -13,12 +13,12 @@ metadata:
   annotations: {{ $conf.annotations | toYaml | nindent 4 }}
 data:
   {{- if .Values.global.redis.enabled }}
-  STARHUB_SERVER_REDIS_ENDPOINT: {{ include "redis.internal.endpoint" . }}
+  STARHUB_SERVER_REDIS_ENDPOINT: {{ include "redis.internal.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
   {{- else }}
   STARHUB_SERVER_REDIS_ENDPOINT: {{ printf "%s:%s" $conf.redis.host ($conf.redis.port | toString) }}
   STARHUB_SERVER_REDIS_HOST: {{ $conf.redis.host }}
   STARHUB_SERVER_REDIS_PORT: {{ $conf.redis.port | toString }}
-  STARHUB_SERVER_REDIS_PASSWD: {{ $conf.redis.password }}
+  STARHUB_SERVER_REDIS_PASSWORD: {{ $conf.redis.password }}
   {{- end }}
   {{- if .Values.global.gitaly.enabled }}
   STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
