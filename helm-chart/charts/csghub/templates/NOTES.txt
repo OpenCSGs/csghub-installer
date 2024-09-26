@@ -16,6 +16,7 @@ To access the Casdoor, please navigate to the following URL:
 
      {{ include "casdoor.external.endpoint" . }}
 
+{{- if .Values.global.gitea.enabled }}
 To access the Gitea management interface, please navigate to the following URL:
 
      {{ include "gitea.external.endpoint" . }}
@@ -24,6 +25,7 @@ You can use the following admin credentials to log in:
 
     Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "gitea") }} -o jsonpath="{.data.GITEA_ADMIN_USER}" | base64 -d)
     Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "gitea") }} -o jsonpath="{.data.GITEA_ADMIN_PASSWORD}" | base64 -d)
+{{- end }}
 
 To access the MinIO management interface, please navigate to the following URL:
 
