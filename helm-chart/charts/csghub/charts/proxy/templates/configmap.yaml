@@ -14,7 +14,7 @@ metadata:
 data:
   {{- range .Values.global.runner.internalDomain }}
   {{ .domain }}.conf: |
-    {{- if not $.Values.global.ingress.tls.enabled }}
+    {{- if $.Values.global.ingress.tls.enabled }}
     server {
       listen 80;
       server_name {{ printf "*.%s.%s" $.Values.global.runner.namespace .domain }};
