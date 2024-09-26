@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   csghub:
   - apiVersion: v2
+    appVersion: v0.9.1
+    created: "2024-09-26T05:00:43.378382281Z"
+    description: A Helm chart for Kubernetes
+    digest: 22e44d354d7c47749c20143bcde312fef5b5991e2cb80e1d823381ed32a75f40
+    name: csghub
+    type: application
+    urls:
+    - https://github.com/OpenCSGs/CSGHub-Installer/releases/download/csghub-0.9.1/csghub-0.9.1.tgz
+    version: 0.9.1
+  - apiVersion: v2
     appVersion: v0.8.0
     created: "2024-09-13T07:40:58.451364474Z"
     description: CSGHub is an open source, trustworthy large model asset management
@@ -61,4 +71,4 @@ entries:
     urls:
     - https://github.com/OpenCSGs/CSGHub-helm/releases/download/csghub-0.8.2/csghub-0.8.2.tgz
     version: 0.8.2
-generated: "2024-09-13T07:40:58.45137822Z"
+generated: "2024-09-26T05:00:43.378400184Z"
