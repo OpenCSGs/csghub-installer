@@ -7,11 +7,11 @@ SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', 'public', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+SELECT pg_catalog.set_config('search_path', 'public', false);
 
 --
 -- Seed Data for Name: space_resources; Type: TABLE DATA; Schema: public; Owner: postgres
@@ -101,28 +101,28 @@ EXECUTE FUNCTION promote_root_to_admin();
 -- Hint: Only used as a test environment, please choose the enterprise version for production environment
 --
 
-CREATE OR REPLACE FUNCTION enable_model_fine_tuning()
-    RETURNS trigger AS $$
-BEGIN
-    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
-    SELECT
-        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
-        NEW.repository_id,
-        2
-    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory') IS NOT NULL;
-
-    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
-    SELECT
-        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
-        NEW.repository_id,
-        1
-    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER trigger_enable_model_fine_tuning
-    AFTER INSERT ON public.models
-    FOR EACH ROW
-EXECUTE PROCEDURE enable_model_fine_tuning();
+-- CREATE OR REPLACE FUNCTION enable_model_fine_tuning()
+--     RETURNS trigger AS $$
+-- BEGIN
+--     INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+--     SELECT
+--         (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
+--         NEW.repository_id,
+--         2
+--     WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory') IS NOT NULL;
+--
+--     INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+--     SELECT
+--         (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
+--         NEW.repository_id,
+--         1
+--     WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
+--
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+--
+-- CREATE OR REPLACE TRIGGER trigger_enable_model_fine_tuning
+--     AFTER INSERT ON public.models
+--     FOR EACH ROW
+-- EXECUTE PROCEDURE enable_model_fine_tuning();
