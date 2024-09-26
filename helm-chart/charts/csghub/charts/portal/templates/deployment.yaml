@@ -18,7 +18,7 @@ spec:
       {{- include "common.labels.selector" . | nindent 6 }}
   replicas: {{ $conf.replicas }}
   revisionHistoryLimit: 1
-  minReadySeconds: 30
+  minReadySeconds: 60
   template:
     metadata:
       annotations:
@@ -133,7 +133,7 @@ spec:
           volumeMounts:
             - name: certs
               mountPath: /usr/local/share/ca-certificates
-              readOnly: false
+              readOnly: true
           {{- end }}
       volumes:
         {{- if $ingress.tls.enabled }}
