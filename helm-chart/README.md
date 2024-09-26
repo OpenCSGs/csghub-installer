@@ -15,7 +15,7 @@ Recommended operating system:
 - Hardware >= 4c8g
 
 ```shell
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/install.sh | bash
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash
 ```
 
 ## Manual deployment

@@ -52,6 +52,17 @@ metadata:
         proxy_set_header X-Forwarded-Proto http;
       }
       {{- end }}
+      location ~* "^/endpoint/" {
+        proxy_pass http://{{ include "proxy.internal.domain" . }}:{{ include "proxy.internal.port" . }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_cookie_flags ~ nosecure samesite=lax;
+      }
     {{- with $conf.ingress.annotations }}
     {{- toYaml . | nindent 4  }}
     {{- end  }}
@@ -110,18 +121,6 @@ spec:
             {{- else }}
               serviceName: {{ include "server.internal.domain" . }}
               servicePort: {{ include "server.internal.port" . }}
-            {{- end }}
-          - path: /endpoint/
-            pathType: ImplementationSpecific
-            backend:
-            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
-              service:
-                name: {{ include "proxy.internal.domain" . }}
-                port:
-                  number: {{ include "proxy.internal.port" . }}
-            {{- else }}
-              serviceName: {{ include "proxy.internal.domain" . }}
-              servicePort: {{ include "proxy.internal.port" . }}
             {{- end }}
           - path: /.*\.git(/.*)?$
             pathType: ImplementationSpecific
