@@ -14,5 +14,9 @@ metadata:
   name: {{ include "ingress-nginx.fullname" . }}-tcp
   namespace: {{ include "ingress-nginx.namespace" . }}
 data:
+  {{- if .Values.global.gitaly.enabled }}
+  22: {{ printf "%s/%s:22" .Release.Namespace (include "gitlab-shell.internal.domain" .) }}
+  {{- else }}
   22: {{ printf "%s/%s:22" .Release.Namespace (include "gitea.internal.domain" .) }}
+  {{- end }}
 {{- end }}
