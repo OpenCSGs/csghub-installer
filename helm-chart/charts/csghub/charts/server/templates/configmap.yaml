@@ -25,7 +25,7 @@ data:
   STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
   STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ printf "tcp://%s:%s" (include "gitaly.internal.domain" .) (include "gitaly.internal.port" .) }}
   STARHUB_SERVER_GITALY_STORAGE: default
-  STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@$%s:%s" (include "gitlab-shell.internal.domain" .) (include "gitlab-shell.internal.port" .) }}
+  STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s:%s" (include "csghub.external.domain" .) (include "gitlab-shell.external.port" .) }}
   STARHUB_SERVER_GITALY_TOKEN: "YWJjMTIzc2VjcmV0"
   {{- else }}
   STARHUB_SERVER_GITSERVER_TYPE: "gitea"
