@@ -140,7 +140,7 @@ global:
       ## The name of the database to connect to on the PostgreSQL server.
       # database: "server"
       ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
-    # timezone: "Asia/Shanghai"
+      # timezone: "Asia/Shanghai"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -154,7 +154,7 @@ global:
       ## The name of the bucket within the object storage service to be used.
       # bucketName: "csghub-server"
       ## The region where the bucket is located within the object storage service.
-    # region: "cn-north-1"
+      # region: "cn-north-1"
 
   ## GitLab Shell configuration
   ## GitLab Shell is a SSH access and repository management software developed for GitLab.
@@ -303,7 +303,7 @@ global:
       ## Specifies the location of the Builder Docker image in the Builder.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
       ## Defines the specific version of the Builder image to use.
-      tag: v0.9.0
+      tag: v0.9.2
       ## Determines how the image should be pulled from the Builder.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -360,7 +360,7 @@ global:
       ## This is the network port where the Runner service will listen for connections.
       port: 8082
     ## Defines the Kubernetes namespace in which the runner will operate.
-    namespace: "app"
+    namespace: "space"
     ## Specifies the internal domain (from knative serving) name for the runner to use.
     internalDomain:
       - domain: app.internal
