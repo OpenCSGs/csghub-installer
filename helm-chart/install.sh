@@ -137,6 +137,7 @@ else
 fi
 log "INFO" "Detected OS: ${OS} on ${ARCH} architecture."
 
+# https://docs.k3s.io/advanced?_highlight=nvidia#nvidia-container-runtime-support
 if [ "$ENABLE_K3S" == "true" ]; then
   # For demonstration, let's retry the K3S installation with the retry function
   log "INFO" "Create mirror registry files."
