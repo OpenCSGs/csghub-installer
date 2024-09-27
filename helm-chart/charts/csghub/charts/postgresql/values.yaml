@@ -33,7 +33,6 @@ parameters:
 databases:
   - csghub_portal
   - csghub_server
-  - csghub_git
   - casdoor
 
 ## Persistence settings for the PostgreSQL data.
