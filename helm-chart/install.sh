@@ -325,7 +325,7 @@ if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
   retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
   retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-core.yaml
   retry kubectl patch cm config-autoscaler -n knative-serving -p='{"data":{"enable-scale-to-zero":"false"}}'
-
+  retry kubectl patch cm config-features -n knative-serving -p='{"data":{"kubernetes.podspec-nodeselector":"enabled"}}'
   # Verify if KNative serving resources created successful
   if [ $? -ne 0 ]; then
     log "ERRO" "Failed to install Knative Serving crds and core components."
