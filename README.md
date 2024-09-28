@@ -17,6 +17,9 @@ Recommended operating system:
 ```shell
 # <domain>: like example.com
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
+
+# If enable Nvidia GPU
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | ENABLE_NVIDIA_GPU=true bash -s -- <domain>
 ```
 
 ## Manual deployment

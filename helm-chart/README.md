@@ -9,7 +9,7 @@ Due to the version problem, the configuration is relatively complicated, which w
 ## Quick deployment
 
 You can use quick deployment to pull up a usable csghub environment in minutes.
-
+g
 Recommended operating system:
 - Ubuntu >= 20.04 / Debian >=10 / CentOS 7  
 - Hardware >= 4c8g
@@ -18,7 +18,7 @@ Recommended operating system:
 # <domain>: like example.com
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
 
-# If enable nvidia GPU
+# If enable Nvidia GPU
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | ENABLE_NVIDIA_GPU=true bash -s -- <domain>
 ```
 
