@@ -104,7 +104,7 @@ environments: {}
 ## information about your Registry instance.
 ## Like the environments section, this is also currently empty.
 annotations: {}
-#  "helm.sh/resource-policy": keep
+#  helm.sh/resource-policy: keep
 
 ## The 'resources' section is used to define the compute resource requirements for the Registry container.
 ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
