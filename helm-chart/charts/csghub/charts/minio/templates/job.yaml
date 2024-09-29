@@ -37,7 +37,7 @@ spec:
         - name: wait-for-minio
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until curl -s {{ include "minio.internal.endpoint" . }}/minio/health/live; do echo 'Waiting for Minio can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until curl -s {{ include "minio.internal.endpoint" . }}/minio/health/live; do echo 'Waiting for Minio can be connected'; sleep 3; done" ]
       containers:
         - name: mc
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/mc:RELEASE.2024-06-01T15-03-35Z
