@@ -1,0 +1,53 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: true
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-ready
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/bitnami/kubectl:latest
+          imagePullPolicy: "IfNotPresent"
+          command: [ "/bin/bash", "/scripts/wait-for-ready.sh" ]
+          volumeMounts:
+            - name: auto-run
+              mountPath: /scripts
+      containers:
+        - name: kubectl
+          image: opencsg-registry-vpc.cn-beijing.cr.aliyuncs.com/opencsg_public/kube/watcher:0.1.0
+          imagePullPolicy: "IfNotPresent"
+{{/*          command: ["/bin/bash", "-c" ,"sleep 3600"]*/}}
+{{/*          command: ["/bin/bash", "/scripts/auto-reconfigure.sh"]*/}}
+{{/*          volumeMounts:*/}}
+{{/*            - name: auto-run*/}}
+{{/*              mountPath: /scripts*/}}
+      volumes:
+        - name: auto-run
+          configMap:
+            name: {{ include "common.names.custom" . }}

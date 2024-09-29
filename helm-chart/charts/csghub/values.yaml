@@ -547,6 +547,10 @@ global:
   coredns: { }
   # replicas: 1
 
+  ## Kube Watcher configuration
+  ## This is just only a watcher, do not modify anything
+  watcher: {}
+
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
   ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
   ## Each section allows for customization to suit organizational needs, including security contexts, persistence settings, and service exposures.
