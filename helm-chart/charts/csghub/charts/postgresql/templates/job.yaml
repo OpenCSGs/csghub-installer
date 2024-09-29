@@ -37,7 +37,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "sh", "-c", "until pg_isready -h {{ include "postgresql.internal.domain" . }} -p {{ include "postgresql.internal.port" . }} -U postgres; do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -h {{ include "postgresql.internal.domain" . }} -p {{ include "postgresql.internal.port" . }} -U postgres; do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
           env:
             - name: PGPASSWORD
               valueFrom:
