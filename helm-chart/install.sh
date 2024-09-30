@@ -322,8 +322,8 @@ fi
 if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
   # Install Knative Serving
   log "INFO" "Install the Knative Serving component."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/serving-core.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
   retry kubectl patch cm config-autoscaler -n knative-serving -p='{"data":{"enable-scale-to-zero":"false"}}'
   retry kubectl patch cm config-features -n knative-serving -p='{"data":{"kubernetes.podspec-nodeselector":"enabled"}}'
   # Verify if KNative serving resources created successful
@@ -335,7 +335,7 @@ if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
   fi
 
   log "INFO" "Install a networking layer."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/knative/kourier.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
   # Verify if networking layer installed
   if [ $? -ne 0 ]; then
     log "ERRO" "Failed to install kourier networking layer."
@@ -422,7 +422,7 @@ if [ $? -ne 0 ]; then
 fi
 
 log "INFO" "Add CSGHUB helm repository."
-retry helm repo add csghub https://opencsgs.github.io/CSGHub-Installer --force-update && helm repo update
+retry helm repo add csghub https://opencsgs.github.io/csghub-installer --force-update && helm repo update
 if [ $? -ne 0 ]; then
   log "ERRO" "Failed to add csghub helm repository."
   exit 1
@@ -436,7 +436,7 @@ fi
 log "INFO" "Installing CSGHub helm chart..."
 CHART_VERSION=$(helm search repo csghub -l | sort --version-sort -r | awk 'NR==1{print $2}')
 rm -rf csghub-"$CHART_VERSION".tgz &>/dev/null
-retry wget "https://ghp.ci/https://github.com/OpenCSGs/CSGHub-Installer/releases/download/csghub-"$CHART_VERSION"/csghub-"$CHART_VERSION".tgz"
+retry wget "https://ghp.ci/https://github.com/OpenCSGs/csghub-installer/releases/download/csghub-"$CHART_VERSION"/csghub-"$CHART_VERSION".tgz"
 if [ $? -ne 0 ]; then
   log "ERRO" "Failed to download csghub helm chart latest version."
   exit 1
@@ -592,7 +592,7 @@ EOF
     log "INFO" "k3s restarted successfully."
   fi
 else
-  log "INFO" "Please config insecure registries by follow https://github.com/OpenCSGs/CSGHub-Installer?tab=readme-ov-file#post-installation-configuration."
+  log "INFO" "Please config insecure registries by follow https://github.com/OpenCSGs/csghub-installer?tab=readme-ov-file#post-installation-configuration."
 fi
 
 log "INFO" "Environment is ready, login info at login.txt."

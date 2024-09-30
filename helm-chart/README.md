@@ -16,10 +16,10 @@ Recommended operating system:
 
 ```shell
 # <domain>: like example.com
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
 
 # If enable Nvidia GPU
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/CSGHub-Installer/refs/heads/main/helm-chart/install.sh | ENABLE_NVIDIA_GPU=true bash -s -- <domain>
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/install.sh | ENABLE_NVIDIA_GPU=true bash -s -- <domain>
 ```
 
 ## Manual deployment
@@ -45,7 +45,7 @@ KNative Serving is a necessary component for CSGHub to create Space and other ap
     kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-crds.yaml
     
     # If you have trouble pulling the gcr.io image, use the following command
-    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-crds.yaml
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
     ```
 
 2. Install the core components of Knative Serving
@@ -54,7 +54,7 @@ KNative Serving is a necessary component for CSGHub to create Space and other ap
     kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-core.yaml
     
     # If you have trouble pulling the gcr.io image, use the following command
-    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-core.yaml
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
     ```
 
 #### Install a networking layer
@@ -67,7 +67,7 @@ Here choosing `Kourier` as default. If you want to use other network components,
     kubectl apply -f https://github.com/knative/net-kourier/releases/download/knative-v1.15.1/kourier.yaml
     
     # If you have trouble pulling the gcr.io image, use the following command
-    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/kourier.yaml
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
     ```
 
 2. Configure Knative Serving to use Kourier by default
@@ -109,7 +109,7 @@ kubectl patch configmap/config-domain \
 kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.15.2/serving-hpa.yaml
 
 # If you have trouble pulling the gcr.io image, use the following command
-kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/CSGHub-helm/main/knative/serving-hpa.yaml
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-hpa.yaml
 ```
 
 ## Create KubeConfig Secret
@@ -132,7 +132,7 @@ Before performing the following operations, you must be ready for the above oper
 - Add helm repository
 
     ```shell
-    helm repo add csghub https://opencsgs.github.io/CSGHub-Installer
+    helm repo add csghub https://opencsgs.github.io/csghub-installer
     helm repo update
     ```
 
