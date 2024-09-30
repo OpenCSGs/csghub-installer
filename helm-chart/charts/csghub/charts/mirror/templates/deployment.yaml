@@ -43,6 +43,20 @@ spec:
       automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
       {{- end }}
       initContainers:
+        - name: wait-for-redis
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis:7.2.5
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "redis-cli", "-h", "$(REDIS_HOST)", "-p", "$(REDIS_PORT)", "-a", "$(REDIS_PASSWD)", "ping" ]
+          envFrom:
+            {{- if .Values.global.redis.enabled }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- else }}
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- end }}
         - name: wait-for-server
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
