@@ -19,13 +19,4 @@ spec:
       - http01:
           ingress:
             ingressClassName: nginx
-{{- else }}
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: {{ include "common.names.custom" (list . "cluster-issuer")}}
-  namespace: {{ .Release.Namespace }}
-  labels: {{ include "common.labels" . | nindent 4 }}
-spec:
-  selfSigned: {}
 {{- end }}
