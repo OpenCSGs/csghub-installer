@@ -146,14 +146,14 @@ Before performing the following operations, you must be ready for the above oper
     # global.builder.internal[0].service.host: The external address of the kourier service
     # global.builder.internal[0].service.port: Kourier service external port
     helm install csghub csghub/csghub \
-    	--namespace csghub \
-    	--create-namespace \
-    	--set global.ingress.hosts=example.com \ 
+        --namespace csghub \
+        --create-namespace \
+        --set global.ingress.hosts=example.com \
         --set global.ingress.service.type=NodePort \
         --set global.portal.image.tag=v0.9.2 \
-    	--set global.builder.internalDomain[0].domain=app.internal \ 
-    	--set global.builder.internalDomain[0].service.host=192.168.18.18 \ 
-    	--set global.builder.internalDomain[0].service.port=30463  
+        --set global.builder.internalDomain[0].domain=app.internal \
+        --set global.builder.internalDomain[0].service.host=192.168.18.18 \
+        --set global.builder.internalDomain[0].service.port=30463  
   
     # Patch ingress svc type to NodePort
     kubectl -n csghub patch service csghub-ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
