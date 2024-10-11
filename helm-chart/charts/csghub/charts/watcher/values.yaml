@@ -15,7 +15,7 @@ image:
   ## Specifies the location of the Watcher Docker image in the Watcher.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/kube/watcher
   ## Defines the specific version of the Watcher image to use.
-  tag: 1.1.0
+  tag: 1.1.1
   ## Determines how the image should be pulled from the Watcher.
   pullPolicy: "IfNotPresent"
 
