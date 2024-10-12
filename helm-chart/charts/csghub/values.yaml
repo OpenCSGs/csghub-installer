@@ -47,7 +47,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  1Gi
+      # size:  1Gi
 
   ## Specify whether to enable internal postgresql.
   ## If not, please specify external postgresql connection information in subsequent configurations.
@@ -62,7 +62,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  2Gi
+      # size:  2Gi
 
   ## Specify whether to enable internal minio.
   ## If not, please specify external minio connection information in subsequent configurations.
@@ -77,7 +77,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  5Gi
+      # size:  5Gi
 
   ## Specify whether to enable internal registry.
   ## If not, please specify external registry connection information in subsequent configurations.
@@ -93,7 +93,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  10Gi
+      # size:  10Gi
     ## Configuration for ingress. If enabled, you can access Registry console by Registry.<domain>
     ingress:
       ## Enable or disable ingress.
@@ -187,7 +187,7 @@ global:
       accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  1Gi
+      # size:  1Gi
 
   ## Gitaly configuration
   ## Gitaly is a Git RPC service for handling all the git calls made by GitLab.
@@ -220,7 +220,7 @@ global:
       accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  10Gi
+      # size:  10Gi
 
   ## Gitea's configuration
   ## Enables the Gitea service and specifies the Docker image version and persistence storage size.
@@ -293,7 +293,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  10Gi
+      # size:  10Gi
 
   ## Builder configuration
   ## Specifies the persistent storage size for the builder component.
@@ -339,7 +339,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  6Gi
+      # size:  6Gi
 
   ## Runner configuration
   ## Specifies the Kubernetes secret name that contains the kubeconfig file, allowing the runner to interact with the Kubernetes API.
@@ -471,7 +471,7 @@ global:
       # accessMode: [ "ReadWriteOnce" ]
       ## Specifies the size of the persistent volume.
       ## This should be adjusted based on expected usage and data growth over time.
-      size:  6Gi
+      # size:  6Gi
 
   ## User Server configuration
   ## This section is intended for configurations related to the User Server, which manages user accounts, authentication, and authorization.
