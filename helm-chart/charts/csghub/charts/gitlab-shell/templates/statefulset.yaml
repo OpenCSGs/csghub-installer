@@ -48,7 +48,7 @@ spec:
         - name: init-host-keys
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/alpine:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "if [ ! -e /srv/gitlab-shell/keys/ssh_host_* ]; then apk update && apk add openssh && ssh-keygen -A && cp /etc/ssh/ssh_host_* /srv/gitlab-shell/keys/; fi" ]
+          command: [ "/bin/sh", "-c", "if [ ! -e /srv/gitlab-shell/keys/ssh_host_* ]; then sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && apk update && apk add openssh && ssh-keygen -A && cp /etc/ssh/ssh_host_* /srv/gitlab-shell/keys/; fi" ]
           volumeMounts:
             - name: data
               mountPath: /srv/gitlab-shell/keys

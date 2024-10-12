@@ -116,7 +116,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -301,9 +301,9 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Builder Docker image in the Builder.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-space-builder
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder
       ## Defines the specific version of the Builder image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Builder.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -349,7 +349,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -382,7 +382,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -431,7 +431,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -482,7 +482,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -502,7 +502,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -518,6 +518,11 @@ global:
   ## Currently, there are no configurations set for Casdoor, as indicated by the empty section.
   casdoor:
     replicas: 1
+    image:
+      ## Specifies the location of the Runner Docker image in the Runner.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor
+      ## Defines the specific version of the Runner image to use.
+      tag: v1.723.0
     ## Specifies the location and credentials for accessing the external PostgreSQL database.
     postgresql: { }
       ## Specifies the host address of the PostgreSQL database server.
@@ -537,7 +542,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
-      tag: v0.9.2
+      tag: v0.9.3
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
 
@@ -549,7 +554,12 @@ global:
 
   ## Kube Watcher configuration
   ## This is just only a watcher, do not modify anything
-  watcher: {}
+  watcher:
+    image:
+      ## Specifies the location of the Watcher Docker image in the Watcher.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/kube/watcher
+      ## Defines the specific version of the Watcher image to use.
+      tag: 1.1.1
 
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
   ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
