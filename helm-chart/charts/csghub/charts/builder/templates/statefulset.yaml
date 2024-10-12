@@ -62,7 +62,6 @@ spec:
         - name: builder
           image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "update-ca-certificates && /app/builder" ]
           ports:
             - containerPort: 8080
               name: builder
