@@ -1,6 +1,6 @@
 ## CSGHub产品一键部署使用说明
 
-[English Version](./docs/compose_readme_en.md)
+[English Version](../../docs/compose_readme_en.md)
 
 使用该脚本可以一键部署一个all-in-one的CSGHub环境，包括前端后端以及其他所有相关的功能组件，包括：
 * csghub-portal
