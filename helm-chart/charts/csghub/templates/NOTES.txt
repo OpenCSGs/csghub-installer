@@ -44,4 +44,4 @@ you can only do pull/push images from this registry.To access registry using doc
 
 For more detailed documentation, visit:
 
-    https://github.com/OpenCSGs/CSGHub-helm
+    https://github.com/OpenCSGs/csghub-installer

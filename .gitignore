@@ -3,4 +3,5 @@
 tls.*
 *.crt
 *.key
+**/.kube/*
 .DS_Store

@@ -16,7 +16,7 @@
 
 **注意：**
 1. CSGHhub v0.4.0支持了space功能，v0.7.0支持了模型微调、推理等功能。而space，模型微调以及推理等都需要Kubernetes以及其他相关环境和配置，而基于compose部署不包括Kubernetes部分，因此这里的一键部署功能`不包含space，模型微调和推理功能`
-1. 可以使用CSGHub的[helm chart](https://github.com/OpenCSGs/CSGHub-helm)来安装完整版CSGHub实例。
+1. 可以使用CSGHub的[helm chart](https://github.com/OpenCSGs/csghub-installer)来安装完整版CSGHub实例。
 1. 该部署脚本使用gitea作为Git Server后端，从**CSGHub v0.9.0版本开始，将不再提供后续支持和维护，请悉知**
 
 ### 前置条件

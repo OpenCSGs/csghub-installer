@@ -3,7 +3,7 @@ name: csghub
 description: CSGHub is an open source, trustworthy large model asset management platform that can assist users in governing the assets involved in the lifecycle of LLM and LLM applications (datasets, model files, codes, etc).
 home: https://opencsg.com
 sources:
-  - https://github.com/OpenCSGs/CSGHub-helm
+  - https://github.com/OpenCSGs/csghub-installer
 
 # A chart can be either an 'application' or a 'library' chart.
 #
