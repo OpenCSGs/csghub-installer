@@ -1,20 +1,21 @@
-name: Release Charts
+name: Release CSGHub
 
 on:
   push:
     tags:
-      - '*'
+      - 'v*'
 
 jobs:
   release:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 30
 
       - name: Configure Git
         run: |
@@ -27,8 +28,39 @@ jobs:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Run chart-releaser
+        id: chart-releaser
         uses: helm/chart-releaser-action@v1.6.0
         with:
           charts_dir: helm-chart/charts
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Package Custom Artifact
+        id: package_artifact
+        run: |
+          docker_artifact="csghub-docker-compose-${{ github.ref_name }}.tgz"
+          chart_artifact="csghub-helm-chart-${{ github.ref_name }}.tgz"
+          tar -zcf $docker_artifact docker-compose/csghub
+          tar -zcf $chart_artifact helm-chart/charts/csghub
+          artifacts="$docker_artifact,$chart_artifact"
+          echo "artifacts=$artifacts" >> $GITHUB_OUTPUT
+
+      - name: Get previous tag
+        id: get_previous_tag
+        run: |
+          ALL_TAGS=$(git tag --sort=-v:refname)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -F -x -A 1 "$CURRENT_TAG" | tail -n 1)
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+
+      - name: Generate Detailed Release Notes
+        id: generate_detailed_release_notes
+        run: |
+          git log --oneline ${{ env.PREVIOUS_TAG }}..${{ github.ref_name }} > release-notes.md
+          cat release-notes.md
+
+      - name: Publish Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: ${{ steps.package_artifact.outputs.artifacts }}
+          bodyFile: "release-notes.md"
