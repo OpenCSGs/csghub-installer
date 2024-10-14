@@ -123,11 +123,11 @@ CSGHub Helm Chart 部署需要使用域名，Ingress 暂不支持使用 IP 地�
 
  `仪表盘（Dashboards）` >  `设置（Settings）` > `Kubernets` > `启用（Enable Kubernetes）` > `应用（Apply）`
 
-等待 Kubernetes 集群启动完成。Docker Desktop 集成的 Kubernetes 集群可以支持 PV 动态管理和 ServerLB。此两项功能可以在部署时简化部署操作和提供 csghub 服务友好访问。
+等待 Kubernetes 集群启动完成。Docker Desktop 集成的 Kubernetes 集群可以支持 PV 动态管理和 ServiceLB。此两项功能可以在部署时简化部署操作和提供 csghub 服务友好访问。
 
 - [K3S](https://docs.k3s.io/zh/quick-start)
 
-K3S 同样内置了 PV Dynamic Provisioning 和 ServerLB，且部署简单实用。部署方式如下：
+K3S 同样内置了 PV Dynamic Provisioning 和 ServiceLB，且部署简单实用。部署方式如下：
 
 ```shell
 # 安装集群
@@ -378,83 +378,67 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
 2. 部署 csghub
 
     - `global`
+
         - `domain`：前面章节要求提供的[二级域名](#域名)。
         - `runner.internalDomain[i]`
             - `domain`：安装 Knative Serving 时配置的[内部域名](#配置dns)。
             - `host`：[Kourier 组件服务](#kourier-svc)暴露的`EXTERNAL-IP`地址，示例中`172.25.11.130`为本机 IP 地址。
             - `port`：[Kourier 组件服务](#kourier-svc)暴露的 80 对应的`NodePort`端口，本示例中为 `32497`。
+
     - LoadBalancer
 
-    ```shell
-    helm install csghub csghub/csghub \
-    	--namespace csghub \
-    	--create-namespace \
-    	--set global.domain=example.com \
-    	--set global.runner.internalDomain[0].domain=app.internal \
-    	--set global.runner.internalDomain[0].host=172.25.11.130 \
-    	--set global.runner.internalDomain[0].port=32497
-    ```
+        ```shell
+        helm install csghub csghub/csghub \
+        	--namespace csghub \
+        	--create-namespace \
+        	--set global.domain=example.com \
+        	--set global.runner.internalDomain[0].domain=app.internal \
+        	--set global.runner.internalDomain[0].host=172.25.11.130 \
+        	--set global.runner.internalDomain[0].port=32497
+        ```
 
     - NodePort
 
         如果你使用的 Kubernetes 环境不具备 LoadBalancer 负载均衡功能。那么可以通过如下方式进行部署。
 
-    ```shell
-    helm install csghub csghub/csghub \
-    	--namespace csghub \
-    	--create-namespace \
-    	--set global.domain=example.com \
-    	--set global.ingress.service.type=NodePort \
-    	--set global.runner.internalDomain[0].domain=app.internal \
-    	--set global.runner.internalDomain[0].host=172.25.11.130 \
-    	--set global.runner.internalDomain[0].port=32497
-    ```
+        ```shell
+        helm install csghub csghub/csghub \
+        	--namespace csghub \
+        	--create-namespace \
+        	--set global.domain=example.com \
+        	--set global.ingress.service.type=NodePort \
+        	--set global.runner.internalDomain[0].domain=app.internal \
+        	--set global.runner.internalDomain[0].host=172.25.11.130 \
+        	--set global.runner.internalDomain[0].port=32497
+        ```
 
-​	因为配置复杂性因素，NodePort 端口被定义为如下映射：80/30080, 443/30443, 22/30022。
+​		因为配置复杂性因素，NodePort 端口被定义为如下映射：80/30080, 443/30443, 22/30022。
 
 3. DNS 解析
 
     如果您使用的是云服务器，且具备已经备案可以正常使用的域名，请自行配置 DNS 解析 csghub.example.com、casdoor.example.com、minio.example、registry.example.com 域名到云服务器。
 
-    
-
     如果您是本地测试服务器，请配置宿主机和客户端的`/etc/hosts`域名解析，以及配置Kubernetes coredns，配置方式如下：
 
     ```shell
     # 添加自定义域名解析
-    $ kubectl -n kube-system edit configmap/coredns 
-    ...
-    data:
-      Corefile: |
-        .:53 {
-            errors
-            health
-            ready
-            kubernetes cluster.local in-addr.arpa ip6.arpa {
-              pods insecure
-              fallthrough in-addr.arpa ip6.arpa
-            }
-            hosts /etc/coredns/NodeHosts {
-              ttl 60
-              reload 15s
-              fallthrough
-            }
-            prometheus :9153
-            forward . /etc/resolv.conf
-            cache 30
-            loop
-            reload
-            loadbalance
-            import /etc/coredns/custom/*.override
-        }
-        import /etc/coredns/custom/*.server
-      NodeHosts: |
-        172.25.11.130 izbp183g8mgpeyagrw8896z iZbp183g8mgpeyagrw8896Z
-        172.25.11.130 csghub.example.com csghub
-        172.25.11.130 casdoor.example.com casdoor
-        172.25.11.130 registry.example.com registry
-        172.25.11.130 minio.example.com minio
+    $ kubectl apply -f - <<EOF
+    apiVersion: v1
     kind: ConfigMap
+    metadata:
+      name: coredns-custom
+      namespace: kube-system
+    data:
+      example.server: |
+        example.com {
+          hosts {
+            172.25.11.131 csghub.example.com csghub
+            172.25.11.131 casdoor.example.com casdoor
+            172.25.11.131 registry.example.com registry
+            172.25.11.131 minio.example.com minio
+          }
+        }
+    EOF
     
     # 更新 coredns pods
     $ kubectl -n kube-system rollout restart deploy coredns

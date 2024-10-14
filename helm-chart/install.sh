@@ -23,6 +23,7 @@ ENABLE_DYNAMIC_PV=${ENABLE_DYNAMIC_PV:-"false"}
 ENABLE_KNATIVE_SERVING=${ENABLE_KNATIVE_SERVING:-$ENABLE_K3S}
 ENABLE_NVIDIA_GPU=${ENABLE_NVIDIA_GPU:-"false"}
 ENABLE_HTTPS=${ENABLE_HTTPS:-"false"}
+ENABLE_HOSTS=${ENABLE_HOSTS:-"true"}
 KNATIVE_INTERNAL_DOMAIN=${KNATIVE_INTERNAL_DOMAIN:-"app.internal"}
 KNATIVE_INTERNAL_HOST=${KNATIVE_INTERNAL_HOST:-"127.0.0.1"}
 KNATIVE_INTERNAL_PORT=${KNATIVE_INTERNAL_PORT:-80}
@@ -612,6 +613,31 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
 #  done
 fi
 
+if [ "$ENABLE_HOSTS" == true ]; then
+  log "INFO" "Configure local custom domain name resolution."
+  retry kubectl apply -f - <<EOF
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: coredns-custom
+    namespace: kube-system
+  data:
+    ${DOMAIN}.server: |
+      ${DOMAIN} {
+        hosts {
+          ${IP_ADDRESS} csghub.${DOMAIN} csghub
+          ${IP_ADDRESS} casdoor.${DOMAIN} casdoor
+          ${IP_ADDRESS} registry.${DOMAIN} registry
+          ${IP_ADDRESS} minio.${DOMAIN} minio
+        }
+      }
+EOF
+
+  log "INFO" "Rollout restart deployment coredns."
+  retry kubectl -n kube-system rollout restart deploy coredns
+fi
+
+
 if [ "$ENABLE_K3S" == "true" ]; then
   log "INFO" "Adding insecure registry to k3s."
   SECRET_JSON=$(kubectl -n csghub get secret csghub-registry-docker-config -ojsonpath='{.data.\.dockerconfigjson}' | base64 -d)
@@ -652,6 +678,18 @@ else
 fi
 
 log "INFO" "Environment is ready, login info at login.txt."
-if [ "$ENABLE_HTTPS" == "false" ]; then
-  log "INFO" "Next you need to configure DNS domain name resolution yourself."
+if [ "$ENABLE_HTTPS" == "false" ] && [ "$ENABLE_HOSTS" == "true" ]; then
+  log "INFO" "Add domain resolution to /etc/hosts."
+  HOST_ENTRIES=(
+      "${IP_ADDRESS} csghub.${DOMAIN} csghub"
+      "${IP_ADDRESS} casdoor.${DOMAIN} casdoor"
+      "${IP_ADDRESS} registry.${DOMAIN} registry"
+      "${IP_ADDRESS} minio.${DOMAIN} minio"
+  )
+
+  for ENTRY in "${HOST_ENTRIES[@]}"; do
+      if ! grep -qF "$ENTRY" /etc/hosts; then
+          echo "$ENTRY" >> /etc/hosts
+      fi
+  done
 fi
