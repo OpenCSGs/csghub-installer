@@ -15,7 +15,7 @@ image:
   ## Specifies the location of the Runner Docker image in the Runner.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor
   ## Defines the specific version of the Runner image to use.
-  tag: v1.571.0
+  tag: v1.725.0
   ## Determines how the image should be pulled from the Runner.
   pullPolicy: "IfNotPresent"
 
