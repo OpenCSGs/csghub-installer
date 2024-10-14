@@ -5,3 +5,8 @@ tls.*
 *.key
 **/.kube/*
 .DS_Store
+
+
+# DO NOT ignore .kube on below folders
+!docker-compose/csghub/.kube/
+!docker-compose/csghub-with-gitea/.kube/
