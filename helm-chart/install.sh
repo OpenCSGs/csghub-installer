@@ -568,6 +568,7 @@ if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
        exit 1
      fi
    fi
+   retry kubectl -n knative-serving rollout restart deployment.apps/controller
 fi
 
 if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
