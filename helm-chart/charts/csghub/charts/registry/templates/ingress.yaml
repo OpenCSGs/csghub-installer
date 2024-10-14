@@ -35,8 +35,8 @@ spec:
       {{- else }}
       {{- if $conf.ingress.tls.secretName }}
       secretName: {{ $conf.ingress.tls.secretName }}
-      {{- else}}
-      {{ fail "Ingress TLS is enabled but no secretName is provided for the TLS certificate." }}
+      {{- else }}
+      secretName: {{ include "common.names.custom" (list . "certs") }}
       {{- end }}
     {{- end }}
   {{- end }}
