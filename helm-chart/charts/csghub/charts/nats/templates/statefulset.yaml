@@ -45,7 +45,7 @@ spec:
       {{- end }}
       containers:
         - name: nats
-          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.nats.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
             - containerPort: 4222

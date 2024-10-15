@@ -116,7 +116,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -303,7 +303,7 @@ global:
       ## Specifies the location of the Builder Docker image in the Builder.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder
       ## Defines the specific version of the Builder image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Builder.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -349,7 +349,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -382,7 +382,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -431,7 +431,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -482,7 +482,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -502,7 +502,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -542,7 +542,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
-      tag: v0.9.3
+      # tag: v0.9.3
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
 

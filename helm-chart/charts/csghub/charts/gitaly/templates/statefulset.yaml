@@ -46,7 +46,7 @@ spec:
       {{- end }}
       containers:
         - name: gitaly
-          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.gitaly.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "/scripts/process-wrapper" ]
           ports:

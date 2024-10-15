@@ -89,7 +89,7 @@ spec:
         {{- end }}
       containers:
         - name: server
-          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.server.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/scripts/init.sh" ]
           ports:

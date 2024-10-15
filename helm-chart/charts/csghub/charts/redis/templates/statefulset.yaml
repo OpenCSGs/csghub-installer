@@ -47,7 +47,7 @@ spec:
       {{- end }}
       containers:
         - name: redis
-          image: {{ $conf.image.repository }}:{{ $conf.image.tag }}
+          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.redis.image.tag }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           args: [ "--requirepass", "$(REDIS_PASSWD)", "--save", "60 1000", "--appendonly", "yes" ]
           ports:
