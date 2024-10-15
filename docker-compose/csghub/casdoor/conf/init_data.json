@@ -170,6 +170,28 @@
       "signupApplication": "",
       "createdIp": "",
       "groups": []
+    },
+      {
+      "owner": "OpenCSG",
+      "name": "root",
+      "type": "normal-user",
+      "password": "Password123",
+      "displayName": "root",
+      "avatar": "",
+      "email": "root@example.com",
+      "phone": "12345678901",
+      "countryCode": "",
+      "address": [],
+      "affiliation": "",
+      "tag": "",
+      "score": 2000,
+      "ranking": 1,
+      "isAdmin": false,
+      "isForbidden": false,
+      "isDeleted": false,
+      "signupApplication": "CSGHub",
+      "createdIp": "",
+      "groups": []
     }
   ],
   "providers": [
