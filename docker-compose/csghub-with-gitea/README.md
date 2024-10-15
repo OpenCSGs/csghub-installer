@@ -22,7 +22,8 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 
 
 **Notice:**
-CSGHhub v0.4.0 supports the space function, and v0.7.0 supports model fine-tuning, inference. Space, model fine-tuning and inference all require Kubernetes and other related environments and configurations, since Kubernetes is not included here,  the All-in-one deployment here `does not include space, model fine-tuning and inference functions`.
+1. CSGHhub v0.4.0 supports the space function, and v0.7.0 supports model fine-tuning, inference. Space, model fine-tuning and inference all require Kubernetes and other related environments and configurations, since Kubernetes is not included here,  the All-in-one deployment here `does not include space, model fine-tuning and inference functions`.
+2. This deployment script uses `Gitea` as the Git Server backend, Starting from CSGHub version 0.9.0, there will no further support for Gitea. It is recommended to use `Gitaly` as the Git Server backend instead.
 
 ### Prerequisites
 * Hardware
