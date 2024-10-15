@@ -60,8 +60,8 @@ data:
           "name": "OpenCSG",
           "displayName": "OpenCSG",
           "websiteUrl": {{ include "csghub.external.endpoint" . | quote }},
-          "favicon": "https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/favicon/favicon.png",
-          "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/logo/logo.png",
+          "favicon": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/favicon.png",
+          "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
           "passwordType": "sha512-salt",
           "passwordSalt": "OpenCSG",
           "passwordOptions": [
@@ -73,7 +73,7 @@ data:
             "CN",
             "US"
           ],
-          "defaultAvatar": "https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/avatar/rebot.png",
+          "defaultAvatar": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/robot.png",
           "defaultApplication": "CSGHub",
           "tags": [],
           "languages": [
@@ -202,7 +202,7 @@ data:
           "owner": "admin",
           "name": "CSGHub",
           "displayName": "CSGHub",
-          "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/logo/logo.png",
+          "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
           "homepageUrl": {{ include "csghub.external.endpoint" . | quote }},
           "organization": "OpenCSG",
           "cert": "csghub-cert",
@@ -409,9 +409,9 @@ data:
             "isEnabled": true
           },
           "footerHtml": "<C2><A9>2024 OpenCSG. All rights reserved.",
-          "formCSS": "<style>  .login-panel{    border-radius: 10px;    background-color: #ffffff;    box-shadow: 0 0 30px 20px rgba(0, 0, 0, 0.20);  }  .login-form {    padding: 40px;  }</style>",
-          "formOffset": 4,
-          "formSideHtml": "<style>  .left-model{    text-align: center;    padding: 60px;    background-image: url('https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/background/bg-img.png');    background-size: cover;    background-position: center;    position: absolute;    transform: none;    width: 100%;    height: 100%;  }  .side-logo {    display: flex;    align-items: center;  }  .side-logo span {    font-family: Montserrat, sans-serif;    font-weight: 900;    font-size: 2.4rem;    line-height: 1.3;    margin-left: 16px;    color: #404040;  }  .img{    max-width: none;    margin: 41px 0 13px;  }</style><div class='left-model'>  <span class='side-logo'> <img src='' alt='' style='width: 120px'>   </span>  <div class='img'>    <img src='' alt='' style='width: 120px'/>  </div></div>",
+          "formCSS": "",
+          "formOffset": 2,
+          "formSideHtml": "<style>  .left-model{    text-align: center;    padding: 60px;    background-image: url('https://cdn.jsdelivr.net/gh/OpenCSGs/images/background.png');    background-size: cover;    background-position: center;    position: absolute;    transform: none;    width: 100%;    height: 100%;  }  .side-logo {    display: flex;    align-items: center;  }  .side-logo span {    font-family: Montserrat, sans-serif;    font-weight: 900;    font-size: 2.4rem;    line-height: 1.3;    margin-left: 16px;    color: #404040;  }  .img{    max-width: none;    margin: 41px 0 13px;  }</style><div class='left-model'>  <span class='side-logo'> <img src='' alt='' style='width: 120px'>   </span>  <div class='img'>    <img src='' alt='' style='width: 120px'/>  </div></div>",
           "failedSigninLimit": 5,
           "failedSigninFrozenTime": 15
         }
@@ -440,7 +440,7 @@ data:
           "displayName": "root",
           "email": "root@example.com",
           "type": "normal-user",
-          "avatar": "https://cdn.jsdelivr.net/gh/OpenCSGs/images@main/avatar/rebot.png",
+          "avatar": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/robot.png",
           "isAdmin": true,
           "signupApplication": "CSGHub"
         }
