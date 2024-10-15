@@ -53,6 +53,26 @@ jobs:
             echo "release_exists=false" >> $GITHUB_ENV
           fi
 
+      - name: Get Previous Tag
+        id: get_previous_tag
+        run: |
+          ALL_TAGS=$(git tag --sort=-v:refname)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -F -x -A 1 "$CURRENT_TAG" | tail -n 1)
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
+
+      - name: Generate Release Notes
+        id: generate_release_note
+        if: env.release_exists == 'false'
+        run: |
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/releases/generate-notes" \
+            -d '{"tag_name":"${{ github.ref_name }}","target_commitish":"${{ github.sha }}","previous_tag_name":"${{ env.previous_tag }}"}')
+          if [[ $? -eq 0 ]] && [[ ! -z "$response" ]]; then
+            body=$(echo "$response" | jq -r '.body')
+            echo "$body" > release-notes.md
+            cat release-notes.md
+          fi
+
       - name: Upload Release Assets
         if: env.release_exists == 'true'
         uses: softprops/action-gh-release@v2
@@ -61,16 +81,6 @@ jobs:
             ${{ steps.package_artifact.outputs.artifacts }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Generate Detailed Release Notes
-        id: generate_detailed_release_notes
-        if: env.release_exists == 'false'
-        run: |
-          ALL_TAGS=$(git tag --sort=-v:refname)
-          CURRENT_TAG=${GITHUB_REF#refs/tags/}
-          PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -F -x -A 1 "$CURRENT_TAG" | tail -n 1)
-          git log --oneline $PREVIOUS_TAG..$CURRENT_TAG > release-notes.md
-          cat release-notes.md
 
       - name: Publish Release
         uses: ncipollo/release-action@v1
