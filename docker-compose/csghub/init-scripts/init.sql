@@ -1,21 +1,26 @@
 --
 -- PostgreSQL database dump
 --
-
-
+SET exit_on_error = on;
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', 'public', false);
 SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+SELECT pg_catalog.set_config('search_path', 'public', false);
 
 --
--- Seed Data for Name: space_resources; Type: TABLE DATA;  Owner: postgres
+-- Truncate Data for Name: space_resources; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+TRUNCATE TABLE space_resources;
+
+--
+-- Seed Data for Name: space_resources; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO space_resources (name, resources, cluster_id)
@@ -67,35 +72,44 @@ ON CONFLICT (name)
                   cluster_id = EXCLUDED.cluster_id;
 
 --
--- Seed Data for Name: runtime_frameworks; Type: TABLE DATA;  Owner: postgres
+-- Truncate Data for Name: runtime_frameworks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('1', 'VLLM', '2.7', 'vllm-local:2.7', 'vllm-cpu:2.3', 1, 8000, 1);
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('3', 'TGI', '2.1', 'tgi:2.1', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('2', 'LLaMA-Factory', '1.11', 'llama-factory:1.18-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
-
--- for nim
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama3-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-8b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama3-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-70b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3-swallow-70b-instruct-v0.1', 'latest', 'nvcr.io/nim/tokyotech-llm/llama-3-swallow-70b-instruct-v0.1:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3-taiwan-70b-instruct', 'latest', 'nvcr.io/nim/yentinglin/llama-3-taiwan-70b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-2-7b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-7b-chat:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-2-70b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-70b-chat:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-2-13b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-13b-chat:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3.1-8b-base', 'latest', 'nvcr.io/nim/meta/llama-3.1-8b-base:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3.1-405b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-405b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama3-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-70b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3.1-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-8b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-llama-3.1-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-70b-instruct:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-mistral-7b-instruct-v0.3', 'latest', 'nvcr.io/nim/mistralai/mistral-7b-instruct-v0.3:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-mixtral-8x7b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x7b-instruct-v01:latest', '', 1, 8000, 1);
-INSERT INTO runtime_frameworks (frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES ('NIM-mixtral-8x22b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x22b-instruct-v01:latest', '', 1, 8000, 1);
-
+TRUNCATE TABLE runtime_frameworks;
 
 --
--- Init data runtime frameworks architecture
+-- Seed Data for Name: runtime_frameworks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '2.7', 'vllm-local:2.7', 'vllm-cpu:2.3', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (2, 'LLaMA-Factory', '1.11', 'llama-factory:1.18-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (3, 'TGI', '2.1', 'tgi:2.1', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (4, 'NIM-llama3-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-8b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (5, 'NIM-llama3-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-70b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (6, 'NIM-llama-3-swallow-70b-instruct-v0.1', 'latest', 'nvcr.io/nim/tokyotech-llm/llama-3-swallow-70b-instruct-v0.1:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (7, 'NIM-llama-3-taiwan-70b-instruct', 'latest', 'nvcr.io/nim/yentinglin/llama-3-taiwan-70b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (8, 'NIM-llama-2-7b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-7b-chat:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (9, 'NIM-llama-2-70b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-70b-chat:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (10, 'NIM-llama-2-13b-chat', 'latest', 'nvcr.io/nim/meta/llama-2-13b-chat:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (11, 'NIM-llama-3.1-8b-base', 'latest', 'nvcr.io/nim/meta/llama-3.1-8b-base:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (12, 'NIM-llama-3.1-405b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-405b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (13, 'NIM-llama-3.1-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-8b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (14, 'NIM-llama-3.1-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama-3.1-70b-instruct:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (15, 'NIM-mistral-7b-instruct-v0.3', 'latest', 'nvcr.io/nim/mistralai/mistral-7b-instruct-v0.3:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (16, 'NIM-mixtral-8x7b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x7b-instruct-v01:latest', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (17, 'NIM-mixtral-8x22b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x22b-instruct-v01:latest', '', 1, 8000, 1);
+
+--
+-- Truncate Data for Name: runtime_architectures; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+TRUNCATE TABLE runtime_architectures;
+
+--
+-- Seed Data for Name: runtime_architectures; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+-- For VLLM
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'AquilaForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'ArcticForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'BaiChuanForCausalLM');
@@ -139,7 +153,7 @@ INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALU
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'LlavaNextForConditionalGeneration');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'PaliGemmaForConditionalGeneration');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(1, 'Phi3VForCausalLM');
-
+-- For LLaMA-Factory
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'BaiChuanForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'BloomForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'ChatGLMModel');
@@ -166,7 +180,7 @@ INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALU
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'XverseForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'LlavaLlamaForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(2, 'YuanForCausalLM');
-
+-- For TGI
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'DeepseekV2ForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'Idefics2ForConditionalGeneration');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'LlavaNextForConditionalGeneration');
@@ -194,9 +208,73 @@ INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALU
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'IdeficsForVisionText2Text');
 
 --
--- Name: runtime_frameworks_id_seq; Type: SEQUENCE SET;  Owner: postgres
+-- Name: runtime_frameworks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('runtime_frameworks_id_seq', 6, true);
+SELECT pg_catalog.setval(
+               'public.runtime_frameworks_id_seq',
+               (SELECT MAX(id) FROM runtime_frameworks),
+               true
+       );
 
+--
+-- Seed Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
+CREATE OR REPLACE FUNCTION promote_root_to_admin()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.username = 'root' THEN
+        UPDATE public.users
+        SET role_mask = 'admin'
+        WHERE username = 'root';
+
+        -- After update Drop all
+        EXECUTE 'DROP TRIGGER IF EXISTS trigger_promote_root_to_admin ON public.users';
+        EXECUTE 'DROP FUNCTION IF EXISTS promote_root_to_admin()';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql VOLATILE;
+
+CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
+    AFTER INSERT ON public.users
+    FOR EACH ROW
+EXECUTE FUNCTION promote_root_to_admin();
+
+--
+-- Create a trigger function to automatically enable LLaMA-Factory model fine-tuning for the model
+-- Types:
+--  SpaceType     = 0
+--  InferenceType = 1
+--  FinetuneType  = 2
+--
+-- Hint: Only used as a test environment, please choose the enterprise version for production environment
+--
+
+CREATE OR REPLACE FUNCTION enable_model_fine_tuning()
+    RETURNS trigger AS $$
+BEGIN
+    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+    SELECT
+        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
+        NEW.repository_id,
+        2
+    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory') IS NOT NULL;
+
+    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
+    SELECT
+        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
+        NEW.repository_id,
+        1
+    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER trigger_enable_model_fine_tuning
+    AFTER INSERT ON public.models
+    FOR EACH ROW
+EXECUTE PROCEDURE enable_model_fine_tuning();
