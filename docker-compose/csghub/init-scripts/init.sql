@@ -45,7 +45,7 @@ ON CONFLICT (name)
 
 INSERT INTO space_resources (name, resources,  cluster_id)
 VALUES
-    ('NVIDIA A10G · 12 vCPU · 32 GB', '{"gpu": { "type": "A10", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "12" },  "memory": "48Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
+    ('NVIDIA A10G · 6 vCPU · 32 GB', '{"gpu": { "type": "A10", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "12" },  "memory": "48Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
     DO UPDATE SET
                   resources = EXCLUDED.resources,
@@ -54,6 +54,14 @@ ON CONFLICT (name)
 INSERT INTO space_resources (name, resources,  cluster_id)
 VALUES
     ('NVIDIA A10G · 2 · 12 vCPU · 48 GB', '{"gpu": { "type": "A10", "num": "2", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "12" },  "memory": "48Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
+ON CONFLICT (name)
+    DO UPDATE SET
+                  resources = EXCLUDED.resources,
+                  cluster_id = EXCLUDED.cluster_id;
+
+INSERT INTO space_resources (name, resources,  cluster_id)
+VALUES
+    ('NVIDIA A10G · 4 · 24 vCPU · 96 GB', '{"gpu": { "type": "A10", "num": "4", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "24" },  "memory": "96Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
     DO UPDATE SET
                   resources = EXCLUDED.resources,
