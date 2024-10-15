@@ -10,15 +10,13 @@ CSGHub致力于为用户带来针对大模型原生设计的、可私有化部�
 
 目前官方提供两种部署方式：
 
-- [Docker Compose](https://github.com/OpenCSGs/csghub/tree/main/deploy/all_in_one)
+- [Docker Compose](../../docker-compose/README.md)
 
-- [Helm Chart](https://github.com/OpenCSGs/csghub-installer)
+- [Helm Chart](../../helm-chart/README.md)
 
-    *说明：后面 docker-compose 会合并到 helm chart 所属的 Git 仓库。*
+本文档介绍 Helm Chart 部署方式。Helm Chart 目前仅包含了必要组件的必要资源的创建。如遇使用过程中遇到任何问题可以通过方式提交反馈：
 
-本次主要介绍 Helm Chart 部署方式。Helm Chart 部署方式发布时间较短，目前仅包含了必要组件的必要资源的创建。如遇使用过程中遇到任何问题可以通过方式提交反馈：
-
--  [csghub-installer](https://github.com/OpenCSGs/csghub-installer)
+-  [csghub-installer](https://github.com/OpenCSGs/csghub-installer/issues)
 
 同时也欢迎贡献到此部署项目。
 
@@ -30,8 +28,6 @@ CSGHub致力于为用户带来针对大模型原生设计的、可私有化部�
 | :-----------: | :------------: | ------ |
 |     0.9.x     |     0.9.x      |        |
 |     0.8.x     |     0.8.x      |        |
-
-*注意：需要说明的是，如果个别组件版本更新较快，那么 csghub helm chart 版本可能并不会跟随。*
 
 ## 组件介绍
 
@@ -55,7 +51,7 @@ CSGHub致力于为用户带来针对大模型原生设计的、可私有化部�
 16. **registry**: 提供容器镜像仓库，便于存储和分发容器镜像。
 17. **redis**: 为 csghub_builder 和 csghub_mirror 提供高性能的缓存和数据存储服务，支持快速数据读取和写入。
 18. **casdoor**: 负责用户身份验证和授权，提供单点登录（SSO）和多种认证方式。
-19. **coredns**: 用于处理和解析内部 DNS 请求。
+19. **coredns**: 用于处理和解析内部 DNS 解析。
 20. **fluentd**: 日志收集和处理框架，聚合和转发应用程序日志，便于分析和监控。
 
 ## 持久化数据
@@ -84,7 +80,7 @@ CSGHub Helm Chart 部署需要使用域名，Ingress 暂不支持使用 IP 地�
 - **minio.example.com**：用于访问对象存储。
 - **registry.example.com**：用于访问容器镜像仓库。
 
-如果您使用的域名是正式域名，请自行配置 DNS 确保以上域名可以正确解析到 Kubernetes 集群。如果是临时域名请确保宿主机的 /etc/hosts 和 Kubernetes coredns 可以解析这些域名。
+如果您使用的域名是公网域名，请自行配置 DNS 确保以上域名可以正确解析到 Kubernetes 集群。如果是临时域名请确保宿主机的 /etc/hosts 和 Kubernetes coredns 可以解析这些域名。
 
 ## Kube Config 
 
@@ -153,16 +149,13 @@ kubectl get pods -A
 - [Offical](https://helm.sh/docs/intro/install/)
 
     ```shell
-    # 获取安装shell 脚本
     curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-    # 开始安装
     chmod 700 get_helm.sh && ./get_helm.sh && helm version
     ```
 
 - Other
 
     ```shell
-    # 安装
     snap install helm --classic && helm version
     ```
 
@@ -267,87 +260,87 @@ kubectl get pods -A
     kubectl get pvc
     ```
 
-    ### Knative Serving
+### Knative Serving
 
-    Knative Serving 是 csghub 创建应用实例所必须的组件。因为此组件并不一定安装在 csghub 所在集群，所以并没有集成到 csghub helm chart 中。不过此服务的安装虽然资源较多，但是通常较为顺利。详细参考如下：
+Knative Serving 是 csghub 创建应用实例所必须的组件。因为此组件并不一定安装在 csghub 所在集群，所以并没有集成到 csghub helm chart 中。不过此服务的安装虽然资源较多，但是通常较为顺利。详细参考如下：
 
-    - [Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
+- [Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
 
-    部署如下：
+部署如下：
 
-    1. 安装核心组件
+1. 安装核心组件
 
-        ```shell
-        # 安装自定义资源
-        kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
+    ```shell
+    # 安装自定义资源
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
         
-        # 安装核心组件
-        kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
-        ```
+    # 安装核心组件
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
+    ```
 
-    2. 安装网络组件
+2. 安装网络组件
 
-        ```shell
-        kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
-        ```
+    ```shell
+    kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
+    ```
 
-    3. 配置默认网络组件
+3. 配置默认网络组件
 
-        ```shell
-        kubectl patch configmap/config-network \
-          --namespace knative-serving \
-          --type merge \
-          --patch '{"data":{"ingress-class":"kourier.ingress.networking.knative.dev"}}'
-        ```
+    ```shell
+    kubectl patch configmap/config-network \
+      --namespace knative-serving \
+      --type merge \
+      --patch '{"data":{"ingress-class":"kourier.ingress.networking.knative.dev"}}'
+    ```
 
-    4. 配置服务访问方式
+4. 配置服务访问方式
 
-        ```shell
-        kubectl patch service/kourier \
-        	--namespace kourier-system \
-        	--type merge \
-        	--patch '{"spec": {"type": "NodePort"}}'
-        ```
+    ```shell
+    kubectl patch service/kourier \
+        --namespace kourier-system \
+        --type merge \
+        --patch '{"spec": {"type": "NodePort"}}'
+    ```
 
-    5. <a id="配置dns">配置DNS</a>
+5. <a id="配置dns">配置DNS</a>
 
-        Knative Serving 提供了多种 DNS 方式，但是目前仅支持使用 RealDNS，配置如下。
+    Knative Serving 提供了多种 DNS 方式，但是目前仅支持使用 RealDNS，配置如下。
 
-        ```shell
-        kubectl patch configmap/config-domain \
-          --namespace knative-servings \
-          --type merge \
-          --patch '{"data":{"app.internal":""}}' 
-        ```
+    ```shell
+    kubectl patch configmap/config-domain \
+      --namespace knative-servings \
+      --type merge \
+      --patch '{"data":{"app.internal":""}}' 
+    ```
 
-        `app.internal` 是一个用于暴露 ksvc 服务的二级域名，此域名不需要暴露在互联网中，因此你可以定义为任何域名，此域名解析会通过 csghub helm chart 的 coredns 组件完成。
+    `app.internal` 是一个用于暴露 ksvc 服务的二级域名，此域名不需要暴露在互联网中，因此你可以定义为任何域名，此域名解析会通过 csghub helm chart 的 coredns 组件完成。
 
-    6. 禁用 ksvc pod 缩减为 0
+6. 禁用 ksvc pod 缩减为 0
 
-        ```shell
-        kubectl patch configmap/config-autoscaler \
-        	--namespace knative-serving \
-        	--type merge \
-        	--patch '{"data":{"enable-scale-to-zero":"false"}}'
-        ```
+    ```shell
+    kubectl patch configmap/config-autoscaler \
+        --namespace knative-serving \
+        --type merge \
+        --patch '{"data":{"enable-scale-to-zero":"false"}}'
+    ```
 
-    7. <a id="kourier-svc">验证所有服务</a>
+7. <a id="kourier-svc">验证所有服务</a>
 
-        ```shell
-        $ kubectl -n kourier-system get service kourier
-        NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-        kourier   NodePort   10.43.190.125   <none>        80:32497/TCP,443:30876/TCP   42m
+    ```shell
+    $ kubectl -n kourier-system get service kourier
+    NAME      TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+    kourier   NodePort   10.43.190.125   <none>        80:32497/TCP,443:30876/TCP   42m
         
-        $ kubectl -n knative-serving get pods
-        NAME                                     READY   STATUS    RESTARTS   AGE
-        activator-665d7d76b7-fc2x5               1/1     Running   0          42m
-        autoscaler-779b955d67-zpcqr              1/1     Running   0          42m
-        controller-69b7d4cd45-r2cnl              1/1     Running   0          18m
-        net-kourier-controller-cf85dbc87-rbfpw   1/1     Running   0          42m
-        webhook-6c655cb488-2mm26                 1/1     Running   0          42m
-        ```
+    $ kubectl -n knative-serving get pods
+    NAME                                     READY   STATUS    RESTARTS   AGE
+    activator-665d7d76b7-fc2x5               1/1     Running   0          42m
+    autoscaler-779b955d67-zpcqr              1/1     Running   0          42m
+    controller-69b7d4cd45-r2cnl              1/1     Running   0          18m
+    net-kourier-controller-cf85dbc87-rbfpw   1/1     Running   0          42m
+    webhook-6c655cb488-2mm26                 1/1     Running   0          42m
+    ```
 
-        确认一切服务正常运行。
+确认一切服务正常运行。
 
 ## 安装 CSGHub Helm Chart
 
@@ -360,7 +353,7 @@ kubectl get pods -A
 如果你有多个 config 文件，可以通过`.kube/config*`的方式存放在目标目录下，Secret 创建后会统一存储。
 
 ```shell
-# 此命名空间后面也会用户
+# 此命名空间后面也会用到
 kubectl create ns csghub 
 # 创建 Secret
 kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
@@ -412,7 +405,7 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
         	--set global.runner.internalDomain[0].port=32497
         ```
 
-​		因为配置复杂性因素，NodePort 端口被定义为如下映射：80/30080, 443/30443, 22/30022。
+        因为配置复杂性因素，NodePort 端口被定义为如下映射：80/30080, 443/30443, 22/30022。
 
 3. DNS 解析
 
@@ -450,7 +443,9 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
 
     用户名：root
 
-    密码：见 helm install 输出，格式如下：
+    密码：
+
+    *见 helm install 输出，格式如下：*
 
     ```shell
     ......
