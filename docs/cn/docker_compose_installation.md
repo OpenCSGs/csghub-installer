@@ -195,3 +195,7 @@ CSGHub默认安装使用的是一个insecure registry（即上面提到的: 110.
    ```
 
 注意：此配置直接生效，无须重启
+
+## 通过阿里云计算巢一键部署
+我们提供了一键部署到阿里云的方案的解决方案，只需填写相关配置，
+[部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-712413c5c35c47b3a42c)
