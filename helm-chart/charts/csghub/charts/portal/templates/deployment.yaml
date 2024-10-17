@@ -69,7 +69,7 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
       containers:
         - name: portal
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.portal.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.portal.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "/myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
           ports:

@@ -47,7 +47,7 @@ spec:
       {{- end }}
       containers:
         - name: postgresql
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.postgresql.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.postgresql.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
             - containerPort: 5432

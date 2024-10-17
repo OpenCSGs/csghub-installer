@@ -47,7 +47,7 @@ spec:
       {{- end }}
       containers:
         - name: registry
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.registry.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.registry.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
             - containerPort: 5000
