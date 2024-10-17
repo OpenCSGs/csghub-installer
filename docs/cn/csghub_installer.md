@@ -6,6 +6,7 @@
 1. compose方式部署的CSGhub实例可用于测试和试用，生产环境推荐使用helm chart方式安装。
 1. compose方式部署的CSGHub实例不能直接使用依赖kubernetes平台的部分功能，比如应用空间，模型推理和模型微调。kubernetes平台部署和对接配置不在compose脚本功能范围之内，需要手动进行配置，具体配置对接方法可参见[配置对接Kubernetes](./docker-compose/csghub/README.md#configure-kubernetes)
 1. 从CSGHub v0.9.0版本开始，CSGHub不再对gitea后端提供持续支持，推荐使用gitaly后端进行安装。
+1. 提供一键部署到阿里云的解决方案，[部署链接](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-712413c5c35c47b3a42c)
 1. compose安装部署方式详见[文档](./docker-compose/csghub/README.md)
 
 #### Helm Chart

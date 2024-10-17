@@ -191,3 +191,7 @@ restart `containerd` service
    ```
 
 Note: This configuration takes effect directly without restarting
+
+## One-click Deployment on Alibaba Cloud 
+We provide a solution for one-click deployment to AliCloud, by using Alibaba Cloud ComputeNest,only the relevant configuration information is needed to implement CSGHub one-click deployment and configuration of kubernetes.
+[Deployment Link](https://computenest.console.aliyun.com/service/instance/create/cn-hangzhou?type=user&ServiceId=service-712413c5c35c47b3a42c)
