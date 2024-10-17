@@ -80,7 +80,7 @@ spec:
               {{- end }}
       containers:
         - name: casdoor
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.casdoor.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.casdoor.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
             - containerPort: 8000

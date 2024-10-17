@@ -68,7 +68,7 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
       containers:
         - name: user
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion (default .Values.global.server.image.tag .Values.global.user.image.tag) }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.server.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub user launch" ]
           ports:

@@ -60,7 +60,7 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
       containers:
         - name: runner
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion (default .Values.global.server.image.tag .Values.global.runner.image.tag) }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.server.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "deploy", "runner" ]
           ports:
@@ -120,8 +120,8 @@ spec:
             {{- $exists := lookup "v1" "Secret" .Release.Namespace .Values.global.runner.kubeConfig.secretName }}
             {{- if $exists }}
             secretName: {{ .Values.global.runner.kubeConfig.secretName }}
-            {{- else }}
-              {{ fail "You must specify a kube config secret (you need to create it yourself)" }}
+{{/*            {{- else }}*/}}
+{{/*              {{ fail "You must specify a kube config secret (you need to create it yourself)" }}*/}}
             {{- end }}
         - name: docker-daemon
           configMap:

@@ -55,7 +55,7 @@ spec:
               readOnly: false
       containers:
         - name: gitlab-shell
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.gitlabShell.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.gitlabShell.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/bash", "-c", "cp /opt/gitlab-shell/{config.yml,.gitlab_shell_secret} /srv/gitlab-shell/ && /scripts/process-wrapper" ]
           ports:

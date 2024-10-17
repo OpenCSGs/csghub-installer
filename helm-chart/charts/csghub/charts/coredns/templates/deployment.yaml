@@ -45,7 +45,7 @@ spec:
       {{- end }}
       containers:
         - name: coredns
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.coredns.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.coredns.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           args: [ "-conf", "/var/opt/coredns/corefile" ]
           ports:
