@@ -21,6 +21,8 @@ data:
   STARHUB_SERVER_CASDOOR_ENDPOINT: {{ include "casdoor.external.endpoint" . | quote }}
   STARHUB_SERVER_CASDOOR_ORGANIZATION_NAME: "OpenCSG"
   STARHUB_SERVER_CASDOOR_APPLICATION_NAME: "CSGHub"
+  disable-re-injection.sql: |
+    {{ .Files.Get "disable-re-injection.sql" | nindent 4 }}
   app.conf: |
     appname = casdoor
     httpport = 8000

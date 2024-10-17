@@ -1,0 +1,77 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.casdoor (omit .Values "global" "exports") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation, hook-succeeded
+    {{- with $conf.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: psql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done; psql -f /init/disable-re-injection.sql" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include  "common.names.custom" (list . "postgresql") }}
+            {{- end  }}
+          env:
+            {{- if .Values.global.postgresql.enabled }}
+            - name: PGHOST
+              value: {{ include "postgresql.internal.domain" . }}
+            - name: PGPORT
+              value: {{ include "postgresql.internal.port" . | quote }}
+            - name: PGDATABASE
+              value: "casdoor"
+            - name: PGUSER
+              value: "casdoor"
+            - name: PGPASSWORD
+              value: "$(casdoor)"
+            {{- else }}
+            - name: PGHOST
+              value: {{ $conf.postgresql.host }}
+            - name: PGPORT
+              value: {{ $conf.postgresql.port | quote }}
+            - name: PGDATABASE
+              value: {{ $conf.postgresql.database }}
+            - name: PGUSER
+              value: {{ $conf.postgresql.user }}
+            - name: PGPASSWORD
+              value: {{ $conf.postgresql.password }}
+            {{- end }}
+          volumeMounts:
+            - name: re-injection
+              mountPath: /init
+      volumes:
+        - name: re-injection
+          configMap:
+            name: {{ include "common.names.custom" . }}
