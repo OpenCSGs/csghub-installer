@@ -60,7 +60,7 @@ spec:
             {{- end }}
       containers:
         - name: builder
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.builder.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.builder.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
             - containerPort: 8080

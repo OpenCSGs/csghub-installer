@@ -47,7 +47,7 @@ spec:
       {{- end }}
       containers:
         - name: minio
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.minio.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.minio.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           args: ["server", "/data", "--console-address", ":9001"]
           ports:

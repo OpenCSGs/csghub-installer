@@ -55,7 +55,7 @@ spec:
               mountPath: /scripts
       containers:
         - name: watcher
-          image: {{ $conf.image.repository }}:{{ default .Chart.AppVersion .Values.global.watcher.image.tag }}
+          image: {{ $conf.image.repository }}:{{ .Values.global.watcher.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           env:
             - name: NAMESPACE
