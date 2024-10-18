@@ -385,7 +385,7 @@ services:
       - ./casdoor:/starhub-bin/casdoor:r
 
   casdoor:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.571.0
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0
     ports:
       - "8087:8000"
     depends_on:
