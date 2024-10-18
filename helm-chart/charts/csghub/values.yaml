@@ -523,7 +523,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor
       ## Defines the specific version of the Runner image to use.
-      tag: v1.725.0
+      # tag: v1.733.0
     ## Specifies the location and credentials for accessing the external PostgreSQL database.
     postgresql: { }
       ## Specifies the host address of the PostgreSQL database server.

@@ -51,6 +51,7 @@ data:
     quota = {"organization": -1, "user": -1, "application": -1, "provider": -1}
     logConfig = {"filename": "logs/casdoor.log", "maxdays":99999, "perm":"0770"}
     initDataFile = "/conf/init_data.json"
+    initDataNewOnly = true
     frontendBaseDir = "../casdoor"
   init_data.json: |
     {
