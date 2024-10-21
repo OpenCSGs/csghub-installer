@@ -100,41 +100,45 @@ confirm_action() {
           exit 1  # 返回失败并退出
           ;;
         *)
-          log "ERROR" "Invalid input. Please enter 'yes' or 'no'."
+          log "ERRO" "Invalid input. Please enter 'yes' or 'no'."
           ;;
       esac
   done
 }
 
 # Detect operating system and architecture
-OS=""
 ARCH=$(uname -m)
+if [[ "$ARCH" != "x86_64" && "$ARCH" != "aarch64" ]]; then
+  log "ERRO" "Unsupported architecture. This script supports only x86_64(amd64) and aarch64(arm64)."
+  exit 1
+fi
 
-if [ "$ARCH" = "x86_64" ]; then
-  if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    case $ID in
-      ubuntu)
-        OS="ubuntu"
-        log "INFO" "Installing dependencies for Ubuntu..."
-        apt update &>/dev/null && apt install -y curl wget unzip jq &>/dev/null
-        ;;
-      centos)
-        OS="centos"
-        log "INFO" "Installing dependencies for Centos..."
-        yum install -y curl wget unzip jq &>/dev/null
-        ;;
-      *)
-        log "ERROR" "Unsupported Linux distribution."
-        exit 1
-        ;;
-    esac
-  else
-    log "ERROR" "Cannot determine the operating system."
-    exit 1
-  fi
+OS=""
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  case $ID in
+    ubuntu|debian)
+      OS="debian-based"
+      log "INFO" "Installing dependencies for Debian/Ubuntu..."
+      apt update &>/dev/null && apt install -y curl wget unzip jq &>/dev/null
+      ;;
+    centos|rhel|fedora)
+      OS="fedora-based"
+      log "INFO" "Installing dependencies for CentOS/RHEL/Fedora..."
+      yum install -y curl wget unzip jq &>/dev/null || dnf install -y curl wget unzip jq &>/dev/null
+      ;;
+    arch)
+      OS="arch"
+      log "INFO" "Installing dependencies for Arch Linux..."
+      pacman -Syu --noconfirm curl wget unzip jq &>/dev/null
+      ;;
+    *)
+      log "ERRO" "Unsupported Linux distribution: $ID."
+      exit 1
+      ;;
+  esac
 else
-  log "ERROR" "Unsupported architecture. This script supports only x86_64."
+  log "ERRO" "Cannot determine the operating system."
   exit 1
 fi
 log "INFO" "Detected OS: ${OS} on ${ARCH} architecture."
@@ -236,6 +240,7 @@ EOF
 
   if [ $? -ne 0 ]; then
       log "ERRO" "Failed to create storageClass."
+      exit 1
   fi
 
   if ! kubectl get ns local-path-storage &>/dev/null; then
