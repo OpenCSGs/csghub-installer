@@ -405,6 +405,7 @@ if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
     --namespace knative-serving \
     --type merge \
     --patch '{"data":{"app.internal":""}}'
+
   # Verify if Kourier patched with service type NodePort
   if [ $? -ne 0 ]; then
     log "ERRO" "Failed to patch Knative Serving configure to use self internal domain."
@@ -607,15 +608,26 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
 
   log "INFO" "Installing NVIDIA helm chart..."
   retry helm upgrade -i nvdp nvdp/nvidia-device-plugin \
-          --namespace nvidia-device-plugin \
+          --namespace nvdp \
           --create-namespace \
+          --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin:v0.16.2 \
           --set gfd.enabled=true
 
-#  log "INFO" "Add labels for all nodes."
-#  NODES=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.allocatable}{"\n"}{end}' | awk '{print $1}')
-#  for NODE in $NODES; do
-#    kubectl label node "$NODE" nvidia.com/mps.capable=true nvidia.com/gpu=true
-#  done
+  log "INFO" "Replace all nvidia-device-plugin images to local."
+  retry kubectl -n nvdp patch deployment nvdp-node-feature-discovery-master -p='{"spec":{"template":{"spec":{"containers":[{"name":"master","image":"opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nfd/node-feature-discovery:v0.15.3"}]}}}}'
+  retry kubectl -n nvdp patch daemonset nvdp-node-feature-discovery-worker -p='{"spec":{"template":{"spec":{"containers":[{"name":"worker","image":"opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nfd/node-feature-discovery:v0.15.3"}]}}}}'
+  retry kubectl delete pods --all -n nvdp
+  #  kubectl -n nvdp patch daemonset nvdp-nvidia-device-plugin -p='{"spec":{"template":{"spec":{"containers":[{"name":"nvidia-device-plugin","image":"opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin:v0.16.2"}]}}}}'
+  # retry kubectl -n nvidia-device-plugin patch ds nvdp-nvidia-device-plugin \
+  #        --type='json' \
+  #        -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args", "value": ["--device-discovery-strategy=tegra"]}]'
+
+  log "INFO" "Add labels for all nodes to enable Multi-Process Service."
+  NODES=$(kubectl get nodes -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.allocatable}{"\n"}{end}' | awk '{print $1}')
+  for NODE in $NODES; do
+    # kubectl label node "$NODE" nvidia.com/mps.capable=true nvidia.com/gpu=true
+    kubectl label node "$NODE" nvidia.com/mps.capable=true
+  done
 fi
 
 if [ "$ENABLE_HOSTS" == true ]; then
