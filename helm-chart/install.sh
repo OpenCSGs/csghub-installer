@@ -622,6 +622,10 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
   for NODE in $NODES; do
     # kubectl label node "$NODE" nvidia.com/mps.capable=true nvidia.com/gpu=true
     kubectl label node "$NODE" nvidia.com/mps.capable=true
+
+    GPU_INFO=$(nvidia-smi --query-gpu=name --format=csv,noheader | head -n 1)
+    GPU_MODEL=$(echo "$GPU_INFO" | sed 's/ /-/g')
+    kubectl label node "$NODE" nvidia.com/nvidia_name=${GPU_MODEL}
   done
 fi
 
