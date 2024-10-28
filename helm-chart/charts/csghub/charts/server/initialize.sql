@@ -71,7 +71,7 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 -- for A40
-INSERT INTO space_resources (name, resources,  cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A40G · 4 vCPU · 16 GB', '{"gpu": { "type": "A40", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "nvidia.com/nvidia_name": "NVIDIA-A40" } }, "cpu": { "type": "Intel", "num": "4" },  "memory": "16Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
@@ -79,7 +79,7 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 
-INSERT INTO space_resources (name, resources,  cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A40G · 2 · 12 vCPU · 48 GB', '{"gpu": { "type": "A40", "num": "2", "resource_name": "nvidia.com/gpu", "labels": { "nvidia.com/nvidia_name": "NVIDIA-A40" } }, "cpu": { "type": "Intel", "num": "12" },  "memory": "48Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
