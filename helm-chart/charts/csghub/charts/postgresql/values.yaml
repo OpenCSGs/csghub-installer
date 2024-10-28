@@ -25,9 +25,9 @@ service:
 
 ## You can pass in the parameters you want to modify by executing this parameter.
 ## Currently, only hot loading parameters are supported.
-parameters:
+parameters: { }
   ## Set the timezone for the PostgreSQL database
-  timezone: "Asia/Shanghai"
+  # timezone: "Asia/Shanghai"
 
 ## List of databases to be created upon deployment
 databases:
