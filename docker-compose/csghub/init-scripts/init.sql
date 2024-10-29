@@ -39,7 +39,7 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 
-INSERT INTO space_resources (name, resources,  cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A10G · 4 vCPU · 16 GB', '{"gpu": { "type": "A10", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "4" },  "memory": "16Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
@@ -47,7 +47,7 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 
-INSERT INTO public.space_resources (name, resources, cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A10G · 6 vCPU · 32 GB', '{"gpu": { "type": "A10", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "6" },  "memory": "32Gi" }', (SELECT cluster_id FROM public.cluster_infos LIMIT 1))
 ON CONFLICT (name)
@@ -55,7 +55,7 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 
-INSERT INTO space_resources (name, resources,  cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A10G · 2 · 12 vCPU · 48 GB', '{"gpu": { "type": "A10", "num": "2", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "12" },  "memory": "48Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
 ON CONFLICT (name)
@@ -63,7 +63,24 @@ ON CONFLICT (name)
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
 
-INSERT INTO public.space_resources (name, resources, cluster_id)
+INSERT INTO space_resources (name, resources, cluster_id)
+VALUES
+    ('NVIDIA A10G · 4 · 24 vCPU · 96 GB', '{"gpu": { "type": "A10", "num": "4", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "24" },  "memory": "96Gi" }', (SELECT cluster_id FROM public.cluster_infos LIMIT 1))
+ON CONFLICT (name)
+    DO UPDATE SET
+                  resources = EXCLUDED.resources,
+                  cluster_id = EXCLUDED.cluster_id;
+
+-- for A40
+INSERT INTO space_resources (name, resources, cluster_id)
+VALUES
+    ('NVIDIA A40G · 4 vCPU · 16 GB', '{"gpu": { "type": "A40", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "nvidia.com/nvidia_name": "NVIDIA-A40" } }, "cpu": { "type": "Intel", "num": "4" },  "memory": "16Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
+ON CONFLICT (name)
+    DO UPDATE SET
+                  resources = EXCLUDED.resources,
+                  cluster_id = EXCLUDED.cluster_id;
+
+INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
     ('NVIDIA A10G · 4 · 24 vCPU · 96 GB', '{"gpu": { "type": "A10", "num": "4", "resource_name": "nvidia.com/gpu", "labels": { "aliyun.accelerator/nvidia_name": "NVIDIA-A10" } }, "cpu": { "type": "Intel", "num": "24" },  "memory": "96Gi" }', (SELECT cluster_id FROM public.cluster_infos LIMIT 1))
 ON CONFLICT (name)
@@ -98,8 +115,8 @@ TRUNCATE TABLE runtime_frameworks;
 -- Seed Data for Name: runtime_frameworks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '2.7', 'vllm-local:2.7', 'vllm-cpu:2.3', 1, 8000, 1);
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (2, 'LLaMA-Factory', '1.11', 'llama-factory:1.18-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '2.8', 'vllm-local:2.8', 'vllm-cpu:2.4', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (2, 'LLaMA-Factory', '1.21', 'llama-factory:1.21-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (3, 'TGI', '2.1', 'tgi:2.1', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (4, 'NIM-llama3-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-8b-instruct:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (5, 'NIM-llama3-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-70b-instruct:latest', '', 1, 8000, 1);
@@ -259,39 +276,3 @@ CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
     AFTER INSERT ON public.users
     FOR EACH ROW
 EXECUTE FUNCTION promote_root_to_admin();
-
---
--- Create a trigger function to automatically enable LLaMA-Factory model fine-tuning for the model
--- Types:
---  SpaceType     = 0
---  InferenceType = 1
---  FinetuneType  = 2
---
--- Hint: Only used as a test environment, please choose the enterprise version for production environment
---
-
-CREATE OR REPLACE FUNCTION enable_model_fine_tuning()
-    RETURNS trigger AS $$
-BEGIN
-    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
-    SELECT
-        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory'),
-        NEW.repository_id,
-        2
-    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'LLaMA-Factory') IS NOT NULL;
-
-    INSERT INTO public.repositories_runtime_frameworks (runtime_framework_id, repo_id, type)
-    SELECT
-        (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM'),
-        NEW.repository_id,
-        1
-    WHERE (SELECT id FROM public.runtime_frameworks WHERE frame_name = 'VLLM') IS NOT NULL;
-
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE TRIGGER trigger_enable_model_fine_tuning
-    AFTER INSERT ON public.models
-    FOR EACH ROW
-EXECUTE PROCEDURE enable_model_fine_tuning();

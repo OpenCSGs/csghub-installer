@@ -12,7 +12,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
-    resource.dependencies/deployments: "{{ include "common.names.custom" (list . "user") }}"
+    resource.dependencies/deployments: "{{ include "common.names.custom" (list . "user") }} {{ include "common.names.custom" . }}"
     {{- with $conf.annotations }}
       {{- . | toYaml | nindent 4 }}
     {{- end }}
