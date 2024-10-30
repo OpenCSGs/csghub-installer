@@ -612,6 +612,7 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
   retry helm upgrade -i nvdp nvdp/nvidia-device-plugin \
           --namespace nvdp \
           --create-namespace \
+          --set runtimeClassName=nvidia \
           --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin:v0.16.2 \
           --set gfd.enabled=true
 
@@ -620,8 +621,9 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
   retry kubectl -n nvdp patch daemonset nvdp-node-feature-discovery-worker -p='{"spec":{"template":{"spec":{"containers":[{"name":"worker","image":"opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nfd/node-feature-discovery:v0.15.3"}]}}}}'
   retry kubectl delete pods --all -n nvdp
   #  kubectl -n nvdp patch daemonset nvdp-nvidia-device-plugin -p='{"spec":{"template":{"spec":{"containers":[{"name":"nvidia-device-plugin","image":"opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin:v0.16.2"}]}}}}'
-  # retry kubectl -n nvidia-device-plugin patch ds nvdp-nvidia-device-plugin \
-  #        --type='json' \
+  retry kubectl -n nvidia-device-plugin patch ds nvdp-nvidia-device-plugin \
+          --type='json' \
+          -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args", "value": ["--device-discovery-strategy=nvml"]}]'
   #        -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args", "value": ["--device-discovery-strategy=tegra"]}]'
 
   log "INFO" "Add labels for all nodes to enable Multi-Process Service."
