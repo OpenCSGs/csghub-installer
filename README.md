@@ -7,6 +7,11 @@ This project provides installation scripts and configuration files for deploying
 Please go to [here](https://github.com/OpenCSGs/csghub) for more details information about CSGHub.
 
 ### Installation methods 
+#### Docker 
+1. The docker deployment method is mainly used for simple functional experience testing. It has just been launched and some functions are not yet perfect. They will be supplemented later.
+2. Functions that depend on k8s are not yet completed.
+3. For mor details about docker installation, please refer to [docker](./docker/README.md)
+
 #### Docker Compose
 1. compose mode can be used for test and develop purpose. It is recommended to use helm chart installation for production environments.
 1. CSGHub instance that deployed with compose mode cannot directly use functions which rely on the kubernetes platform, such as space, model inference, and model fine-tuning. Kubernetes's deployment and configuration are not within the scope of the compose installation method, it needs further manual configurations which can be found [here](./docker-compose/csghub/README.md#configure-kubernetes)
