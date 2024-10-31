@@ -8,7 +8,9 @@ CSGHub is committed to bringing users an asset management platform that is nativ
 
 ## Deployment
 
-Currently, there are two official deployment methods:
+Currently, there are three official deployment methods:
+
+- [Docker](../../docker/README.md)
 
 - [Docker Compose](../../docker-compose/README.md)
 
@@ -379,6 +381,8 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
             - `port`: The `NodePort` port corresponding to 80 exposed by the [Kourier component service](#kourier-svc). In this example, it is `32497`.
 
     - LoadBalancer
+
+      <font color='red'>*Hint: If you are using the [automatic installation script](https://github.com/OpenCSGs/csghub-installer/blob/main/helm-chart/README.md#quick-deployment) or do not have the LoadBalancer supply capability, please use the NodePort method to install it. Otherwise, csghub will occupy port 22 of the local machine after installation. If you insist on using the LoadBalancer service type for installation, please modify the server sshd service port to a non-port 22 in advance.*</font>
 
         ```shell
         helm install csghub csghub/csghub \

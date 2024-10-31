@@ -16,13 +16,22 @@ Recommended operating system:
 
 ```shell
 # <domain>: like example.com
+## default ingress service type: NodePort
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/install.sh | bash -s -- <domain>
 
-# If enable Nvidia GPU
+## If using LoadBalancer 
+## Hint: If you are using the [automatic installation script](https://github.com/OpenCSGs/csghub-installer/blob/main/helm-chart/README.md#quick-deployment) 
+## or do not have the LoadBalancer supply capability, please use the NodePort method to install it. Otherwise, csghub will occupy port 22 of the local machine after installation. 
+## If you insist on using the LoadBalancer service type for installation, please modify the server sshd service port to a non-port 22 in advance.
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/install.sh | INGRESS_SERVICE_TYPE=LoadBalancer bash -s -- <domain>
+
+## If enable Nvidia GPU
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/install.sh | ENABLE_NVIDIA_GPU=true bash -s -- <domain>
 ```
 
 ## Manual deployment
+
+- [Details Reference](../docs/en/helm_chart_installation_detail_en.md)
 
 ### Prerequisites
 - Kubernetes 1.20+
