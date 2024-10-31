@@ -154,7 +154,11 @@ if [ "$ENABLE_K3S" == "true" ]; then
 EOF
 
   log "INFO" "Installing K3S..."
-  retry curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION=v1.30.4+k3s1 sh -s - --disable=traefik
+  if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
+    retry curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION=v1.30.4+k3s1 sh -s - --disable=traefik --default-runtime=nvidia
+  else
+    retry curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION=v1.30.4+k3s1 sh -s - --disable=traefik
+  fi
   chmod 0400 /etc/rancher/k3s/k3s.yaml
   export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
