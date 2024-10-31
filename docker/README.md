@@ -4,12 +4,6 @@
 
 This is a project that manages all components of csghub in a unified way. Currently, the overall image is relatively large and will be optimized later.
 
-## Build
-
-```shell
-docker build -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-all-in-one:v1.0.0 .
-```
-
 ## Usage
 
 ```shell
