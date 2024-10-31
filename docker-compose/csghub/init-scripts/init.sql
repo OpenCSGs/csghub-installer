@@ -70,7 +70,6 @@ ON CONFLICT (name)
     DO UPDATE SET
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
-
 -- for A40
 INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
@@ -79,6 +78,15 @@ ON CONFLICT (name)
     DO UPDATE SET
                   resources = EXCLUDED.resources,
                   cluster_id = EXCLUDED.cluster_id;
+
+INSERT INTO space_resources (name, resources,  cluster_id)
+VALUES
+    ('NVIDIA A40G · 8 vCPU · 32 GB', '{"gpu": { "type": "A40", "num": "1", "resource_name": "nvidia.com/gpu", "labels": { "nvidia.com/nvidia_name": "NVIDIA-A40" } }, "cpu": { "type": "Intel", "num": "8" },  "memory": "32Gi" }', (SELECT cluster_id FROM cluster_infos LIMIT 1))
+ON CONFLICT (name)
+    DO UPDATE SET
+                  resources = EXCLUDED.resources,
+                  cluster_id = EXCLUDED.cluster_id;
+
 
 INSERT INTO space_resources (name, resources, cluster_id)
 VALUES
@@ -98,9 +106,9 @@ TRUNCATE TABLE runtime_frameworks;
 -- Seed Data for Name: runtime_frameworks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '2.8', 'vllm-local:2.8', 'vllm-cpu:2.4', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '3.1', 'vllm-local:3.1', 'vllm-cpu:2.4', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (2, 'LLaMA-Factory', '1.21', 'llama-factory:1.21-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (3, 'TGI', '2.1', 'tgi:2.1', '', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (3, 'TGI', '3.0', 'tgi:3.0', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (4, 'NIM-llama3-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-8b-instruct:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (5, 'NIM-llama3-70b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-70b-instruct:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (6, 'NIM-llama-3-swallow-70b-instruct-v0.1', 'latest', 'nvcr.io/nim/tokyotech-llm/llama-3-swallow-70b-instruct-v0.1:latest', '', 1, 8000, 1);
