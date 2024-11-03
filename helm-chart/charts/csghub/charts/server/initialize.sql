@@ -106,7 +106,7 @@ TRUNCATE TABLE runtime_frameworks;
 -- Seed Data for Name: runtime_frameworks; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '3.1', 'vllm-local:3.1', 'vllm-cpu:2.4', 1, 8000, 1);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (1, 'VLLM', '3.0', 'vllm-local:3.0', 'vllm-cpu:2.4', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (2, 'LLaMA-Factory', '1.21', 'llama-factory:1.21-cuda12.1-devel-ubuntu22.04-py310-torch2.1.2', '', 1, 8000, 2);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (3, 'TGI', '3.0', 'tgi:3.0', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (4, 'NIM-llama3-8b-instruct', 'latest', 'nvcr.io/nim/meta/llama3-8b-instruct:latest', '', 1, 8000, 1);
