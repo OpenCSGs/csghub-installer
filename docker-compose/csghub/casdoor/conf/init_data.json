@@ -6,7 +6,7 @@
       "displayName": "OpenCSG",
       "websiteUrl": "https://door.casdoor.com",
       "favicon": "",
-      "passwordType": "plain",
+      "passwordType": "sha512-salt",
       "passwordSalt": "",
       "passwordOptions": [],
       "countryCodes": [
