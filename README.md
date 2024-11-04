@@ -7,6 +7,15 @@ This project provides installation scripts and configuration files for deploying
 Please go to [here](https://github.com/OpenCSGs/csghub) for more details information about CSGHub.
 
 ### Installation methods 
+
+**Choose the right method for your deployment:**
+
+**【Recommend for quick-start】** If you are trying CSGHub for fast-try on your test/dev environment without complicated configs, you could go to the [Docker](#docker) section
+
+**【Recommend for production-env】** If you are using CSGHub for production envirement with kubernetes supported, you should go to the [HelmChart](#helm-chart) section
+
+If you are familar with Docker Compose and trying to use CSGHub, you could go to the [DockerCompose](#docker-compose) section
+
 #### Docker 
 1. The docker deployment method is mainly used for simple functional experience testing. It has just been launched and some functions are not yet perfect. They will be supplemented later.
 2. Functions that depend on k8s are not yet completed.
