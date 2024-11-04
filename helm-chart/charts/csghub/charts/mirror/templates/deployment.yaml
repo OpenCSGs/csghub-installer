@@ -92,6 +92,10 @@ spec:
               {{- end }}
             - name: STARHUB_DATABASE_DSN
               value: "postgresql://$(STARHUB_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(STARHUB_DATABASE_HOST):$(STARHUB_DATABASE_PORT)/$(STARHUB_DATABASE_NAME)?sslmode=disable"
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
+              value: "$(MINIO_ROOT_PASSWORD)"
             {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
@@ -132,6 +136,10 @@ spec:
               {{- end }}
             - name: STARHUB_DATABASE_DSN
               value: "postgresql://$(STARHUB_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(STARHUB_DATABASE_HOST):$(STARHUB_DATABASE_PORT)/$(STARHUB_DATABASE_NAME)?sslmode=disable"
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
+              value: "$(MINIO_ROOT_PASSWORD)"
             {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
