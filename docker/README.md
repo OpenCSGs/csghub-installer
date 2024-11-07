@@ -1,33 +1,30 @@
-# CSGHub Quick Deployment Guide
+# CSGHub Quick Deployment Guide  
 
-## Overview
+## Overview  
 
-CSGHub offers a one-click Docker deployment solution designed for users who wish to quickly test and experience CSGHub's functionalities. By deploying in Docker's All-in-One mode, users can swiftly launch a CSGHub instance in their local environment (Linux/MacOS/Windows) without complex configuration steps. This deployment method is ideal for functionality testing and basic demonstrations, providing easy access to CSGHub's core features, including model and dataset management, model inference, and fine-tuning.
+CSGHub provides a streamlined Docker deployment solution for quick testing and evaluation. The All-in-One Docker container allows users to instantly deploy CSGHub on their local machine (Linux/MacOS/Windows) with minimal setup.  
+This deployment approach is perfect for proof of concept and testing purposes, enabling users to immediately access CSGHub's core features including model/dataset management, inference, and fine-tuning.  
 
-> **Note:**
-> The Docker one-click deployment mode is **not intended for production use** (it does not support high availability, and some configurations are hardcoded within the container).
+> **Note:**  
+> This deployment method is **not intended for production use** (lacks high availability support and contains hardcoded configurations).  
 
-## Key Benefits
+## Advantages  
 
-- **Quick Setup**: Deploy a CSGHub instance in your local environment with a single command, enabling fast access to core functionality and feature exploration.
-- **Centralized Management**: Easily upload, download, and sync models and datasets, allowing users to experience end-to-end LLM management workflows.
-- **Focus on Your Business**: CSGHub handles all configuration and tasks related to LLM management, enabling users to focus on their core objectives without needing to manage underlying infrastructure.
+- **Quick Setup:** One-command deployment for rapid testing and demos.  
+- **Unified Management:** Integrated model and dataset management featuring remote synchronization.  
+- **Zero Configuration:** Streamlined LLM operations without configuration overhead.  
 
-## System Requirements
+## Prerequisites  
 
-- **Supported Operating Systems**: Linux, MacOS, Windows
-- **Required Tool**: Docker (Download the compatible version from the [Docker official website](https://www.docker.com/))
+- **Supported OS**: Linux, MacOS, Windows  
+- **Required Tool**: Docker installed (Download from [Docker official website](https://www.docker.com/))  
 
-## Quick Installation Steps
+## Installation Steps  
 
-Follow these steps to quickly deploy CSGHub using Docker:
+Follow these steps to quickly deploy CSGHub:
 
-**1. Clone the required files using Git**
-
-`git clone https://github.com/OpenCSGs/csghub.git`
-
-**2. Start the Docker Container**
-Run the following command in your terminal to start the CSGHub container (replace `<ip address>` with your machine's IP address):
+**1. Launch Container**  
+Run the following command in your terminal to start the CSGHub container, replacing `<ip address>` with your local IP:  
 
 ```shell
 docker run -it -d --name csghub --hostname csghub \
@@ -36,49 +33,47 @@ docker run -it -d --name csghub --hostname csghub \
     -p 8000:8000 \
     -p 9000:9000 \
     -e SERVER_DOMAIN=<ip address> \
-    -v /srv/opt:/var/opt \
-    -v /srv/log:/var/log \
     opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub-all-in-one:v1.0.0
 ```
 
-This command will launch an All-in-One CSGHub container that includes essential components for model and dataset management, inference, and fine-tuning.
+This creates an All-in-One CSGHub container with everything you need for model/dataset management, inference, and fine-tuning.  
 
-> How to Find Your IP Address:
+> Finding Your IP Address:  
 >
-> - **Linux:** In the terminal, type **ifconfig** and locate the IP address following the **inet** field.
-> - **MacOS:** In the terminal, type **ifconfig** and check the **en0** (typically Wi-Fi) or **en1** (wired connection) section for the **inet** field.
-> - **Windows:** Press **Win + R**, enter **cmd** to open Command Prompt, then type **ipconfig** and locate the **IPv4 Address**.
+> - **Linux:** Run **ifconfig** and look for the **inet** address  
+> - **MacOS:** Run **ifconfig** and check **en0** (WiFi) or **en1** (ethernet) for the **inet** address  
+> - **Windows:** Press **Win + R**, type **cmd**, then run **ipconfig** and look for **IPv4 Address**  
 
-> Note: The current CSGHub image supports the AMD64 platform. If you see a warning similar to the one below, you may safely ignore it.
-*WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested.*
+> Note: The CSGHub image supports AMD64 platforms. You can safely ignore warnings like:  
+*WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
+c18a023b21c5619b1b613bf6dd215942cd9adec6d61d5e1d4b9e2795bee62cd0*  
 
-**3. Access and Log in to CSGHub**
-Once the deployment is complete, you can access and log in to CSGHub using the following information:
+**2. Access CSGHub**  
+Once deployed, connect to CSGHub using:  
 
-Access URL: `http://<ip address>`
-Username: `root`
-Password: `Um9vdEAxMjM0NTY=`
+- Access URL: `http://<ip address>`  
+- Username: `root`  
+- Password: `Um9vdEAxMjM0NTY=`  
 
-**4. Feature Verification**
-After accessing CSGHub, you can explore the following key features:
+**3. Explore Features**  
 
-- Model Management: Quickly upload and manage various types of model files, with support for remote model synchronization and multi-user collaboration.
-- Dataset Management: Upload, download, and manage datasets for streamlined testing and validation.
-- Inference and Fine-Tuning: Use CSGHub's intuitive interface to perform model inference or fine-tuning, ideal for end-to-end customer use cases.
+CSGHub offers several key capabilities:  
 
-**5. Stop or Remove the CSGHub Container**
+- Model Management: Easily upload and manage models with support for remote synchronization and team collaboration.  
+- Dataset Management: Streamlined tools for handling your datasets - perfect for quick testing and validation.  
+- Inference & Fine-tuning: User-friendly interfaces for running inferences and fine-tuning models, suitable for end-to-end use cases.  
 
-- Use the following command to check the running status of the CSGHub container:
+**4. Manage CSGHub Container**  
 
-  ```
-  docker ps -a | grep csghub
-  ```
+```shell
+# Check running status
+docker ps -a | grep csghub
 
-- To stop or remove the CSGHub container, use the following commands:
+# Stop container
+docker stop csghub
 
-  ```
-  docker stop csghub
-  docker rm csghub
-  ```
+# Remove container
+docker rm csghub
+```
 
-Following these steps, you can quickly deploy and run CSGHub locally to explore its core functionalities.
+With these steps, you'll have CSGHub running locally and be all set to explore its core features!
