@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -e
+
+if [ -f "/etc/nats/nats.conf.sample" ]; then
+  export BCRYPT_NATS_PASSWORD=$(htpasswd -Bbn "$NATS_USERNAME" "$NATS_PASSWORD" | cut -d : -f 2)
+  envsubst < /etc/nats/nats.conf.sample > /etc/nats/nats.conf
+fi
+
+if [ -f "/etc/nats/nats.conf" ]; then
+  echo "Starting nats server..."
+  exec /usr/bin/nats-server -c /etc/nats/nats.conf
+fi
