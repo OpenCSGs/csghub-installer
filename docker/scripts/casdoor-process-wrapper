@@ -1,0 +1,30 @@
+#!/bin/bash
+
+set -e
+
+export PGHOST=${POSTGRES_HOST}
+export PGPORT=${POSTGRES_PORT}
+export PGUSER=${POSTGRES_CASDOOR_USER}
+export PGPASSWORD=${POSTGRES_CASDOOR_PASS:-"$POSTGRES_CASDOOR_USER"}
+export PGDATABASE=${POSTGRES_CASDOOR_DB:-"$POSTGRES_CASDOOR_USER"}
+
+check_postgresql() {
+  echo "Waiting PostgreSQL ready..."
+  until su - postgres -lc 'psql -t -A -c \\du' | grep -q "${POSTGRES_CASDOOR_USER}"; do
+    sleep 2
+  done
+  echo "PostgreSQL is ready."
+}
+
+check_postgresql
+
+export POSTGRES_CASDOOR_PASS=${POSTGRES_CASDOOR_PASS:-POSTGRES_CASDOOR_USER}
+export POSTGRES_CASDOOR_DB=${POSTGRES_CASDOOR_DB:-$POSTGRES_CASDOOR_USER}
+
+if [ -f "/etc/casdoor/app.conf.sample" ] && [ -f "/etc/casdoor/init_data.json.sample" ]; then
+  envsubst < /etc/casdoor/app.conf.sample > /etc/casdoor/conf/app.conf
+  envsubst < /etc/casdoor/init_data.json.sample > /etc/casdoor/conf/init_data.json
+fi
+
+echo "Starting casdoor..."
+cd /etc/casdoor && exec /usr/bin/casdoor

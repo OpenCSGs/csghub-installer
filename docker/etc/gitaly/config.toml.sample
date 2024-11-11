@@ -1,0 +1,35 @@
+## Gitaly configuration (default)
+# The directory where Gitaly's executables are stored
+bin_dir = "/usr/local/bin"
+
+# listen on a TCP socket. This is insecure (no authentication)
+listen_addr = "127.0.0.1:8075"
+
+# Git executable settings
+[git]
+use_bundled_binaries = true
+
+# storage configuration, expected in $HOME
+[[storage]]
+name = "default"
+path = "/var/opt/gitaly/repositories"
+
+[logging]
+format = "json"
+level = "info"
+dir = "/var/log/gitaly"
+
+[auth]
+token = "${GITALY_TOKEN}"
+
+[gitlab]
+# # URL of the GitLab server.
+url = "http://127.0.0.1:8080"
+# # 'relative_url_root' is only needed if a UNIX socket is used in 'url' and GitLab is configured to
+# # use a relative path. For example, '/gitlab'.
+# relative_url_root = '/'
+# # Path of the file containing the secret token used to authenticate with GitLab. Use either 'secret_token' or 'secret'
+# # but not both.
+# secret_file = "/etc/gitaly/.gitaly_token"
+# # Secret token used to authenticate with GitLab.
+secret = "signing-key"
