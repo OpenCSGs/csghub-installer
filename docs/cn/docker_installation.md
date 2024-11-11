@@ -1,50 +1,49 @@
-# Omnibus CSGHub Quick Deployment
+# Omnibus CSGHub 快速部署文档
 
-> **Tips:**
+> 提示：
 >
-> - This method is currently in the testing phase and is not suitable for production deployment.
-> - Currently only supports the amd64 architecture (supports Docker Desktop Rosetta).
-> - [Chinese Documentation](../docs/cn/docker_installation.md)
+> - 此种方式目前处于测试阶段，暂不适用于生产环境部署。
+> - 目前仅支持 amd64 架构（支持 Docker Desktop Rosetta）。
 
-## Overview
+## 概述
 
-Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainly for rapid functional experience and testing. The Docker deployment method allows users to deploy CSGHub on local computers at a lower cost. This deployment method is very suitable for proof of concept and testing, allowing users to immediately access the core functions of CSGHub (including models, dataset management, Space application creation, and model reasoning and fine-tuning (GPU required)).
+Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种方式，主要用于快速功能体验和测试。Docker 部署方式允许用户以较低成本在本地计算机部署 CSGHub。此种部署方法非常适合概念验证和测试，使用户能够立即访问 CSGHub 的核心功能（包括模型，数据集管理、Space 应用创建以及模型的推理和微调（需要 GPU））。
 
-## Advantages
+## 优势
 
-- **Quick configuration:** Supports one-click deployment and quick start.
-- **Unified management:** Supports integrated model, dataset, space application management, and built-in multi-source synchronization function.
-- **Simple operation:** Supports model inference, fine-tune instance quick start.
+- **快速配置：**支持一键部署，快速启动。
+- **统一管理：**支持集成模型、数据集、Space 应用管理，并内置多源同步功能。
+- **操作简单：**支持模型推理、微调实例快速启动。
 
-## Deployment
+## 部署方式
 
-### Prerequisites
+### 先决条件
 
-- The host used for deployment has [Docker Desktop](https://docs.docker.com/desktop/) or [Docker Engine](https://docs.docker.com/engine/) installed.
-- The operating system is Linux, macOS, Windows, and the configuration is not less than 4c8g.
-- Fine-tune instances requires GPU (currently only supports NVIDIA)
+- 用于部署的主机已安装 [Docker Desktop](https://docs.docker.com/desktop/) 或 [Docker Engine](https://docs.docker.com/engine/)。
+- 操作系统 Linux、macOS、Windows，配置不低于 4c8g。
+- 微调实例需要 GPU（目前仅支持 NVIDIA）
 
-### Installation Steps
+### 安装步骤
 
-> **Tips:**
+> 提示：
 >
-> - HTTPS access configuration is not supported yet, you can adjust the Nginx configuration in the container yourself.
-> - If`SERVER_DOMAIN`and`SERVER_PORT`are modified, it is recommended to delete the persistent data directory and recreate it.
-> - Cloud server`SERVER_DOMAIN = <external public ip>`
+> - HTTPS 访问配置暂时不支持，可自行调整容器内 Nginx 配置。
+> - 如果`SERVER_DOMAIN`和`SERVER_PORT`进行了修改，建议删除持久化数据目录后重新创建。
+> - 云服务器 `SERVER_DOMAIN = <external public ip>`
 
-#### Quick installation (Space and model inference fine-tuning functions cannot be used)
+#### 快速安装（无法使用 Space、模型推理微调功能）
 
 - **Linux**
 
-    > **Tips:**
+    > ***提示：***
     >
-    > - Please replace `<your ip address>` with your host IPv4 address.
+    > - 请自行替换`<your ip address>`为主机 IPv4 地址。
     >
-    > - To view the IPv4 address, enter the following command in the terminal command line:
+    > - IPv4 地址查看方式，终端命令行输入:
     >
     >     `ip -4 -o addr show $(ip route show default | awk '/default/ {print $5}')`
 
-    - Quick start without data persistence volumes
+    - 快速启动（不做数据持久化）
 
         ```shell
         export SERVER_PORT=80
@@ -60,7 +59,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-    - Normal startup with persistent data volumes
+    - 正常启动（持久化数据）
 
         ```shell
         export SERVER_PORT=80
@@ -80,27 +79,27 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
 
 - **macOS**
 
-    > **Tips:**
+    > **提示：**
     >
-    > - To deploy with Docker Desktop, please enable Rosetta. The method to enable it is as follows:
+    > - Docker Desktop 部署请开启 Rosetta，方式如下：
     >
     >     `Settings` > `General` > `Use Rosetta for x86_64/amd64 emulation on Apple Silicon`
     >
-    > - Please replace `<your ip address>` with your host IPv4 address.
+    > - 请自行替换`<your ip address>`为主机 IPv4 地址。
     >
-    > - To view the IPv4 address, enter the following command in the terminal command line:
+    > - IPv4 地址查看方式，终端命令行输入:
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***Note:** Rosetta runs slowly. A container running in rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
+    > ***注意：**Rosetta运行速度较慢。以 rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
 
-    - Manually pull the image
+    - 手动拉取镜像
 
         ```shell
         docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-    - Quick start without data persistence volumes
+    - 快速启动（不做数据持久化）
 
         ```shell
         export SERVER_PORT=80
@@ -116,7 +115,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-    - Normal startup with persistent data volumes
+    - 正常启动（持久化数据）
 
     ```shell
     export SERVER_PORT=80
@@ -136,17 +135,16 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
 
 - **Windows**
 
-    >**Tips:**
+    >***提示：***
     >
-    >- Please replace `<your ip address>` with your host IPv4 address.
+    >- 请自行替换`<your ip address>`为主机 IPv4 地址。
     >
-    >- To view the IPv4 address:
+    >- IPv4 地址查看方式：
     >
-    >   Use the key combination `Win + R`, enter `cmd`, and after the window opens, enter `ipconfig` to obtain the IPv4 address.
-    >   
-    
+    >    组合键 `Win + R`, 输出 `cmd`, 待窗口打开后输入 `ipconfig`获取 IPv4 地址。
+
     - **Powershell**
-    
+
         ```shell
         $env:SERVER_PORT = "80"
         docker run -it -d `
@@ -160,9 +158,9 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
             -e SERVER_PORT=$env:SERVER_PORT `
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
-    
+
     - **CMD**
-    
+
         ```shell
         set SERVER_PORT=80
         docker run -it -d ^
@@ -177,39 +175,39 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-#### General installation (can use Space, model inference fine-tuning features (requires NVIDIA GPU))
+#### 通用安装（可以使用 Space、模型推理微调功能（需要 NVIDIA GPU））
 
 - **Linux**
 
-    >**Prerequisites:**
+    >**前置条件：**
     >
-    >- A Kubernetes cluster with Knative Serving deployed is required.
-    >- For other precautions, see the Quick Installation section.
+    >- 需要一个部署好 Knative Serving 的 Kubernetes 集群。
+    >- 其他注意事项见快捷安装部分。
 
-    - Quickly configure the k8s cluster
+    - 快速配置k8s环境
 
         ```shell
         curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | bash -s
         
-        # If enable NVIDIA GPU
+        # 如果启用 NVIDIA GPU 配置
         curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | ENABLE_NVIDIA_GPU=true bash -s
         ```
 
-    - Configure Docker
+    - 配置 Docker
 
         ```shell
-        # Add insecure registry
+        # 添加 insecure registry
         cat <<EOF > /etc/docker/daemon.json
         {
           "insecure-registries": ["<your ip address>:5000"]
         }
         EOF
         
-        # Restart docker
+        # 重启 docker
         systemctl restart docker
         ```
 
-    - Install csghub
+    - 安装 csghub
 
         ```shell
         export SERVER_PORT=80
@@ -232,7 +230,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
 
 - **macOS / Windows**
 
-    Please configure Kubernetes cluster yourself and make sure the file `~/.kube/config` exists. Then use a command similar to the following to install it:
+    请自行配置 Kubernetes 集群，且保证 `~/.kube/config` 文件存在。然后使用类似如下命令进行安装：
 
     - **macOS**
 
@@ -257,48 +255,45 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
 
     - **Windows**
 
-        Not supported yet.
+        暂未支持。
 
-### Visit CSGHub
+### 访问 CSGHub
 
-After the above deployment is successful, use the following method to access:
+当以上部署成功后使用如下方式进行访问：
 
-Access address: `http://<SERVER_DOMAIN>:<SERVER_PORT>`, for example http://192.168.1.12
+访问地址：`http://<SERVER_DOMAIN>:<SERVER_PORT>`，例如 http://192.168.1.12
 
-Default administrator: `root`
+默认管理员：`root`
 
-Default password: `Root@1234`
+默认密码：`Root@1234`
 
-### Function Exploration
+### 功能探索
 
-CSGHub provides several key functions:
+CSGHub 提供了几个关键功能：
 
-- **Model hosting:**
+**模型托管：**
 
-    - Currently supports model hosting, easy upload and management of models.
+- 目前支持模型的托管，轻松上传和管理模型。
+- 支持创建推理和微调实例（需要 NVIDIA GPU）。
+- 默认以启用多源同步，启动后多源同步会自动开始同步（同步需要一段时间完成）。
 
-    - Supports creating inference and fine-tuning instances (NVIDIA GPU required).
+**数据集托管：**
 
-    - Multi-source synchronization is enabled by default, and multi-source synchronization will automatically start after startup (synchronization takes a while to complete).
+- 用于处理数据集的简化工具 ，非常适合快速测试和验证。
 
+**应用托管：**
 
-**Dataset hosting:**
+- 通过自定义程序和模型组合，快速创建大模型应用。
 
-- Simplified tools for processing datasets, ideal for rapid testing and verification.
+### 销毁容器
 
-**Application hosting:**
-
-- Quickly create large model applications through custom programs and model combinations.
-
-### Destroy the container
-
-If you are not using or need to rebuild the container, you can do the following:
+如果您不在使用或者需要重建容器，可以执行如下操作：
 
 ```shell
 docker rm -f omnibus-csghub
 ```
 
-If you also need to uninstall the k8s environment, you can do the following:
+如果还需要卸载k8s 环境，可以执行如下操作：
 
 ```shell
 /usr/local/bin/k3s-uninstall.sh
