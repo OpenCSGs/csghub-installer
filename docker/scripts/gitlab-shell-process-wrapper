@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+KEYS_DIRECTORY="${KEYS_DIRECTORY:-/etc/ssh}"
+SSH_DAEMON="${SSH_DAEMON:-"gitlab-sshd"}"
+
+if [ -f "/etc/gitlab-shell/.gitaly_token.sample" ]; then
+  envsubst < /etc/gitlab-shell/.gitaly_token.sample > /etc/gitlab-shell/.gitaly_token
+fi
+
+if ls $KEYS_DIRECTORY/ssh_host_* 1> /dev/null 2>&1; then
+  echo "Using existing Host Keys"
+  # copy from KEYS_DIRECTORY to /etc/ssh as needed
+  if [ "$KEYS_DIRECTORY" != "/etc/ssh" ]; then
+      cp $KEYS_DIRECTORY/ssh_host_* "/etc/ssh/"
+  fi
+else
+  echo "Generating Host Keys"
+  # generate host keys, placed into `/etc/ssh`
+  ssh-keygen -A
+  cp /etc/ssh/ssh_host_* "$KEYS_DIRECTORY/"
+fi
+
+if [ "${SSH_DAEMON}" == "gitlab-sshd" ]; then
+  exec /usr/bin/gitlab-sshd -config-dir /etc/gitlab-shell
+else
+  if [ "${USE_GITLAB_LOGGER-0}" -eq 1 ]; then
+    /usr/bin/gitlab-logger /var/log/gitlab-shell &
+  else
+    if command -v xtail >/dev/null; then
+      xtail /var/log/gitlab-shell &
+    else
+      touch /var/log/gitlab-shell/gitlab-shell.log
+      tail -f /var/log/gitlab-shell/* &
+    fi
+  fi
+
+  exec /usr/sbin/sshd -D -E /var/log/gitlab-shell/gitlab-shell.log
+fi

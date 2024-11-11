@@ -1,0 +1,173 @@
+#!/bin/bash
+
+export PGHOST=${POSTGRES_HOST}
+export PGPORT=${POSTGRES_PORT}
+export PGUSER=${POSTGRES_SERVER_USER}
+export PGPASSWORD=${POSTGRES_SERVER_PASS:-"$POSTGRES_SERVER_USER"}
+export PGDATABASE=${POSTGRES_SERVER_DB:-"$POSTGRES_SERVER_USER"}
+
+check_postgresql_isready() {
+  until pg_isready -q -d $PGDATABASE; do
+    sleep 2
+  done
+}
+
+check_postgresql() {
+  check_postgresql_isready
+
+  echo "Waiting PostgreSQL ready..."
+  until su - postgres -lc 'psql -t -A -c \\du' | grep -q "${POSTGRES_SERVER_USER}"; do
+    sleep 2
+  done
+  echo "PostgreSQL is ready."
+}
+
+check_minio() {
+  echo "Waiting MinIO ready..."
+  until /usr/bin/curl -s http://${STARHUB_SERVER_S3_ENDPOINT}/minio/health/live; do
+    sleep 2
+  done
+  echo "MinIO is ready."
+}
+
+check_postgresql
+
+if [ "$MINIO_ROOT_USER" == "minio" ]; then
+  check_minio
+fi
+
+if [ "$STARHUB_SERVER_GITSERVER_TYPE" = "gitea" ]; then
+  # The base64 encoded usename:password
+  AUTH_HEADER=$(echo -n "$GITEA_USERNAME:$GITEA_PASSWORD" | base64)
+  # Function to check if the Gitea service is ready
+  check_gitea() {
+    # Check the availability of the Gitea service
+    # Replace the following command with the appropriate check for your service
+    # For example, using curl to check if the Gitea API responds:
+    curl -s -X GET --url $STARHUB_SERVER_GITSERVER_HOST/api/v1/version --header "Authorization: Basic $AUTH_HEADER" | grep "version"
+  }
+
+  # Wait for the database to be ready
+  # echo "Waiting for the database to be ready..."
+  # until telnet postgres 5432 </dev/null 2>&1 | grep -q "Connected"; do
+  #     sleep 1
+  # done
+  # echo "Database is ready!"
+
+  # Wait for the Gitea service to be ready
+  echo "Waiting for Gitea service to be ready..."
+  until check_gitea; do
+    sleep 3
+  done
+  echo "Gitea service is ready!"
+  echo "Running initialization commands..."
+
+
+  # Delete if the access token named `webhook_access_token` already exist
+  echo "Access token already exist, Delete it..."
+  curl -s -X DELETE --url "$STARHUB_SERVER_GITSERVER_HOST/api/v1/users/$GITEA_USERNAME/tokens/webhook_access_token" --header "Authorization: Basic $AUTH_HEADER"
+
+  echo "Creating access token..."
+  # Create a new access token for $GITEA_USERNAME
+  TOKEN_RESPONSE=$(curl -s -X POST \
+    --url $STARHUB_SERVER_GITSERVER_HOST/api/v1/users/$GITEA_USERNAME/tokens \
+    --data-urlencode "name=webhook_access_token" \
+    --data-urlencode "scopes=read:user,write:user,write:admin,read:admin" \
+    --header "accept: application/json" \
+    --header "Content-Type: application/x-www-form-urlencoded" \
+    --header "Authorization: Basic $AUTH_HEADER")
+
+  # Extract access token from the response
+  STARHUB_SERVER_GITSERVER_SECRET_KEY=$(echo "$TOKEN_RESPONSE" | jq -r '.sha1')
+
+  # Get the system hook list
+  webhooks=$(curl -s -X GET --url "$STARHUB_SERVER_GITSERVER_HOST/api/v1/admin/hooks" --header "Authorization: Basic $AUTH_HEADER")
+
+  # Get the first hook type
+  first_hook_type=$(echo "$webhooks" | jq -r '.[0].type')
+
+  if [ -n "$first_hook_type" ] && [ "$first_hook_type" != "null" ]; then
+    echo "System hook exists"
+  else
+    # Create a webhook to send push events
+    curl -X POST \
+      -H "Content-Type: application/json" \
+      -d '{
+            "type": "gitea",
+            "authorization_header": "Bearer '"$STARHUB_SERVER_API_TOKEN"'",
+            "config": {
+                "is_system_webhook": "true",
+                "url": "'"$STARHUB_SERVER_GITSERVER_WEBHOOK_URL"'",
+                "content_type": "json",
+                "insecure_ssl": "true"
+            },
+            "events": ["push"],
+            "active": true
+            }' \
+      "$STARHUB_SERVER_GITSERVER_HOST/api/v1/admin/hooks?access_token=$STARHUB_SERVER_GITSERVER_SECRET_KEY"
+  fi
+fi
+
+# Create cron job
+cron=""
+read_and_set_cron() {
+  env_variable=$1
+  default_value=$2
+
+  cron=${!env_variable}
+
+  if [[ -z $cron ]]; then
+    cron=$default_value
+  fi
+}
+
+current_cron_jobs=$(crontab -l 2>/dev/null)
+
+if echo "$current_cron_jobs" | grep -qF "logscan gitea"; then
+  echo "Gitea log scan job already exists"
+else
+  echo "Creating cron job for gitea logscan..."
+  read_and_set_cron "STARHUB_SERVER_CRON_LOGSCAN" "0 23 * * *"
+  (crontab -l ;echo "$cron /usr/bin/bash -c \"source /etc/profile && /usr/bin/csghub-server logscan gitea --path /var/log/csghub-server/gitea.log >> /var/log/csghub-server/cron.log 2>&1\"") | crontab -
+fi
+
+if echo "$current_cron_jobs" | grep -qF "calc-recom-score"; then
+  echo "Calculate score job already exists"
+else
+  echo "Creating cron job for repository recommendation score calculation..."
+  read_and_set_cron "STARHUB_SERVER_CRON_CALC_RECOM_SCORE" "0 1 * * *"
+  (crontab -l ;echo "$cron /usr/bin/bash -c \"source /etc/profile && /usr/bin/csghub-server cron calc-recom-score >> /var/log/csghub-server/cron-calc-recom-score.log 2>&1\"") | crontab -
+fi
+
+if [ "$STARHUB_SERVER_SAAS" == "false" ]; then
+  if echo "$current_cron_jobs" | grep -qF "sync-as-client"; then
+    echo "Sync as client job already exists"
+  else
+    echo "Creating cron job for sync saas sync verions..."
+    read_and_set_cron "STARHUB_SERVER_CRON_SYNC_AS_CLIENT" "0 * * * *"
+    (crontab -l ;echo "$cron /usr/bin/bash -c \"source /etc/profile && /usr/bin/csghub-server sync sync-as-client >> /var/log/csghub-server/cron-sync-as-client.log 2>&1\"") | crontab -
+  fi
+else
+  echo "Saas does not need sync-as-client cron job"
+fi
+# Reload cron server
+service cron restart
+echo "Done."
+
+echo "Database setup..."
+echo "Migration init"
+/usr/bin/csghub-server migration init
+
+echo "Migration migrate"
+/usr/bin/csghub-server migration migrate
+
+if [ $(ls -A /etc/.kube/config* 2>dev/null) ]; then
+    echo "Copy kube configs."
+    cp -a /etc/.kube /root
+fi
+
+echo "Reset temporary environments"
+unset PGPASSWORD PGHOST PGPORT PGUSER PGDATABASE
+
+echo "Starting server..."
+exec /usr/bin/csghub-server start server

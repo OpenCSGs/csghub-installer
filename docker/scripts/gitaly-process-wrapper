@@ -1,0 +1,29 @@
+#!/bin/bash
+
+set -e
+
+GITALY_CONFIG_FILE="${GITALY_CONFIG_FILE:-/etc/gitaly/config.toml}"
+PRAEFECT_CONFIG_FILE="${PRAEFECT_CONFIG_FILE:-/etc/gitaly/config.toml}"
+GITALY_DATA="/var/opt/gitaly/repositories"
+
+if [ -f "/etc/gitaly/config.toml.sample" ]; then
+  envsubst < /etc/gitaly/config.toml.sample > /etc/gitaly/config.toml
+fi
+
+if [ ! -d "$GITALY_DATA" ]; then
+  mkdir -p /var/opt/gitaly $GITALY_DATA 2>/dev/null
+fi
+
+if [ "${USE_PRAEFECT_SERVICE:-0}" -eq 1 ]; then
+  echo "Starting praefect..."
+
+  if [ "${PRAEFECT_AUTO_MIGRATE:-1}" -eq 1 ]; then
+    echo "Running migrations"
+    /usr/bin/praefect -config "$PRAEFECT_CONFIG_FILE" sql-migrate
+  fi
+
+  exec /usr/bin/praefect -config "$PRAEFECT_CONFIG_FILE" >> /var/log/gitaly/praefect.log 2>&1
+else
+  echo "Starting gitaly..."
+  exec /usr/bin/gitaly "$GITALY_CONFIG_FILE"
+fi
