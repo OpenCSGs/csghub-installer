@@ -71,7 +71,7 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:ba
 ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /
 
-ARG TAG=v1.0.0
+ARG TAG=release-v1.0
 RUN apt update && apt install -y git && \
     git clone -b $TAG --depth=1 https://ghp.ci/https://github.com/OpenCSGs/csghub-server.git csghub-server
 
@@ -90,7 +90,7 @@ RUN apt update && apt install -y git && \
 RUN cd /casdoor/web && yarn install && yarn build
 RUN cd /casdoor && CGO_ENABLED=0 GOOS=linux go build -o ./casdoor
 
-ARG TAG=v1.0.0
+ARG TAG=release-v1.0
 RUN git clone -b $TAG --depth=1 https://ghp.ci/https://github.com/OpenCSGs/csghub.git csghub-portal
 
 RUN cd /csghub-portal/frontend && yarn install && yarn build
@@ -185,3 +185,7 @@ RUN useradd registry && \
     chmod 0644 /etc/ssh/ssh_host_*
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
+
+# docker build --provenance false \
+#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0 \
+#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest .
