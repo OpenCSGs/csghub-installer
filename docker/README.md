@@ -1,14 +1,14 @@
-# Omnibus CSGHub Quick Deployment
+# CSGHub Omnibus Deployment Guide
 
 > **Tips:**
 >
 > - This method is currently in the testing phase and is not suitable for production deployment.
 > - Currently only supports the amd64 architecture (supports Docker Desktop Rosetta).
-> - [Chinese Documentation](../docs/cn/docker_installation.md)
+> - [中文文档](../docs/zh/README_cn_docker)
 
 ## Overview
 
-Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainly for rapid functional experience and testing. The Docker deployment method allows users to deploy CSGHub on local computers at a lower cost. This deployment method is very suitable for proof of concept and testing, allowing users to immediately access the core functions of CSGHub (including models, dataset management, Space application creation, and model reasoning and fine-tuning (GPU required)).
+Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainly for rapid functional experience and testing. The Docker deployment method allows users to deploy CSGHub on local computers at a lower cost. This deployment method is very suitable for proof of concept and testing, allowing users to immediately access the core functions of CSGHub (including models, dataset management, Space application creation, and model reasoning and fine-tuning (GPU required)).
 
 ## Advantages
 
@@ -118,21 +118,21 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
 
     - Normal startup with persistent data volumes
 
-    ```shell
-    export SERVER_PORT=80
-    docker run -it -d \
-        --name omnibus-csghub \
-        --hostname omnibus-csghub \
-        -p ${SERVER_PORT}:80 \
-        -p 2222:2222 \
-        -p 8000:8000 \
-        -p 9000:9000 \
-        -v ~/Documents/csghub/data:/var/opt \
-        -v ~/Documents/csghub/log:/var/log \
-        -e SERVER_DOMAIN=<your ip address> \
-        -e SERVER_PORT=${SERVER_PORT} \
-        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
-    ```
+        ```shell
+        export SERVER_PORT=80
+        docker run -it -d \
+            --name omnibus-csghub \
+            --hostname omnibus-csghub \
+            -p ${SERVER_PORT}:80 \
+            -p 2222:2222 \
+            -p 8000:8000 \
+            -p 9000:9000 \
+            -v ~/Documents/csghub/data:/var/opt \
+            -v ~/Documents/csghub/log:/var/log \
+            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_PORT=${SERVER_PORT} \
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+        ```
 
 - **Windows**
 
@@ -176,6 +176,10 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
             -e SERVER_PORT=%SERVER_PORT% ^
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
+    
+    - WSL
+    
+        Please refer to the **Linux deployment method**.
 
 #### General installation (can use Space, model inference fine-tuning features (requires NVIDIA GPU))
 
@@ -209,7 +213,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGhub using Docker, mainl
         systemctl restart docker
         ```
 
-    - Install csghub
+    - Install CSGHub
 
         ```shell
         export SERVER_PORT=80
@@ -269,6 +273,38 @@ Default administrator: `root`
 
 Default password: `Root@1234`
 
+### Command Line Tools
+
+Currently, a simple command line tool is provided for restarting services and viewing logs separately.
+
+- Service Managemnet
+
+    ```shell
+    # View all services status
+    csghub-ctl status 
+    
+    # View all jobs status 
+    # EXITED is expected status
+    csghub-ctl jobs
+    
+    # Restart a service
+    csghub-ctl restart nginx
+    ```
+
+- Log
+
+    ```shell
+    # View all service logs in real time
+    csghub-ctl tail 
+    
+    # View a service log in real time
+    csghub-ctl tail nginx
+    ```
+
+- Others
+
+    All other command options are inherited from supervisorctl.
+
 ### Function Exploration
 
 CSGHub provides several key functions:
@@ -303,6 +339,3 @@ If you also need to uninstall the k8s environment, you can do the following:
 ```shell
 /usr/local/bin/k3s-uninstall.sh
 ```
-
-
-

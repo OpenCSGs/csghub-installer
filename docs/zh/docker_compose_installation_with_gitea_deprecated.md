@@ -1,9 +1,9 @@
-## CSGHub产品一键部署使用说明
+## CSGHub产品一键部署使用说明（已弃用）
 
 
 使用该脚本可以一键部署一个all-in-one的CSGHub环境，包括前端后端以及其他所有相关的功能组件，包括：
-* CSGHub_portal
-* CSGHub_server
+* csghub_portal
+* csghub_server
 * nginx
 * postgresql
 * gitea
@@ -11,8 +11,8 @@
 * casdoor
 * coredns
 * natsmaster
-* CSGHub_server_proxy
-* CSGHub_server_proxy
+* csghub_server_proxy
+* csghub_server_proxy
 * account_server
 * user_server
 * space-builder
@@ -21,7 +21,7 @@
 
 **注意：**
 1. CSGHhub v0.4.0支持了space功能，v0.7.0支持了模型微调、推理等功能。而space，模型微调以及推理等都需要Kubernetes以及其他相关环境和配置，而基于compose部署不包括Kubernetes部分，因此这里的一键部署功能`不包含space，模型微调和推理功能`
-1. 可以使用CSGHub的[helm chart](https://github.com/OpenCSGs/CSGHub-installer)来安装完整版CSGHub实例。
+1. 可以使用CSGHub的[helm chart](https://github.com/OpenCSGs/csghub-installer)来安装完整版CSGHub实例。
 1. 该部署脚本使用gitea作为Git Server后端，从**CSGHub v0.9.0版本开始，将不再提供后续支持和维护，请悉知**
 
 ### 前置条件
@@ -41,7 +41,7 @@ docker engine（>=5:20.10.24）
 1. 切换到all_in_one目录
 2. 编辑.env文件，设置`SERVER_DOMAIN`为当前主机的ip地址或者自定义域名（域名可能会有备案问题，因此推荐使用ip地址，公网/内网ip皆可）。请不要使用`127.0.0.1`或者`localhost`。
 3. 没有kubernetes情况下，.env中的space和registry相关配置可以忽略。
-4. 运行`startup.sh`脚本，待所有服务启动完毕，即可以通过`http://[SERVER_DOMAIN]:[SERVER_PORT]`访问到自部署的CSGHub服务。
+4. 运行`startup.sh`脚本，待所有服务启动完毕，即可以通过`http://[SERVER_DOMAIN]:[SERVER_PORT]`访问到自部署的 CSGHub 服务。
 
 详细使用方法可参看[使用文档](https://opencsg.com/docs/)
 

@@ -1,4 +1,4 @@
-# Omnibus CSGHub 快速部署文档
+# CSGHub Omnibus 快速部署文档
 
 > 提示：
 >
@@ -7,7 +7,7 @@
 
 ## 概述
 
-Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种方式，主要用于快速功能体验和测试。Docker 部署方式允许用户以较低成本在本地计算机部署 CSGHub。此种部署方法非常适合概念验证和测试，使用户能够立即访问 CSGHub 的核心功能（包括模型，数据集管理、Space 应用创建以及模型的推理和微调（需要 GPU））。
+Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种方式，主要用于快速功能体验和测试。Docker 部署方式允许用户以较低成本在本地计算机部署 CSGHub。此种部署方法非常适合概念验证和测试，使用户能够立即访问 CSGHub 的核心功能（包括模型，数据集管理、Space 应用创建以及模型的推理和微调（需要 GPU））。
 
 ## 优势
 
@@ -174,6 +174,10 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种�
             -e SERVER_PORT=%SERVER_PORT% ^
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
+    
+    - WSL
+    
+        请参考 linux 部署方式。
 
 #### 通用安装（可以使用 Space、模型推理微调功能（需要 NVIDIA GPU））
 
@@ -207,7 +211,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种�
         systemctl restart docker
         ```
 
-    - 安装 csghub
+    - 安装 CSGHub
 
         ```shell
         export SERVER_PORT=80
@@ -266,6 +270,38 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种�
 默认管理员：`root`
 
 默认密码：`Root@1234`
+
+### 命令行工具
+
+Omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服务日志。
+
+- 服务管理
+
+    ```shell
+    # 查看所有服务状态
+    csghub-ctl status 
+    
+    # 查看所有作业状态
+    # EXITED 是正常状态
+    csghub-ctl jobs
+    
+    # 重启某个服务
+    csghub-ctl restart nginx
+    ```
+
+- 日志管理
+
+    ```shell
+    # 实时查看所有服务日志
+    csghub-ctl tail 
+    
+    # 实时查看某个服务日志
+    csghub-ctl tail nginx
+    ```
+
+- 其他参数
+
+    所有其他命令选项继承自`supervisorctl`。
 
 ### 功能探索
 
