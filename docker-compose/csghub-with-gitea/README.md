@@ -1,6 +1,6 @@
 ## CSGHub All-in-One Deployment Guide
 
-[简体中文](../../docs/cn/docker_compose_installation_with_gitea.md)
+[简体中文](../../docs/zh/docker_compose_installation_with_gitea_deprecated)
 
 This script enables the one-click deployment of an all-in-one CSGHub instance, including all related components:
 
