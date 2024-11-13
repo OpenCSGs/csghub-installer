@@ -24,7 +24,7 @@ check_postgresql() {
 
 check_minio() {
   echo "Waiting MinIO ready..."
-  until /usr/bin/curl -s http://${STARHUB_SERVER_S3_ENDPOINT}/minio/health/live; do
+  until /usr/bin/curl -s http://127.0.0.1:9000/minio/health/live; do
     sleep 2
   done
   echo "MinIO is ready."

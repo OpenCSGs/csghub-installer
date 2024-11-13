@@ -112,7 +112,7 @@ COPY --from=go-builder /logger /usr/bin/logger
 # ============================================================
 # Here are the instructions for installing the allowed programs
 RUN apt update && \
-    apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate \
+    apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate git git-lfs vim \
         libaprutil1 ca-certificates supervisor postgresql redis nginx libnginx-mod-stream dnsmasq && \
     pg_dropcluster 15 main && rm -rf /etc/postgresql
 

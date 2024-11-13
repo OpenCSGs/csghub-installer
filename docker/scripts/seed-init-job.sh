@@ -4,24 +4,19 @@ set -e
 
 check_server() {
   echo "Waiting CSGHub-Server ready..."
-  until /usr/bin/curl -s -o /dev/null ${SERVER_ENDPOINT}/api/v1/tags; do
+  until /usr/bin/curl -s -o /dev/null http://127.0.0.1:8080/api/v1/tags; do
     sleep 2
   done
-
   echo "CSGHub-Server is ready."
 }
 
 check_casdoor() {
   echo "Waiting Casdoor ready..."
-  until /usr/bin/curl -s -o /dev/null ${CASDOOR_ENDPOINT}/api/health; do
+  until /usr/bin/curl -s -o /dev/null http://127.0.0.1:8087/api/health; do
     sleep 2
   done
-
   echo "Casdoor is ready."
 }
-
-apt update && apt install -y --no-install-recommends git git-lfs vim procps
-apt clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
 
 check_casdoor
 check_server
@@ -71,7 +66,7 @@ if [ -f "/root/.kube/config" ]; then
   execute_sql "$POSTGRES_SERVER_USER" /etc/server/initialize.sql
 else
   execute_sql "$POSTGRES_SERVER_USER" "CREATE OR REPLACE FUNCTION promote_root_to_admin()
-       RETURNS TRIGGER AS $$
+       RETURNS TRIGGER AS \$\$
    BEGIN
        IF NEW.username = 'root' THEN
            UPDATE public.users
@@ -85,7 +80,7 @@ else
 
        RETURN NEW;
    END;
-   $$ LANGUAGE plpgsql VOLATILE;
+   \$\$ LANGUAGE plpgsql VOLATILE;
 
    CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
        AFTER INSERT ON public.users

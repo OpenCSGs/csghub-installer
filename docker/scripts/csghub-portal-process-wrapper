@@ -30,11 +30,22 @@ check_minio() {
   echo "MinIO is ready."
 }
 
+#wait_for_jobs() {
+#  echo "Waiting init jobs done..."
+#  until [ "$(supervisorctl status | grep init-job | grep -v mirror | grep -c RUNNING)" -eq 0 ]; do
+#    echo "Waiting for init jobs to finish..."
+#    sleep 2
+#  done
+#  echo "All init jobs completed."
+#}
+
 check_postgresql
 
 if [ "$MINIO_ROOT_USER" == "minio" ]; then
   check_minio
 fi
+
+#wait_for_jobs
 
 echo "Initializing database migrations..."
 /usr/bin/csghub-portal migration init
