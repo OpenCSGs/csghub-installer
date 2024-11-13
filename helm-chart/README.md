@@ -1,16 +1,18 @@
 # CSGHub Helm Chart Deployment Guide
 
+[中文文档](../docs/zh/README_cn_helm_chart.md)
+
 ## Overview
 
 CSGHub is an open source, trusted large model asset management platform that helps users manage assets (datasets, model files, codes, etc.) involved in the life cycle of LLM and LLM applications. Based on CSGHub, users can operate assets such as model files, data sets, codes, etc. through the Web interface, Git command line, or natural language Chatbot, including uploading, downloading, storage, verification, and distribution; at the same time, the platform provides microservice submodules and standardized APIs to facilitate users to integrate with their own systems.
 
-CSGHub is committed to bringing users an asset management platform that is natively designed for large models and can be privately deployed and run offline. CSGHub provides a similar private HuggingFace function to manage LLM assets in a similar way to OpenStack Glance managing virtual machine images, Harbor managing container images, and Sonatype Nexus managing artifacts.
+CSGHub is committed to bringing users an asset management platform that is natively designed for large models and can be privately deployed and run offline. CSGHub provides a similar private Hugging Face function to manage LLM assets in a similar way to OpenStack Glance managing virtual machine images, Harbor managing container images, and Sonatype Nexus managing artifacts.
 
 ## Instructions
 
 ### Deployments
 
-This Helm Chart currently only contains the creation of necessary resources for necessary components. If you encounter any problems during use, you can submit feedback to the project [csghub-installer](https://github.com/OpenCSGs/csghub-installer/issues) .
+This Helm Chart currently only contains the creation of necessary resources for necessary components. If you encounter any problems during use, you can submit feedback to the project [csghub-installer](https://github.com/OpenCSGs/csghub-installer/issues).
 
 ### Versions
 
@@ -26,47 +28,47 @@ Currently, the version of CSGHub Helm Chart is consistent with the CSGHub versio
 
 The following will introduce the necessary components created when deploying the CSGHub Helm Chart.
 
-- **csghub_server**: Provides the main service logic and API interface to handle client requests and service interactions.
+- **csghub_server:** Provides the main service logic and API interface to handle client requests and service interactions.
 
-- **csghub_portal**: Responsible for the management and display of the user interface for users to interact directly with the system.
+- **csghub_portal:** Responsible for the management and display of the user interface for users to interact directly with the system.
 
-- **csghub_user**: Manages user identity, authentication and related operations to ensure user security and data privacy.
+- **csghub_user:** Manages user identity, authentication and related operations to ensure user security and data privacy.
 
-- **csghub_nats**: Implements message passing and event-driven architecture between microservices, and provides efficient asynchronous communication capabilities.
+- **csghub_nats:** Implements message passing and event-driven architecture between microservices, and provides efficient asynchronous communication capabilities.
 
-- **csghub_proxy**: Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
+- **csghub_proxy:** Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
 
-- **csghub_accounting**: Responsible for financial and accounting processing, monitoring transactions and generating related reports.
+- **csghub_accounting:** Responsible for financial and accounting processing, monitoring transactions and generating related reports.
 
-- **csghub_mirror**: Provides warehouse synchronization services to ensure efficient synchronization of warehouse data.
+- **csghub_mirror:** Provides warehouse synchronization services to ensure efficient synchronization of warehouse data.
 
-- **csghub_runner**: Responsible for deploying application instances to Kubernetes clusters.
+- **csghub_runner:** Responsible for deploying application instances to Kubernetes clusters.
 
-- **csghub_builder**: Mainly responsible for building application images and uploading them to the container image repository.
+- **csghub_builder:** Mainly responsible for building application images and uploading them to the container image repository.
 
-- **csghub_watcher**: Monitors all secret and configmap changes and manages pod dependencies.
+- **csghub_watcher:** Monitors all secret and configmap changes and manages pod dependencies.
 
-- **gitaly**: CSGHub's Git storage backend, providing efficient implementation of Git operations.
+- **gitaly:** CSGHub's Git storage backend, providing efficient implementation of Git operations.
 
-- **gitlab-shell**: Provides Git over SSH interaction between CSGHub and Gitaly repositories for SSH access to Git operations.
+- **gitlab-shell:** Provides Git over SSH interaction between CSGHub and Gitaly repositories for SSH access to Git operations.
 
-- **ingress-nginx**: As an ingress controller in the Kubernetes cluster, it manages traffic from external access to internal services.
+- **ingress-nginx:** As an ingress controller in the Kubernetes cluster, it manages traffic from external access to internal services.
 
-- **minio**: Provides object storage services for csghub_server, csghub_portal and gitaly to support file storage and access.
+- **minio:** Provides object storage services for csghub_server, csghub_portal and gitaly to support file storage and access.
 
-- **postgresql**: A relational database management system responsible for storing and managing (csghub_server / csghub_portal / casdoor) structured data.
+- **postgresql:** A relational database management system responsible for storing and managing (csghub_server/csghub_portal/casdoor) structured data.
 
-- **registry**: Provides a container image repository to facilitate the storage and distribution of container images.
+- **registry:** Provides a container image repository to facilitate the storage and distribution of container images.
 
-- **redis**: Provides high-performance cache and data storage services for csghub_builder and csghub_mirror, supporting fast data reading and writing.
+- **redis:** Provides high-performance cache and data storage services for csghub_builder and csghub_mirror, supporting fast data reading and writing.
 
-- **casdoor**: Responsible for user authentication and authorization, providing single sign-on (SSO) and multiple authentication methods.
+- **casdoor:** Responsible for user authentication and authorization, providing single sign-on (SSO) and multiple authentication methods.
 
-- **coredns**: Used to process and resolve internal DNS resolution.
+- **coredns:** Used to process and resolve internal DNS resolution.
 
-- **fluentd**: Log collection and processing framework, aggregating and forwarding application logs for easy analysis and monitoring.
+- **fluentd:** Log collection and processing framework, aggregating and forwarding application logs for easy analysis and monitoring.
 
-### Data persistence
+### Data Persistence
 
 CSGHub Helm Chart has multiple components that need to persist data, including the following components:
 
@@ -89,12 +91,12 @@ CSGHub Helm Chart only supports domain name deployment (Ingress does not support
 
 For example:
 
-if the domain name is specified as **example.com**, the following domain name will be generated after deployment:
+If the domain name is specified as **example.com**, the following domain name will be generated after deployment:
 
-- **csghub.example.com**: Access entry for CSGHub services.
-- **casdoor.example.com**: Access to casdoor unified login system.
-- **minio.example.com**: Access to object storage.
-- **registry.example.com**: Access to container image repositories.
+- **csghub.example.com:** Access entry for CSGHub services.
+- **casdoor.example.com:** Access to casdoor unified login system.
+- **minio.example.com:** Access to object storage.
+- **registry.example.com:** Access to container image repositories.
 
 If the domain you are using is a public domain name, please configure DNS yourself to ensure that domain names can be correctly resolved. If it is a temporary domain name, please ensure that /etc/hosts and Kubernetes coredns can resolve these domain names.
 
@@ -114,11 +116,11 @@ Software requirements:
 - Helm 3.8.0+
 - PV Dynamic Provisioning
 
-## Basic environment preparation
+## Basic Environment Preparation
 
-### Deployment Kubernetes
+### Deploy Kubernetes
 
-> **Only for users who do not have a k8s basic environment. If you already have a K8S shipping environment, please continue configuration from the next chapter. ** 
+> **Only for users who do not have a k8s basic environment. If you already have a k8s shipping environment, please continue configuration from the next chapter.** 
 
 > **Tips:**
 >
@@ -132,7 +134,7 @@ For users who do not have a basic environment, you can quickly prepare the deplo
 - Helm installation
 - PV dynamic provisioning
 
-#### Deployment Kubernetes Cluster
+#### Deploy Kubernetes Cluster
 
 Currently, there are many ways to quickly pull up a Kubernetes environment, such as K3S, MiniKube, Kubeadm, MicroK8s, etc. Here we mainly introduce the following two ways to quickly pull up a basic environment:
 
@@ -179,9 +181,9 @@ There are two installation methods:
     snap install helm --classic && helm version
     ```
 
-#### Configuring PV Dynamic Management
+#### Configure PV Dynamic Management
 
-If your cluster already supports this feature, or if it is a Kubernetes cluster enabled by the above method, you can skip this section. The method described in this section is **only for testing**, **only for testing**, **only for testing**, and **only for testing**. Do not use it in a production environment.
+If your cluster already supports this feature, or if it is a Kubernetes cluster enabled by the above method, you can skip this section. The method described in this section is **only for testing**. Do not use it in a production environment.
 
 The solution here comes from [kubernetes-sigs/sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner), please refer to [Install local-volume-provisioner with helm](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner) for details.
 
@@ -208,7 +210,7 @@ The detailed configuration operations are as follows:
     EOF
     ```
 
-2. Deployment local-volume-provisoner
+2. Deploy local-volume-provisoner
 
     ```shell
     # Add helm repository
@@ -224,7 +226,7 @@ The detailed configuration operations are as follows:
     kubectl apply -f local-volume-provisioner.generated.yaml
     ```
 
-3. Creating a Virtual Disk
+3. Create a Virtual Disk
 
     ```shell
     for flag in {a..z}; do
@@ -278,15 +280,15 @@ The detailed configuration operations are as follows:
     kubectl get pvc
     ```
 
-### Configuration Existing Kubernetes
+### Configure Existing Kubernetes
 
-> **If you already have a Kubernetes basic environment, please continue configuration from this section. **
+> **If you already have a Kubernetes basic environment, please continue configuration from this section.**
 
 > **Tip:**
 >
 > - This section does not apply to K8S clusters created using the above method.
 
-Although this helm chart has a simple Container Registry built in for testing, it does not provide reliable encrypted access. You still need to go through [more configuration](https://github.com/containerd/containerd/blob/main/docs/hosts.md) to pull images from the Registry normally. Please prepare the Registry for the production environment yourself.
+Although this Helm Chart has a simple Container Registry built in for testing, it does not provide reliable encrypted access. You still need to go through [more configuration](https://github.com/containerd/containerd/blob/main/docs/hosts.md) to pull images from the Registry normally. Please prepare the Registry for the production environment yourself.
 
 - Configure containerd to allow access to the Registry using insecure encryption
 
@@ -347,7 +349,7 @@ Although this helm chart has a simple Container Registry built in for testing, i
          ctr images pull --hosts-dir "/etc/containerd/certs.d" registry.example.com:5000/image_name:tag
          ```
 
-## Deployment Knative Serving
+## Deploy Knative Serving
 
 Knative Serving is a necessary component for CSGHub to create application instances.
 
@@ -365,7 +367,7 @@ The steps are as follows
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
     ```
 
-2. Installing Network Components
+2. Installing network components
 
     ```shell
     kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
@@ -389,7 +391,7 @@ The steps are as follows
         --patch '{"spec": {"type": "NodePort"}}'
     ```
 
-5. <a id="configure-dns">Configure DNS</a>
+5. Configuring DNS
 
     Configure Knative Serving to use RealDNS with the following configuration.
 
@@ -411,7 +413,7 @@ The steps are as follows
         --patch '{"data":{"enable-scale-to-zero":"false"}}'
     ```
 
-7. <a id="kourier-svc">Verify all services</a>
+7. Verify all services
 
     ```shell
     $ kubectl -n kourier-system get service kourier
@@ -431,7 +433,7 @@ The steps are as follows
 
 ## Install CSGHub Helm Chart
 
-### Manual deployment
+### Manual Deployment
 
 #### Create KubeConfig Secret
 
@@ -446,16 +448,16 @@ kubectl create ns csghub
 kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
 ```
 
-#### Deployment CSGHub
+#### Deploy CSGHub
 
-1. Add helm repository
+1. Add Helm Repository
 
     ```shell
     helm repo add csghub https://opencsgs.github.io/csghub-installer
     helm repo update
     ```
 
-2. Deployment CSGHub
+2. Deploy CSGHub
 
     - `global`
 
@@ -628,7 +630,7 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
     ......
     ```
 
-### Quick deployment
+### Quick Deployment
 
 Use the try method to quickly start the CSGHub Helm Chart test environment.
 

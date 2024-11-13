@@ -3,7 +3,7 @@
 > 提示：
 >
 > - 此种方式目前处于测试阶段，暂不适用于生产环境部署。
-> - 目前仅支持 amd64 架构（支持 Docker Desktop Rosetta）。
+> - 目前仅支持 AMD64 架构（支持 Docker Desktop Rosetta）。
 
 ## 概述
 
@@ -11,9 +11,9 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
 
 ## 优势
 
-- **快速配置：**支持一键部署，快速启动。
-- **统一管理：**支持集成模型、数据集、Space 应用管理，并内置多源同步功能。
-- **操作简单：**支持模型推理、微调实例快速启动。
+- **快速配置：** 支持一键部署，快速启动。
+- **统一管理：** 支持集成模型、数据集、Space 应用管理，并内置多源同步功能。
+- **操作简单：** 支持模型推理、微调实例快速启动。
 
 ## 部署方式
 
@@ -91,7 +91,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***注意：**Rosetta运行速度较慢。以 rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
+    > ***注意：**Rosetta运行速度较慢。以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
 
     - 手动拉取镜像
 
@@ -175,9 +175,9 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
     
-    - WSL
+    - **WSL**
     
-        请参考 linux 部署方式。
+        请参考 Linux 部署方式。
 
 #### 通用安装（可以使用 Space、模型推理微调功能（需要 NVIDIA GPU））
 
@@ -188,7 +188,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     >- 需要一个部署好 Knative Serving 的 Kubernetes 集群。
     >- 其他注意事项见快捷安装部分。
 
-    - 快速配置k8s环境
+    - 快速配置 k8s 环境
 
         ```shell
         curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | bash -s
@@ -232,7 +232,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-- **macOS / Windows**
+- **macOS/Windows**
 
     请自行配置 Kubernetes 集群，且保证 `~/.kube/config` 文件存在。然后使用类似如下命令进行安装：
 
@@ -323,13 +323,13 @@ CSGHub 提供了几个关键功能：
 
 ### 销毁容器
 
-如果您不在使用或者需要重建容器，可以执行如下操作：
+如果您不再使用或者需要重建容器，可以执行如下操作：
 
 ```shell
 docker rm -f omnibus-csghub
 ```
 
-如果还需要卸载k8s 环境，可以执行如下操作：
+如果还需要卸载 k8s 环境，可以执行如下操作：
 
 ```shell
 /usr/local/bin/k3s-uninstall.sh
