@@ -69,9 +69,14 @@ function checkOS() {
     log "ERRO" "Current OS architecture is $arch_info, Only x86_64/amd64 or aarch64/arm64 is supported!"
   fi
   if [ $(uname) == 'Darwin' ]; then
-    sed() {
-      gsed "$@"
-    }
+    if which gsed >/dev/null 2>&1; then
+      sed() {
+        gsed "$@"
+      }
+    else
+      echo "Command gsed not found"
+      exit 1
+    fi
   fi
 }
 
