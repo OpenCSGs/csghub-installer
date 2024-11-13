@@ -2,74 +2,75 @@
 
 > **Tips:**
 >
-> - v0.4.0 supports the space function.
-> - v0.7.0 supports model fine-tuning, inference. Space.
-> - [中文文档](../docs/zh/README_cn_docker_compose)
+> - v0.4.0 supports the Space function.
+> - v0.7.0 supports model fine-tuning and inference, as well as the Space function.
+> - [中文文档](../docs/zh/README_cn_docker_compose.md)
 
 ## Overview
 
 This script enables the one-click deployment of an all-in-one CSGHub instance, including all related components:
 
-- **csghub_server**: Provides the main service logic and API interface to handle client requests and service interactions.
+- **csghub_server:** Provides the main service logic and API interface to handle client requests and service interactions.
 
-- **csghub_portal**: Responsible for the management and display of the user interface, allowing users to interact directly with the system.
+- **csghub_portal:** Responsible for the management and display of the user interface, allowing users to interact directly with the system.
 
-- **user_server**: Manage user identity, authentication, and related operations to ensure user security and data privacy.
+- **user_server:** Manage user identity, authentication, and related operations to ensure user security and data privacy.
 
-- **natsmaster**: Implement messaging and event-driven architecture between microservices, and provide efficient asynchronous communication capabilities.
+- **natsmaster:** Implement messaging and event-driven architecture between microservices, and provide efficient asynchronous communication capabilities.
 
-- **csghub_server_proxy**: Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
+- **csghub_server_proxy:** Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
 
-- **account_server**: Responsible for financial and accounting processing, monitoring transactions and generating relevant reports.
+- **account_server:** Responsible for financial and accounting processing, monitoring transactions and generating relevant reports.
 
-- **mirror-repo-sync/mirror-lfs-sync**: Provide warehouse synchronization services to ensure efficient synchronization of warehouse data.
+- **mirror-repo-sync/mirror-lfs-sync:** Provide warehouse synchronization services to ensure efficient synchronization of warehouse data.
 
-- **csghub_server_runner**: Responsible for deploying application instances to the Kubernetes cluster.
+- **csghub_server_runner:** Responsible for deploying application instances to the Kubernetes cluster.
 
-- **space_builder**: Mainly responsible for building application images and uploading them to the container image repository.
+- **space_builder:** Mainly responsible for building application images and uploading them to the container image repository.
 
-- **gitaly**: CSGHub's Git storage backend, providing efficient implementation of Git operations.
+- **gitaly:** CSGHub's Git storage backend, providing efficient implementation of Git operations.
 
-- **gitlab-shell**: Provides Git over SSH interaction between CSGHub and Gitaly repositories for SSH access for Git operations.
+- **gitlab-shell:** Provides Git over SSH interaction between CSGHub and Gitaly repositories for SSH access for Git operations.
 
-- **ingress-nginx**: As an ingress controller in a Kubernetes cluster, it manages traffic from external access to internal services.
+- **ingress-nginx:** As an ingress controller in a Kubernetes cluster, it manages traffic from external access to internal services.
 
-- **minio**: Provides object storage services for csghub_server, csghub_portal, and gitaly to support file storage and access.
+- **minio:** Provides object storage services for csghub_server, csghub_portal, and gitaly to support file storage and access.
 
-- **postgresql**: A relational database management system responsible for storing and managing (csghub_server / csghub_portal / casdoor) structured data.
+- **postgresq:** A relational database management system responsible for storing and managing (csghub_server/csghub_portal/casdoor) structured data.
 
-- **registry**: Provides a container image repository to facilitate the storage and distribution of container images.
+- **registry:** Provides a container image repository to facilitate the storage and distribution of container images.
 
-- **redis**: Provides high-performance cache and data storage services for csghub_builder and csghub_mirror, supporting fast data reading and writing.
+- **redis:** Provides high-performance cache and data storage services for csghub_builder and csghub_mirror, supporting fast data reading and writing.
 
-- **casdoor**: Responsible for user authentication and authorization, providing single sign-on (SSO) and multiple authentication methods.
+- **casdoor:** Responsible for user authentication and authorization, providing single sign-on (SSO) and multiple authentication methods.
 
-- **coredns**: Used to handle and resolve internal DNS resolution.
+- **coredns:** Used to handle and resolve internal DNS resolution.
 
-- **fluentd**: A log collection and processing framework that aggregates and forwards application logs for easy analysis and monitoring.
+- **fluentd:** A log collection and processing framework that aggregates and forwards application logs for easy analysis and monitoring.
 
-* **nginx:** Provide routing forwarding.
+- **nginx:** Provide routing forwarding.
 
 ## Prerequisites
 
 * **Hardware**
-    * Minimum: 4 CPU / 8GB RAM / 50GB Hard Disk
-    * Recommended: 8 CPU / 16GB RAM / 500GB Hard Disk
+    * Minimum: 4 CPU/8GB RAM/50GB Hard Disk
+    * Recommended: 8 CPU/16GB RAM/500GB Hard Disk
 
 
 * **Software**
-    - linux/amd64、linux/arm64
+    - Linux/AMD64, Linux/ARM64
     - Docker Engine (>=5:20.10.24)
 
 ## Usage
 
 1. Navigate to the `docker-compose` directory.
 2. Edit the `.env` file and set `SERVER_DOMAIN` to the current host's IP address or domain name. DO NOT use `127.0.0.1` or `localhost`.
-3. the space and registry related configurations in .env can be ignored without Kubernetes cluster. The configuration for integration with the existing Kubernetes cluster can be found in follow [section](#Configure-kubernetes).
+3. The space and registry related configurations in .env can be ignored without Kubernetes cluster. The configuration for integration with the existing Kubernetes cluster can be found in following [section](#Configure-kubernetes).
 4. Run the `startup.sh` script. Once all services are started, you can visit the self-deployed CSGHub service at `http://[SERVER_DOMAIN]`. If SERVER_PORT not 80 default, please visit by adding `:[SERVER_PORT]`.
 5. Once CSGHub instance startup, you can login with default admin account with `root/Password123`.
 
 ### Notes
+
 1. Self-deployed CSGHub uses local-type Docker volumes for persistence, such as for PostgreSQL and Minio. Ensure that Docker local volumes have sufficient disk space.
 2. Ensure that the external port `2222` of the host is accessible, as Git operations via the SSH protocol depend on it.
 3. Make sure the host's external port `31001` is accessible, which is used by the casdoor service for user registration and login.
@@ -80,14 +81,14 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 docker compose -f docker-compose.yml down -v
 ```
 
-## Configure kubernetes
+## Configure Kubernetes
 
 ### Prerequisites
 
-* Kubernetes version > 1.20+.
-* Minimum server configuration 8c16g, X86_64 architecture (non-X86_64 system architecture is not supported yet).
-* Kubernetes can be deployed in a variety of ways, such as Docker Desktop、[K3s](https://docs.k3s.io/quick-start)、[Kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/).
-* CSGHub instance running with docker compose installation scripts.
+- Kubernetes version > 1.20+.
+- Minimum server configuration 8c16g, X86_64 architecture (non-X86_64 system architecture is not supported yet).
+- Kubernetes can be deployed in a variety of ways, such as Docker Desktop, [K3s](https://docs.k3s.io/quick-start), [Kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/).
+- CSGHub instance running with Docker Compose installation scripts.
 
 ### Knative Configuration
 
@@ -96,16 +97,16 @@ Please refer to [Knative installation](https://opencsg.com/docs/csghub/101/helm/
 ### CSGHub Configuration
 
 Reconfigure CSGHub instance to connect to the specified Kubernetes cluster. Assume the following information:
-* CSGHub ip：`110.95.70.140`
-* Kubernetes Master node: `101.201.52.76`
-* Kubernetes Worker node: `59.10.62.160`
-* Using service type`NodePort` to expose Knative service，its value is`30541`.
+- CSGHub IP：`110.95.70.140`
+- Kubernetes Master node: `101.201.52.76`
+- Kubernetes Worker node: `59.10.62.160`
+- Using service type`NodePort` to expose Knative service，its value is`30541`.
 
-Refer to [knative config](https://opencsg.com/docs/csghub/101/helm/installation#%E5%AE%89%E8%A3%85%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6) for more details. 
+Refer to [Knative config](https://opencsg.com/docs/csghub/101/helm/installation#%E5%AE%89%E8%A3%85%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6) for more details. 
 
 ### Reconfigure CSGHub instance
 
-Based on the above information, first change the .env file content as follows:
+Based on the above information, first change the `.env` file content as follows:
 ```
 # Common Configuration
 ## CSGHub service's domain name, can be ip or domain name
@@ -152,28 +153,28 @@ KNATIVE_GATEWAY_HOST=59.10.62.160
 KNATIVE_GATEWAY_PORT=30541
 ```
 
-move kube config file of the Kubernetes cluster to the `.kube` folder of the CSGHub installation directory. and restart CSGHub instance:
+Move kube config file of the Kubernetes cluster to the `.kube` folder of the CSGHub installation directory and restart CSGHub instance:
 
 ```
 docker compose -f docker-compose.yml down
 docker compose -f docker-compose.yml up -d
 ```
 
-####  Reconfigure Kubernetes
+#### Reconfigure Kubernetes
 
 
-* Create new namespace and secret
+- Create new namespace and secret
 ```
 kubectl create ns space
 
 kubectl create secret docker-registry space-registry-credential --docker-server=110.95.70.140:5000 --docker-username=csghub --docker-password=csghub@2024! -n space
 ```
 
-* enable CSGHub's insecure docker registry for Kubernetes
+- Enable CSGHub's insecure docker registry for Kubernetes
 
     The default installation of CSGHub uses an insecure registry (that is, the one mentioned above: 110.95.70.140:5000). You need to ensure that Kubernetes can pull images from this registry. Perform the following operations on each worker node of Kubernetes:
 
-    Before configuration, please confirm whether the configuration file `/etc/containerd/config.toml` exists or not. If not , you can create it with the following command.
+    Before configuration, please confirm whether the configuration file `/etc/containerd/config.toml` exists or not. If not, you can create it with the following command.
 
     ```shell
     mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.toml
@@ -199,7 +200,7 @@ kubectl create secret docker-registry space-registry-credential --docker-server=
           config_path = "/etc/containerd/certs.d"
      ```
 
-2. restart `containerd` service.
+2. restart `containerd` service
 
     ```shell
     systemctl restart containerd
