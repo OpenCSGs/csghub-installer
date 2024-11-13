@@ -1,6 +1,6 @@
-## CSGHub All-in-One Deployment Guide
+# CSGHub All-in-One Deployment Guide
 
-[简体中文](../../docs/cn/docker_compose_installation.md)
+> - [中文文档](../../docs/cn/docker_compose_installation.md)
 
 This script enables the one-click deployment of an all-in-one CSGHub instance, including all related components:
 
@@ -169,7 +169,7 @@ Before configuration, please confirm whether the configuration file `/etc/contai
 
      ```toml
      version = 2
-
+     
      [plugins."io.containerd.grpc.v1.cri".registry]
           config_path = "/etc/containerd/certs.d"
      ```
@@ -180,10 +180,10 @@ restart `containerd` service
 
    ```shell
    mkdir /etc/containerd/certs.d/110.95.70.140:5000
-
+   
    cat <<EOF > /etc/containerd/certs.d/110.95.70.140:5000/hosts.toml
    server = "http://110.95.70.140:5000"
-
+   
    [host."http://110.95.70.140:5000"]
            capabilities = ["pull", "resolve", "push"]
            skip_verify = true

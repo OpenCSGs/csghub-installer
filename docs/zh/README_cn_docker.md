@@ -117,21 +117,21 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGhub 的一种�
 
     - 正常启动（持久化数据）
 
-    ```shell
-    export SERVER_PORT=80
-    docker run -it -d \
-        --name omnibus-csghub \
-        --hostname omnibus-csghub \
-        -p ${SERVER_PORT}:80 \
-        -p 2222:2222 \
-        -p 8000:8000 \
-        -p 9000:9000 \
-        -v ~/Documents/csghub/data:/var/opt \
-        -v ~/Documents/csghub/log:/var/log \
-        -e SERVER_DOMAIN=<your ip address> \
-        -e SERVER_PORT=${SERVER_PORT} \
-        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
-    ```
+        ```shell
+        export SERVER_PORT=80
+        docker run -it -d \
+            --name omnibus-csghub \
+            --hostname omnibus-csghub \
+            -p ${SERVER_PORT}:80 \
+            -p 2222:2222 \
+            -p 8000:8000 \
+            -p 9000:9000 \
+            -v ~/Documents/csghub/data:/var/opt \
+            -v ~/Documents/csghub/log:/var/log \
+            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_PORT=${SERVER_PORT} \
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+        ```
 
 - **Windows**
 
