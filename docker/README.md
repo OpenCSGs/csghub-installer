@@ -3,12 +3,12 @@
 > **Tips:**
 >
 > - This method is currently in the testing phase and is not suitable for production deployment.
-> - Currently only supports the amd64 architecture (supports Docker Desktop Rosetta).
-> - [中文文档](../docs/zh/README_cn_docker)
+> - Currently only supports the AMD64 architecture (supports Docker Desktop Rosetta).
+> - [中文文档](../docs/zh/README_cn_docker.md)
 
 ## Overview
 
-Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainly for rapid functional experience and testing. The Docker deployment method allows users to deploy CSGHub on local computers at a lower cost. This deployment method is very suitable for proof of concept and testing, allowing users to immediately access the core functions of CSGHub (including models, dataset management, Space application creation, and model reasoning and fine-tuning (GPU required)).
+Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainly for rapid functional experience and testing. The Docker deployment method allows users to deploy CSGHub on local computers at a lower cost. This deployment method is very suitable for proof of concept and testing, allowing users to immediately access the core functions of CSGHub (including models, dataset management, space application creation, and model inference and fine-tuning (GPU required)).
 
 ## Advantages
 
@@ -32,7 +32,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
 > - If`SERVER_DOMAIN`and`SERVER_PORT`are modified, it is recommended to delete the persistent data directory and recreate it.
 > - Cloud server`SERVER_DOMAIN = <external public ip>`
 
-#### Quick installation (Space and model inference fine-tuning functions cannot be used)
+#### Quick Installation (Space and model inference & fine-tuning functions cannot be used)
 
 - **Linux**
 
@@ -92,7 +92,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***Note:** Rosetta runs slowly. A container running in rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
+    > ***Note:** Rosetta runs slowly. A container running in Rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
 
     - Manually pull the image
 
@@ -177,11 +177,11 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
     
-    - WSL
+    - **WSL**
     
         Please refer to the **Linux deployment method**.
 
-#### General installation (can use Space, model inference fine-tuning features (requires NVIDIA GPU))
+#### General installation (Space, model inference & fine-tuning features can be used (requires NVIDIA GPU))
 
 - **Linux**
 
@@ -234,7 +234,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
 
-- **macOS / Windows**
+- **macOS/Windows**
 
     Please configure Kubernetes cluster yourself and make sure the file `~/.kube/config` exists. Then use a command similar to the following to install it:
 
@@ -318,13 +318,13 @@ CSGHub provides several key functions:
     - Multi-source synchronization is enabled by default, and multi-source synchronization will automatically start after startup (synchronization takes a while to complete).
 
 
-**Dataset hosting:**
+- **Dataset hosting:**
 
-- Simplified tools for processing datasets, ideal for rapid testing and verification.
+    - Simplified tools for processing datasets, ideal for rapid testing and verification.
 
-**Application hosting:**
+- **Application hosting:**
 
-- Quickly create large model applications through custom programs and model combinations.
+    - Quickly create large model applications through custom programs and model combinations.
 
 ### Destroy the container
 
