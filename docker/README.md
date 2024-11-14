@@ -31,6 +31,10 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
 > - HTTPS access configuration is not supported yet, you can adjust the Nginx configuration in the container yourself.
 > - If`SERVER_DOMAIN`and`SERVER_PORT`are modified, it is recommended to delete the persistent data directory and recreate it.
 > - Cloud server`SERVER_DOMAIN = <external public ip>`
+>
+> **Note:**
+>
+> - Please make sure that your local IP address segment and the docker default address segment (172.17.0.0) do not overlap.
 
 #### Quick Installation (Space and model inference & fine-tuning functions cannot be used)
 
@@ -47,6 +51,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Quick start without data persistence volumes
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -55,7 +60,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 2222:2222 \
             -p 8000:8000 \
             -p 9000:9000 \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -63,6 +68,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Normal startup with persistent data volumes
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -73,7 +79,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 \
             -v /srv/csghub/data:/var/opt \
             -v /srv/csghub/log:/var/log \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -103,6 +109,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Quick start without data persistence volumes
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -111,7 +118,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 2222:2222 \
             -p 8000:8000 \
             -p 9000:9000 \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -119,6 +126,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Normal startup with persistent data volumes
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -129,7 +137,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 \
             -v ~/Documents/csghub/data:/var/opt \
             -v ~/Documents/csghub/log:/var/log \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -148,6 +156,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - **Powershell**
     
         ```shell
+        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
         $env:SERVER_PORT = "80"
         docker run -it -d `
             --name omnibus-csghub `
@@ -156,7 +165,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 2222:2222 `
             -p 8000:8000 `
             -p 9000:9000 `
-            -e SERVER_DOMAIN="<your ip address>" `
+            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
             -e SERVER_PORT=$env:SERVER_PORT `
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -164,6 +173,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - **CMD**
     
         ```shell
+        set SERVER_DOMAIN=<your ip address>
         set SERVER_PORT=80
         docker run -it -d ^
             --name omnibus-csghub ^
@@ -172,7 +182,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 2222:2222 ^
             -p 8000:8000 ^
             -p 9000:9000 ^
-            -e SERVER_DOMAIN=<your ip address> ^
+            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
             -e SERVER_PORT=%SERVER_PORT% ^
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -216,6 +226,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Install CSGHub
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -229,7 +240,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v /srv/csghub/log:/var/log \
             -v ~/.kube:/etc/.kube \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -241,6 +252,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - **macOS**
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -254,7 +266,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v ~/Documents/csghub/log:/var/log \
             -v ~/.kube:/etc/.kube \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```

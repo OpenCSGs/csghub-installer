@@ -25,11 +25,15 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
 
 ### 安装步骤
 
-> 提示：
+> **提示：**
 >
 > - HTTPS 访问配置暂时不支持，可自行调整容器内 Nginx 配置。
 > - 如果`SERVER_DOMAIN`和`SERVER_PORT`进行了修改，建议删除持久化数据目录后重新创建。
 > - 云服务器 `SERVER_DOMAIN = <external public ip>`
+>
+> **注意：**
+>
+> - 请确保您本机 IP 地址段和 docker 默认地址（172.17.0.0）段不重叠。
 
 #### 快速安装（无法使用 Space、模型推理微调功能）
 
@@ -46,6 +50,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 快速启动（不做数据持久化）
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -54,7 +59,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 2222:2222 \
             -p 8000:8000 \
             -p 9000:9000 \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -62,6 +67,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 正常启动（持久化数据）
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -72,7 +78,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 \
             -v /srv/csghub/data:/var/opt \
             -v /srv/csghub/log:/var/log \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -102,6 +108,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 快速启动（不做数据持久化）
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -110,7 +117,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 2222:2222 \
             -p 8000:8000 \
             -p 9000:9000 \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -118,6 +125,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 正常启动（持久化数据）
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -128,7 +136,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 \
             -v ~/Documents/csghub/data:/var/opt \
             -v ~/Documents/csghub/log:/var/log \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -146,6 +154,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - **Powershell**
 
         ```shell
+        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
         $env:SERVER_PORT = "80"
         docker run -it -d `
             --name omnibus-csghub `
@@ -154,14 +163,15 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 2222:2222 `
             -p 8000:8000 `
             -p 9000:9000 `
-            -e SERVER_DOMAIN="<your ip address>" `
+            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
             -e SERVER_PORT=$env:SERVER_PORT `
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
-
+    
     - **CMD**
-
+    
         ```shell
+        set SERVER_DOMAIN=<your ip address>
         set SERVER_PORT=80
         docker run -it -d ^
             --name omnibus-csghub ^
@@ -170,7 +180,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 2222:2222 ^
             -p 8000:8000 ^
             -p 9000:9000 ^
-            -e SERVER_DOMAIN=<your ip address> ^
+            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
             -e SERVER_PORT=%SERVER_PORT% ^
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -214,6 +224,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 安装 CSGHub
 
         ```shell
+        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -227,7 +238,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v /srv/csghub/log:/var/log \
             -v ~/.kube:/etc/.kube \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
@@ -239,6 +250,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - **macOS**
 
         ```shell
+        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
         export SERVER_PORT=80
         docker run -it -d \
             --name omnibus-csghub \
@@ -252,13 +264,13 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v ~/Documents/csghub/log:/var/log \
             -v ~/.kube:/etc/.kube \
             -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=<your ip address> \
+            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
         ```
-
+    
     - **Windows**
-
+    
         暂未支持。
 
 ### 访问 CSGHub
