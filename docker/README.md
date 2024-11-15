@@ -34,7 +34,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
 >
 > **Note:**
 >
-> - Please make sure that your local IP address segment and the docker default address segment (172.17.0.0) do not overlap.
+> - Please make sure that your local IP address segment and the docker default address segment (172.17.0.0) do not overlap. If they overlap, please try changing the local network connection (for example, changing the Ethernet network).
 
 #### Quick Installation (Space and model inference & fine-tuning functions cannot be used)
 
