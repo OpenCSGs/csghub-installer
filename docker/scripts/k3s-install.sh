@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ -z "$SERVER_DOMAIN" ]; then
-  echo "env SERVER_DOMAIN ot set. it can be set as ip or domain."
+  echo "env SERVER_DOMAIN for csghub not set. it can be set as ip or domain."
   exit 1
 fi
 
@@ -505,7 +505,7 @@ fi
 
 if [ "$ENABLE_K3S" == "true" ]; then
   log "INFO" "Adding insecure registry to k3s."
-  REGISTRY_ADDRESS="$IP_ADDRESS:5000"
+  REGISTRY_ADDRESS="$SERVER_DOMAIN:5000"
   REGISTRY_USERNAME=registry
   REGISTRY_PASSWORD=registry
 
