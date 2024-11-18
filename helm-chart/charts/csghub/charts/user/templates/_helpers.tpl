@@ -36,5 +36,5 @@ Define the internal endpoint for user
 Define the password of user root
 */}}
 {{- define "user.password" }}
-{{- "Root@123456" | b64enc -}}
+{{- "Root@1234" -}}
 {{- end }}
