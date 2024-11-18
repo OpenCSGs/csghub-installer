@@ -1,0 +1,129 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.temporal (omit .Values "global" "exports") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ $conf.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready -h {{ include "postgresql.internal.domain" . }} -p {{ include "postgresql.internal.port" . }} -U postgres; do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.custom" (list . "postgresql") }}
+                  key: postgres
+      containers:
+        - name: temporal
+          image: {{ $conf.image.repository }}:{{ .Values.global.temporal.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          ports:
+            - containerPort: 7233
+              name: temporal
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            {{- if .Values.global.postgresql.enabled }}
+            - name: POSTGRES_PWD
+              value: "$(temporal)"
+            {{- end }}
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 7233
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+        - name: temporal-ui
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/ui:2.30.3
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: temporal-ui
+              protocol: TCP
+          env:
+            - name: TEMPORAL_ADDRESS
+              value: {{ include "temporal.internal.endpoint" . }}
+            - name: TEMPORAL_CORS_ORIGINS
+              value: "http://localhost:3000"
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

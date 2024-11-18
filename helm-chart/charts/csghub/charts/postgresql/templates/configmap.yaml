@@ -38,4 +38,4 @@ data:
     {{- end }}
     {{- end }}
     SELECT pg_reload_conf();
-{{- end }}
+    {{- end }}
