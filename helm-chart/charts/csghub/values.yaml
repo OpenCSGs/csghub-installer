@@ -304,7 +304,7 @@ global:
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder
       ## Defines the specific version of the Builder image to use.
       ## Please keep this default
-      tag: v0.9.3
+      tag: v1.0.0
       ## Determines how the image should be pulled from the Builder.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -571,3 +571,30 @@ global:
       host: "127.0.0.1"
       port: 9200
       index: "csghub"
+
+  ## Moderation configuration
+  moderation:
+    enabled: false
+    contentCheck:
+      accessKeyId: ""
+      accessKeySecret: ""
+      region: ""
+
+  ## Temporal configuration
+  temporal:
+    ingress:
+      enabled: true
+    image:
+      ## Specifies the location of the Watcher Docker image in the temporal.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup
+      ## Defines the specific version of the temporal image to use.
+#      tag: 1.25.1
+    postgresql: { }
+      # database: "temporal"
+      # databaseVisibility: ""
+      # host: ""
+      # port: 5432
+      # user: "temporal"
+      # password: ""
+
+

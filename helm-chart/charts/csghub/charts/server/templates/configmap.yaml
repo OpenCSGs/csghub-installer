@@ -91,6 +91,14 @@ data:
   {{- end }}
   {{- end }}
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
+  {{- if .Values.global.moderation.enabled }}
+  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"
+  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "moderation.internal.domain" .)}}
+  OPENCSG_MODERATION_SERVER_PORT: {{ include "moderation.internal.port" . | quote }}
+  {{- else }}
+  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"
+  {{- end }}
+  OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
 ---
 apiVersion: v1
 kind: ConfigMap

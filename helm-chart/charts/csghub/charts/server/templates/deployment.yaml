@@ -87,6 +87,10 @@ spec:
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until curl -s {{ include "gitea.internal.endpoint" . }}/api/healthz; do echo 'Waiting for gitea can be connected'; sleep 2; done" ]
         {{- end }}
+        - name: wait-for-temporal
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "temporal.internal.domain" . }} {{ include "temporal.internal.port" . }}; do echo 'Waiting for temporal can be connected'; sleep 2; done" ]
       containers:
         - name: server
           image: {{ $conf.image.repository }}:{{ .Values.global.server.image.tag | default .Chart.AppVersion }}

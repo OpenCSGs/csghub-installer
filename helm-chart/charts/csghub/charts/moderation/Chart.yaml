@@ -1,13 +1,8 @@
 apiVersion: v2
-name: gitaly
-description: Gitaly is a Git RPC service for handling all the git calls made by GitLab
-home: https://gitlab.com/gitlab-org/gitaly
-icon: https://www.gitlab.com/assets/logo-8f4c937b2a5d6eac1ef0ebadbe13ec029e932e7eaafcbbfedd99bab2fcda260.svg
-keywords:
-  - gitlab
-  - gitaly
-sources:
-  - https://gitlab.com/gitlab-org/gitaly
+name: moderation
+maintainers:
+  - name: OpenCSG Inc.
+    email: support@opencsg.com
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -28,4 +23,4 @@ version: 1.1.0
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v16.4.6"
+appVersion: "v1.1.0"
