@@ -159,6 +159,9 @@ services:
       STARHUB_SERVER_S3_ENABLE_SSL: false
       STARHUB_SERVER_PUBLIC_DOMAIN: http://${SERVER_DOMAIN}:${SERVER_PORT}
       STARHUB_SERVER_MULTI_SYNC_ENABLED: true
+      OPENCSG_MODERATION_SERVER_HOST: http://moderation_server
+      OPENCSG_MODERATION_SERVER_PORT: 8089
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: temporal:7233
     ports:
       - "8080:8080"
     restart: always
@@ -375,6 +378,7 @@ services:
       STARHUB_JWT_SIGNING_KEY: e2kk6awudc3620ed9a
       OPENCSG_USER_SERVER_PORT: 8088
       OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: http://${SERVER_DOMAIN}:${SERVER_PORT}/server/callback
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: temporal:7233
     ports:
       - "8088:8088"
     restart: always
@@ -455,10 +459,71 @@ services:
       STARHUB_SERVER_S3_BUCKET: opencsg-server-lfs
       STARHUB_SERVER_S3_REGION: cn-beijing
       STARHUB_SERVER_S3_ENABLE_SSL: false
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: temporal:7233
     restart: always
     networks:
       opencsg:
         ipv4_address: 192.168.100.230
+
+  moderation_server:
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
+    entrypoint:
+      - /starhub-bin/starhub
+      - moderation
+      - launch
+    depends_on:
+      - postgres
+      - gitaly
+    environment:
+      STARHUB_SERVER_API_TOKEN: ${HUB_SERVER_API_TOKEN}
+      STARHUB_DATABASE_DSN: postgresql://postgres:sdfa23Sh!322@postgres:5432/starhub_server?sslmode=disable
+      STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_ID: ${STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_ID}
+      STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_SECRET: ${STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_SECRET}
+      STARHUB_SERVER_SENSITIVE_CHECK_REGION: ${STARHUB_SERVER_SENSITIVE_CHECK_REGION}
+      STARHUB_SERVER_GITSERVER_TYPE: gitaly
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: tcp://gitaly:8075
+      STARHUB_SERVER_GITALY_STORGE: default
+      STARHUB_SERVER_GITALY_TOKEN: abc123secret
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: temporal:7233
+    ports:
+      - "8089:8089"
+    restart: always
+    networks:
+      - opencsg
+
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgres
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PWD=sdfa23Sh!322
+      - DEFAULT_NAMESPACE_RETENTION=7d
+      - POSTGRES_SEEDS=postgres
+    # uncomment to use docker hub
+    # image: temporalio/auto-setup:1.25.1
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup:1.25.1
+    networks:
+      - opencsg
+    ports:
+      - 7233:7233
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    # uncomment to use docker hub
+    # image: temporalio/ui:2.30.3
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/ui:2.30.3
+    networks:
+      - opencsg
+    ports:
+      - 8180:8080
 
 networks:
   opencsg:
