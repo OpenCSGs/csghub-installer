@@ -1,6 +1,6 @@
 ## Gitaly configuration (default)
 # The directory where Gitaly's executables are stored
-bin_dir = "/usr/local/bin"
+bin_dir = "/usr/bin"
 
 # listen on a TCP socket. This is insecure (no authentication)
 listen_addr = "127.0.0.1:8075"
