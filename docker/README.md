@@ -62,7 +62,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - Normal startup with persistent data volumes
@@ -81,7 +81,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v /srv/csghub/log:/var/log \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **macOS**
@@ -103,7 +103,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - Manually pull the image
 
         ```shell
-        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - Quick start without data persistence volumes
@@ -120,7 +120,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - Normal startup with persistent data volumes
@@ -139,7 +139,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v ~/Documents/csghub/log:/var/log \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **Windows**
@@ -167,7 +167,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 `
             -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
             -e SERVER_PORT=$env:SERVER_PORT `
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
     - **CMD**
@@ -184,7 +184,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -p 9000:9000 ^
             -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
             -e SERVER_PORT=%SERVER_PORT% ^
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
     - **WSL**
@@ -242,7 +242,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **macOS/Windows**
@@ -268,7 +268,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - **Windows**
