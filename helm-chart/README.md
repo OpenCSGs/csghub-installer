@@ -614,7 +614,7 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
 
     Username：`root`
 
-    Password：`Um9vdEAxMjM0NTY=`
+    Password：`Root@1234`
 
     *For more information, see the helm install output, which is roughly as follows:*
 
@@ -626,7 +626,7 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
     
     You can use the following admin credentials to log in:
          Username: root
-         Password: xxxxxxxx
+         Password: Root@1234
     ......
     ```
 

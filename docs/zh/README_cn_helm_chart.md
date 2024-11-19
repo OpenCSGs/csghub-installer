@@ -622,7 +622,7 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
     
     You can use the following admin credentials to log in:
          Username: root
-         Password: xxxxxxxx
+         Password: Root@1234
     ......
     ```
 

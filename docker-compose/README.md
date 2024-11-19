@@ -67,7 +67,7 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 2. Edit the `.env` file and set `SERVER_DOMAIN` to the current host's IP address or domain name. DO NOT use `127.0.0.1` or `localhost`.
 3. The space and registry related configurations in .env can be ignored without Kubernetes cluster. The configuration for integration with the existing Kubernetes cluster can be found in following [section](#Configure-kubernetes).
 4. Run the `startup.sh` script. Once all services are started, you can visit the self-deployed CSGHub service at `http://[SERVER_DOMAIN]`. If SERVER_PORT not 80 default, please visit by adding `:[SERVER_PORT]`.
-5. Once CSGHub instance startup, you can login with default admin account with `root/Password123`.
+5. Once CSGHub instance startup, you can login with default admin account with `root/Root@1234`.
 
 ### Notes
 
