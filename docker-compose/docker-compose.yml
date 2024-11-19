@@ -242,7 +242,7 @@ services:
     restart: always
 
   space_builder:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder:v0.9.3
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder:v1.0.0
     environment:
       - REDIS_ENDPOINT=redis:6379
       - SPACE_DATA_PATH=/opt/data
