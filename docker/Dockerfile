@@ -1,51 +1,35 @@
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup:1.25.1 AS temporal
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/ui:2.30.3 AS temporal-ui
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/minio:RELEASE.2024-07-15T19-02-30Z AS minio-server
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/mc:RELEASE.2024-06-01T15-03-35Z AS minio-mc
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry:2.8.3 AS registry
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitaly:v16.4.6 AS gitaly
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitlab-shell:v16.4.6 AS gitlab-shell
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10.16 AS nats-server
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1.1.0 AS server
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.1.0 AS portal
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
+
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/go-node AS go-builder
+ENV GOPROXY=https://goproxy.cn,direct
+WORKDIR /
+COPY logger .
+RUN go build -o logger
+
 FROM debian:bookworm-slim AS tools
 WORKDIR /tools
 
-RUN apt update && apt install -y wget apache2-utils curl openssh-client
-
-ARG MINIO_VERSION=latest
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        ARCH="amd64"; \
-    elif [ "$(uname -m)" = "aarch64" ]; then \
-        ARCH="arm64"; \
-    else \
-        echo "Unsupported architecture"; exit 1; \
-    fi && \
-    curl -o minio https://dl.min.io/server/minio/release/linux-${ARCH}/minio && \
-    curl -o mc https://dl.min.io/client/mc/release/linux-${ARCH}/mc && \
-    chmod +x minio mc
-
-ARG DISTRIBUTION_VERSION=2.8.3
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        ARCH="amd64"; \
-    elif [ "$(uname -m)" = "aarch64" ]; then \
-        ARCH="arm64"; \
-    else \
-        echo "Unsupported architecture"; exit 1; \
-    fi && \
-    curl -O https://ghp.ci/https://github.com/distribution/distribution/releases/download/v${DISTRIBUTION_VERSION}/registry_${DISTRIBUTION_VERSION}_linux_${ARCH}.tar.gz && \
-    tar -zxf registry_${DISTRIBUTION_VERSION}_linux_${ARCH}.tar.gz -C /tools && rm -rf registry_${DISTRIBUTION_VERSION}_linux_${ARCH}.tar.gz
-
-ARG GITALY_VERSION=v17.5.0
-RUN curl -O http://gitlab-ubi.s3.amazonaws.com/ubi-build-dependencies-${GITALY_VERSION}-ubi/gitaly.tar.gz && \
-    tar -zxf gitaly.tar.gz
-
-ARG GITLAB_SHELL_VERSION=v17.5.0
-RUN curl -O http://gitlab-ubi.s3.amazonaws.com/ubi-build-dependencies-${GITLAB_SHELL_VERSION}-ubi/gitlab-shell.tar.gz && \
-    tar -zxf gitlab-shell.tar.gz
-
-ARG NATS_VERSION=v2.10.22
-RUN if [ "$(uname -m)" = "x86_64" ]; then \
-        ARCH="amd64"; \
-    elif [ "$(uname -m)" = "aarch64" ]; then \
-        ARCH="arm64"; \
-    else \
-        echo "Unsupported architecture"; exit 1; \
-    fi && \
-    curl -O https://ghp.ci/https://github.com/nats-io/nats-server/releases/download/${NATS_VERSION}/nats-server-${NATS_VERSION}-linux-${ARCH}.tar.gz && \
-    tar -zxf nats-server-${NATS_VERSION}-linux-${ARCH}.tar.gz --strip-components=1
-
-RUN ssh-keygen -A
+RUN apt update && apt install -y wget apache2-utils curl openssh-client && ssh-keygen -A
 
 COPY bin .
 ARG TARGETPLATFORM
@@ -67,35 +51,6 @@ RUN case ${TARGETPLATFORM} in \
 RUN tar -zxf helm.tar.gz -C /usr/bin --strip-components=1 && \
     chmod +x -R /usr/bin/*
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:base-1.0 AS server-builder
-ENV GOPROXY=https://goproxy.cn,direct
-WORKDIR /
-
-ARG TAG=release-v1.0
-RUN apt update && apt install -y git && \
-    git clone -b $TAG --depth=1 https://ghp.ci/https://github.com/OpenCSGs/csghub-server.git csghub-server
-
-RUN cd /csghub-server && CGO_ENABLED=1 GOOS=linux go build -v -o csghub-server ./cmd/csghub-server
-
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/go-node AS go-builder
-ENV GOPROXY=https://goproxy.cn,direct
-WORKDIR /
-
-COPY logger .
-RUN go build -o logger
-
-RUN apt update && apt install -y git && \
-    git clone -b v1.733.0 --depth=1 https://ghp.ci/https://github.com/casdoor/casdoor.git casdoor
-
-RUN cd /casdoor/web && yarn install && yarn build
-RUN cd /casdoor && CGO_ENABLED=0 GOOS=linux go build -o ./casdoor
-
-ARG TAG=release-v1.0
-RUN git clone -b $TAG --depth=1 https://ghp.ci/https://github.com/OpenCSGs/csghub.git csghub-portal
-
-RUN cd /csghub-portal/frontend && yarn install && yarn build
-RUN cd /csghub-portal && CGO_ENABLED=0 GOOS=linux go build -o ./csghub-portal ./cmd/csghub-portal
-
 FROM debian:bookworm-slim
 LABEL authors="opencsg"
 ENV GIN_MODE=release \
@@ -103,16 +58,16 @@ ENV GIN_MODE=release \
 WORKDIR /
 
 # ============================================================
-#                   Init Log Monitor Service
+#   Init Log Monitor Service
 # ============================================================
 COPY --from=go-builder /logger /usr/bin/logger
 
 # ============================================================
-#             Init PostgreSQL, Redis Services
+#   Init PostgreSQL, Redis Services
 # ============================================================
 # Here are the instructions for installing the allowed programs
 RUN apt update && \
-    apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate \
+    apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate git git-lfs vim netcat-openbsd \
         libaprutil1 ca-certificates supervisor postgresql redis nginx libnginx-mod-stream dnsmasq && \
     pg_dropcluster 15 main && rm -rf /etc/postgresql
 
@@ -120,65 +75,77 @@ SHELL ["/bin/bash", "-c"]
 COPY etc /etc
 COPY scripts /scripts
 # ============================================================
-#                   Init Minio Services
+#   Init Minio Services
 # ============================================================
-COPY --from=tools /tools/minio /usr/bin/minio
-COPY --from=tools /tools/mc /usr/bin/mc
+COPY --from=minio-server /usr/bin/minio /usr/bin/minio
+COPY --from=minio-mc /usr/bin/mc /usr/bin/mc
 
 # ============================================================
-#                     Init Registry Service
+#   Init Registry Service
 # ============================================================
-COPY --from=tools /tools/registry /usr/bin/registry
 COPY --from=tools /usr/bin/htpasswd /usr/bin/htpasswd
+COPY --from=registry /bin/registry /usr/bin/registry
+COPY --from=registry /bin/busybox /usr/bin/busybox
 
 # ============================================================
-#            Init Gitaly and Gitlab-Shell Service
+#   Init Gitaly and Gitlab-Shell Service
 # ============================================================
-COPY --from=tools /tools/usr/local/bin/* /usr/bin/
-COPY --from=tools /tools/srv/gitlab-shell/bin/* /usr/bin/
 COPY --from=tools /etc/ssh/ssh_host_* /etc/ssh/
+COPY --from=gitaly /usr/local/bin/* /usr/bin/
+COPY --from=gitlab-shell /srv/gitlab-shell/bin/* /usr/bin/
 
 # ============================================================
-#                     Init Nats Service
+#   Init Nats Service
 # ============================================================
-COPY --from=tools /tools/nats-server /usr/bin/
+COPY --from=nats-server /nats-server /usr/bin/nats-server
 
 # ============================================================
-#                   Init Space Builder Service
+#   Init Space Builder Service
 # ============================================================
 COPY --from=tools /usr/bin/builder /usr/bin/builder
 
 # ============================================================
-#                    Init Casdoor Service
+#   Init Temporal Service
 # ============================================================
-COPY --from=go-builder /casdoor/casdoor /usr/bin/casdoor
-COPY --from=go-builder /casdoor/web/build /etc/casdoor/web/build
+COPY --from=temporal /usr/local/bin/* /usr/bin/
+COPY --from=temporal /etc/temporal/config /etc/temporal/config
+COPY --from=temporal /etc/temporal/schema /usr/bin/schema
+COPY --from=temporal-ui /home/ui-server/ui-server /usr/bin/ui-server
+COPY --from=temporal-ui /home/ui-server/config /etc/temporal-ui/config
+COPY --from=temporal-ui /home/ui-server/config-template.yaml /etc/temporal-ui/config-template.yaml
 
 # ============================================================
-#                     Init CSGHub Server Service
+#   Init Casdoor Service
+# ============================================================
+COPY --from=casdoor /server /usr/bin/casdoor
+COPY --from=casdoor /web /etc/casdoor/web
+
+# ============================================================
+#   Init CSGHub Server Service
 # ============================================================
 ENV GIN_MODE=release
-COPY --from=server-builder /csghub-server/csghub-server /usr/bin/
-COPY --from=server-builder /csghub-server/builder/store/database/seeds /builder/store/database/seeds
+COPY --from=server /starhub-bin/starhub /usr/bin/csghub-server
+COPY --from=server /starhub-bin/builder/store/database/seeds /builder/store/database/seeds
 
 # ============================================================
-#                     Init CSGHub Server Service
+#   Init CSGHub Server Service
 # ============================================================
-COPY --from=go-builder /csghub-portal/csghub-portal /usr/bin/csghub-portal
+COPY --from=portal /myapp/csghub-portal /usr/bin/csghub-portal
 
 # ============================================================
-#                      Install kubectl/helm
+#   Install kubectl/helm
 # ============================================================
 COPY --from=tools /usr/bin/kubectl /usr/bin/kubectl
 COPY --from=tools /usr/bin/helm /usr/bin/helm
 
 # ============================================================
-#                         ENTRYPOINT
+#   ENTRYPOINT
 # ============================================================
 RUN useradd registry && \
     useradd minio && \
     useradd -m git && \
     useradd nats && \
+    useradd temporal && \
     chmod +x -R /scripts && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* && \
@@ -187,5 +154,5 @@ RUN useradd registry && \
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 
 # docker build --provenance false \
-#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0 \
+#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.-t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0 \
 #     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest .
