@@ -61,7 +61,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - 正常启动（持久化数据）
@@ -80,7 +80,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v /srv/csghub/log:/var/log \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **macOS**
@@ -102,7 +102,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - 手动拉取镜像
 
         ```shell
-        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - 快速启动（不做数据持久化）
@@ -119,7 +119,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - 正常启动（持久化数据）
@@ -138,7 +138,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v ~/Documents/csghub/log:/var/log \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **Windows**
@@ -165,7 +165,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 `
             -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
             -e SERVER_PORT=$env:SERVER_PORT `
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
     - **CMD**
@@ -182,7 +182,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -p 9000:9000 ^
             -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
             -e SERVER_PORT=%SERVER_PORT% ^
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
     - **WSL**
@@ -240,7 +240,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
 - **macOS/Windows**
@@ -266,7 +266,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             -v /var/run/docker.sock:/var/run/docker.sock \
             -e SERVER_DOMAIN=${SERVER_DOMAIN} \
             -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
     - **Windows**
