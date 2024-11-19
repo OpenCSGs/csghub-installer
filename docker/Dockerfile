@@ -66,10 +66,16 @@ COPY --from=go-builder /logger /usr/bin/logger
 #   Init PostgreSQL, Redis Services
 # ============================================================
 # Here are the instructions for installing the allowed programs
+ARG TARGETPLATFORM
 RUN apt update && \
     apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate git git-lfs vim netcat-openbsd \
         libaprutil1 ca-certificates supervisor postgresql redis nginx libnginx-mod-stream dnsmasq && \
-    pg_dropcluster 15 main && rm -rf /etc/postgresql
+    pg_dropcluster 15 main && rm -rf /etc/postgresql && \
+    if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
+        dpkg --add-architecture amd64 && \
+        apt-get update && \
+        apt-get install -y --no-install-recommends libc6:amd64 libpcre2-8-0:amd64 zlib1g:amd64; \
+    fi
 
 SHELL ["/bin/bash", "-c"]
 COPY etc /etc
