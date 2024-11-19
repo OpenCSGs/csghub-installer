@@ -583,7 +583,7 @@ global:
   ## Temporal configuration
   temporal:
     ingress:
-      enabled: true
+      enabled: false
     image:
       ## Specifies the location of the Watcher Docker image in the temporal.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup
