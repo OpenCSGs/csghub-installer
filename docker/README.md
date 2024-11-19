@@ -3,7 +3,7 @@
 > **Tips:**
 >
 > - This method is currently in the testing phase and is not suitable for production deployment.
-> - Currently only supports the AMD64 architecture (supports Docker Desktop Rosetta).
+> - Now supports amd64/arm64 architecture (supports Docker Desktop Rosetta).
 > - [中文文档](../docs/zh/README_cn_docker.md)
 
 ## Overview
@@ -98,12 +98,12 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***Note:** Rosetta runs slowly. A container running in Rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
+    > ***Note:** Rosetta runs Slightly slower. Before version v1.1.0, container running in Rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
 
     - Manually pull the image
 
         ```shell
-        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        docker pull opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - Quick start without data persistence volumes

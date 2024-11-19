@@ -3,7 +3,7 @@
 > 提示：
 >
 > - 此种方式目前处于测试阶段，暂不适用于生产环境部署。
-> - 目前仅支持 AMD64 架构（支持 Docker Desktop Rosetta）。
+> - 目前支持 AMD64/ARM64 架构（支持 Docker Desktop Rosetta）。
 
 ## 概述
 
@@ -97,12 +97,12 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***注意：**Rosetta运行速度较慢。以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
+    > ***注意：**Rosetta运行速度稍慢。v1.1.0 以前版本以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
 
     - 手动拉取镜像
 
         ```shell
-        docker pull --platform=linux/amd64 opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        docker pull opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
     - 快速启动（不做数据持久化）
