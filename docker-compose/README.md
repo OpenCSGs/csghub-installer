@@ -48,6 +48,12 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 
 - **fluentd:** A log collection and processing framework that aggregates and forwards application logs for easy analysis and monitoring.
 
+- **moderation_server:** Content security scanning service.
+
+- **temporal:** Asynchronous task management service.
+
+- **temporal-ui:** Provide asynchronous task viewing dashboard. 
+
 - **nginx:** Provide routing forwarding.
 
 ## Prerequisites
