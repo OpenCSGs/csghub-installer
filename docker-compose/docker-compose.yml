@@ -16,7 +16,7 @@ services:
     privileged: true
     networks:
       opencsg:
-        ipv4_address: 192.168.100.250
+        ipv4_address: 192.171.100.250
     restart: always
 
   redis:
@@ -27,7 +27,7 @@ services:
       - redis:/data
     networks:
       opencsg:
-        ipv4_address: 192.168.100.249
+        ipv4_address: 192.171.100.249
     healthcheck:
       test: redis-cli ping
       interval: 1s
@@ -45,7 +45,7 @@ services:
     privileged: true
     networks:
       opencsg:
-        ipv4_address: 192.168.100.248
+        ipv4_address: 192.171.100.248
 
   registry:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry:2
@@ -56,7 +56,7 @@ services:
       - ./auth:/auth
     networks:
       opencsg:
-        ipv4_address: 192.168.100.247
+        ipv4_address: 192.171.100.247
     environment:
       REGISTRY_AUTH: "htpasswd"
       REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
@@ -72,7 +72,7 @@ services:
       - "5433:5432"
     networks:
       opencsg:
-        ipv4_address: 192.168.100.246
+        ipv4_address: 192.171.100.246
     healthcheck:
       test: pg_isready -U postgres -h 127.0.0.1
       interval: 5s
@@ -105,7 +105,7 @@ services:
       - "8081:8090"
     networks:
       opencsg:
-        ipv4_address: 192.168.100.245
+        ipv4_address: 192.171.100.245
 
   csghub_server:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -168,7 +168,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.244
+        ipv4_address: 192.171.100.244
 
   csghub_server_runner:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -190,9 +190,9 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.243
+        ipv4_address: 192.171.100.243
     dns:
-      - "192.168.100.248"
+      - "192.171.100.248"
     volumes:
       - ./.kube:/root/.kube:r
 
@@ -209,7 +209,7 @@ services:
     entrypoint: [ "sh", "-c", "until nc -zv csghub_server 8080 ; do echo 'sleep 10s...'; sleep 10; done; echo 'begin to do db init scripts'; until pg_isready -h postgres -p 5432; do sleep 5; done; psql -h postgres -U postgres -d starhub_server -f /scripts/init.sql" ]
     networks:
       opencsg:
-        ipv4_address: 192.168.100.232
+        ipv4_address: 192.171.100.232
 
   csghub_server_proxy:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -236,9 +236,9 @@ services:
       - "8083:8083"
     networks:
       opencsg:
-        ipv4_address: 192.168.100.242
+        ipv4_address: 192.171.100.242
     dns:
-      - "192.168.100.248"
+      - "192.171.100.248"
     restart: always
 
   space_builder:
@@ -256,7 +256,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.241
+        ipv4_address: 192.171.100.241
     volumes:
       - ./space_data:/opt/data:rw
 
@@ -276,7 +276,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.240
+        ipv4_address: 192.171.100.240
     volumes:
       - ./data/gitlab-shell/config.yml:/srv/gitlab-shell/config.yml
       - ./data/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret
@@ -294,7 +294,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.239
+        ipv4_address: 192.171.100.239
     volumes:
       - ./data/data/gitaly/git/repositories:/home/git/repositories
       - ./data/gitaly/gitaly.config.toml:/home/gitaly.config.toml
@@ -315,7 +315,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.238
+        ipv4_address: 192.171.100.238
 
   natsmaster:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10.16
@@ -329,7 +329,7 @@ services:
       - ./nats/jetstream:/data/jetstream
     networks:
       opencsg:
-        ipv4_address: 192.168.100.237
+        ipv4_address: 192.171.100.237
 
   account_server:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -354,7 +354,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.236
+        ipv4_address: 192.171.100.236
 
   user_server:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -386,13 +386,17 @@ services:
       STARHUB_JWT_SIGNING_KEY: e2kk6awudc3620ed9a
       OPENCSG_USER_SERVER_PORT: 8088
       OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: http://${SERVER_DOMAIN}:${SERVER_PORT}/server/callback
+      # moderation service connection
+      OPENCSG_MODERATION_SERVER_HOST: http://moderation_server
+      OPENCSG_MODERATION_SERVER_PORT: 8089
+      # workflow
       OPENCSG_WORKFLOW_SERVER_ENDPOINT: temporal:7233
     ports:
       - "8088:8088"
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.235
+        ipv4_address: 192.171.100.235
     volumes:
       - ./casdoor:/starhub-bin/casdoor:r
 
@@ -409,7 +413,7 @@ services:
       - ./casdoor/conf:/conf/
     networks:
       opencsg:
-        ipv4_address: 192.168.100.234
+        ipv4_address: 192.171.100.234
 
   server_proxy_nginx:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/nginx:latest
@@ -421,7 +425,7 @@ services:
     privileged: true
     networks:
       opencsg:
-        ipv4_address: 192.168.100.233
+        ipv4_address: 192.171.100.233
     restart: always
 
   mirror-repo-sync:
@@ -448,7 +452,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.231
+        ipv4_address: 192.171.100.231
 
   mirror-lfs-sync:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -472,7 +476,7 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.230
+        ipv4_address: 192.171.100.230
 
   moderation_server:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:${CSGHUB_VERSION}
@@ -501,45 +505,45 @@ services:
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.229
+        ipv4_address: 192.171.100.229
 
   temporal:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup:1.25.1
     depends_on:
       - postgres
     environment:
-      - DB=postgres12
-      - DB_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PWD=sdfa23Sh!322
-      - DEFAULT_NAMESPACE_RETENTION=7d
-      - POSTGRES_SEEDS=postgres
+      DB: temporal
+      DB_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: sdfa23Sh!322
+      DEFAULT_NAMESPACE_RETENTION: 7d
+      POSTGRES_SEEDS: postgres
     ports:
-      - "7233:7233"
+      - "8091:7233"
     networks:
       opencsg:
-        ipv4_address: 192.168.100.228
+        ipv4_address: 192.171.100.228
 
   temporal-ui:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/ui:2.30.3
     depends_on:
       - temporal
     environment:
-      - TEMPORAL_ADDRESS=temporal:7233
-      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:3000
     ports:
-      - "8180:8080"
+      - "8192:8080"
     restart: always
     networks:
       opencsg:
-        ipv4_address: 192.168.100.227
+        ipv4_address: 192.171.100.227
 
 networks:
   opencsg:
     ipam:
       driver: default
       config:
-        - subnet: "192.168.100.0/24"
+        - subnet: "192.171.100.0/24"
 
 volumes:
   redis:
