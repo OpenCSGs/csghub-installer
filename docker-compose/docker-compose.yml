@@ -13,6 +13,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/logs:/var/log/nginx
       - ./nginx/tmpdata:/var/nginx/client_body_temp
+      - ./nginx/htpasswd:/etc/nginx/.htpasswd
     privileged: true
     networks:
       opencsg:
@@ -508,14 +509,14 @@ services:
     depends_on:
       - postgres
     environment:
-      - DB=postgres12
-      - DB_PORT=5432
-      - POSTGRES_USER=postgres
-      - POSTGRES_PWD=sdfa23Sh!322
-      - DEFAULT_NAMESPACE_RETENTION=7d
-      - POSTGRES_SEEDS=postgres
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PWD: sdfa23Sh!322
+      DEFAULT_NAMESPACE_RETENTION: 7d
+      POSTGRES_SEEDS: postgres
     ports:
-      - "7233:7233"
+      - "8091:7233"
     networks:
       opencsg:
         ipv4_address: 192.168.100.228
@@ -525,8 +526,9 @@ services:
     depends_on:
       - temporal
     environment:
-      - TEMPORAL_ADDRESS=temporal:7233
-      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:3000
+      TEMPORAL_UI_PUBLIC_PATH: /temporal-ui
     ports:
       - "8180:8080"
     restart: always
