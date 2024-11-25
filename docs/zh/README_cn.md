@@ -1,5 +1,12 @@
 # 安装 CSGHub
 
+## 概述
+
+CSGHub 是一个开源、可信的大模型资产管理平台，可帮助用户治理 LLM 及其应用生命周期中涉及到的资产（数据集、模型文件、代码等）。基于 CSGHub，用户可以通过 Web 界面、Git 命令行或者自然语言
+ Chatbot 等方式，实现对模型文件、数据集、代码等资产的操作，包括上传、下载、存储、校验和分发；同时平台提供微服务子模块和标准化 API，便于用户与自有系统集成。
+
+CSGHub 致力于为用户带来针对大模型原生设计的、可私有化部署离线运行的资产管理平台。CSGHub 提供类似私有化的 Hugging Face 功能，以类似 OpenStack Glance 管理虚拟机镜像、Harbor 管理容器镜>像以及 Sonatype Nexus 管理制品的方式，实现对 LLM 资产的管理。
+
 > **提示:**
 >
 > - 从 v0.9.0 版本开始, CSGHub 将使用 [Gitaly](https://gitlab.com/gitlab-org/gitaly) 作为默认的 Git 服务，并且不在继续提供 Gitea 支持。

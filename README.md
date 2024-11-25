@@ -1,5 +1,11 @@
 # CSGHub Installer
 
+## Overview
+
+CSGHub is an open source, trusted large model asset management platform that helps users manage assets (datasets, model files, codes, etc.) involved in the life cycle of LLM and LLM applications. Based on CSGHub, users can operate assets such as model files, data sets, codes, etc. through the Web interface, Git command line, or natural language Chatbot, including uploading, downloading, storage, verification, and distribution; at the same time, the platform provides microservice submodules and standardized APIs to facilitate users to integrate with their own systems.
+
+CSGHub is committed to bringing users an asset management platform that is natively designed for large models and can be privately deployed and run offline. CSGHub provides a similar private Hugging Face function to manage LLM assets in a similar way to OpenStack Glance managing virtual machine images, Harbor managing container images, and Sonatype Nexus managing artifacts.
+
 > **Tips:**
 >
 > - Starting from v0.9.0, CSGHub will use [Gitaly](https://gitlab.com/gitlab-org/gitaly) as the default git service and will no longer provide Gitea support.
