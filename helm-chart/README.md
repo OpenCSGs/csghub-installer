@@ -2,12 +2,6 @@
 
 [中文文档](../docs/zh/README_cn_helm_chart.md)
 
-## Overview
-
-CSGHub is an open source, trusted large model asset management platform that helps users manage assets (datasets, model files, codes, etc.) involved in the life cycle of LLM and LLM applications. Based on CSGHub, users can operate assets such as model files, data sets, codes, etc. through the Web interface, Git command line, or natural language Chatbot, including uploading, downloading, storage, verification, and distribution; at the same time, the platform provides microservice submodules and standardized APIs to facilitate users to integrate with their own systems.
-
-CSGHub is committed to bringing users an asset management platform that is natively designed for large models and can be privately deployed and run offline. CSGHub provides a similar private Hugging Face function to manage LLM assets in a similar way to OpenStack Glance managing virtual machine images, Harbor managing container images, and Sonatype Nexus managing artifacts.
-
 ## Instructions
 
 ### Deployments
@@ -20,6 +14,7 @@ Currently, the version of CSGHub Helm Chart is consistent with the CSGHub versio
 
 | Chart version | CSGHub version | Remark |
 | :-----------: | :------------: | ------ |
+|     1.1.x     |     v1.1.x     |        |
 |     1.0.x     |     v1.0.x     |        |
 |     0.9.x     |     v0.9.x     |        |
 |     0.8.x     |     v0.8.x     |        |
@@ -126,7 +121,7 @@ Software requirements:
 
 ### Deploy Kubernetes
 
-> **Only for users who do not have a k8s basic environment. If you already have a k8s shipping environment, please continue configuration from the next chapter.** 
+> **Only for users who do not have a k8s basic environment. If you already have a k8s shipping environment which meets the above software requirements, please continue configuration from the [next chapter](#configure-existing-kubernetes).** 
 
 > **Tips:**
 >
