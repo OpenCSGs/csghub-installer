@@ -509,7 +509,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DB: temporal
+      DB: postgres12
       DB_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PWD: sdfa23Sh!322
