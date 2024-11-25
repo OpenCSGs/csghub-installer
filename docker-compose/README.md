@@ -74,6 +74,7 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 3. The space and registry related configurations in .env can be ignored without Kubernetes cluster. The configuration for integration with the existing Kubernetes cluster can be found in following [section](#Configure-kubernetes).
 4. Run the `startup.sh` script. Once all services are started, you can visit the self-deployed CSGHub service at `http://[SERVER_DOMAIN]`. If SERVER_PORT not 80 default, please visit by adding `:[SERVER_PORT]`.
 5. Once CSGHub instance startup, you can login with default admin account with `root/Root@1234`.
+6. You can access backend async task panel with `/temporal-ui` and default admin account is `admin/Admin@1234` 
 
 ### Notes
 
