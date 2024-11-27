@@ -61,8 +61,6 @@ The following will introduce the necessary components created when deploying the
 
 - **coredns:** Used to process and resolve internal DNS resolution.
 
-- **moderation_server:** Content security scanning service.
-
 - **temporal:** Asynchronous task management service.
 
 - **temporal-ui:** Provide asynchronous task viewing dashboard. 
