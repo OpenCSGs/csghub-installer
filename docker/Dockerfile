@@ -134,7 +134,7 @@ COPY --from=server /starhub-bin/starhub /usr/bin/csghub-server
 COPY --from=server /starhub-bin/builder/store/database/seeds /builder/store/database/seeds
 
 # ============================================================
-#   Init CSGHub Server Service
+#   Init CSGHub Portal Service
 # ============================================================
 COPY --from=portal /myapp/csghub-portal /usr/bin/csghub-portal
 
