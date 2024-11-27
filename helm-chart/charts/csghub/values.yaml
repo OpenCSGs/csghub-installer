@@ -572,14 +572,6 @@ global:
       port: 9200
       index: "csghub"
 
-  ## Moderation configuration
-  moderation:
-    enabled: false
-    contentCheck:
-      accessKeyId: ""
-      accessKeySecret: ""
-      region: ""
-
   ## Temporal configuration
   temporal:
     ingress:
