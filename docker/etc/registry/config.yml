@@ -14,7 +14,7 @@ http:
 auth:
   htpasswd:
     realm: basic-realm
-    path: /etc/registry/htpasswd
+    path: /etc/registry/.htpasswd
 health:
   storagedriver:
     enabled: true

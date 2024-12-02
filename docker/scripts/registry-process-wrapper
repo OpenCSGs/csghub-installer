@@ -3,12 +3,12 @@
 set -e
 
 echo "Create htpasswd file."
-htpasswd -Bb -c /etc/registry/htpasswd $REGISTRY_USERNAME $REGISTRY_PASSWORD
+htpasswd -Bb -c /etc/registry/.htpasswd $REGISTRY_USERNAME $REGISTRY_PASSWORD
 
 if [[ "$(pgrep -l -c -x registry)" -eq 1 ]]; then
   echo "distribution registry is already running."
 else
-  if [ -f "/etc/registry/htpasswd" ]; then
+  if [ -f "/etc/registry/.htpasswd" ]; then
     echo "start distribution registry..."
     exec /usr/bin/registry serve /etc/registry/config.yml
   else
