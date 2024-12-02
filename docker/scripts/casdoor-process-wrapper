@@ -21,6 +21,7 @@ check_postgresql
 export POSTGRES_CASDOOR_PASS=${POSTGRES_CASDOOR_PASS:-POSTGRES_CASDOOR_USER}
 export POSTGRES_CASDOOR_DB=${POSTGRES_CASDOOR_DB:-$POSTGRES_CASDOOR_USER}
 
+mkdir -p /etc/casdoor/conf
 if [ -f "/etc/casdoor/app.conf.sample" ] && [ -f "/etc/casdoor/init_data.json.sample" ]; then
   envsubst < /etc/casdoor/app.conf.sample > /etc/casdoor/conf/app.conf
   envsubst < /etc/casdoor/init_data.json.sample > /etc/casdoor/conf/init_data.json
