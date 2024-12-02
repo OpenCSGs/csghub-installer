@@ -7,9 +7,9 @@ if [ -f ./config/config_template.yaml ]; then
     exit 1
 fi
 
-dockerize -template ./config-template.yaml:./config/docker.yaml
+dockerize -template  /etc/temporal-ui/config-template.yaml:/etc/temporal-ui/config/docker.yaml
 
 # Run bash instead of ui-server if "bash" is passed as an argument (convenient to debug docker image).
 for arg in "$@" ; do [[ ${arg} == "bash" ]] && bash && exit 0 ; done
 
-exec /usr/bin/ui-server --env docker start
+exec /usr/bin/ui-server --config /etc/temporal-ui/config  --env docker start
