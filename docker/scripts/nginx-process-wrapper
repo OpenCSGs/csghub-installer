@@ -21,6 +21,9 @@ check_portal() {
 check_server
 check_portal
 
+echo "Create htpasswd file."
+htpasswd -Bb -c /etc/nginx/.htpasswd "$TEMPORAL_USER" "$TEMPORAL_PASS"
+
 if [ -f "/etc/nginx/nginx.conf.sample" ]; then
   envsubst < /etc/nginx/nginx.conf.sample > /etc/nginx/nginx.conf
 fi

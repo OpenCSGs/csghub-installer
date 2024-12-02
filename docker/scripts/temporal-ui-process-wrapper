@@ -12,9 +12,6 @@ check_temporal() {
 
 check_temporal
 
-echo "Create htpasswd file."
-htpasswd -Bb -c /etc/nginx/.htpasswd $TEMPORAL_USER $TEMPORAL_PASS
-
 if [ -f /etc/temporal-ui/config-template.yaml ]; then
   dockerize -template /etc/temporal-ui/config-template.yaml:/etc/temporal-ui/config/docker.yaml
 fi
