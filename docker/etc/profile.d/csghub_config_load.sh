@@ -157,6 +157,7 @@ export DOCKER_HOST=unix:///var/run/docker.sock
 
 # Temporal Environments
 export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-"127.0.0.1:7233"}
+export TEMPORAL_UI=${TEMPORAL_UI:-true}
 export TEMPORAL_UI_PUBLIC_PATH="/temporal-ui"
 export TEMPORAL_UI_PORT=8180
 export TEMPORAL_CORS_ORIGINS="http://localhost:3000"
