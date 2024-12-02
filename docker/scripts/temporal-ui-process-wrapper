@@ -2,14 +2,24 @@
 
 set -eu -o pipefail
 
-if [ -f ./config/config_template.yaml ]; then
-    >&2 echo "Custom config templates should now be mounted at: /home/ui-server/config-template.yaml"
-    exit 1
-fi
+check_temporal() {
+  echo "Waiting Temporal ready..."
+  until /usr/bin/curl -s -o /dev/null http://127.0.0.1:7233; do
+    sleep 2
+  done
+  echo "Temporal is ready."
+}
 
-dockerize -template  /etc/temporal-ui/config-template.yaml:/etc/temporal-ui/config/docker.yaml
+check_temporal
+
+echo "Create htpasswd file."
+htpasswd -Bb -c /etc/nginx/.htpasswd $TEMPORAL_USER $TEMPORAL_PASS
+
+if [ -f /etc/temporal-ui/config-template.yaml ]; then
+  dockerize -template /etc/temporal-ui/config-template.yaml:/etc/temporal-ui/config/docker.yaml
+fi
 
 # Run bash instead of ui-server if "bash" is passed as an argument (convenient to debug docker image).
 for arg in "$@" ; do [[ ${arg} == "bash" ]] && bash && exit 0 ; done
 
-exec /usr/bin/ui-server --config /etc/temporal-ui/config  --env docker start
+exec /usr/bin/ui-server --config /etc/temporal-ui/config --env docker start
