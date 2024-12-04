@@ -72,9 +72,9 @@ RUN apt update && \
         libaprutil1 ca-certificates supervisor postgresql redis nginx libnginx-mod-stream dnsmasq && \
     pg_dropcluster 15 main && rm -rf /etc/postgresql && \
     if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
-        dpkg --add-architecture arm64 && \
+        dpkg --add-architecture amd64 && \
         apt-get update && \
-        apt-get install -y --no-install-recommends libc6:arm64 libpcre2-8-0:arm64 zlib1g:arm64; \
+        apt-get install -y --no-install-recommends libc6:amd64 libpcre2-8-0:amd64 zlib1g:amd64; \
     fi
 
 SHELL ["/bin/bash", "-c"]
