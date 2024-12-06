@@ -20,11 +20,11 @@ check_casdoor() {
   echo "Casdoor is ready."
 }
 
-apt update && apt install -y --no-install-recommends git git-lfs vim procps
-apt clean && rm -rf /var/lib/apt/lists/* /var/tmp/*
-
 check_casdoor
 check_server
+
+echo "Sleeping 2 seconds to wait for all services done...""
+sleep 2
 
 export PGHOST=${POSTGRES_HOST}
 export PGPORT=${POSTGRES_PORT}
