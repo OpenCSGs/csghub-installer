@@ -53,7 +53,6 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - registry:/var/lib/registry
       - ./auth:/auth
     networks:
       opencsg:
@@ -62,6 +61,14 @@ services:
       REGISTRY_AUTH: "htpasswd"
       REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
       REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+      REGISTRY_STORAGE: s3
+      REGISTRY_STORAGE_S3_ACCESSKEY: admin
+      REGISTRY_STORAGE_S3_SECRETKEY: Password_123
+      REGISTRY_STORAGE_S3_REGION: cn-beijing
+      REGISTRY_STORAGE_S3_BUCKET: opencsg-registry-storage
+      REGISTRY_STORAGE_S3_ENCRYPT: false
+      REGISTRY_STORAGE_S3_SECURE: false
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: http://${SERVER_INTERNAL_DOMAIN}:9000
 
   postgres:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gradescope/postgresql-multiple-databases:14.4
@@ -306,7 +313,7 @@ services:
     environment:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: Password_123
-      MINIO_DEFAULT_BUCKETS: opencsg-server-lfs:public,opencsg-portal-storage:public
+      MINIO_DEFAULT_BUCKETS: opencsg-server-lfs:public,opencsg-portal-storage:public,opencsg-registry-storage:private
       MINIO_SCHEME: http
     volumes:
       - minio_data:/bitnami/minio/data
@@ -519,6 +526,4 @@ volumes:
   minio_data:
     driver: local
   pgdata:
-    driver: local
-  registry:
     driver: local
