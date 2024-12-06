@@ -1,1 +1,0 @@
-ALTER TABLE current_executions ADD COLUMN start_time DATETIME(6) NULL;
