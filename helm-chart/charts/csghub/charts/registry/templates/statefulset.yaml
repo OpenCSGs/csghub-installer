@@ -56,12 +56,22 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
           env:
           {{- if $conf.ingress.tls.enabled }}
             - name: REGISTRY_HTTP_TLS_CERTIFICATE
               value: "/opt/certs/x509/tls.crt"
             - name: REGISTRY_HTTP_TLS_KEY
               value: "/opt/certs/x509/tls.key"
+          {{- end }}
+          {{- if .Values.global.minio.enabled }}
+            - name: REGISTRY_STORAGE_S3_ACCESSKEY
+              value: "$(MINIO_ROOT_USER)"
+            - name: REGISTRY_STORAGE_S3_SECRETKEY
+              value: "$(MINIO_ROOT_PASSWORD)"
           {{- end }}
           {{- with $conf.environments }}
             {{- range $key, $value := . }}

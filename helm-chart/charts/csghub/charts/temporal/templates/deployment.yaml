@@ -88,11 +88,12 @@ spec:
             periodSeconds: 10
           securityContext:
             {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+        {{- if $conf.ingress.enabled }}
         - name: temporal-ui
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/ui:2.30.3
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
-            - containerPort: 8080
+            - containerPort: 8180
               name: temporal-ui
               protocol: TCP
           env:
@@ -110,11 +111,12 @@ spec:
             {{- $conf.resources | toYaml | nindent 12 }}
           livenessProbe:
             tcpSocket:
-              port: 8080
+              port: 8180
             initialDelaySeconds: 20
             periodSeconds: 10
           securityContext:
             {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+        {{- end }}
       {{- with $conf.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

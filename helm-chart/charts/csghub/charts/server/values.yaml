@@ -52,7 +52,7 @@ objectStore:
   ## This is also empty by default and should be provided securely.
   accessSecret: ""
   ## The name of the bucket within the object storage service to be used.
-  bucketName: "csghub-server"
+  bucket: "csghub-server"
   ## The region where the bucket is located within the object storage service.
   region: "cn-north-1"
 

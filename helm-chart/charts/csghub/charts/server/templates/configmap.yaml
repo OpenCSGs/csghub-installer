@@ -56,9 +56,8 @@ data:
   STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" | trimPrefix "https://" }}
   STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ .accessKey }}
   STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ .accessSecret }}
-  STARHUB_SERVER_S3_BUCKET: {{ .bucketName }}
+  STARHUB_SERVER_S3_BUCKET: {{ .bucket }}
   STARHUB_SERVER_S3_REGION: {{ .region }}
-  {{- else }}
   {{- end }}
   {{- end }}
   STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.internal.endpoint" . }}
@@ -91,13 +90,13 @@ data:
   {{- end }}
   {{- end }}
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
-  {{- if .Values.global.moderation.enabled }}
-  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"
-  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "moderation.internal.domain" .)}}
-  OPENCSG_MODERATION_SERVER_PORT: {{ include "moderation.internal.port" . | quote }}
-  {{- else }}
-  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"
-  {{- end }}
+{{/*  {{- if .Values.global.moderation.enabled }}*/}}
+{{/*  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"*/}}
+{{/*  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "moderation.internal.domain" .)}}*/}}
+{{/*  OPENCSG_MODERATION_SERVER_PORT: {{ include "moderation.internal.port" . | quote }}*/}}
+{{/*  {{- else }}*/}}
+{{/*  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"*/}}
+{{/*  {{- end }}*/}}
   OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
 ---
 apiVersion: v1

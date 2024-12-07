@@ -16,4 +16,26 @@ data:
   REGISTRY_AUTH: "htpasswd"
   REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
   REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+  REGISTRY_STORAGE: s3
+  {{- if .Values.global.minio.enabled }}
+  {{- if .Values.global.ingress.tls.enabled }}
+  REGISTRY_STORAGE_S3_ENCRYPT: "true"
+  {{- else }}
+  REGISTRY_STORAGE_S3_ENCRYPT: "false"
+  {{- end }}
+  REGISTRY_STORAGE_S3_SECURE: "false"
+  REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "minio.external.endpoint" . }} # used to generate download links for lfs files
+  REGISTRY_STORAGE_S3_BUCKET: "csghub-git"
+  REGISTRY_STORAGE_S3_REGION: "cn-north-1"
+  {{- else }}
+  {{- with $conf.objectStore }}
+  REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ .endpoint }}
+  REGISTRY_STORAGE_S3_ACCESSKEY: {{ .accessKey }}
+  REGISTRY_STORAGE_S3_SECRETKEY: {{ .accessSecret }}
+  REGISTRY_STORAGE_S3_BUCKET: {{ .bucket }}
+  REGISTRY_STORAGE_S3_REGION: {{ .region }}
+  REGISTRY_STORAGE_S3_ENCRYPT: {{ .encrypt }}
+  REGISTRY_STORAGE_S3_SECURE: {{ .secure }}
+  {{- end }}
+  {{- end }}
 {{- end }}
