@@ -23,7 +23,7 @@ check_casdoor() {
 check_casdoor
 check_server
 
-echo "Sleeping 2 seconds to wait for all services done...""
+echo "Sleeping 2 seconds to wait for all services done..."
 sleep 2
 
 export PGHOST=${POSTGRES_HOST}
