@@ -68,7 +68,7 @@ services:
       REGISTRY_STORAGE_S3_BUCKET: opencsg-registry-storage
       REGISTRY_STORAGE_S3_ENCRYPT: false
       REGISTRY_STORAGE_S3_SECURE: false
-      REGISTRY_STORAGE_S3_REGIONENDPOINT: http://${SERVER_INTERNAL_DOMAIN}:9000
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: http://${SERVER_DOMAIN}:9000  # must be accessible from client（such as docker push...）
 
   postgres:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gradescope/postgresql-multiple-databases:14.4
