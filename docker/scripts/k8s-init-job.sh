@@ -51,6 +51,13 @@ create_namespace() {
   fi
 }
 
+install_argo_workflow() {
+  # Install argo workflow
+  log "INFO" "Install the ARGO Workflow component."
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+}
+
 install_knative_serving() {
   echo "Install the Knative Serving component"
   retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
@@ -144,6 +151,10 @@ for CONFIG in $(ls -A /etc/.kube/config*); do
 
   if [ "$STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET" == "csghub-docker-config" ]; then
     create_docker_config
+  fi
+
+  if [ "$ENABLE_ARGO_WORKFLOW" == "true" ]; then
+    install_argo_workflow
   fi
 
   if [ "$KNATIVE_SERVING_ENABLE" == "true" ]; then

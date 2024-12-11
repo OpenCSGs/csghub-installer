@@ -20,7 +20,6 @@ fi
 
 ENABLE_K3S=${ENABLE_K3S:-"true"}
 ENABLE_DYNAMIC_PV=${ENABLE_DYNAMIC_PV:-"false"}
-ENABLE_KNATIVE_SERVING=${ENABLE_KNATIVE_SERVING:-$ENABLE_K3S}
 ENABLE_NVIDIA_GPU=${ENABLE_NVIDIA_GPU:-"false"}
 ENABLE_HTTPS=${ENABLE_HTTPS:-"false"}
 ENABLE_HOSTS=${ENABLE_HOSTS:-"true"}
@@ -329,6 +328,13 @@ EOF
 
   # Additional operations or script content can go here
   log "INFO" "Binding local disks to fast disks completed."
+fi
+
+if [ "$ENABLE_ARGO_WORKFLOW" == "true" ]; then
+  # Install argo workflow
+  log "INFO" "Install the ARGO Workflow component."
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
 fi
 
 if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
