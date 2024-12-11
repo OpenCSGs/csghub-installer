@@ -152,7 +152,7 @@ INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, fram
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (16, 'NIM-mixtral-8x7b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x7b-instruct-v01:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (17, 'NIM-mixtral-8x22b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x22b-instruct-v01:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (18, 'MS-Swift', '1.0', 'ms-swift:1.0-cuda12.1-devel-ubuntu22.04-py310-torch2.4.0', '', 1, 8000, 2);
-
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, type) VALUES (19, 'OpenCompass', '0.3.5', 'opencompass:0.3.5', '', 1, 4);
 --
 -- Truncate Data for Name: runtime_architectures; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -260,6 +260,50 @@ INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALU
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'GPT2LMHeadModel');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'GPTNeoXForCausalLM');
 INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(3, 'IdeficsForVisionText2Text');
+--for opencompass
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'AquilaForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'ArcticForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'BaiChuanForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'BloomForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'ChatGLMModel');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'CohereForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'DbrxForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'DeciLMForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'FalconForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'GemmaForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Gemma2ForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'GPT2LMHeadModel');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'GPTBigCodeForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'GPTJForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'GPTNeoXForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'InternLMForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'InternLM2ForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'JAISLMHeadModel');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'JambaForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'LlamaForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'MiniCPMForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'MistralForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'MixtralForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'MPTForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'OLMoForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'OPTForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'OrionForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'PhiForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Phi3ForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Phi3SmallForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'PersimmonForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'QWenLMHeadModel');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Qwen2ForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Qwen2MoeForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'StableLmForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Starcoder2ForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'XverseForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'ChameleonForConditionalGeneration');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'FuyuForCausalLM');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'LlavaForConditionalGeneration');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'LlavaNextForConditionalGeneration');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'PaliGemmaForConditionalGeneration');
+INSERT INTO runtime_architectures (runtime_framework_id, architecture_name) VALUES(19, 'Phi3VForCausalLM');
 
 --
 -- Name: runtime_frameworks_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
