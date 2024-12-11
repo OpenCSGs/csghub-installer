@@ -99,6 +99,10 @@ docker compose -f docker-compose.yml down -v
 
 Please refer to [Knative installation](https://opencsg.com/docs/csghub/101/helm/installation) for knative configuration.
 
+### Argo Workflow Configuration
+```
+kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker-compose/argo/all.yaml
+```
 ### CSGHub Configuration
 
 Reconfigure CSGHub instance to connect to the specified Kubernetes cluster. Assume the following information:
