@@ -1,0 +1,34 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.minio (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+data:
+  {{- if .Values.global.minio.enabled }}
+  {{- if .Values.global.ingress.tls.enabled }}
+  STARHUB_SERVER_S3_ENABLE_SSL: "true"
+  {{- else }}
+  STARHUB_SERVER_S3_ENABLE_SSL:  "false"
+  {{- end }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }} # used to generate download links for lfs files
+  STARHUB_SERVER_ARGO_S3_PUBLIC_BUCKET: "csghub-portal"
+  STARHUB_SERVER_S3_REGION: "cn-north-1"
+  {{- else }}
+  {{- with $conf.objectStore }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" | trimPrefix "https://" }}
+  STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ .accessKey }}
+  STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ .accessSecret }}
+  STARHUB_SERVER_ARGO_S3_PUBLIC_BUCKET: {{ .bucket }}
+  STARHUB_SERVER_S3_REGION: {{ .region }}
+  {{- end }}
+  {{- end }}
+  
