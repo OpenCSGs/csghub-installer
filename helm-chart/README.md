@@ -430,6 +430,22 @@ The steps are as follows
 
 ​	Confirm that all services are running normally.
 
+## Deploy Argo Workflow
+
+Argo Workflow is used in csghub to support model evaluation services.
+
+Please follow below steps to install: 
+
+```shell
+# Installing core Resources
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+    
+# Installing rbac resources
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+
+```
+Confirm that all services are running normally.
+
 ## Install CSGHub Helm Chart
 
 ### Manual Deployment

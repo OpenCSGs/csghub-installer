@@ -425,6 +425,20 @@ Knative Serving 是 CSGHub 创建应用实例所必须的组件。
 
 ​	确认一切服务正常运行。
 
+## 部署 Argo Workflow
+
+argo workflow组件在csghub中用于支持模型评测服务。请使用如下命令进行安装：
+
+```shell
+# 安装核心组件
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+
+# 安装rbac组件
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+
+```
+确认所有服务正常运行。
+
 ## 安装 CSGHub Helm Chart
 
 ### 手动部署
