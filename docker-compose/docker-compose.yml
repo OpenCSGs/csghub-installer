@@ -68,7 +68,7 @@ services:
       REGISTRY_STORAGE_S3_BUCKET: opencsg-registry-storage
       REGISTRY_STORAGE_S3_ENCRYPT: false
       REGISTRY_STORAGE_S3_SECURE: false
-      REGISTRY_STORAGE_S3_REGIONENDPOINT: http://${SERVER_DOMAIN}:9000  # must be accessible from client（such as docker push...）
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: http://${SERVER_DOMAIN}:9000 # must be accessible from client（such as docker push...）
 
   postgres:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gradescope/postgresql-multiple-databases:14.4
@@ -190,6 +190,12 @@ services:
       STARHUB_SERVER_DOCKER_REG_BASE: ${DOCKER_REGISTRY_SERVER}/${DOCKER_REGISTRY_NS}/
       STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: ${SPACE_APP_NS}.${SPACE_APP_INTERNAL_DOMAIN}:${SPACE_APP_INTERNAL_DOMAIN_PORT}
       STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET: ${DOCKER_REGISTRY_SECRET} #space-registry-credential
+      STARHUB_SERVER_S3_ENABLE_SSL: false
+      STARHUB_SERVER_S3_ACCESS_KEY_ID: admin
+      STARHUB_SERVER_S3_ACCESS_KEY_SECRET: Password_123
+      STARHUB_SERVER_ARGO_S3_PUBLIC_BUCKET: opencsg-portal-storage
+      STARHUB_SERVER_S3_ENDPOINT: ${SERVER_DOMAIN}:9000
+      OPENCSG_ACCOUNTING_NATS_URL: nats://natsadmin:gALqqbP6SpftVdFzrU2URJ8k1G@natsmaster:4222
     ports:
       - "8082:8082"
     restart: always
@@ -479,7 +485,6 @@ services:
     networks:
       opencsg:
         ipv4_address: 192.171.100.230
-
 
   temporal:
     image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup:1.25.1
