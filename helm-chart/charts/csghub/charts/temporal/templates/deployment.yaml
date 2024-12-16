@@ -46,13 +46,21 @@ spec:
         - name: wait-for-postgresql
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -h {{ include "postgresql.internal.domain" . }} -p {{ include "postgresql.internal.port" . }} -U postgres; do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -h $(POSTGRES_SEEDS) -p $(DB_PORT) -U $(POSTGRES_USER); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
           env:
+            {{- if .Values.global.postgresql.enabled }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "common.names.custom" (list . "postgresql") }}
                   key: postgres
+            {{- else }}
+            - name: PGPASSWORD
+              value: "$(POSTGRES_PWD)"
+            {{- end }}
       containers:
         - name: temporal
           image: {{ $conf.image.repository }}:{{ .Values.global.temporal.image.tag | default .Chart.AppVersion }}
