@@ -97,7 +97,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***注意：**Rosetta运行速度稍慢。v1.1.0 以前版本以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
+    > ***注意：**Rosetta运行速度稍慢。v1.2.0 以前版本以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
 
     - 手动拉取镜像
 
