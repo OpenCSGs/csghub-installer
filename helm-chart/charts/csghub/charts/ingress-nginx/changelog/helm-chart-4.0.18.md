@@ -26,7 +26,7 @@ This file documents all notable changes to [ingress-nginx](https://github.com/ku
 * [8191](https://github.com/kubernetes/ingress-nginx/pull/8191) Using Go install for misspell
 * [8186](https://github.com/kubernetes/ingress-nginx/pull/8186) prometheus+grafana using servicemonitor
 * [8185](https://github.com/kubernetes/ingress-nginx/pull/8185) Append elements on match, instead of removing for cors-annotations
-* [8179](https://github.com/kubernetes/ingress-nginx/pull/8179) Bump github.com/opencontainers/runc from 1.0.3 to 1.1.0
+* [8179](https://github.com/kubernetes/ingress-nginx/pull/8179) Bump github.com/opencontainers/runc from 1.0.3 to 1.2.0
 * [8173](https://github.com/kubernetes/ingress-nginx/pull/8173) Adding annotations to the controller service account
 * [8163](https://github.com/kubernetes/ingress-nginx/pull/8163) Update the $req_id placeholder description
 * [8162](https://github.com/kubernetes/ingress-nginx/pull/8162) Versioned static manifests

@@ -98,7 +98,7 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     >
     >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
     >
-    > ***Note:** Rosetta runs Slightly slower. Before version v1.1.0, container running in Rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
+    > ***Note:** Rosetta runs Slightly slower. Before version v1.2.0, container running in Rosetta mode will prompt `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested`. Just ignore it.*
 
     - Manually pull the image
 
