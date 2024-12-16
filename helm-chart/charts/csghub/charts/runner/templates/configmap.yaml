@@ -31,4 +31,4 @@ data:
   STARHUB_SERVER_S3_REGION: {{ .region }}
   {{- end }}
   {{- end }}
-  
+  {{- end }}
