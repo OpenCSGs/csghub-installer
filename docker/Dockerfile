@@ -171,6 +171,6 @@ RUN useradd registry && \
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 
-# docker build --provenance false \
-#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.-t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.0.0 \
-#     -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest .
+# docker buildx build --provenance false --platform linux/arm64,linux/amd64 \
+#   -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:v1.2.0 \
+#   -t opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest --push .
