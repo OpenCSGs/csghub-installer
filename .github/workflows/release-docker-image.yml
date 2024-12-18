@@ -17,6 +17,10 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Cache Prune
+        run: |
+          docker system prune -f
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
