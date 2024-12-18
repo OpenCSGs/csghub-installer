@@ -13,6 +13,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 SELECT pg_catalog.set_config('search_path', 'public', false);
 
+
 --
 -- Seed Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -151,7 +152,7 @@ INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, fram
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (16, 'NIM-mixtral-8x7b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x7b-instruct-v01:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (17, 'NIM-mixtral-8x22b-instruct-v01', 'latest', 'nvcr.io/nim/mistralai/mixtral-8x22b-instruct-v01:latest', '', 1, 8000, 1);
 INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (18, 'MS-Swift', '1.0', 'ms-swift:1.0-cuda12.1-devel-ubuntu22.04-py310-torch2.4.0', '', 1, 8000, 2);
-INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, type) VALUES (19, 'OpenCompass', '0.3.5', 'opencompass:0.3.5', '', 1, 4);
+INSERT INTO runtime_frameworks (id, frame_name, frame_version, frame_image, frame_cpu_image, enabled, container_port, type) VALUES (19, 'OpenCompass', '0.3.5', 'opencompass:0.3.5', '', 1, 8000, 4);
 
 --
 -- Truncate Data for Name: runtime_architectures; Type: TABLE DATA; Schema: public; Owner: postgres
