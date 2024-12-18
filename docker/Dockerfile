@@ -14,9 +14,9 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry:2.8.3 A
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10.16 AS nats-server
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1.2.0 AS server
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:latest AS server
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.2.1 AS portal
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:latest AS portal
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 
@@ -56,6 +56,8 @@ RUN case ${TARGETPLATFORM} in \
 
 RUN tar -zxf helm.tar.gz -C /usr/bin --strip-components=1 && \
     chmod +x -R /usr/bin/*
+
+RUN rm -rf *.deb *.tar.gz /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
 
 FROM debian:bookworm-slim
 LABEL authors="opencsg"
