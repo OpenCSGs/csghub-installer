@@ -125,7 +125,7 @@ get_knative_kourier_network() {
   if [ ! -d "/etc/dnsmasq.d" ]; then
       mkdir -p /etc/dnsmasq.d
   fi
-  echo "address=/${SPACE_APP_NS}.${BASE_KNATIVE_DOMAIN}/${BASE_KOURIER_HOST}" >> /etc/dnsmasq.d/app-internal.conf
+  echo "address=/${SPACE_APP_NS}.${BASE_KNATIVE_DOMAIN}/127.0.0.1" > /etc/dnsmasq.d/app-internal.conf
 }
 
 create_docker_config() {
