@@ -57,6 +57,8 @@ RUN case ${TARGETPLATFORM} in \
 RUN tar -zxf helm.tar.gz -C /usr/bin --strip-components=1 && \
     chmod +x -R /usr/bin/*
 
+RUN rm -rf *.deb *.tar.gz /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
+
 FROM debian:bookworm-slim
 LABEL authors="opencsg"
 ENV GIN_MODE=release \
