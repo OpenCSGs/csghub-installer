@@ -16,7 +16,7 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1.2.0 AS server
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.2.0 AS portal
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.2.1 AS portal
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 
