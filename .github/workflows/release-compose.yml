@@ -44,6 +44,7 @@ jobs:
           ALL_TAGS=$(git tag --sort=-v:refname)
           CURRENT_TAG=${GITHUB_REF#refs/tags/}
           PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -F -x -A 1 "$CURRENT_TAG" | tail -n 1)
+          echo ${PREVIOUS_TAG}..${CURRENT_TAG}
           echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
 
       - name: Generate Release Notes
