@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/nginx:latest
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
     depends_on:
       - csghub_server
       - csghub_server_proxy
@@ -424,7 +424,7 @@ services:
         ipv4_address: 192.171.100.234
 
   server_proxy_nginx:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/nginx:latest
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
     ports:
       - "8090:80"
     volumes:
