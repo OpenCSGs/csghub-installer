@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/nginx:latest
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
     depends_on:
       - csghub_server
       - csghub_server_proxy
@@ -217,7 +217,7 @@ services:
       PGPASSWORD: "sdfa23Sh!322"
     volumes:
       - ./init-scripts:/scripts
-    entrypoint: [ "sh", "-c", "until nc -zv csghub_server 8080 ; do echo 'sleep 10s...'; sleep 10; done; echo 'begin to do db init scripts'; until pg_isready -h postgres -p 5432; do sleep 5; done; psql -h postgres -U postgres -d starhub_server -f /scripts/init.sql" ]
+    entrypoint: [ "sh", "-c", "until nc -zv csghub_server 8080 ; do echo 'sleep 10s...'; sleep 10; done; echo 'begin to do db init scripts'; until pg_isready -h postgres -p 5432; do sleep 5; done; psql -h postgres -U postgres -d starhub_server -f /scripts/initialize.sql" ]
     networks:
       opencsg:
         ipv4_address: 192.171.100.232
@@ -424,7 +424,7 @@ services:
         ipv4_address: 192.171.100.234
 
   server_proxy_nginx:
-    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/nginx:latest
+    image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nginx:latest
     ports:
       - "8090:80"
     volumes:
