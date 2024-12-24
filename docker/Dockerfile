@@ -18,6 +18,8 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.2.1 AS portal
 
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder:latest AS space-builder
+
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/golang:latest AS go-builder
@@ -33,18 +35,15 @@ ARG GL_VERSION=16.4.6-ee.0
 RUN apt update && apt install -y wget apache2-utils curl openssh-client && ssh-keygen -A
 RUN curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash
 
-COPY bin .
 ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") \
-            cp builder_linux_amd64 /usr/bin/builder && \
             curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
             curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz && \
             apt update && apt download gitlab-ee=${GL_VERSION} && \
             dpkg-deb -x gitlab-ee_${GL_VERSION}_amd64.deb / \
             ;; \
         "linux/arm64") \
-            cp builder_linux_arm64 /usr/bin/builder && \
             curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl" && \
             curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-arm64.tar.gz && \
             apt update && apt download gitlab-ee=${GL_VERSION} && \
@@ -120,7 +119,7 @@ COPY --from=nats-server /nats-server /usr/bin/nats-server
 # ============================================================
 #   Init Space Builder Service
 # ============================================================
-COPY --from=tools /usr/bin/builder /usr/bin/builder
+COPY --from=space-builder /app/builder /usr/bin/builder
 
 # ============================================================
 #   Init Temporal Service
