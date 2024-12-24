@@ -20,7 +20,7 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/go-node AS go-builder
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/golang:latest AS go-builder
 ENV GOPROXY=https://goproxy.cn,direct
 WORKDIR /
 COPY logger .
