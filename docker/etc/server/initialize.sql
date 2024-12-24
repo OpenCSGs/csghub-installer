@@ -102,7 +102,7 @@ BEGIN
     IF EXISTS (
         SELECT FROM information_schema.columns
         WHERE table_name = 'runtime_frameworks'
-            AND column_name = 'frame_npu_image_01'
+            AND column_name = 'frame_npu_image'
     )
     THEN
         ALTER TABLE IF EXISTS runtime_frameworks
