@@ -271,7 +271,7 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-    # database: "gitea"
+      # database: "gitea"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -285,7 +285,7 @@ global:
       ## The name of the bucket within the object storage service to be used.
       # bucketName: "csghub-server"
       ## The region where the bucket is located within the object storage service.
-    # region: "cn-north-1"
+      # region: "cn-north-1"
     ## Configure SMTP to support email sending
     ## Gitea can send emails for notifications, account recovery, etc. Configure your SMTP Gitea details here.
     smtp: { }
@@ -300,7 +300,7 @@ global:
       ## The username for authenticating with the SMTP Gitea, if authentication is required.
       # user: ""
       ## The password for authenticating with the SMTP Gitea. Ensure this is kept secure.
-    # password: ""
+      # password: ""
     ## Persistence settings for the Gitea data.
     persistence:
       ## Specifies the StorageClass used for provisioning the volume.
@@ -340,14 +340,14 @@ global:
       # port: 6379
       ## Provides the password for authenticating with the Redis server.
       ## Leave this empty if no authentication is required.
-    # password: ""
+      # password: ""
     ## External Registry configuration.
     ## Docker Registry configuration for the builder
     registry: { }
       # repository: registry.example.com
       # namespace: csghub
       # username: ""
-    # password: ""
+      # password: ""
     ## Persistence settings for the Builder data.
     persistence:
       ## Specifies the StorageClass used for provisioning the volume.
@@ -422,7 +422,7 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-    # database: "portal"
+      # database: "portal"
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore: { }
       ## The endpoint URL of the object storage service.
@@ -553,7 +553,7 @@ global:
       ## It is empty by default for security reasons and should be set through secure means.
       # password: ""
       ## The name of the database to connect to on the PostgreSQL server.
-    # database: "casdoor"
+      # database: "casdoor"
 
   mirror:
     image:
@@ -605,5 +605,3 @@ global:
       # port: 5432
       # user: "temporal"
       # password: ""
-
-
