@@ -72,6 +72,8 @@ spec:
                 name: {{ include "common.names.custom" (list . "server") }}
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "builder") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
