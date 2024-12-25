@@ -131,8 +131,6 @@ spec:
           env:
             - name: DOCKER_HOST
               value: "tcp://localhost:2375"
-            - name: DOCKER_DRIVER
-              value: overlay2
             - name: DOCKER_TLS_CERTDIR
               value: ""
           resources:
