@@ -391,7 +391,7 @@ Knative Serving 是 CSGHub 创建应用实例所必须的组件。
 
     ```shell
     kubectl patch configmap/config-domain \
-      --namespace knative-servings \
+      --namespace knative-serving \
       --type merge \
       --patch '{"data":{"app.internal":""}}' 
     ```
@@ -435,7 +435,6 @@ kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/ref
 
 # 安装rbac组件
 kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
-
 ```
 确认所有服务正常运行。
 
