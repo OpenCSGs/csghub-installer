@@ -624,8 +624,9 @@ if [ "$ENABLE_NVIDIA_GPU" == "true" ]; then
   retry helm upgrade -i nvdp nvdp/nvidia-device-plugin \
           --namespace nvdp \
           --create-namespace \
+          --version v0.16.2 \
           --set runtimeClassName=nvidia \
-          --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin:v0.16.2 \
+          --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin \
           --set gfd.enabled=true
 
   log "INFO" "Replace all nvidia-device-plugin images to local."
