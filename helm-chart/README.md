@@ -396,7 +396,7 @@ The steps are as follows
 
     ```shell
     kubectl patch configmap/config-domain \
-      --namespace knative-servings \
+      --namespace knative-serving \
       --type merge \
       --patch '{"data":{"app.internal":""}}' 
     ```
@@ -442,7 +442,6 @@ kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/ref
     
 # Installing rbac resources
 kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
-
 ```
 Confirm that all services are running normally.
 
