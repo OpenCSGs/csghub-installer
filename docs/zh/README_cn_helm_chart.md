@@ -473,7 +473,9 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
             - `domain`：安装 Knative Serving 时配置的[内部域名](#配置dns)。
             - `host`：[Kourier 组件服务](#kourier-svc)暴露的`EXTERNAL-IP`地址，示例中`172.25.11.130`为本机 IP 地址。
             - `port`：[Kourier 组件服务](#kourier-svc)暴露的 80 对应的`NodePort`端口，本示例中为 `32497`。
-
+          
+        _注意: 如果您使用的是 ZSH SHELL，应该使用 `global.runner.internalDomain\[0\]`_ 
+   
     - **LoadBalancer**
 
         >**提示：**如果您是使用自动安装脚本或者所用集群不具备 LoadBalancer 供给能力，请使用 NodePort 方式安装，否则安装后 CSGHub 会占用本机 22 端口导致 SSH 无法正常登录。如果您坚持使用 LoadBalancer 服务类型安装，请提前将服务器 SSHD 服务端口修改为非 22 端口。
