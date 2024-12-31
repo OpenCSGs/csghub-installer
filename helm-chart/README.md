@@ -481,7 +481,9 @@ kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
             - `host`：The `EXTERNAL-IP` address exposed by the [Kourier component service](#kourier-svc). In the example, `172.25.11.130` is the local IP address.
             - `port`：The NodePort port corresponding to port 80 exposed by the Kourier component service is 32497 in this example.
 
-    - **LoadBalancer**
+        _Notes: If you use ZSH SHELL, you should use `global.runner.internalDomain\[0\]`_
+   
+     - **LoadBalancer**
 
         >**Tips：**If you are using an automatic installation script or the cluster you are using does not have the LoadBalancer provisioning capability, please use the NodePort method to install it. Otherwise, after installation, CSGHub will occupy port 22 on the local machine, causing SSH to fail to log in normally. If you insist on using the LoadBalancer service type for installation, please change the server SSHD service port to a non-port 22 in advance.
 
