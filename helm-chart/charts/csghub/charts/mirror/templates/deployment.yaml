@@ -81,6 +81,10 @@ spec:
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
           env:
             - name: STARHUB_SERVER_REDIS_PASSWORD
               value: "$(REDIS_PASSWD)"
@@ -126,6 +130,10 @@ spec:
             {{- if .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
             {{- end }}
           env:
             - name: STARHUB_SERVER_REDIS_PASSWORD
