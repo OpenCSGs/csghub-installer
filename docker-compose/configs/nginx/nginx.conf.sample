@@ -22,8 +22,8 @@ events {
 
 stream {
     server {
-        listen 2222;  # 监听 2222 端口（SSH 默认端口）
-        proxy_pass gitlab-shell:2222;  # 转发到后端 gitlay shell SSH 服务器
+        listen 2222;
+        proxy_pass gitlab-shell:2222;
     }
 }
 http {
@@ -69,21 +69,21 @@ http {
     # gzip_http_version 1.1;
     gzip_types text/plain application/xml text/css text/js text/xml application/x-javascript text/javascript application/json application/xml+rss;
 
-    # 配置nginx代理大文件请求
+    # Configure nginx to proxy large file requests
 
-    # nginx不缓冲客户端请求，也不缓冲代理服务器请求
+    # nginx does not buffer client requests and does not buffer proxy server requests
     proxy_request_buffering off;
     proxy_buffering off;
 
-    # 临时存储路径，确保这个路径有足够空间
+    # Temporary storage path, ensure this path has enough space
     client_body_temp_path /var/nginx/client_body_temp;
-    #  临时文件的最大大小
+    # Maximum size of temporary files
     proxy_max_temp_file_size 150000M;
 
-    # 客户端发送请求最大大小
-    client_max_body_size 150000M;
+    # Maximum size of client requests
+    client_max_body_size 0;
 
-    # 增加超时设置以支持大文件传输
+    # Increase timeout settings to support large file transfers
     client_body_timeout 300s;
     client_header_timeout 300s;
     send_timeout 300s;
@@ -99,19 +99,19 @@ http {
     }
 
     server {
-        listen _CSGHUB_DOMAINPORT;
-        server_name _CSGHUB_DOMAINNAME;
+        listen _SERVER_PORT;
+        server_name _SERVER_DOMAIN;
 
         location / {
-            proxy_pass http://csghub_portal:8090;
+            proxy_pass http://csghub-portal:8090;
             proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header X-Forwarded-Host $server_name:_CSGHUB_DOMAINPORT;
+            proxy_set_header X-Forwarded-Host $server_name:_SERVER_PORT;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header Host $host;
         }
 
         location /api/ {
-            proxy_pass http://csghub_server:8080/api/;
+            proxy_pass http://csghub-server:8080/api/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -120,7 +120,7 @@ http {
         }
 
         location /hf/ {
-            proxy_pass http://csghub_server:8080/hf/;
+            proxy_pass http://csghub-server:8080/hf/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -141,7 +141,7 @@ http {
        }
 
         location /endpoint/ {
-            proxy_pass http://csghub_server_proxy:8083;
+            proxy_pass http://csghub-proxy:8083;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -152,27 +152,46 @@ http {
             proxy_cookie_flags ~ nosecure samesite=lax;
         }
 
-      # used for git operations
         location ~* \.git(/.*)?$ {
-               proxy_pass http://csghub_server:8080;
-               proxy_set_header Host $host;
-               proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-               proxy_set_header X-Forwarded-Proto http;
+            proxy_pass http://csghub-server:8080;
+            proxy_set_header Host $host;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto http;
         }
-	
+
         error_page 500 502 503 504 /50x.html;
         location = /50x.html {
             root  /usr/share/nginx/html;
         }
     }
 
+    server {
+        listen 5000;
+        server_name _SERVER_DOMAIN;
+
+        client_max_body_size 0;
+        chunked_transfer_encoding on;
+
+        location /v2/ {
+            if ($http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*$" ) {
+                return 404;
+            }
+
+            proxy_pass                          http://registry:5000;
+            proxy_set_header  Host              $http_host;
+            proxy_set_header  X-Real-IP         $remote_addr;
+            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
+            proxy_set_header  X-Forwarded-Proto $scheme;
+            proxy_read_timeout                  900;
+        }
+    }
 
     server {
-        listen 31001;
-        server_name _CSGHUB_DOMAINNAME;
+        listen 8000;
+        server_name _SERVER_DOMAIN;
 
         location / {
-        proxy_pass http://casdoor:8000;
+            proxy_pass http://casdoor:8000;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -186,4 +205,53 @@ http {
         }
     }
 
+    server {
+        listen 9000;
+        server_name _SERVER_DOMAIN;
+
+        ignore_invalid_headers off;
+        client_max_body_size 0;
+        proxy_buffering off;
+        proxy_request_buffering off;
+
+        location / {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_connect_timeout 300;
+            # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            chunked_transfer_encoding off;
+
+            proxy_pass http://minio:9000;
+       }
+    }
+
+    server {
+        listen 9001;
+        server_name _SERVER_DOMAIN;
+
+        ignore_invalid_headers off;
+        client_max_body_size 0;
+        proxy_buffering off;
+        proxy_request_buffering off;
+
+        location / {
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_connect_timeout 300;
+            # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+            proxy_http_version 1.1;
+            proxy_set_header Connection "";
+            chunked_transfer_encoding off;
+
+            proxy_pass http://minio:9001;
+       }
+    }
 }

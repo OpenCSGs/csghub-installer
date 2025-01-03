@@ -14,15 +14,15 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 
 - **csghub_portal:** Responsible for the management and display of the user interface, allowing users to interact directly with the system.
 
-- **user_server:** Manage user identity, authentication, and related operations to ensure user security and data privacy.
+- **csghub_user:** Manage user identity, authentication, and related operations to ensure user security and data privacy.
 
-- **natsmaster:** Implement messaging and event-driven architecture between microservices, and provide efficient asynchronous communication capabilities.
+- **nats:** Implement messaging and event-driven architecture between microservices, and provide efficient asynchronous communication capabilities.
 
 - **csghub_server_proxy:** Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
 
-- **account_server:** Responsible for financial and accounting processing, monitoring transactions and generating relevant reports.
+- **csghub_accounting:** Responsible for financial and accounting processing, monitoring transactions and generating relevant reports.
 
-- **mirror-repo-sync/mirror-lfs-sync:** Provide warehouse synchronization services to ensure efficient synchronization of warehouse data.
+- **csghub_mirror-repo-sync/mirror-lfs-sync:** Provide warehouse synchronization services to ensure efficient synchronization of warehouse data.
 
 - **csghub_server_runner:** Responsible for deploying application instances to the Kubernetes cluster.
 

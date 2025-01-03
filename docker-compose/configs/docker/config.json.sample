@@ -1,0 +1,9 @@
+{
+  "auths": {
+    "_REGISTRY_ADDRESS": {
+      "username": "_REGISTRY_USERNAME",
+      "password": "_REGISTRY_PASSWORD",
+      "auth": "_REGISTRY_USER_PASSWORD_BASE64"
+    }
+  }
+}

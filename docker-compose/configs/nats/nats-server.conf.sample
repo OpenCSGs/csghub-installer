@@ -22,7 +22,7 @@ authorization {
   }
 
   users = [
-    {user: "natsadmin", password: $2a$11$g4o5u9EfDRhxQrfo7y2dxeyOKM1HR/X7wXJotnCm4m1travhBb/t2, permissions: $ADMIN}
+    {user: '_NATS_ROOT_USER', password: '_NATS_ROOT_PASSWORD_HTPASSWD', permissions: $ADMIN}
   ]
 }
 

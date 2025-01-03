@@ -3,7 +3,7 @@ httpport = 8000
 runmode = prod
 copyrequestbody = true
 driverName = postgres
-dataSourceName = "user=postgres password=sdfa23Sh!322 host=postgres port=5432 sslmode=disable dbname=casdoor"
+dataSourceName = "user=_POSTGRES_USER password=_POSTGRES_PASSWORD host=_POSTGRES_HOST port=_POSTGRES_PORT sslmode=disable dbname=casdoor"
 dbName =
 tableNamePrefix =
 showSql = false
@@ -27,4 +27,5 @@ radiusSecret = "secret"
 quota = {"organization": -1, "user": -1, "application": -1, "provider": -1}
 logConfig = {"filename": "logs/casdoor.log", "maxdays":99999, "perm":"0770"}
 initDataFile = "/conf/init_data.json"
+initDataNewOnly = true
 frontendBaseDir = "../casdoor"

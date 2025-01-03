@@ -1,0 +1,5 @@
+{
+  "insecure-registries": [
+    "_SERVER_DOMAIN:_REGISTRY_PORT"
+  ]
+}
