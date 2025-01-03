@@ -82,10 +82,10 @@ http {
 
     server {
         listen 80;
-        server_name *.space.app.internal;
+        server_name *._SPACE_APP_NAMESPACE._SPACE_APP_INTERNAL_DOMAIN;
         location / {
             proxy_http_version 1.1;
-            proxy_pass http://_CSGHUB_KNATIVE_GATEWAY_HOST:_CSGHUB_KNATIVE_GATEWAY_PORT;
+            proxy_pass http://_SPACE_APP_INTERNAL_HOST:_SPACE_APP_INTERNAL_PORT;
             proxy_set_header Host $host;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
@@ -100,27 +100,4 @@ http {
             root  /usr/share/nginx/html;
         }
     }
-
-    # default case for knative
-    server {
-        listen 80;
-        server_name *.space.example.com;
-        location / {
-            proxy_http_version 1.1;
-            proxy_pass http://_CSGHUB_KNATIVE_GATEWAY_HOST:_CSGHUB_KNATIVE_GATEWAY_PORT;
-            proxy_set_header Host $host;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $http_host;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        error_page 500 502 503 504 /50x.html;
-        location = /50x.html {
-            root  /usr/share/nginx/html;
-        }
-    }
-
 }

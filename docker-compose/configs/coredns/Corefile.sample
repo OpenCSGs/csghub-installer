@@ -1,5 +1,5 @@
 internal {
-    file /root/db.space.internal
+    file /etc/coredns/_SPACE_APP_NAMESPACE._SPACE_APP_INTERNAL_DOMAIN
     log
     errors
 }
