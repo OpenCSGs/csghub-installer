@@ -248,7 +248,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]
-      interval: 5s
+      interval: 10s
       timeout: 10s
       retries: 30
     networks:
@@ -525,8 +525,8 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "8000" ]
-      interval: 1s
-      timeout: 3s
+      interval: 10s
+      timeout: 10s
       retries: 30
     networks:
       opencsg:
