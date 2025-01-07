@@ -293,7 +293,6 @@ if [ -f "$KUBE_CONFIG_DIR/config" ]; then
       --namespace="$SPACE_APP_NAMESPACE"
 else
   export CSGHUB_WITH_K8S=0
-  export REGISTRY_ENABLED=$CSGHUB_WITH_K8S
 fi
 
 set +e
