@@ -151,7 +151,7 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     >
     >    组合键 `Win + R`, 输出 `cmd`, 待窗口打开后输入 `ipconfig`获取 IPv4 地址。
 
-    - **Powershell**
+    - **PowerShell**
 
         ```shell
         $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
@@ -171,7 +171,10 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
     - **CMD**
     
         ```shell
-        set SERVER_DOMAIN=<your ip address>
+        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
+            set "tempIpv4=%i"
+            set SERVER_DOMAIN=%tempIpv4:~1%
+        )
         set SERVER_PORT=80
         docker run -it -d ^
             --name omnibus-csghub ^
@@ -243,35 +246,84 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
-- **macOS/Windows**
+- **macOS**
 
     请自行配置 Kubernetes 集群，且保证 `~/.kube/config` 文件存在。然后使用类似如下命令进行安装：
 
-    - **macOS**
+    ```shell
+    export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
+    export SERVER_PORT=80
+    docker run -it -d \
+        --name omnibus-csghub \
+        --hostname omnibus-csghub \
+        -p ${SERVER_PORT}:80 \
+        -p 2222:2222 \
+        -p 5000:5000 \
+        -p 8000:8000 \
+        -p 9000:9000 \
+        -v ~/Documents/csghub/data:/var/opt \
+        -v ~/Documents/csghub/log:/var/log \
+        -v ~/.kube:/etc/.kube \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -e SERVER_DOMAIN=${SERVER_DOMAIN} \
+        -e SERVER_PORT=${SERVER_PORT} \
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+    
+- **Windows**
 
+    以下命令仅供参考，请根据实际进行配置。
+    
+    - **PowerShell**
+    
         ```shell
-        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 5000:5000 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -v ~/Documents/csghub/data:/var/opt \
-            -v ~/Documents/csghub/log:/var/log \
-            -v ~/.kube:/etc/.kube \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
+        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
+        $env:SERVER_PORT = "80"
+        docker run -it -d `
+            --name omnibus-csghub `
+            --hostname omnibus-csghub `
+            -p ${env:SERVER_PORT}:80 `
+            -p 2222:2222 `
+            -p 5000:5000 `
+            -p 8000:8000 `
+            -p 9000:9000 `
+            -v $env:USERPROFILE\Documents\csghub\data:/var/opt `
+            -v $env:USERPROFILE\Documents\csghub\log:/var/log `
+            -v $env:USERPROFILE\.kube:/etc/.kube `
+            -v DOCKER_HOST=<YOUR DOCKER SERVER> `
+            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
+            -e SERVER_PORT=$env:SERVER_PORT `
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
     
-    - **Windows**
+    - **CMD**
     
-        暂未支持。
+        ```shell
+        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
+            set "tempIpv4=%i"
+            set SERVER_DOMAIN=%tempIpv4:~1%
+        )
+        set SERVER_PORT=80
+        docker run -it -d ^
+            --name omnibus-csghub ^
+            --hostname omnibus-csghub ^
+            -p %SERVER_PORT%:80 ^
+            -p 2222:2222 ^
+            -p 5000:5000 ^
+            -p 8000:8000 ^
+            -p 9000:9000 ^
+            -v %USERPROFILE%\Documents\csghub\data:/var/opt ^
+            -v %USERPROFILE%\Documents\csghub\log:/var/log ^
+            -v %USERPROFILE%\.kube:/etc/.kube ^
+            -e DOCKER_HOST=<YOUR DOCKER SERVER> ^
+            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
+            -e SERVER_PORT=%SERVER_PORT% ^
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        ```
+    
+    - **WSL**
+    
+        请参考 Linux 部署方式。
 
 ### 访问 CSGHub
 

@@ -173,7 +173,10 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
     - **CMD**
     
         ```shell
-        set SERVER_DOMAIN=<your ip address>
+        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
+            set "tempIpv4=%i"
+            set SERVER_DOMAIN=%tempIpv4:~1%
+        )
         set SERVER_PORT=80
         docker run -it -d ^
             --name omnibus-csghub ^
@@ -245,35 +248,84 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
-- **macOS/Windows**
+- **macOS**
 
     Please configure Kubernetes cluster yourself and make sure the file `~/.kube/config` exists. Then use a command similar to the following to install it:
 
-    - **macOS**
+    ```shell
+    export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
+    export SERVER_PORT=80
+    docker run -it -d \
+        --name omnibus-csghub \
+        --hostname omnibus-csghub \
+        -p ${SERVER_PORT}:80 \
+        -p 2222:2222 \
+        -p 5000:5000 \
+        -p 8000:8000 \
+        -p 9000:9000 \
+        -v ~/Documents/csghub/data:/var/opt \
+        -v ~/Documents/csghub/log:/var/log \
+        -v ~/.kube:/etc/.kube \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -e SERVER_DOMAIN=${SERVER_DOMAIN} \
+        -e SERVER_PORT=${SERVER_PORT} \
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+
+- **Windows**
+
+    The following commands are for reference only. Please configure according to your actual situation.
+
+    - **PowerShell**
 
         ```shell
-        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 5000:5000 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -v ~/Documents/csghub/data:/var/opt \
-            -v ~/Documents/csghub/log:/var/log \
-            -v ~/.kube:/etc/.kube \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
+        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
+        $env:SERVER_PORT = "80"
+        docker run -it -d `
+            --name omnibus-csghub `
+            --hostname omnibus-csghub `
+            -p ${env:SERVER_PORT}:80 `
+            -p 2222:2222 `
+            -p 5000:5000 `
+            -p 8000:8000 `
+            -p 9000:9000 `
+            -v $env:USERPROFILE\Documents\csghub\data:/var/opt `
+            -v $env:USERPROFILE\Documents\csghub\log:/var/log `
+            -v $env:USERPROFILE\.kube:/etc/.kube `
+            -v DOCKER_HOST=<YOUR DOCKER SERVER> `
+            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
+            -e SERVER_PORT=$env:SERVER_PORT `
             opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
         ```
 
-    - **Windows**
+    - **CMD**
 
-        Not supported yet.
+        ```shell
+        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
+            set "tempIpv4=%i"
+            set SERVER_DOMAIN=%tempIpv4:~1%
+        )
+        set SERVER_PORT=80
+        docker run -it -d ^
+            --name omnibus-csghub ^
+            --hostname omnibus-csghub ^
+            -p %SERVER_PORT%:80 ^
+            -p 2222:2222 ^
+            -p 5000:5000 ^
+            -p 8000:8000 ^
+            -p 9000:9000 ^
+            -v %USERPROFILE%\Documents\csghub\data:/var/opt ^
+            -v %USERPROFILE%\Documents\csghub\log:/var/log ^
+            -v %USERPROFILE%\.kube:/etc/.kube ^
+            -e DOCKER_HOST=<YOUR DOCKER SERVER> ^
+            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
+            -e SERVER_PORT=%SERVER_PORT% ^
+            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        ```
+
+    - **WSL**
+
+        Please refer to Linux deployment method.
 
 ### Visit CSGHub
 
