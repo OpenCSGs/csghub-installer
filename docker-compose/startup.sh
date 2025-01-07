@@ -160,6 +160,21 @@ cat <<EOF > "${COREDNS_CONF_DIR}/${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOM
 EOF
 
 ####################################################################################
+# Configure Minio
+####################################################################################
+log "NORM" "Minio:"
+MINIO_DATA_DIR="${CURRENT_DIR}/data/minio"
+
+## The following is a fix for bitnami/minio.
+## This container does not have root permissions by default,
+## and there is no way to automatically correct directory permissions.
+log "INFO" "- create data directories."
+if [[ "$MINIO_ENABLED" -eq 1 ]]; then
+  mkdirs "$MINIO_DATA_DIR"
+  chown -R 1001:1001 "$MINIO_DATA_DIR"
+fi
+
+####################################################################################
 # Configure Registry
 ####################################################################################
 log "NORM" "Registry:"
