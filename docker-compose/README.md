@@ -59,7 +59,7 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 
 
 * **Software**
-    - Linux/AMD64, Linux/ARM64(Continuing to adapt)
+    - Linux/AMD64, Linux/ARM64
     - Docker Engine (>=5:20.10.24)
 
 ## Usage

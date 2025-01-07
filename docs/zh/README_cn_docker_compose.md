@@ -33,7 +33,7 @@
 
 
 * **软件**
-    - Linux/AMD64，Linux/ARM64 (适配中)
+    - Linux/AMD64，Linux/ARM64
     - Docker Engine (>=5:20.10.24)
 
 ## 配置
