@@ -77,9 +77,8 @@ function initial_check() {
     exit 1
   fi
 
-  if [ "$SPACE_APP_INTERNAL_HOST" != "" ]; then
-    log "WARN" "Tip 1: Please make sure namespace space was created in k8s cluster."
-    log "WARN" "Tip 2: Please make sure the gateway can be accessed in csghub server: telnet ${SPACE_APP_INTERNAL_HOST} ${SPACE_APP_INTERNAL_PORT}."
+  if [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
+    log "WARN" "Tips: Please make sure the gateway can be accessed in csghub server: telnet ${SPACE_APP_INTERNAL_HOST} ${SPACE_APP_INTERNAL_PORT}."
   fi
 
   check_arch
@@ -169,7 +168,7 @@ MINIO_DATA_DIR="${CURRENT_DIR}/data/minio"
 ## This container does not have root permissions by default,
 ## and there is no way to automatically correct directory permissions.
 log "INFO" "- create data directories."
-if [[ "$MINIO_ENABLED" -eq 1 ]]; then
+if [[ "$MINIO_ENABLED" -eq 1 ]] && [[ "$(uname)" == "Linux" ]]; then
   mkdirs "$MINIO_DATA_DIR"
   chown -R 1001:1001 "$MINIO_DATA_DIR"
 fi
@@ -293,11 +292,16 @@ sed -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
 # Configure Csghub Runner Docker Config
 ####################################################################################
 if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
-  EXISTS=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
-  if [ "$EXISTS" -eq 1 ]; then
+  EXISTS_SECRET=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
+  if [ "$EXISTS_SECRET" -eq 1 ]; then
     docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
         delete secret csghub-docker-config \
         --namespace="$SPACE_APP_NAMESPACE"
+  fi
+
+  EXISTS_NS=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get namespace "$SPACE_APP_NAMESPACE" | grep -c "$SPACE_APP_NAMESPACE")
+  if [ "$EXISTS_NS" -eq 0 ]; then
+      docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest create namespace "$SPACE_APP_NAMESPACE"
   fi
 
   docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
