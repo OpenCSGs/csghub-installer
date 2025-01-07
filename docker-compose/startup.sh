@@ -130,7 +130,7 @@ log "INFO" "- render nginx configuration file."
 sed "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g;s/_SERVER_PORT/${SERVER_PORT}/g" "$NGINX_CONF_DIR"/nginx.conf.sample > "$NGINX_CONF_DIR"/nginx.conf
 
 log "INFO" "- generate temporal auth file."
-docker run --rm --entrypoint htpasswd httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/.htpasswd
+docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/.htpasswd
 
 ####################################################################################
 # Configure CoreDNS
@@ -169,7 +169,7 @@ log "INFO" "- create config directories."
 mkdirs "$REGISTRY_CONF_DIR"/auth
 
 log "INFO" "- generate registry auth file."
-docker run --rm --entrypoint htpasswd httpd -Bbn "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" > "$REGISTRY_CONF_DIR"/auth/.htpasswd
+docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$REGISTRY_USERNAME" "$REGISTRY_PASSWORD" > "$REGISTRY_CONF_DIR"/auth/.htpasswd
 
 ####################################################################################
 # Configure Gitaly
@@ -238,7 +238,7 @@ log "NORM" "Nats:"
 NATS_CONF_DIR="${CURRENT_DIR}/configs/nats"
 
 log "INFO" "- render nats config file."
-NATS_ROOT_PASSWORD_HTPASSWD=$(docker run --rm --entrypoint htpasswd httpd -Bbn "$NATS_ROOT_USER" "$NATS_ROOT_PASSWORD" | cut -d ':' -f 2)
+NATS_ROOT_PASSWORD_HTPASSWD=$(docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$NATS_ROOT_USER" "$NATS_ROOT_PASSWORD" | cut -d ':' -f 2)
 sed -e "s/_NATS_ROOT_USER/${NATS_ROOT_USER}/g" \
     -e "s|_NATS_ROOT_PASSWORD_HTPASSWD|${NATS_ROOT_PASSWORD_HTPASSWD}|g" \
     "$NATS_CONF_DIR"/nats-server.conf.sample > "$NATS_CONF_DIR"/nats-server.conf
@@ -278,14 +278,14 @@ sed -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
 # Configure Csghub Runner Docker Config
 ####################################################################################
 if [ -f "$KUBE_CONFIG_DIR/config" ]; then
-  EXISTS=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
+  EXISTS=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
   if [ "$EXISTS" -eq 1 ]; then
-    docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config bitnami/kubectl:latest \
+    docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
         delete secret csghub-docker-config \
         --namespace="$SPACE_APP_NAMESPACE"
   fi
 
-  docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config bitnami/kubectl:latest \
+  docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
       create secret docker-registry csghub-docker-config \
       --docker-server="$REGISTRY_ADDRESS" \
       --docker-username="$REGISTRY_USERNAME" \
