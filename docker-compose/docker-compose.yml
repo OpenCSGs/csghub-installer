@@ -118,7 +118,7 @@ services:
         ipv4_address: 192.171.100.105
 
   gitaly:
-    image: ${CSGHUB_IMAGE_PREFIX}/gitaly:v16.4.6
+    image: ${CSGHUB_IMAGE_PREFIX}/gitaly:v17.5.0
     command: [ "bash", "-c", "mkdir -p /home/git/repositories && rm -rf /srv/gitlab-shell/hooks/* && touch /srv/gitlab-shell/.gitlab_shell_secret && exec /scripts/process-wrapper" ]
     environment:
       GITALY_CONFIG_FILE: "/etc/gitaly/config.toml"
@@ -135,7 +135,7 @@ services:
         ipv4_address: 192.171.100.106
 
   gitlab-shell:
-    image: ${CSGHUB_IMAGE_PREFIX}/gitlab-shell:v16.4.6
+    image: ${CSGHUB_IMAGE_PREFIX}/gitlab-shell:v17.5.0
     command: [ "bash", "-c", "exec /usr/bin/env SSH_DAEMON=gitlab-sshd /scripts/process-wrapper" ]
     depends_on:
       - gitaly
