@@ -16,7 +16,7 @@ image:
   ## Specifies the location of the Gitaly Docker image in the Gitaly.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitaly
   ## Defines the specific version of the Gitaly image to use.
-  tag: v16.4.6
+  # tag: v17.5.0
   ## Determines how the image should be pulled from the Gitaly.
   pullPolicy: "IfNotPresent"
 
