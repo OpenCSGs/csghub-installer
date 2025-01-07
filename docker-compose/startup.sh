@@ -292,7 +292,7 @@ sed -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
 ####################################################################################
 # Configure Csghub Runner Docker Config
 ####################################################################################
-if [ -f "$KUBE_CONFIG_DIR/config" ]; then
+if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
   EXISTS=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
   if [ "$EXISTS" -eq 1 ]; then
     docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
@@ -306,8 +306,6 @@ if [ -f "$KUBE_CONFIG_DIR/config" ]; then
       --docker-username="$REGISTRY_USERNAME" \
       --docker-password="$REGISTRY_PASSWORD" \
       --namespace="$SPACE_APP_NAMESPACE"
-else
-  export CSGHUB_WITH_K8S=0
 fi
 
 set +e
