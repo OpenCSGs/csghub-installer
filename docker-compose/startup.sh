@@ -291,6 +291,9 @@ if [ -f "$KUBE_CONFIG_DIR/config" ]; then
       --docker-username="$REGISTRY_USERNAME" \
       --docker-password="$REGISTRY_PASSWORD" \
       --namespace="$SPACE_APP_NAMESPACE"
+else
+  export CSGHUB_WITH_K8S=0
+  export REGISTRY_ENABLED=$CSGHUB_WITH_K8S
 fi
 
 set +e

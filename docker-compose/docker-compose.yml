@@ -50,6 +50,8 @@ services:
       - ./configs/coredns:/etc/coredns:r
     privileged: true
     restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-1}
     networks:
       opencsg:
         ipv4_address: 192.171.100.102
@@ -280,6 +282,8 @@ services:
     volumes:
       - ${KUBE_CONFIG_DIR}:/root/.kube:r
     restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-1}
     networks:
       opencsg:
         ipv4_address: 192.171.100.110
@@ -327,6 +331,8 @@ services:
       - ./logs/proxy_nginx:/var/log/nginx
     privileged: true
     restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-1}
     networks:
       opencsg:
         ipv4_address: 192.171.100.112
@@ -469,6 +475,8 @@ services:
       - ./configs/docker/config.json:/root/.docker/config.json:r
     restart: always
     privileged: true
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-1}
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "2375" ]
       interval: 1s
@@ -500,6 +508,8 @@ services:
       - ./data/csghub_space_builder:/opt/data
       - ./logs/csghub_space_builder:/opt/data/logs
     restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-1}
     networks:
       opencsg:
         ipv4_address: 192.171.100.119
