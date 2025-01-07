@@ -3,7 +3,7 @@
 > **Tips:**
 >
 > - This method is currently in the testing phase and is not suitable for production deployment.
-> - Now supports AMD64/ARM64 architecture (arm64 supports Docker Desktop Rosetta only).
+> - Now supports AMD64/ARM64 architecture.
 > - [中文文档](../docs/zh/README_cn_docker.md)
 
 ## Overview
