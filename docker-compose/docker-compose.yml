@@ -144,7 +144,7 @@ services:
       KEYS_DIRECTORY: "/srv/gitlab-shell/keys"
     volumes:
       - ./configs/gitlab-shell/config.yml:/srv/gitlab-shell/config.yml
-      - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret"
+      - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret
       - ./data/gitlab-shell/keys:/srv/gitlab-shell/keys
       - ./logs/gitlab-shell:/srv/gitlab-shell/logs
     user: "root"
@@ -155,7 +155,7 @@ services:
 
   csghub-portal:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal:${CSGHUB_VERSION}
-    command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate v&& ./csghub-portal start server" ]
+    command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate && ./csghub-portal start server" ]
     depends_on:
       - postgres
       - minio
