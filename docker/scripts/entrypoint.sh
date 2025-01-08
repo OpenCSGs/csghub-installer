@@ -25,5 +25,10 @@ ln -sf /scripts /script
 # Create postgresql links
 find /usr/lib/postgresql/*/bin/ -maxdepth 1 -type f -executable -exec ln -s {} /usr/bin \; 2>/dev/null
 
+if [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
+    cp /etc/supervisord.ee.conf /etc/supervisord.conf
+else
+    cp /etc/supervisord.ce.conf /etc/supervisord.conf
+fi
 # Start supervisor
 /usr/bin/supervisord -c /etc/supervisord.conf
