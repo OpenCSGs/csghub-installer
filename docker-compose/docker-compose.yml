@@ -87,7 +87,7 @@ services:
     environment:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal,dataflow"
     volumes:
       - ./data/postgresql/data:/var/lib/postgresql/data
     restart: always
@@ -144,7 +144,7 @@ services:
       KEYS_DIRECTORY: "/srv/gitlab-shell/keys"
     volumes:
       - ./configs/gitlab-shell/config.yml:/srv/gitlab-shell/config.yml
-      - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret"
+      - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret
       - ./data/gitlab-shell/keys:/srv/gitlab-shell/keys
       - ./logs/gitlab-shell:/srv/gitlab-shell/logs
     user: "root"
@@ -154,8 +154,8 @@ services:
         ipv4_address: 192.171.100.107
 
   csghub-portal:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal:${CSGHUB_VERSION}
-    command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate v&& ./csghub-portal start server" ]
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal_ee:${CSGHUB_VERSION}
+    command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate && ./csghub-portal db seed && ./csghub-portal start server" ]
     depends_on:
       - postgres
       - minio
@@ -186,7 +186,7 @@ services:
         ipv4_address: 192.171.100.108
 
   csghub-server:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     depends_on:
       - postgres
       - minio
@@ -195,6 +195,7 @@ services:
       - gitlab-shell
       - nats
       - temporal
+      - dataflow
     environment:
       # Server
       GIN_MODE: release
@@ -225,6 +226,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_MIRROR_REMOTE: false
       # Csghub Space Builder
       STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-space-builder:8080"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
@@ -247,6 +249,12 @@ services:
       OPENCSG_USER_SERVER_PORT: 8088
       # Workflow
       OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+      # Moderation
+      OPENCSG_MODERATION_SERVER_HOST: "http://moderation_server"
+      OPENCSG_MODERATION_SERVER_PORT: 8089
+      # Dataflow
+      OPENCSG_DATAFLOW_SERVER_HOST: http://dataflow
+      OPENCSG_DATAFLOW_SERVER_PORT: 8000
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]
@@ -258,7 +266,7 @@ services:
         ipv4_address: 192.171.100.109
 
   csghub-runner:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "deploy", "runner" ]
     depends_on:
       - coredns
@@ -291,7 +299,7 @@ services:
       - 192.171.100.102
 
   csghub-proxy:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "start", "rproxy" ]
     depends_on:
       - coredns
@@ -338,7 +346,7 @@ services:
         ipv4_address: 192.171.100.112
 
   csghub-user:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
     depends_on:
       - csghub-server
@@ -366,6 +374,9 @@ services:
       OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: "http://${SERVER_DOMAIN}:${SERVER_PORT}/server/callback"
       # Workflow
       OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+      # Moderation
+      OPENCSG_MODERATION_SERVER_HOST: "http://moderation_server"
+      OPENCSG_MODERATION_SERVER_PORT: 8089
     volumes:
       - ./configs/casdoor:/starhub-bin/casdoor:r
     restart: always
@@ -374,7 +385,7 @@ services:
         ipv4_address: 192.171.100.113
 
   csghub-accounting:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "accounting", "launch" ]
     depends_on:
       - csghub-server
@@ -397,7 +408,7 @@ services:
         ipv4_address: 192.171.100.114
 
   csghub-mirror-repo:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "mirror", "repo-sync" ]
     depends_on:
       - csghub-server
@@ -421,7 +432,7 @@ services:
         ipv4_address: 192.171.100.115
 
   csghub-mirror-lfs:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "mirror", "lfs-sync" ]
     depends_on:
       - csghub-server
@@ -438,6 +449,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_MIRROR_REMOTE: false
     restart: always
     networks:
       opencsg:
@@ -571,6 +583,67 @@ services:
     networks:
       opencsg:
         ipv4_address: 192.171.100.123
+
+  moderation_server:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "moderation", "launch" ]
+    depends_on:
+      - postgres
+      - gitaly
+      - temporal
+    environment:
+      # Server
+      STARHUB_SERVER_API_TOKEN: "${HUB_SERVER_API_TOKEN}"
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      # Sensitive Check
+      STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: true
+      STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_ID: "${SENSITIVE_CHECK_ACCESS_KEY_ID}"
+      STARHUB_SERVER_SENSITIVE_CHECK_ACCESS_KEY_SECRET: "${SENSITIVE_CHECK_ACCESS_KEY_SECRET}"
+      STARHUB_SERVER_SENSITIVE_CHECK_REGION: "${SENSITIVE_CHECK_REGION}"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      # Workflow
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+    restart: always
+    deploy:
+      replicas: ${SENSITIVE_CONTENT_CHECK:-0}
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.124
+
+  dataflow:
+    image: ${CSGHUB_IMAGE_PREFIX}/dataflow:latest
+    depends_on:
+      - postgres
+    environment:
+      CSGHUB_ENDPOINT: "http://${SERVER_DOMAIN}:${SERVER_PORT}"
+      DATABASE_HOSTNAME: "$POSTGRES_HOST"
+      DATABASE_PORT: "$POSTGRES_PORT"
+      DATABASE_USERNAME: "$POSTGRES_USER"
+      DATABASE_PASSWORD: "$POSTGRES_PASSWORD"
+      DATABASE_DB: "dataflow"
+      DATA_DIR: "/data"
+      MAX_WORKERS: 50
+      RAY_ADDRESS: "auto"
+      RAY_ENABLE: false
+      RAY_LOG_DIR: "/var/log/dataflow"
+      API_SERVER: "0.0.0.0"
+      API_PORT: 8000
+      AZURE_OPENAI_ENDPOINT: ""
+      AZURE_OPENAI_API_KEY: ""
+      OPENAI_API_VERSION: ""
+      AZURE_MODEL: ""
+      ENABLE_OPENTELEMETRY: false
+    volumes:
+      - ./data/dataflow:/data
+      - ./logs/dataflow:/var/log/dataflow
+    restart: always
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.125
 
 networks:
   opencsg:
