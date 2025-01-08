@@ -88,21 +88,11 @@ spec:
             {{- end }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
-            {{- if .Values.global.gitea.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "gitea") }}
-            {{- end }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
             {{- end }}
           env:
-            {{- if .Values.global.gitea.enabled }}
-            - name: STARHUB_SERVER_GITSERVER_USERNAME
-              value: "$(GITEA_ADMIN_USER)"
-            - name: STARHUB_SERVER_GITSERVER_PASSWORD
-              value: "$(GITEA_ADMIN_PASSWORD)"
-            {{- end }}
             - name: POSTGRES_DB
               value: "$(STARHUB_DATABASE_NAME)"
             - name: POSTGRES_USER

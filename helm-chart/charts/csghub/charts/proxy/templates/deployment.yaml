@@ -74,10 +74,6 @@ spec:
                 name: {{ include "common.names.custom" (list . "server") }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
-            {{- if .Values.global.gitea.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "gitea") }}
-            {{- end }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
@@ -91,10 +87,6 @@ spec:
               value: "$(REDIS_PASSWD)"
             - name: STARHUB_SERVER_SPACE_SESSION_SECRET_KEY
               value: {{ sha256sum .Release.Name | trunc 32 | quote }}
-            - name: STARHUB_SERVER_GITSERVER_USERNAME
-              value: "$(GITEA_ADMIN_USER)"
-            - name: STARHUB_SERVER_GITSERVER_PASSWORD
-              value: "$(GITEA_ADMIN_PASSWORD)"
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
             - name: POSTGRES_PASSWORD

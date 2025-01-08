@@ -69,10 +69,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "server") }}
-            {{- if .Values.global.gitea.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "gitea") }}
-            {{- end }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
@@ -119,10 +115,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "server") }}
-            {{- if .Values.global.gitea.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "gitea") }}
-            {{- end }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
