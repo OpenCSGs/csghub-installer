@@ -134,6 +134,8 @@ SPACE_APP_INTERNAL_HOST="59.10.62.160"
 ## If ServiceType is LoadBalancer SPACE_APP_INTERNAL_PORT should be 80 or 443
 SPACE_APP_INTERNAL_PORT="30541"
 
+## If you want to use k8s cluster, you should set this to 1.
+CSGHUB_WITH_K8S=1
 ## If using Space/Finetune/Inference/Model Evaluation/Dataflow functions and so on.
 KUBE_CONFIG_DIR="/root/.kube"
 ```
