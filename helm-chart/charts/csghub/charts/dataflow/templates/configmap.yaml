@@ -1,0 +1,48 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.dataflow (omit .Values "global" "exports") }}
+{{- if $conf.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: "{{ include "common.names.custom" (list . "user") }} {{ include "common.names.custom" . }}"
+    {{- with $conf.annotations }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
+data:
+  CSGHUB_ENDPOINT: "{{ include "csghub.external.endpoint" . }}"
+  {{- if .Values.global.postgresql.enabled }}
+  DATABASE_HOSTNAME: {{ include "postgresql.internal.domain" . }}
+  DATABASE_PORT: {{ include "postgresql.internal.port" . | quote }}
+  DATABASE_USERNAME: "dataflow"
+  DATABASE_DB: "dataflow"
+  {{- else }}
+  {{- with $conf.postgresql }}
+  DATABASE_HOSTNAME: {{ default "127.0.0.1" .host }}
+  DATABASE_PORT: {{ default "5432" .port | quote }}
+  DATABASE_USERNAME: {{ default "dataflow" .user }}
+  DATABASE_DB: {{ default "postgres" .database }}
+  {{- end }}
+  {{- end }}
+  DATA_DIR: "/data"
+  MAX_WORKERS: 99
+  RAY_ADDRESS: "auto"
+  RAY_ENABLE: false
+  RAY_LOG_DIR: "/var/log/dataflow"
+  API_SERVER: "0.0.0.0"
+  API_PORT: 8000
+  {{- with $conf.openAI }}
+  AZURE_OPENAI_ENDPOINT: {{ .endpoint }}
+  AZURE_OPENAI_API_KEY: {{ .apiKey }}
+  OPENAI_API_VERSION: {{ .version }}
+  AZURE_MODEL: {{ .model }}
+  {{- end }}
+  ENABLE_OPENTELEMETRY: false
+{{- end }}

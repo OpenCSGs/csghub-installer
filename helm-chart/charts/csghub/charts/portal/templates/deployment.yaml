@@ -71,7 +71,7 @@ spec:
         - name: portal
           image: {{ $conf.image.repository }}:{{ .Values.global.portal.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "/myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
+          command: [ "/bin/sh", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate && ./csghub-portal db seed && ./csghub-portal start server" ]
           ports:
             - containerPort: 8090
               name: portal

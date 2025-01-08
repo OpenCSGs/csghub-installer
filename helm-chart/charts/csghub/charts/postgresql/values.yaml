@@ -35,6 +35,7 @@ databases:
   - csghub_server
   - casdoor
   - temporal
+  - dataflow
 
 ## Persistence settings for the PostgreSQL data.
 persistence:

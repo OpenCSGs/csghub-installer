@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- $conf := merge .Values.global.gitea (omit .Values "global" "exports") }}
+{{- $conf := merge .Values.global.dataflow (omit .Values "global" "exports") }}
 {{- if $conf.enabled }}
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
@@ -23,7 +23,6 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- with $conf.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -45,80 +44,48 @@ spec:
       serviceAccountName: {{ include "common.names.custom" . }}
       automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
       {{- end }}
-      initContainers:
-        - name: wait-for-postgresql
-          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
-          imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -h $(GITEA_DATABASE_HOST) -p $(GITEA_DATABASE_PORT_NUMBER) -d $(GITEA_DATABASE_NAME) -U $(GITEA_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.custom" . }}
-            {{- if .Values.global.postgresql.enabled }}
-            - secretRef:
-                name: {{ include  "common.names.custom" (list . "postgresql") }}
-            {{- end }}
-          env:
-            - name: PGPASSWORD
-              {{- if .Values.global.postgresql.enabled }}
-              value: "$(csghub_git)"
-              {{- else }}
-              value: "$(GITEA_DATABASE_PASSWORD)"
-              {{- end }}
       containers:
-        - name: gitea
-          image: {{ $conf.image.repository }}:{{ .Values.global.gitea.image.tag | default .Chart.AppVersion }}
+        - name: dataflow
+          image: {{ $conf.image.repository }}:{{ .Values.global.dataflow.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ $conf.image.pullPolicy }}
           ports:
-            - containerPort: 3001
-              name: http
+            - containerPort: 8000
+              name: dataflow
               protocol: TCP
-            - containerPort: 22
-              name: ssh
-              protocol: TCP
+          {{- if .Values.global.postgresql.enabled }}
           envFrom:
-            - configMapRef:
-                name: {{ include "common.names.custom" . }}
-            - secretRef:
-                name: {{ include "common.names.custom" . }}
-            {{- if .Values.global.minio.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "minio") }}
-            {{- end }}
-            {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
-            {{- end }}
+          {{- end }}
           env:
+            - name: DATABASE_PASSWORD
             {{- if .Values.global.postgresql.enabled }}
-            - name: GITEA_DATABASE_PASSWORD
-              value: "$(csghub_git)"
-            {{- end }}
-            {{- if .Values.global.minio.enabled }}
-            - name: GITEA_LFS_MINIO_ACCESS_KEY_ID
-              value: "$(MINIO_ROOT_USER)"
-            - name: GITEA_LFS_MINIO_SECRET_ACCESS_KEY
-              value: "$(MINIO_ROOT_PASSWORD)"
+              value: "$(dataflow)"
+            {{- else }}
+              value: {{ $conf.postgresql.password }}
             {{- end }}
             {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- end }}
+          {{- end }}
           resources:
             {{- $conf.resources | toYaml | nindent 12 }}
           livenessProbe:
-            httpGet:
-              path: /api/healthz
-              port: 3001
+            tcpSocket:
+              port: 8000
             initialDelaySeconds: 20
-            periodSeconds: 20
+            periodSeconds: 10
           securityContext:
             {{- $conf.podSecurityContext | toYaml | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: /bitnami/gitea
-              readOnly: false
+              mountPath: /data
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include  "common.names.custom" . }}
       {{- with $conf.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
