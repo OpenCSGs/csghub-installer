@@ -8,9 +8,9 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/minio/mc:RELEASE
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/registry:2.8.3 AS registry
 
-# FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitaly:v16.4.6 AS gitaly
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitaly:v17.5.0 AS gitaly
 
-# FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitlab-shell:v16.4.6 AS gitlab-shell
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitlab-shell:v17.5.0 AS gitlab-shell
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10.16 AS nats-server
 
@@ -28,26 +28,21 @@ WORKDIR /
 COPY logger .
 RUN go build -o logger
 
-FROM debian:bookworm-slim AS tools
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/debian:bookworm-slim AS tools
 WORKDIR /tools
 
 ARG GL_VERSION=16.4.6-ee.0
 RUN apt update && apt install -y wget apache2-utils curl openssh-client && ssh-keygen -A
-RUN curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | bash
 
 ARG TARGETPLATFORM
 RUN case ${TARGETPLATFORM} in \
         "linux/amd64") \
             curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
-            curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz && \
-            apt update && apt download gitlab-ee=${GL_VERSION} && \
-            dpkg-deb -x gitlab-ee_${GL_VERSION}_amd64.deb / \
+            curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-amd64.tar.gz \
             ;; \
         "linux/arm64") \
             curl -L -o /usr/bin/kubectl "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/arm64/kubectl" && \
-            curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-arm64.tar.gz && \
-            apt update && apt download gitlab-ee=${GL_VERSION} && \
-            dpkg-deb -x gitlab-ee_${GL_VERSION}_arm64.deb / \
+            curl -L -o helm.tar.gz https://get.helm.sh/helm-v3.16.2-linux-arm64.tar.gz \
             ;; \
         *) \
              echo "Unsupported platform: ${TARGETPLATFORM}" && exit 1 ;; \
@@ -56,37 +51,54 @@ RUN case ${TARGETPLATFORM} in \
 RUN tar -zxf helm.tar.gz -C /usr/bin --strip-components=1 && \
     chmod +x -R /usr/bin/*
 
-RUN rm -rf *.deb *.tar.gz /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
+RUN rm -rf *.tar.gz /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/*
 
-FROM debian:bookworm-slim
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/debian:bookworm-slim
 LABEL authors="opencsg"
 ENV GIN_MODE=release \
     DOLLAR=$
-WORKDIR /
 
+WORKDIR /
 # ============================================================
 #   Init Log Monitor Service
 # ============================================================
 COPY --from=go-builder /logger /usr/bin/logger
 
 # ============================================================
-#   Init PostgreSQL, Redis Services
+#   Init PostgreSQL, Redis Services and So on
 # ============================================================
 # Here are the instructions for installing the allowed programs
-ARG TARGETPLATFORM
-RUN apt update && \
-    apt install -y --no-install-recommends bash curl gettext yq jq jo procps logrotate git git-lfs vim netcat-openbsd \
-        libaprutil1 ca-certificates supervisor postgresql redis nginx libnginx-mod-stream dnsmasq && \
-    pg_dropcluster 15 main && rm -rf /etc/postgresql
-    # if [ "${TARGETPLATFORM}" = "linux/arm64" ]; then \
-    #     dpkg --add-architecture amd64 && \
-    #     apt-get update && \
-    #     apt-get install -y --no-install-recommends libc6:amd64 libpcre2-8-0:amd64 zlib1g:amd64; \
-    # fi
+RUN pkgDeps=' \
+    bash \
+    curl \
+    gettext \
+    yq \
+    jq \
+    jo \
+    procps \
+    logrotate \
+    git \
+    git-lfs \
+    vim \
+    netcat-openbsd \
+    libaprutil1 \
+    ca-certificates \
+    supervisor \
+    postgresql \
+    redis-server \
+    nginx \
+    libnginx-mod-stream  \
+    dnsmasq' && \
+    apt update && \
+    apt install -y --no-install-recommends $pkgDeps
 
+# ============================================================
+#   Using bash Shell Default
+# ============================================================
 SHELL ["/bin/bash", "-c"]
 COPY etc /etc
 COPY scripts /scripts
+
 # ============================================================
 #   Init Minio Services
 # ============================================================
@@ -104,12 +116,8 @@ COPY --from=registry /bin/busybox /usr/bin/busybox
 #   Init Gitaly and Gitlab-Shell Service
 # ============================================================
 COPY --from=tools /etc/ssh/ssh_host_* /etc/ssh/
-# COPY --from=gitaly /usr/local/bin/* /usr/bin/
-# COPY --from=gitlab-shell /srv/gitlab-shell/bin/* /usr/bin/
-COPY --from=tools /opt/gitlab/embedded/bin/gitaly* /usr/bin/
-COPY --from=tools /opt/gitlab/embedded/service/gitlab-shell/bin/* /usr/bin/
-COPY --from=tools /opt/gitlab/embedded/lib/libiconv.so.2.6.0 /usr/lib/
-COPY --from=tools /opt/gitlab/embedded/lib/libiconv.so.2 /usr/lib/
+COPY --from=gitaly /usr/local/bin/git* /usr/bin/
+COPY --from=gitlab-shell /srv/gitlab-shell/bin/* /usr/bin/
 
 # ============================================================
 #   Init Nats Service
@@ -168,7 +176,8 @@ RUN useradd registry && \
     chmod +x -R /scripts && \
     apt clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/* && \
-    chmod 0644 /etc/ssh/ssh_host_*
+    chmod 0644 /etc/ssh/ssh_host_* && \
+    pg_dropcluster 15 main && rm -rf /etc/postgresql
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 
