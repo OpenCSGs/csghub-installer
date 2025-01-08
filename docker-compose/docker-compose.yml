@@ -470,6 +470,7 @@ services:
     environment:
       DOCKER_HOST: "tcp://localhost:2375"
       DOCKER_TLS_CERTDIR: ""
+      DOCKER_REGISTRY: "$REGISTRY_ADDRESS"
     volumes:
       - ./configs/docker/daemon.json:/etc/docker/daemon.json
       - ./configs/docker/config.json:/root/.docker/config.json:r
