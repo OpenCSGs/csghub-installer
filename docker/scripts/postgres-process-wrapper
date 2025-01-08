@@ -29,6 +29,7 @@ postgres_running() {
     if [ -n "$POSTGRES_PID" ]; then
       PROGRESS_EXISTS=$(ps -ef | awk '$1 == '"$POSTGRES_PID"' {print $NF}')
       if [ -n "$PROGRESS_EXISTS" ]; then
+        kill -9 "$POSTGRES_PID"
         return 0
       else
         return 1
@@ -42,8 +43,8 @@ postgres_running() {
 }
 
 if postgres_running; then
-  echo "PostgreSQL database already running."
-else
-  echo "Starting PostgreSQL database..."
-  exec /usr/bin/postgres -D "$PGDATA" -k "$UNIX_SOCK"
+  rm -rf $UNIX_SOCK/.s.PGSQL.5432 $PGDATA/postmaster.pid 2>/dev/null
 fi
+
+echo "Starting PostgreSQL database..."
+exec /usr/bin/postgres -D "$PGDATA" -k "$UNIX_SOCK"
