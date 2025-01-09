@@ -109,6 +109,8 @@ spec:
               value: {{ include "temporal.internal.endpoint" . }}
             - name: TEMPORAL_CORS_ORIGINS
               value: "http://localhost:3000"
+            - name: TEMPORAL_CSRF_COOKIE_INSECURE
+              value: "true"
             {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
