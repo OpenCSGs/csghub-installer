@@ -18,8 +18,8 @@ spec:
       targetPort: 7233
       protocol: TCP
       name: temporal
-    - port: 8180
-      targetPort: 8180
+    - port: 8080
+      targetPort: 8080
       protocol: TCP
       name: temporal-ui
   selector:
