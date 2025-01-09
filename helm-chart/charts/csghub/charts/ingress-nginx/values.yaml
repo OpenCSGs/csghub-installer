@@ -502,7 +502,7 @@ controller:
     externalTrafficPolicy: ""
     # -- Session affinity of the external controller service. Must be either "None" or "ClientIP" if set. Defaults to "None".
     # Ref: https://kubernetes.io/docs/reference/networking/virtual-ips/#session-affinity
-    sessionAffinitinclude "common.names.custom" (list . "gitea")y: ""
+    sessionAffinitinclude "common.names.custom" (list . "gitaly"): ""
     # -- Specifies the health check node port (numeric port number) for the external controller service.
     # If not specified, the service controller allocates a port from your cluster's node port range.
     # Ref: https://kubernetes.io/docs/tasks/access-application-cluster/create-external-load-balancer/#preserving-the-client-source-ip

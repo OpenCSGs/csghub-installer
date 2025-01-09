@@ -80,12 +80,7 @@ spec:
         - name: wait-for-gitaly
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/busybox:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "gitaly.internal.domain" . }} {{ include "gitaly.internal.port" . }}; do echo 'Waiting for gitea can be connected'; sleep 2; done" ]
-        {{- else }}
-        - name: wait-for-gitea
-          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
-          imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until curl -s {{ include "gitea.internal.endpoint" . }}/api/healthz; do echo 'Waiting for gitea can be connected'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "gitaly.internal.domain" . }} {{ include "gitaly.internal.port" . }}; do echo 'Waiting for gitaly can be connected'; sleep 2; done" ]
         {{- end }}
         - name: wait-for-temporal
           image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/curlimages/curl:latest
@@ -105,10 +100,6 @@ spec:
                 name: {{ include "common.names.custom" . }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
-            {{- if .Values.global.gitea.enabled }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "gitea") }}
-            {{- end }}
             {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
@@ -124,18 +115,6 @@ spec:
           env:
             - name: STARHUB_SERVER_REDIS_PASSWORD
               value: "$(REDIS_PASSWD)"
-            - name: GITEA_USERNAME
-              value: "$(GITEA_ADMIN_USER)"
-            - name: GITEA_PASSWORD
-              value: "$(GITEA_ADMIN_PASSWORD)"
-            - name: STARHUB_SERVER_GITSERVER_USERNAME
-              value: "$(GITEA_ADMIN_USER)"
-            - name: STARHUB_SERVER_GITSERVER_PASSWORD
-              value: "$(GITEA_ADMIN_PASSWORD)"
-            - name: STARHUB_SERVER_MIRRORSERVER_USERNAME
-              value: "$(GITEA_ADMIN_USER)"
-            - name: STARHUB_SERVER_MIRRORSERVER_PASSWORD
-              value: "$(GITEA_ADMIN_PASSWORD)"
             - name: STARHUB_SERVER_MIRRORSERVER_HOST
               value: "$(STARHUB_SERVER_GITSERVER_URL)"
             - name: OPENCSG_ACCOUNTING_NATS_URL

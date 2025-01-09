@@ -31,12 +31,6 @@ data:
   STARHUB_SERVER_GITALY_STORAGE: default
   STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s:%s" (include "csghub.external.domain" .) (include "gitlab-shell.external.port" .) }}
   STARHUB_SERVER_GITALY_TOKEN: "YWJjMTIzc2VjcmV0"
-  {{- else }}
-  STARHUB_SERVER_GITSERVER_TYPE: "gitea"
-  STARHUB_SERVER_GITSERVER_URL: {{ include "gitea.external.endpoint" . }}
-  STARHUB_SERVER_FRONTEND_URL: {{ include "csghub.external.endpoint" . }}
-  STARHUB_SERVER_GITSERVER_HOST: {{ include "gitea.internal.endpoint" . }}
-  STARHUB_SERVER_GITSERVER_WEBHOOK_URL: {{ include "csghub.callback.git" . }}
   {{- end }}
   GIN_MODE: release
   STARHUB_SERVER_SAAS: "false"
