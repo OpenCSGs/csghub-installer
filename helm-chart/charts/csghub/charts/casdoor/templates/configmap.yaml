@@ -209,7 +209,7 @@ data:
           "cert": "csghub-cert",
           "enablePassword": true,
           "enableSignUp": true,
-          "enableSigninSession": true,
+          "enableSigninSession": false,
           "enableAutoSignin": false,
           "enableCodeSignin": false,
           "enableSamlCompress": false,
