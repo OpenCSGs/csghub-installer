@@ -45,6 +45,7 @@ data:
   STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }} # used to generate download links for lfs files
   STARHUB_SERVER_S3_BUCKET: "csghub-git"
   STARHUB_SERVER_S3_REGION: "cn-north-1"
+  STARHUB_SERVER_MIRROR_REMOTE: "false"
   {{- else }}
   {{- with $conf.objectStore }}
   STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" | trimPrefix "https://" }}
