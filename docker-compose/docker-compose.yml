@@ -154,7 +154,7 @@ services:
         ipv4_address: 192.171.100.107
 
   csghub-portal:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal:v1.2.1
     command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate && ./csghub-portal start server" ]
     depends_on:
       - postgres
