@@ -54,6 +54,8 @@ spec:
               protocol: TCP
           {{- if .Values.global.postgresql.enabled }}
           envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
           {{- end }}

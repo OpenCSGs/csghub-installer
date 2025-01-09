@@ -32,17 +32,17 @@ data:
   {{- end }}
   {{- end }}
   DATA_DIR: "/data"
-  MAX_WORKERS: 99
+  MAX_WORKERS: "99"
   RAY_ADDRESS: "auto"
-  RAY_ENABLE: false
+  RAY_ENABLE: "false"
   RAY_LOG_DIR: "/var/log/dataflow"
   API_SERVER: "0.0.0.0"
-  API_PORT: 8000
+  API_PORT: "8000"
   {{- with $conf.openAI }}
   AZURE_OPENAI_ENDPOINT: {{ .endpoint }}
   AZURE_OPENAI_API_KEY: {{ .apiKey }}
   OPENAI_API_VERSION: {{ .version }}
   AZURE_MODEL: {{ .model }}
   {{- end }}
-  ENABLE_OPENTELEMETRY: false
+  ENABLE_OPENTELEMETRY: "false"
 {{- end }}
