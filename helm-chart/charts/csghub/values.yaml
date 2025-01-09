@@ -131,7 +131,7 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Server Docker image in the Server.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Server.
@@ -239,6 +239,79 @@ global:
       ## This should be adjusted based on expected usage and data growth over time.
       # size:  10Gi
 
+  ## Gitea's configuration
+  ## Enables the Gitea service and specifies the Docker image version and persistence storage size.
+  gitea:
+    enabled: false  # Enables Gitea service
+    image:
+      ## Specifies the location of the Gitea Docker image in the Gitea.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_git
+      ## Defines the specific version of the Gitea image to use.
+      tag: v0.7.0
+      ## Determines how the image should be pulled from the Gitea.
+      pullPolicy: "IfNotPresent"
+    ## List of image pull secrets.
+    imagePullSecrets: [ ]
+    service:
+      ## This determines how the Gitea service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Gitea service will listen for connections.
+      ports:
+        http: 3001
+        ssh: 22
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql: { }
+      ## Specifies the host address of the PostgreSQL database server.
+      # host: "127.0.0.1"
+      ## Defines the port on which the PostgreSQL server is listening.
+      # port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      # user: "gitea"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      # password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      # database: "gitea"
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore: { }
+      ## The endpoint URL of the object storage service.
+      # endpoint: "http://127.0.0.1:9000"
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      # accessKey: ""
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      # accessSecret: ""
+      ## The name of the bucket within the object storage service to be used.
+      # bucketName: "csghub-server"
+      ## The region where the bucket is located within the object storage service.
+      # region: "cn-north-1"
+    ## Configure SMTP to support email sending
+    ## Gitea can send emails for notifications, account recovery, etc. Configure your SMTP Gitea details here.
+    smtp: { }
+      ## Enable or disable SMTP functionality. When enabled, the Gitea can send emails.
+      # enabled: false
+      ## The email address to use as the sender in outgoing emails.
+      # from: ""
+      ## The hostname or IP address of the SMTP Gitea.
+      # host: ""
+      ## The port number on which the SMTP Gitea is listening.
+      # port: ""
+      ## The username for authenticating with the SMTP Gitea, if authentication is required.
+      # user: ""
+      ## The password for authenticating with the SMTP Gitea. Ensure this is kept secure.
+      # password: ""
+    ## Persistence settings for the Gitea data.
+    persistence:
+      ## Specifies the StorageClass used for provisioning the volume.
+      # storageClass: ""
+      ## Defines the access modes of the volume.
+      ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+      # accessMode: [ "ReadWriteOnce" ]
+      ## Specifies the size of the persistent volume.
+      ## This should be adjusted based on expected usage and data growth over time.
+      # size:  10Gi
+
   ## Builder configuration
   ## Specifies the persistent storage size for the builder component.
   builder:
@@ -292,7 +365,7 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Runner Docker image in the Runner.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Runner.
@@ -374,7 +447,7 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Runner Docker image in the Runner.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Runner image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Runner.
@@ -425,7 +498,7 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Server Docker image in the Server.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Server image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Server.
@@ -445,7 +518,7 @@ global:
     replicas: 1
     image:
       ## Specifies the location of the Accounting Docker image in the Accounting.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Accounting.
@@ -485,7 +558,7 @@ global:
   mirror:
     image:
       ## Specifies the location of the Accounting Docker image in the Accounting.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server
       ## Defines the specific version of the Accounting image to use.
       # tag: v1.2.0
       ## Determines how the image should be pulled from the Accounting.
@@ -507,7 +580,7 @@ global:
       tag: 1.1.1
 
   ## This configuration file outlines the deployment settings for a comprehensive software development platform.
-  ## It includes configurations for various components such as Gitaly, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
+  ## It includes configurations for various components such as Gitea, PostgreSQL, Redis, Minio, Docker Registry, CoreDNS, and more.
   ## Each section allows for customization to suit organizational needs, including security contexts, persistence settings, and service exposures.
   ## Ensure to review and adjust the settings according to your deployment environment and security policies.
   fluent:
@@ -521,72 +594,22 @@ global:
   ## Temporal allows for the management of complex workflows and ensures reliable execution of tasks.
   temporal:
     ingress:
-      enabled: false  # Set to true to enable ingress for external access to the Temporal service.
+      enabled: true  # Set to true to enable ingress for external access to the Temporal service.
     image:
       ## Specifies the location of the Docker image for the Temporal service.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup
       ## Defines the specific version of the Temporal image to use.
-      # tag: 1.25.1  # Uncomment and specify the version tag if a specific version is required.
+      tag: 1.25.1
     postgresql: { }
-      # database: "temporal"  # The name of the database to be used for storing Temporal data.
-      # databaseVisibility: ""  # Optional: The name of the database for visibility data, if applicable.
-      # host: ""  # The host address of the PostgreSQL database server.
-      # port: 5432  # The port on which the PostgreSQL server is listening.
-      # user: "temporal"  # The username used for authenticating with the PostgreSQL database.
-      # password: ""  # The password used for authenticating with the PostgreSQL database.
-
-  ## Moderation configuration
-  ## This section configures moderation features for content management within the application.
-  ## It allows for the enabling or disabling of content moderation functionalities.
-  moderation:
-    enabled: false  # Set to true to enable moderation features, allowing for content checks and filtering.
-    contentCheck:
-      ## Configuration for content checking services.
-      ## These credentials are used to authenticate with the content moderation service.
-      accessKeyId: ""  # The access key ID for the content moderation service.
-      accessKeySecret: ""  # The secret access key for the content moderation service.
-      region: ""  # The region where the content moderation service is hosted.
-
-  ## Configuration for the Dataflow service.
-  ## This section defines the settings for managing data processing workflows.
-  dataflow:
-    image:
-      ## Specifies the location of the Runner Docker image in the Runner.
-      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/dataflow
-      ## Defines the specific version of the Runner image to use.
-      # tag: v1.2.0
-    openAI: { }
-      ## The endpoint URL for the OpenAI API.
-      # endpoint: ""
-      ## The API key for authenticating with the OpenAI service.
-      # apiKey: ""
-      ## The version of the OpenAI API to use.
-      # version: ""
-      ## The specific model to be used for OpenAI requests.
-      # model: ""
-    ## Specifies the location and credentials for accessing the external PostgreSQL database.
-    postgresql: { }
-      ## Specifies the host address of the PostgreSQL database server.
-      # host: "127.0.0.1"
-      ## Defines the port on which the PostgreSQL server is listening.
+      ## The name of the database to be used for storing Temporal data.
+      # database: "temporal"
+      ## Optional: The name of the database for visibility data, if applicable.
+      # databaseVisibility: ""
+      ## The host address of the PostgreSQL database server.
+      # host: ""
+      ## The port on which the PostgreSQL server is listening.
       # port: 5432
-      ## The username used for authentication with the PostgreSQL database.
-      # user: "dataflow"
-      ## The password used for authentication with the PostgreSQL database.
-      ## It is empty by default for security reasons and should be set through secure means.
-      # password: ""
-      ## The name of the database to connect to on the PostgreSQL server.
-      # database: "dataflow"
-    ## Persistence settings for the Minio data.
-    persistence:
-      ## Specifies the StorageClass used for provisioning the volume.
-      ## An empty value means the default StorageClass is used.
-      ## StorageClass defines the type of storage used and can affect performance and cost.
-      # storageClass: ""
-      ## Defines the access modes of the volume.
-      ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
-      ## This is suitable for most use cases where a single instance of Minio is running.
-      accessMode: [ "ReadWriteOnce" ]
-      ## Specifies the size of the persistent volume.
-      ## This should be adjusted based on expected usage and data growth over time.
-      # size:  20Gi
+      ## The username used for authenticating with the PostgreSQL database.
+      # user: "temporal"
+      ## The password used for authenticating with the PostgreSQL database.
+    # password: ""
