@@ -11,7 +11,12 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: "{{ include "common.names.custom" (list . "server") }} {{ include "common.names.custom" (list . "mirror") }}"
+    resource.dependencies/statefulsets: "{{ include "common.names.custom" . }} {{ include "common.names.custom" (list . "builder") }}"
+    {{- with $conf.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 data:
   REDIS_HOST: {{ include "common.names.custom" . | quote }}
   REDIS_PORT: {{ $conf.service.port | quote }}
