@@ -10,7 +10,11 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: "{{ include "common.names.custom" . }}"
+    {{- with $conf.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 data:
   CSGHUB_PORTAL_ON_PREMISE: "true"
   CSGHUB_PORTAL_SENSITIVE_CHECK: "false"
