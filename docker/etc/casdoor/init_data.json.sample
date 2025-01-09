@@ -151,9 +151,8 @@
       "homepageUrl": "${SERVER_ENDPOINT}",
       "organization": "OpenCSG",
       "cert": "csghub-cert",
-
       "enableSignUp": true,
-      "enableSigninSession": true,
+      "enableSigninSession": false,
       "enableAutoSignin": false,
       "enableCodeSignin": false,
       "enableSamlCompress": false,
