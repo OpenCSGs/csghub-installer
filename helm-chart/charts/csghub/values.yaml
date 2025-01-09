@@ -590,18 +590,26 @@ global:
       index: "csghub"
 
   ## Temporal configuration
+  ## This section configures the Temporal service, which is a workflow orchestration platform.
+  ## Temporal allows for the management of complex workflows and ensures reliable execution of tasks.
   temporal:
     ingress:
-      enabled: false
+      enabled: true  # Set to true to enable ingress for external access to the Temporal service.
     image:
-      ## Specifies the location of the Watcher Docker image in the temporal.
+      ## Specifies the location of the Docker image for the Temporal service.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/temporalio/auto-setup
-      ## Defines the specific version of the temporal image to use.
-      # tag: 1.25.1
+      ## Defines the specific version of the Temporal image to use.
+      tag: 1.25.1
     postgresql: { }
+      ## The name of the database to be used for storing Temporal data.
       # database: "temporal"
+      ## Optional: The name of the database for visibility data, if applicable.
       # databaseVisibility: ""
+      ## The host address of the PostgreSQL database server.
       # host: ""
+      ## The port on which the PostgreSQL server is listening.
       # port: 5432
+      ## The username used for authenticating with the PostgreSQL database.
       # user: "temporal"
-      # password: ""
+      ## The password used for authenticating with the PostgreSQL database.
+    # password: ""
