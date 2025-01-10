@@ -307,6 +307,7 @@ sed -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
 ####################################################################################
 # Configure Csghub Runner Docker Config
 ####################################################################################
+set +e
 if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
   EXISTS_SECRET=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "$SPACE_APP_NAMESPACE" | grep -c csghub-docker-config)
   if [ "$EXISTS_SECRET" -eq 1 ]; then
@@ -328,7 +329,6 @@ if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
       --namespace="$SPACE_APP_NAMESPACE"
 fi
 
-set +e
 log "NORM" "Starting services..."
 retry docker compose -f docker-compose.yml up -d
 
