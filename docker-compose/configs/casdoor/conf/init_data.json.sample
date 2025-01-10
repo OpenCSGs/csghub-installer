@@ -4,7 +4,7 @@
       "owner": "admin",
       "name": "OpenCSG",
       "displayName": "OpenCSG",
-      "websiteUrl": "http://_SERVER_DOMAIN:_SERVER_PORT",
+      "websiteUrl": "_SERVER_PROTOCOL://_SERVER_DOMAIN:_SERVER_PORT",
       "favicon": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/favicon.png",
       "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
       "passwordType": "sha512-salt",
@@ -148,7 +148,7 @@
       "name": "CSGHub",
       "displayName": "CSGHub",
       "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
-      "homepageUrl": "http://_SERVER_DOMAIN:_SERVER_PORT",
+      "homepageUrl": "_SERVER_PROTOCOL://_SERVER_DOMAIN:_SERVER_PORT",
       "organization": "OpenCSG",
       "cert": "csghub-cert",
       "enablePassword": true,
@@ -340,7 +340,7 @@
         "id_token"
       ],
       "redirectUris": [
-        "http://_SERVER_DOMAIN:_SERVER_PORT/api/v1/callback/casdoor",
+        "_SERVER_PROTOCOL://_SERVER_DOMAIN:_SERVER_PORT/api/v1/callback/casdoor",
         "http://_SERVER_DOMAIN/api/v1/callback/casdoor"
       ],
       "tokenFormat": "JWT",
