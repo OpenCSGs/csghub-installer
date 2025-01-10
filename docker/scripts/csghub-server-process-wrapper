@@ -32,8 +32,20 @@ check_minio() {
 
 check_postgresql
 
+check_temporal() {
+  echo "Waiting Temporal ready..."
+    until /usr/bin/tctl cluster health; do
+      sleep 2
+    done
+  echo "Temporal is ready."
+}
+
 if [ "$MINIO_ROOT_USER" == "minio" ]; then
   check_minio
+fi
+
+if [ "$TEMPORAL_ADDRESS" == "127.0.0.1:7233" ]; then
+    check_temporal
 fi
 
 if [ "$STARHUB_SERVER_GITSERVER_TYPE" = "gitea" ]; then
