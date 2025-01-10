@@ -31,10 +31,10 @@
     * 最低配置: 4 CPU/8GB RAM/50GB Hard Disk
     * 建议配置: 8 CPU/16GB RAM/500GB Hard Disk
 
-
 * **软件**
     - Linux/AMD64，Linux/ARM64
     - Docker Engine (>=5:20.10.24)
+    - Docker Compose (>=2.20.0)
 
 ## 配置
 
