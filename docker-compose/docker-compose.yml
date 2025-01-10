@@ -633,10 +633,10 @@ services:
       RAY_LOG_DIR: "/var/log/dataflow"
       API_SERVER: "0.0.0.0"
       API_PORT: 8000
-      AZURE_OPENAI_ENDPOINT: ""
-      AZURE_OPENAI_API_KEY: ""
-      OPENAI_API_VERSION: ""
-      AZURE_MODEL: ""
+      AZURE_OPENAI_ENDPOINT: "$AZURE_OPENAI_ENDPOINT"
+      AZURE_OPENAI_API_KEY: "$AZURE_OPENAI_ENDPOINT"
+      OPENAI_API_VERSION: "$OPENAI_API_VERSION"
+      AZURE_MODEL: "$AZURE_MODEL"
       ENABLE_OPENTELEMETRY: false
     volumes:
       - ./data/dataflow:/data
