@@ -126,7 +126,22 @@ log "NORM" "Nginx Main:"
 NGINX_CONF_DIR="${CURRENT_DIR}/configs/nginx"
 
 log "INFO" "- render nginx configuration file."
-sed "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g;s/_SERVER_PORT/${SERVER_PORT}/g" "$NGINX_CONF_DIR"/nginx.conf.sample > "$NGINX_CONF_DIR"/nginx.conf
+if [ "$SERVER_PROTOCOL" == "http" ]; then
+  sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+      "$NGINX_CONF_DIR"/nginx.conf.sample > "$NGINX_CONF_DIR"/nginx.conf
+elif [ "$SERVER_PROTOCOL" == "https" ]; then
+  mkdirs ./configs/nginx/ssl/
+  cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/server.crt
+  cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/server.key
+
+  sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+      "$NGINX_CONF_DIR"/nginx.conf.ssl.sample > "$NGINX_CONF_DIR"/nginx.conf
+else
+  log "ERRO" "Unknown nginx protocol: ${SERVER_PROTOCOL}"
+  exit 1
+fi
 
 log "INFO" "- generate temporal auth file."
 docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/.htpasswd
