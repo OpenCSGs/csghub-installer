@@ -77,6 +77,25 @@ export OPENCSG_ACCOUNTING_CHARGING_ENABLE=true
 export NATS_USERNAME="natsadmin"
 export NATS_PASSWORD="gALqqbP6SpftVdFzrU2URJ8k1Gn"
 
+# Docker Environments
+export DOCKER_HOST=unix:///var/run/docker.sock
+
+# Temporal Environments
+export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-"127.0.0.1:7233"}
+export TEMPORAL_UI=${TEMPORAL_UI:-true}
+export TEMPORAL_UI_PUBLIC_PATH="/temporal-ui"
+export TEMPORAL_UI_PORT=8180
+export TEMPORAL_CORS_ORIGINS="http://localhost:3000"
+export TEMPORAL_HOME="/etc/temporal"
+export TEMPORAL_USER=${TEMPORAL_USER:-temporal}
+export TEMPORAL_PASS=${TEMPORAL_PASS:-"Temporal@2025!"}
+export DB=${DB:-postgres12}
+export POSTGRES_SEEDS=${POSTGRES_HOST}
+export DB_PORT=${POSTGRES_PORT}
+export POSTGRES_USER=${POSTGRES_USER:-temporal}
+export POSTGRES_PWD=${POSTGRES_PWD:-temporal}
+export DEFAULT_NAMESPACE_RETENTION=${DEFAULT_NAMESPACE_RETENTION:-"7d"}
+
 # Server Environments
 ## PostgreSQL Configuration
 export STARHUB_DATABASE_DSN="postgresql://${POSTGRES_SERVER_USER}:${POSTGRES_SERVER_PASS:-"$POSTGRES_SERVER_USER"}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_SERVER_DB:-"$POSTGRES_SERVER_USER"}?sslmode=disable"
@@ -155,25 +174,6 @@ export KNATIVE_KOURIER_TYPE=${KNATIVE_KOURIER_TYPE:-NodePort}
 
 # NVIDIA device plugin Environments
 export NVIDIA_DEVICE_PLUGIN=${NVIDIA_DEVICE_PLUGIN:-false}
-
-# Docker Environments
-export DOCKER_HOST=unix:///var/run/docker.sock
-
-# Temporal Environments
-export TEMPORAL_ADDRESS=${TEMPORAL_ADDRESS:-"127.0.0.1:7233"}
-export TEMPORAL_UI=${TEMPORAL_UI:-true}
-export TEMPORAL_UI_PUBLIC_PATH="/temporal-ui"
-export TEMPORAL_UI_PORT=8180
-export TEMPORAL_CORS_ORIGINS="http://localhost:3000"
-export TEMPORAL_HOME="/etc/temporal"
-export TEMPORAL_USER=${TEMPORAL_USER:-temporal}
-export TEMPORAL_PASS=${TEMPORAL_PASS:-"Temporal@2025!"}
-export DB=${DB:-postgres12}
-export POSTGRES_SEEDS=${POSTGRES_HOST}
-export DB_PORT=${POSTGRES_PORT}
-export POSTGRES_USER=${POSTGRES_USER:-temporal}
-export POSTGRES_PWD=${POSTGRES_PWD:-temporal}
-export DEFAULT_NAMESPACE_RETENTION=${DEFAULT_NAMESPACE_RETENTION:-"7d"}
 
 # Kubernetes
 CSGHUB_WITH_K8S=${CSGHUB_WITH_K8S:-1}
