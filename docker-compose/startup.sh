@@ -131,7 +131,7 @@ if [ "$SERVER_PROTOCOL" == "http" ]; then
       -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
       "$NGINX_CONF_DIR"/nginx.conf.sample > "$NGINX_CONF_DIR"/nginx.conf
 elif [ "$SERVER_PROTOCOL" == "https" ]; then
-  mkdirs ./configs/nginx/ssl/
+  mkdirs ./configs/nginx/ssl
   cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/server.crt
   cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/server.key
 
@@ -144,7 +144,7 @@ else
 fi
 
 log "INFO" "- generate temporal auth file."
-docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/.htpasswd
+docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/ssl/.htpasswd
 
 ####################################################################################
 # Configure CoreDNS
@@ -279,7 +279,8 @@ log "NORM" "Casdoor:"
 CASDOOR_CONF_DIR="${CURRENT_DIR}/configs/casdoor/conf"
 
 log "INFO" "- render casdoor init_data file."
-sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
+    -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
     -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
    "$CASDOOR_CONF_DIR"/init_data.json.sample > "$CASDOOR_CONF_DIR"/init_data.json
 
@@ -333,10 +334,16 @@ retry docker compose -f docker-compose.yml up -d
 
 log "NORM" "Installation Completed."
 log "INFO" "CSGHub service can be visited by URL:"
-if [ "${SERVER_PORT}" -eq 80 ]; then
-  log "INFO" "\thttp://${SERVER_DOMAIN}"
+if [ "${SERVER_PORT}" == 80 ] || [ "${SERVER_PORT}" -eq 443 ]; then
+  SP=""
 else
-  log "INFO" "\thttp://${SERVER_DOMAIN}:${SERVER_PORT}"
+  SP=":${SERVER_PORT}"
+fi
+
+if [ "$SERVER_PROTOCOL" == "http" ]; then
+  log "INFO" "\thttp://${SERVER_DOMAIN}${SP}"
+elif [ "$SERVER_PROTOCOL" == "https" ]; then
+  log "INFO" "\thttps://${SERVER_DOMAIN}${SP}"
 fi
 
 docker compose -f docker-compose.yml ps --format "table {{.ID}}\t{{.Name}}\t{{.Status}}\t{{.Ports}}"

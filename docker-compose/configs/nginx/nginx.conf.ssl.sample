@@ -99,7 +99,7 @@ http {
     }
 
     server {
-        listen _SERVER_PORT;
+        listen 80;
         server_name _SERVER_DOMAIN;
 
         return 301 https://$host$request_uri;
@@ -110,7 +110,7 @@ http {
         server_name _SERVER_DOMAIN;
 
         ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.crt;
+        ssl_certificate_key /etc/nginx/ssl/server.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -143,7 +143,7 @@ http {
 
         location /temporal-ui/ {
             auth_basic "Please login with your account:";
-            auth_basic_user_file /etc/nginx/.htpasswd;
+            auth_basic_user_file /etc/nginx/ssl/.htpasswd;
 
             proxy_pass http://temporal-ui:8080;
             proxy_set_header Host $host;
@@ -183,7 +183,7 @@ http {
         server_name _SERVER_DOMAIN;
 
         ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.crt;
+        ssl_certificate_key /etc/nginx/ssl/server.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -210,7 +210,7 @@ http {
         server_name _SERVER_DOMAIN;
 
         ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.crt;
+        ssl_certificate_key /etc/nginx/ssl/server.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -260,7 +260,7 @@ http {
         server_name _SERVER_DOMAIN;
 
         ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.crt;
+        ssl_certificate_key /etc/nginx/ssl/server.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
