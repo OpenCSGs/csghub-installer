@@ -208,6 +208,7 @@ services:
       STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: false
       STARHUB_SERVER_PUBLIC_DOMAIN: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
       STARHUB_SERVER_MULTI_SYNC_ENABLED: true
+      STARHUB_SERVER_MIRROR_REMOTE: false
       # PostgresSQL
       STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
       STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
@@ -227,7 +228,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
-      STARHUB_SERVER_MIRROR_REMOTE: false
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
       # Csghub Space Builder
       STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-space-builder:8080"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
@@ -441,6 +442,8 @@ services:
     depends_on:
       - csghub-server
     environment:
+      # Server
+      STARHUB_SERVER_MIRROR_REMOTE: false
       # PostgreSQL
       STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
       STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
@@ -453,7 +456,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
-      STARHUB_SERVER_MIRROR_REMOTE: false
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
     restart: always
     networks:
       opencsg:
@@ -479,6 +482,8 @@ services:
       STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
       # Redis
       STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+      # S3
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
     restart: always
     deploy:
       resources:
