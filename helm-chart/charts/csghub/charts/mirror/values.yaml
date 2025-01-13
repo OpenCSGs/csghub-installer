@@ -1,7 +1,7 @@
-## Default values for Nats.
+## Default values for Mirror.
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.
-## Enable or disable the Nats component.
+## Enable or disable the Mirror component.
 enabled: true
 
 ## List of image pull secrets.
@@ -10,17 +10,17 @@ enabled: true
 imagePullSecrets: [ ]
 
 image:
-  ## Specifies the location of the Nats Docker image in the registry.
+  ## Specifies the location of the Mirror Docker image in the registry.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
-  ## Defines the specific version of the Nats image to use.
+  ## Defines the specific version of the Mirror image to use.
   # tag: v1.2.0
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
 service:
-  ## This determines how the Nats service is accessed within the cluster or from external sources.
+  ## This determines how the Mirror service is accessed within the cluster or from external sources.
   type: ClusterIP
-  ## This is the network port where the Nats service will listen for connections.
+  ## This is the network port where the Mirror service will listen for connections.
   port: ""
 
 serviceAccount:
@@ -53,26 +53,26 @@ securityContext: {}
 # runAsNonRoot: true
 # runAsUser: 1000
 
-## environments: This section is reserved for defining environment variables for the Nats container.
-## Environment variables can be used to customize the behavior of the Nats instance.
-## For example, you might use environment variables to configure logging levels or to enable certain Nats features.
+## environments: This section is reserved for defining environment variables for the Mirror container.
+## Environment variables can be used to customize the behavior of the Mirror instance.
+## For example, you might use environment variables to configure logging levels or to enable certain Mirror features.
 ## This section is currently empty, indicating that no environment variables have been explicitly set.
 environments: {}
 
-## annotations: This section allows you to add annotations to the Nats deployment.
+## annotations: This section allows you to add annotations to the Mirror deployment.
 ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
 ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
-## information about your Nats instance.
+## information about your Mirror instance.
 ## Like the environments section, this is also currently empty.
 annotations: {}
 #  helm.sh/resource-policy: keep
 
-## The 'resources' section is used to define the compute resource requirements for the Nats container.
+## The 'resources' section is used to define the compute resource requirements for the Mirror container.
 ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
-## Leaving this section empty means that no specific resource limits or requests are set for the Nats container.
+## Leaving this section empty means that no specific resource limits or requests are set for the Mirror container.
 ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
 ## where you might not want to enforce strict resource constraints.
-## However, for production environments, it's recommended to uncomment and set these values to ensure that the Nats container
+## However, for production environments, it's recommended to uncomment and set these values to ensure that the Mirror container
 ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
 ## 'limits' specify the maximum amount of CPU and memory the container can use.
 ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
@@ -100,7 +100,7 @@ tolerations: []
 ## spread pods across nodes or zones for high availability.
 affinity: {}
 
-## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Nats deployment.
+## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Mirror deployment.
 ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
 ## set based on observed CPU utilization.
 autoscaling:
