@@ -36,6 +36,7 @@ data:
   STARHUB_SERVER_SAAS: "false"
   STARHUB_SERVER_MIRRORSERVER_ENABLE: "false"
   STARHUB_SERVER_API_TOKEN: {{ include "server.api.token" . }}
+  STARHUB_SERVER_MIRROR_REMOTE: "false"
   {{- if .Values.global.minio.enabled }}
   {{- if .Values.global.ingress.tls.enabled }}
   STARHUB_SERVER_S3_ENABLE_SSL: "true"
@@ -45,6 +46,7 @@ data:
   STARHUB_SERVER_S3_ENDPOINT: {{ include "minio.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }} # used to generate download links for lfs files
   STARHUB_SERVER_S3_BUCKET: "csghub-git"
   STARHUB_SERVER_S3_REGION: "cn-north-1"
+  STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
   {{- else }}
   {{- with $conf.objectStore }}
   STARHUB_SERVER_S3_ENDPOINT: {{ .endpoint | trimPrefix "http://" | trimPrefix "https://" }}
@@ -52,6 +54,7 @@ data:
   STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ .accessSecret }}
   STARHUB_SERVER_S3_BUCKET: {{ .bucket }}
   STARHUB_SERVER_S3_REGION: {{ .region }}
+  STARHUB_SERVER_S3_BUCKET_LOOKUP: {{ .pathStyle }}
   {{- end }}
   {{- end }}
   STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.internal.endpoint" . }}
