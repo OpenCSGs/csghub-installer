@@ -225,6 +225,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
       # Csghub Space Builder
       STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-space-builder:8080"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
@@ -438,6 +439,7 @@ services:
       STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
     restart: always
     networks:
       opencsg:
