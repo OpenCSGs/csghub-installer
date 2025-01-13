@@ -25,6 +25,11 @@ services:
       - ./logs/nginx:/var/log/nginx
     privileged: true
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: nginx
     networks:
       opencsg:
         ipv4_address: 192.171.100.100
@@ -39,6 +44,11 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: redis
     networks:
       opencsg:
         ipv4_address: 192.171.100.101
@@ -52,6 +62,11 @@ services:
     restart: always
     deploy:
       replicas: ${CSGHUB_WITH_K8S:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: coredns
     networks:
       opencsg:
         ipv4_address: 192.171.100.102
@@ -78,6 +93,11 @@ services:
     restart: always
     deploy:
       replicas: ${REGISTRY_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: registry
     networks:
       opencsg:
         ipv4_address: 192.171.100.103
@@ -97,6 +117,11 @@ services:
       interval: 5s
     deploy:
       replicas: ${POSTGRES_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: postgres
     networks:
       opencsg:
         ipv4_address: 192.171.100.104
@@ -113,6 +138,11 @@ services:
     restart: always
     deploy:
       replicas: ${MINIO_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: minio
     networks:
       opencsg:
         ipv4_address: 192.171.100.105
@@ -130,6 +160,11 @@ services:
     restart: always
     deploy:
       replicas: ${GITALY_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: gitaly
     networks:
       opencsg:
         ipv4_address: 192.171.100.106
@@ -149,6 +184,11 @@ services:
       - ./logs/gitlab-shell:/srv/gitlab-shell/logs
     user: "root"
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: gitlab-shell
     networks:
       opencsg:
         ipv4_address: 192.171.100.107
@@ -181,6 +221,11 @@ services:
     volumes:
       - ./logs/csghub-portal:/myapp/log
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-portal
     networks:
       opencsg:
         ipv4_address: 192.171.100.108
@@ -254,6 +299,11 @@ services:
       interval: 10s
       timeout: 10s
       retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-server
     networks:
       opencsg:
         ipv4_address: 192.171.100.109
@@ -285,6 +335,11 @@ services:
     restart: always
     deploy:
       replicas: ${CSGHUB_WITH_K8S:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-runner
     networks:
       opencsg:
         ipv4_address: 192.171.100.110
@@ -315,6 +370,11 @@ services:
       # Redis
       STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-proxy
     networks:
       opencsg:
         ipv4_address: 192.171.100.111
@@ -334,6 +394,11 @@ services:
     restart: always
     deploy:
       replicas: ${CSGHUB_WITH_K8S:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-proxy-nginx
     networks:
       opencsg:
         ipv4_address: 192.171.100.112
@@ -370,6 +435,11 @@ services:
     volumes:
       - ./configs/casdoor:/starhub-bin/casdoor:r
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-user
     networks:
       opencsg:
         ipv4_address: 192.171.100.113
@@ -393,6 +463,11 @@ services:
       OPENCSG_ACCOUNTING_MSG_FETCH_TIMEOUTINSEC: 5
       OPENCSG_ACCOUNTING_CHARGING_ENABLE: true
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-accounting
     networks:
       opencsg:
         ipv4_address: 192.171.100.114
@@ -417,6 +492,11 @@ services:
       # Workflow
       OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-mirror-repo
     networks:
       opencsg:
         ipv4_address: 192.171.100.115
@@ -441,6 +521,11 @@ services:
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
       STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-mirror-lfs
     networks:
       opencsg:
         ipv4_address: 192.171.100.116
@@ -459,6 +544,11 @@ services:
     volumes:
       - ./configs/server/scripts:/scripts
     entrypoint: [ "sh", "-c", "until nc -zv csghub-server 8080 ; do echo 'sleep 10s...'; sleep 10; done; echo 'begin to do db init scripts'; until pg_isready; do sleep 5; done; psql -f /scripts/initialize.sql" ]
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-db-init
     networks:
       opencsg:
         ipv4_address: 192.171.100.117
@@ -485,6 +575,11 @@ services:
       interval: 1s
       timeout: 3s
       retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: docker-server
     networks:
       opencsg:
         ipv4_address: 192.171.100.118
@@ -513,6 +608,11 @@ services:
     restart: always
     deploy:
       replicas: ${CSGHUB_WITH_K8S:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-space-builder
     networks:
       opencsg:
         ipv4_address: 192.171.100.119
@@ -523,6 +623,11 @@ services:
       - ./configs/nats/nats-server.conf:/nats-server.conf
       - ./data/nats:/data/jetstream
     restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: nats
     networks:
       opencsg:
         ipv4_address: 192.171.100.120
@@ -541,6 +646,11 @@ services:
       interval: 10s
       timeout: 10s
       retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: casdoor
     networks:
       opencsg:
         ipv4_address: 192.171.100.121
@@ -556,6 +666,11 @@ services:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PWD: "$POSTGRES_PASSWORD"
       DEFAULT_NAMESPACE_RETENTION: "7d"
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: temporal
     networks:
       opencsg:
         ipv4_address: 192.171.100.122
@@ -571,9 +686,28 @@ services:
     restart: always
     deploy:
       replicas: ${TEMPORAL_UI_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: temporal-ui
     networks:
       opencsg:
         ipv4_address: 192.171.100.123
+
+  fluentd:
+    image: ${CSGHUB_IMAGE_PREFIX}/fluentd:v1.16-1
+    ports:
+      - "24224:24224"
+    volumes:
+      - ./configs/fluentd/fluent.conf:/fluentd/etc/fluent.conf
+      - ./logs/fluentd/archived:/fluentd/log
+      - ./logs/fluentd/buffer:/fluentd/buffer
+    restart: always
+    privileged: true
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.124
 
 networks:
   opencsg:
