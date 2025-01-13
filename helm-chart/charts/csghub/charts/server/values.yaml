@@ -55,6 +55,10 @@ objectStore:
   bucket: "csghub-server"
   ## The region where the bucket is located within the object storage service.
   region: "cn-north-1"
+  # When set to "true", the bucket name will be part of the URL path.
+  # For example, the URL will be in the format:
+  # http://<minio-server>/<bucket-name>/<object-key>
+  pathStyle: "true"
 
 serviceAccount:
   ## Determines whether a service account should be created.
