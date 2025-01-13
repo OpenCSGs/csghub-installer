@@ -1,0 +1,148 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $conf := merge .Values.global.dataviewer (omit .Values "global" "exports") }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ $conf.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        {{- with $conf.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or $conf.imagePullSecrets .Values.global.imagePullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with $conf.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if $conf.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ $conf.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-redis
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/redis:7.2.5
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "redis-cli", "-h", "$(REDIS_HOST)", "-p", "$(REDIS_PORT)", "-a", "$(REDIS_PASSWD)", "ping" ]
+          envFrom:
+            {{- if .Values.global.redis.enabled }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- else }}
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            {{- end }}
+        - name: wait-for-postgresql
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready -h $(STARHUB_DATABASE_HOST) -p $(STARHUB_DATABASE_PORT) -d $(STARHUB_DATABASE_NAME) -U $(STARHUB_DATABASE_USERNAME); do echo 'Waiting for PostgreSQL can be connected'; sleep 3; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include  "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+          env:
+            - name: PGPASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_server)"
+              {{- else }}
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+              {{- end }}
+      containers:
+        - name: dataviewer
+          image: {{ $conf.image.repository }}:{{ .Values.global.dataviewer.image.tag | default .Chart.AppVersion }}
+          imagePullPolicy: {{ $conf.image.pullPolicy }}
+          command: [ "/starhub-bin/starhub", "dataviewer", "launch" ]
+          ports:
+            - containerPort: 8093
+              name: dataviewer
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            {{- if .Values.global.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "postgresql") }}
+            {{- end }}
+            {{- if .Values.global.redis.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
+            {{- if .Values.global.minio.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
+          env:
+            - name: STARHUB_SERVER_REDIS_PASSWORD
+              value: "$(REDIS_PASSWD)"
+            - name: POSTGRES_PASSWORD
+              {{- if .Values.global.postgresql.enabled }}
+              value: "$(csghub_server)"
+              {{- else }}
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+              {{- end }}
+            - name: STARHUB_DATABASE_DSN
+              value: "postgresql://$(STARHUB_DATABASE_USERNAME):$(POSTGRES_PASSWORD)@$(STARHUB_DATABASE_HOST):$(STARHUB_DATABASE_PORT)/$(STARHUB_DATABASE_NAME)?sslmode=disable"
+            {{- if .Values.global.minio.enabled }}
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
+              value: "$(MINIO_ROOT_PASSWORD)"
+            {{- end }}
+            {{- with $conf.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- $conf.resources | toYaml | nindent 12 }}
+          securityContext:
+            {{- $conf.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: proxy-certs
+              mountPath: /usr/local/share/ca-certificates
+              readOnly: false
+      volumes:
+        - name: proxy-certs
+          secret:
+            secretName: {{ include "common.names.custom" (list . "proxy-certs") }}
+      {{- with $conf.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $conf.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

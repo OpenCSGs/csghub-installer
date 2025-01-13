@@ -133,7 +133,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Server image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -294,7 +294,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Runner image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -376,7 +376,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Runner image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Runner.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -427,7 +427,7 @@ global:
       ## Specifies the location of the Server Docker image in the Server.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Server image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Server.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -447,7 +447,7 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Accounting image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
     ## List of image pull secrets.
@@ -487,7 +487,16 @@ global:
       ## Specifies the location of the Accounting Docker image in the Accounting.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
       ## Defines the specific version of the Accounting image to use.
-      tag: ev0.0.6
+      tag: ev0.0.7
+      ## Determines how the image should be pulled from the Accounting.
+      pullPolicy: "IfNotPresent"
+
+  dataviewer:
+    image:
+      ## Specifies the location of the Accounting Docker image in the Accounting.
+      repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
+      ## Defines the specific version of the Accounting image to use.
+      tag: ev0.0.7
       ## Determines how the image should be pulled from the Accounting.
       pullPolicy: "IfNotPresent"
 

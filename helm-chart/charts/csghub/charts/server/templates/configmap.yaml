@@ -93,6 +93,8 @@ data:
   STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"
   {{- end }}
   OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
+  OPENCSG_DATAVIEWER_SERVER_HOST: http://csghub-dataviewer
+  OPENCSG_DATAVIEWER_SERVER_PORT: 8093
 ---
 apiVersion: v1
 kind: ConfigMap
