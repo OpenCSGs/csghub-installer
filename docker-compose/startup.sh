@@ -120,6 +120,47 @@ fi
 
 log "NORM" "Current configured domain name is ${SERVER_DOMAIN}."
 ####################################################################################
+# Configure Fluentd
+####################################################################################
+log "NORM" "Fluentd:"
+FLUENTD_LOG_DIR="${CURRENT_DIR}/logs/fluentd"
+log "INFO" "- create log directory."
+mkdirs "$FLUENTD_LOG_DIR"
+chown -R 100:100 "$FLUENTD_LOG_DIR"
+
+log "INFO" "- render fluent conf."
+FLUENTD_CONF_DIR="${CURRENT_DIR}/configs/fluentd"
+SERVICES=$(docker compose config --services)
+cat "$FLUENTD_CONF_DIR"/fluent.conf.sample > "$FLUENTD_CONF_DIR"/fluent.conf
+for SERVICE in $SERVICES; do
+cat <<EOF >> "$FLUENTD_CONF_DIR"/fluent.conf
+<match $SERVICE>
+  @type file
+  path /fluentd/log/$SERVICE
+  append true
+  compress gzip
+  <buffer>
+    @type file
+    path /fluentd/buffer/$SERVICE
+    chunk_limit_size 20MB
+    chunk_limit_records 5000
+    queue_limit_length 256
+    timekey 1d
+    flush_mode interval
+    flush_interval 5m
+    retry_max_interval 30
+    retry_forever true
+    flush_at_shutdown true
+  </buffer>
+  <format>
+    @type json
+    localtime true
+  </format>
+</match>
+EOF
+done
+
+####################################################################################
 # Configure Nginx Main
 ####################################################################################
 log "NORM" "Nginx Main:"
