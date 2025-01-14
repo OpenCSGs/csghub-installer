@@ -381,28 +381,6 @@ services:
     dns:
       - 192.171.100.102
 
-  csghub-proxy-nginx:
-    image: ${CSGHUB_IMAGE_PREFIX}/nginx:latest
-    depends_on:
-      csghub-server:
-        condition: service_healthy
-        restart: true
-    volumes:
-      - ./configs/proxy_nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./logs/proxy_nginx:/var/log/nginx
-    privileged: true
-    restart: always
-    deploy:
-      replicas: ${CSGHUB_WITH_K8S:-0}
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: csghub-proxy-nginx
-    networks:
-      opencsg:
-        ipv4_address: 192.171.100.112
-
   csghub-user:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
