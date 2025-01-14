@@ -109,8 +109,8 @@ http {
         listen _SERVER_PORT ssl;
         server_name _SERVER_DOMAIN;
 
-        ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.key;
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -161,7 +161,7 @@ http {
             proxy_set_header X-Forwarded-Host $server_name;
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header Upgrade $http_upgrade;
-	        proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Connection $connection_upgrade;
             proxy_cookie_flags ~ nosecure samesite=lax;
         }
 
@@ -182,8 +182,8 @@ http {
         listen 5000 ssl;
         server_name _SERVER_DOMAIN;
 
-        ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.key;
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -209,8 +209,8 @@ http {
         listen 8000 ssl;
         server_name _SERVER_DOMAIN;
 
-        ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.key;
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -259,8 +259,8 @@ http {
         listen 9001 ssl;
         server_name _SERVER_DOMAIN;
 
-        ssl_certificate /etc/nginx/ssl/server.crt;
-        ssl_certificate_key /etc/nginx/ssl/server.key;
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
 
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
@@ -284,5 +284,27 @@ http {
 
             proxy_pass http://minio:9001;
        }
+    }
+
+    server {
+        listen 80;
+        server_name *._SPACE_APP_NAMESPACE._SPACE_APP_INTERNAL_DOMAIN;
+
+        location / {
+            proxy_http_version 1.1;
+            proxy_pass http://_SPACE_APP_INTERNAL_HOST:_SPACE_APP_INTERNAL_PORT;
+            proxy_set_header Host $host;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root  /usr/share/nginx/html;
+        }
     }
 }

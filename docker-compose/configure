@@ -130,7 +130,7 @@ chown -R 100:100 "$FLUENTD_LOG_DIR"
 
 log "INFO" "- render fluent conf."
 FLUENTD_CONF_DIR="${CURRENT_DIR}/configs/fluentd"
-SERVICES=$(docker compose config --services)
+SERVICES=$(docker compose config --services | grep -v fluentd)
 cat "$FLUENTD_CONF_DIR"/fluent.conf.sample > "$FLUENTD_CONF_DIR"/fluent.conf
 for SERVICE in $SERVICES; do
 cat <<EOF >> "$FLUENTD_CONF_DIR"/fluent.conf
@@ -168,21 +168,25 @@ NGINX_CONF_DIR="${CURRENT_DIR}/configs/nginx"
 
 log "INFO" "- render nginx configuration file."
 if [ "$SERVER_PROTOCOL" == "http" ]; then
-  sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
-      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
-      "$NGINX_CONF_DIR"/nginx.conf.sample > "$NGINX_CONF_DIR"/nginx.conf
+  TEMPLATE_FILE="nginx.conf.sample"
 elif [ "$SERVER_PROTOCOL" == "https" ]; then
-  mkdirs ./configs/nginx/ssl
-  cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/server.crt
-  cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/server.key
+  TEMPLATE_FILE="nginx.conf.ssl.sample"
 
-  sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
-      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
-      "$NGINX_CONF_DIR"/nginx.conf.ssl.sample > "$NGINX_CONF_DIR"/nginx.conf
+  mkdirs ./configs/nginx/ssl
+  cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/${SERVER_DOMAIN}.crt
+  cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/${SERVER_DOMAIN}.key
 else
   log "ERRO" "Unknown nginx protocol: ${SERVER_PROTOCOL}"
   exit 1
 fi
+
+sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+    -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+    -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
+    -e "s/_SPACE_APP_INTERNAL_PORT/${SPACE_APP_INTERNAL_PORT}/g" \
+    -e "s/_SPACE_APP_NAMESPACE/${SPACE_APP_NAMESPACE}/g" \
+    -e "s/_SPACE_APP_INTERNAL_DOMAIN/${SPACE_APP_INTERNAL_DOMAIN}/g" \
+    "$NGINX_CONF_DIR"/"$TEMPLATE_FILE" > "$NGINX_CONF_DIR"/nginx.conf
 
 log "INFO" "- generate temporal auth file."
 docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$TEMPORAL_CONSOLE_USER" "$TEMPORAL_CONSOLE_PASSWORD" > "$NGINX_CONF_DIR"/ssl/.htpasswd
@@ -211,7 +215,7 @@ cat <<EOF > "${COREDNS_CONF_DIR}/${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOM
         86400      ; Minimum TTL
 )
 
-*   3600 IN A  192.171.100.112
+*   3600 IN A  192.171.100.100
 EOF
 
 ####################################################################################
@@ -333,19 +337,6 @@ sed -e "s/_POSTGRES_USER/${POSTGRES_USER}/g" \
     "$CASDOOR_CONF_DIR"/app.conf.sample > "$CASDOOR_CONF_DIR"/app.conf
 
 ####################################################################################
-# Configure Csghub Proxy Nginx
-####################################################################################
-log "NORM" "Csghub_Proxy_Nginx:"
-PROXY_NGINX_CONF_DIR="${CURRENT_DIR}/configs/proxy_nginx"
-
-log "INFO" "- render proxy nginx config file."
-sed -e "s/_SPACE_APP_INTERNAL_HOST/${SPACE_APP_INTERNAL_HOST}/g" \
-    -e "s/_SPACE_APP_INTERNAL_PORT/${SPACE_APP_INTERNAL_PORT}/g" \
-    -e "s/_SPACE_APP_NAMESPACE/${SPACE_APP_NAMESPACE}/g" \
-    -e "s/_SPACE_APP_INTERNAL_DOMAIN/${SPACE_APP_INTERNAL_DOMAIN}/g" \
-    "$PROXY_NGINX_CONF_DIR"/nginx.conf.sample > "$PROXY_NGINX_CONF_DIR"/nginx.conf
-
-####################################################################################
 # Configure Csghub Runner Docker Config
 ####################################################################################
 set +e
@@ -371,7 +362,7 @@ if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
 fi
 
 log "NORM" "Starting services..."
-retry docker compose -f docker-compose.yml up -d
+retry docker compose -f docker-compose.yml up -d --remove-orphans
 
 log "NORM" "Installation Completed."
 log "INFO" "CSGHub service can be visited by URL:"
