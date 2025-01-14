@@ -61,7 +61,7 @@ services:
     privileged: true
     restart: always
     deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
+      replicas: ${CSGHUB_WITH_K8S:-0}
     logging:
       driver: fluentd
       options:
@@ -334,7 +334,7 @@ services:
       - ${KUBE_CONFIG_DIR}:/root/.kube:r
     restart: always
     deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
+      replicas: ${CSGHUB_WITH_K8S:-0}
     logging:
       driver: fluentd
       options:
@@ -393,7 +393,7 @@ services:
     privileged: true
     restart: always
     deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
+      replicas: ${CSGHUB_WITH_K8S:-0}
     logging:
       driver: fluentd
       options:
@@ -569,7 +569,7 @@ services:
     restart: always
     privileged: true
     deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
+      replicas: ${CSGHUB_WITH_K8S:-0}
     healthcheck:
       test: [ "CMD", "nc", "-z", "localhost", "2375" ]
       interval: 1s
@@ -607,7 +607,7 @@ services:
       - ./logs/csghub_space_builder:/opt/data/logs
     restart: always
     deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
+      replicas: ${CSGHUB_WITH_K8S:-0}
     logging:
       driver: fluentd
       options:
