@@ -175,8 +175,6 @@ elif [ "$SERVER_PROTOCOL" == "https" ]; then
   mkdirs ./configs/nginx/ssl
   cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/${SERVER_DOMAIN}.crt
   cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/${SERVER_DOMAIN}.key
-
-  export ENABLE_HTTPS=true
 else
   log "ERRO" "Unknown nginx protocol: ${SERVER_PROTOCOL}"
   exit 1
