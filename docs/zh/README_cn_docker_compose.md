@@ -41,11 +41,11 @@
 1. 导航到 `docker-compose`.
 2. 编辑文件 `.env` ，设置变量 `SERVER_DOMAIN` 为本机 IPv4 地址或者域名，不要使用 `127.0.0.1` 或 `localhost`。
 3. 如果没有 Kubernetes 集群，`.env` 中的 space 和 registry 相关配置可以忽略。与现有 Kubernetes 集群集成的配置可以在[下文](#配置-kubernetes)中找到。
-4. 执行 `startup.sh` 脚本。所有服务启动完成后，可以通过`http://[SERVER_DOMAIN]`访问自行部署的 CSGHub 服务，若`SERVER_PORT`默认不是 80，请通过`http://[SERVER_DOMAIN]:[SERVER_PORT]`进行访问。
+4. 执行 `configure` 脚本。所有服务启动完成后，可以通过`http://[SERVER_DOMAIN]`访问自行部署的 CSGHub 服务，若`SERVER_PORT`默认不是 80，请通过`http://[SERVER_DOMAIN]:[SERVER_PORT]`进行访问。
 5. 实例启动后，通过使用默认管理员帐户`root/Root@1234`进行登录。
 6. 其他所有服务的用户和密码均可以在 `.env` 文件中找到.
 
-*注意: 无论何时，请使用 `startup.sh` 渲染应用更新后的配置。*
+*注意: 无论何时，请使用 `configure` 渲染应用更新后的配置。*
 
 ### 注意
 
@@ -116,7 +116,7 @@ KUBE_CONFIG_DIR="/root/.kube"
 然后使用如下命令重新配置 CSGHub 实例:
 
 ```
-./startup.sh
+./configure
 ```
 
 ### 继续配置 Kubernetes
