@@ -206,7 +206,7 @@ services:
       CSGHUB_PORTAL_SENSITIVE_CHECK: false
       CSGHUB_PORTAL_STARHUB_BASE_URL: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
       CSGHUB_PORTAL_STARHUB_API_KEY: "${HUB_SERVER_API_TOKEN}"
-      CSGHUB_PORTAL_ENABLE_HTTPS: false
+      CSGHUB_PORTAL_ENABLE_HTTPS: "${SERVER_SSL_CERT:+true}"
       # PostgreSQL
       CSGHUB_PORTAL_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_portal?sslmode=disable"
       # Casdoor
@@ -392,28 +392,6 @@ services:
         ipv4_address: 192.171.100.111
     dns:
       - 192.171.100.102
-
-  csghub-proxy-nginx:
-    image: ${CSGHUB_IMAGE_PREFIX}/nginx:latest
-    depends_on:
-      csghub-server:
-        condition: service_healthy
-        restart: true
-    volumes:
-      - ./configs/proxy_nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./logs/proxy_nginx:/var/log/nginx
-    privileged: true
-    restart: always
-    deploy:
-      replicas: ${CSGHUB_WITH_K8S:-1}
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: csghub-proxy-nginx
-    networks:
-      opencsg:
-        ipv4_address: 192.171.100.112
 
   csghub-user:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
