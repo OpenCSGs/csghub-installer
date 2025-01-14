@@ -36,6 +36,8 @@ services:
 
   redis:
     image: ${CSGHUB_IMAGE_PREFIX}/redis:7.2.5
+    depends_on:
+      - fluentd
     volumes:
       - ./data/redis:/data
     restart: always
@@ -56,6 +58,8 @@ services:
   coredns:
     image: ${CSGHUB_IMAGE_PREFIX}/coredns/coredns:1.11.1
     command: [ "-conf", "/etc/coredns/Corefile" ]
+    depends_on:
+      - fluentd
     volumes:
       - ./configs/coredns:/etc/coredns:r
     privileged: true
@@ -73,6 +77,8 @@ services:
 
   registry:
     image: ${CSGHUB_IMAGE_PREFIX}/registry:2
+    depends_on:
+      - fluentd
     environment:
       # Server
       REGISTRY_AUTH: "htpasswd"
@@ -104,10 +110,12 @@ services:
 
   postgres:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub/postgres:15.10
+    depends_on:
+      - fluentd
     environment:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal,dataflow"
     volumes:
       - ./data/postgresql/data:/var/lib/postgresql/data
     restart: always
@@ -128,6 +136,8 @@ services:
 
   minio:
     image: ${CSGHUB_IMAGE_PREFIX}/bitnami/minio:2023
+    depends_on:
+      - fluentd
     environment:
       MINIO_ROOT_USER: "$MINIO_ROOT_USER"
       MINIO_ROOT_PASSWORD: "$MINIO_ROOT_PASSWORD"
@@ -150,6 +160,8 @@ services:
   gitaly:
     image: ${CSGHUB_IMAGE_PREFIX}/gitaly:v17.5.0
     command: [ "bash", "-c", "mkdir -p /home/git/repositories && rm -rf /srv/gitlab-shell/hooks/* && touch /srv/gitlab-shell/.gitlab_shell_secret && exec /scripts/process-wrapper" ]
+    depends_on:
+      - fluentd
     environment:
       GITALY_CONFIG_FILE: "/etc/gitaly/config.toml"
     volumes:
@@ -233,13 +245,18 @@ services:
   csghub-server:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
     depends_on:
-      - postgres
-      - minio
-      - redis
-      - gitaly
-      - gitlab-shell
-      - nats
-      - temporal
+      nats:
+        condition: service_started
+        restart: true
+      temporal:
+        condition: service_healthy
+        restart: true
+      dataflow:
+        condition: service_started
+        restart: true
+      csghub-dataviewer:
+        condition: service_started
+        restart: true
     environment:
       # Server
       GIN_MODE: release
@@ -297,7 +314,7 @@ services:
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]
       interval: 10s
-      timeout: 10s
+      timeout: 30s
       retries: 30
     logging:
       driver: fluentd
@@ -382,7 +399,7 @@ services:
       - 192.171.100.102
 
   csghub-user:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
     depends_on:
       - csghub-server
@@ -597,6 +614,8 @@ services:
 
   nats:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_nats:2.10.16
+    depends_on:
+      - fluentd
     volumes:
       - ./configs/nats/nats-server.conf:/nats-server.conf
       - ./data/nats:/data/jetstream
@@ -613,7 +632,9 @@ services:
   casdoor:
     image: ${CSGHUB_IMAGE_PREFIX}/casbin/casdoor:v1.733.0
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+        restart: true
     environment:
       RUNNING_IN_DOCKER: true
     volumes:
@@ -636,7 +657,9 @@ services:
   temporal:
     image: ${CSGHUB_IMAGE_PREFIX}/temporalio/auto-setup:1.25.1
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+        restart: true
     environment:
       DB: "postgres12"
       POSTGRES_SEEDS: "$POSTGRES_HOST"
@@ -644,6 +667,11 @@ services:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PWD: "$POSTGRES_PASSWORD"
       DEFAULT_NAMESPACE_RETENTION: "7d"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z temporal 7233" ]
+      interval: 10s
+      timeout: 30s
+      retries: 30
     logging:
       driver: fluentd
       options:
