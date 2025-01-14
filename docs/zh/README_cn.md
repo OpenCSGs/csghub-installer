@@ -25,19 +25,66 @@ CSGHub 致力于为用户带来针对大模型原生设计的、可私有化部�
 1. Docker Engine 部署方式提供最简易部署（包含完整功能），目前处于测试阶段。
 2. Docker 部署方式分为**快速部署**和**完整部署**两部分，快速部署不包含部分高级功能，例如 Space 应用托管、模型推理与微调等。
 3. 完整功能体验需要 Kubernetes 集群支持部署，文档中已包含快速部署方式（仅供测试与功能体验）。
-4. 更多详细信息请参考[这里](README_cn_docker.md)。
+4. 快速启动：
+```shell
+export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
+export SERVER_PORT=80
+docker run -it -d \
+    --name omnibus-csghub \
+    --hostname omnibus-csghub \
+    -p ${SERVER_PORT}:80 \
+    -p 2222:2222 \
+    -p 8000:8000 \
+    -p 9000:9000 \
+    -v /srv/csghub/data:/var/opt \
+    -v /srv/csghub/log:/var/log \
+    -e CSGHUB_WITH_K8S=0 \
+    -e SERVER_DOMAIN=${SERVER_DOMAIN} \
+    -e SERVER_PORT=${SERVER_PORT} \
+    opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+```
+5. 更多详细信息请参考[这里](README_cn_docker.md)。
 
 ### Docker Compose
 
 1. 此方式仅用于测试开发用途，生产环境建议使用 Helm Chart 部署方式。
 2. Docker Compose 部署方式作为 Docker 的增强部署方式，同样需要依赖 k8s 才能体验完整功能，目前的部署方式不包含 k8s 部署。
-3. 更多详细信息请参考[这里](README_cn_docker_compose.md)。
+3. 快速启动：
+```shell
+curl -L -o csghub.tgz https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghub-docker-compose-v1.3.0.tgz
+tar -zxf csghub.tgz && cd csghub
+
+# 如果 `.env` 发生变化或者是第一次安装，那么必须执行`./configure`以渲染新的配置文件。
+chmod +x configure && ./configure
+```
+4. 更多详细信息请参考[这里](README_cn_docker_compose.md)。
 
 ### Helm Chart
 
 1. Helm Chart 部署方式适用于对稳定性和可用性要求较高的场景，例如生产环境。
 2. Helm Chart 仅支持`gitaly`作为 git 服务器后端，不支持`gitea`。
-3. 更多详细信息请参考[这里](README_cn_helm_chart.md)。
+3. 快速启动:
+```shell
+# 如果是第一次安装请参考步骤 4 完成前置条件配置
+# 创建命名空间和 Secret
+kubectl create ns csghub 
+kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
+
+# 添加 CSGHub Helm 仓库
+helm repo add csghub https://opencsgs.github.io/csghub-installer
+helm repo update
+
+# 安装 CSGHub
+# 如果使用的是 ZSH，请替换 `internalDomain[0]`为`internalDomain\[0\]`
+helm install csghub csghub/csghub \
+  	--namespace csghub \
+  	--create-namespace \
+  	--set global.domain=example.com \
+  	--set global.runner.internalDomain[0].domain=app.internal \
+  	--set global.runner.internalDomain[0].host=172.25.11.130 \
+  	--set global.runner.internalDomain[0].port=32497
+```
+4. 更多详细信息请参考[这里](README_cn_helm_chart.md)。
 
 
 有关 CSGHub 的更多详细信息请参见[这里](https://github.com/OpenCSGs/CSGHub)。
