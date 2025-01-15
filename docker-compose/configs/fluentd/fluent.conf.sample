@@ -4,27 +4,3 @@
   @type forward
   port 24224
 </source>
-
-<match csghub-server>
-  @type file
-  path /fluentd/log/csghub-server
-  append true
-  compress gzip
-  <buffer>
-    @type file
-    path /fluentd/buffer/csghub-server
-    chunk_limit_size 20MB
-    chunk_limit_records 5000
-    queue_limit_length 256
-    timekey 1d
-    flush_mode interval
-    flush_interval 5m
-    retry_max_interval 30
-    retry_forever true
-    flush_at_shutdown true
-  </buffer>
-  <format>
-    @type json
-    localtime true
-  </format>
-</match>
