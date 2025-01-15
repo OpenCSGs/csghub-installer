@@ -329,6 +329,12 @@ sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
     -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
    "$CASDOOR_CONF_DIR"/init_data.json.sample > "$CASDOOR_CONF_DIR"/init_data.json
 
+log "INFO" "- render update RedirectURLs."
+sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
+    -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+    -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+   ${CURRENT_DIR}/configs/server/scripts/update_casdoor.sql.sample > ${CURRENT_DIR}/configs/server/scripts/update_casdoor.sql
+
 log "INFO" "- render casdoor config file."
 sed -e "s/_POSTGRES_USER/${POSTGRES_USER}/g" \
     -e "s/_POSTGRES_PASSWORD/${POSTGRES_PASSWORD}/g" \
