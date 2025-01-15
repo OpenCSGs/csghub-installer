@@ -42,6 +42,7 @@ buckets:
   - csghub-portal
   - csghub-server
   - csghub-git
+  - csghub-registry
 
 ## The region where Minio will operate, useful for configuring location-specific data replication and redundancy.
 region: "cn-north-1"

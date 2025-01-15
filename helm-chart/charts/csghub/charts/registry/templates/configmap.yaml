@@ -29,7 +29,7 @@ data:
   {{- end }}
   REGISTRY_STORAGE_S3_SECURE: "false"
   REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "minio.external.endpoint" . }} # used to generate download links for lfs files
-  REGISTRY_STORAGE_S3_BUCKET: "csghub-git"
+  REGISTRY_STORAGE_S3_BUCKET: "csghub-registry"
   REGISTRY_STORAGE_S3_REGION: "cn-north-1"
   {{- else }}
   {{- with $conf.objectStore }}
