@@ -30,7 +30,7 @@ data:
   REGISTRY_STORAGE_S3_SECURE: "false"
   {{- end }}
   REGISTRY_STORAGE_S3_SECURE: "false"
-  REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "minio.external.endpoint" . }} # used to generate download links for lfs files
+  REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "minio.internal.endpoint" . }} # used to generate download links for lfs files
   REGISTRY_STORAGE_S3_BUCKET: "csghub-git"
   REGISTRY_STORAGE_S3_REGION: "cn-north-1"
   REGISTRY_STORAGE_S3_FORCEPATHSTYLE: "true"
