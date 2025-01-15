@@ -2,6 +2,21 @@ apiVersion: v1
 entries:
   csghub:
   - apiVersion: v2
+    appVersion: v1.3.0
+    created: "2025-01-15T16:17:39.120864593Z"
+    description: CSGHub is an open source, trustworthy large model asset management
+      platform that can assist users in governing the assets involved in the lifecycle
+      of LLM and LLM applications (datasets, model files, codes, etc).
+    digest: 42400839a98429c5202e03516ba8fdd5e20cc64e36c28ce106e07c9d62cb4a8b
+    home: https://opencsg.com
+    name: csghub
+    sources:
+    - https://github.com/OpenCSGs/csghub-installer
+    type: application
+    urls:
+    - https://github.com/OpenCSGs/csghub-installer/releases/download/csghub-1.3.0/csghub-1.3.0.tgz
+    version: 1.3.0
+  - apiVersion: v2
     appVersion: v1.2.0
     created: "2025-01-09T06:01:38.903585234Z"
     description: CSGHub is an open source, trustworthy large model asset management
@@ -191,4 +206,4 @@ entries:
     urls:
     - https://github.com/OpenCSGs/CSGHub-helm/releases/download/csghub-0.8.2/csghub-0.8.2.tgz
     version: 0.8.2
-generated: "2025-01-09T06:01:38.903665243Z"
+generated: "2025-01-15T16:17:39.120979609Z"
