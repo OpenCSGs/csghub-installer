@@ -124,12 +124,17 @@ log "NORM" "Current configured domain name is ${SERVER_DOMAIN}."
 ####################################################################################
 log "NORM" "Fluentd:"
 FLUENTD_LOG_DIR="${CURRENT_DIR}/logs/fluentd"
-log "INFO" "- create log directory."
 mkdirs "$FLUENTD_LOG_DIR"
-chown -R 100:100 "$FLUENTD_LOG_DIR"
+
+log "INFO" "- create log directory."
+if [[ "$(uname)" == "Linux" ]]; then
+  chown -R 100:100 "$FLUENTD_LOG_DIR"
+fi
 
 log "INFO" "- render fluent conf."
 FLUENTD_CONF_DIR="${CURRENT_DIR}/configs/fluentd"
+mkdirs "$FLUENTD_CONF_DIR"
+
 SERVICES=$(docker compose config --services | grep -v fluentd)
 cat "$FLUENTD_CONF_DIR"/fluent.conf.sample > "$FLUENTD_CONF_DIR"/fluent.conf
 for SERVICE in $SERVICES; do
@@ -157,6 +162,7 @@ cat <<EOF >> "$FLUENTD_CONF_DIR"/fluent.conf
     localtime true
   </format>
 </match>
+
 EOF
 done
 
@@ -165,6 +171,7 @@ done
 ####################################################################################
 log "NORM" "Nginx Main:"
 NGINX_CONF_DIR="${CURRENT_DIR}/configs/nginx"
+mkdirs "$NGINX_CONF_DIR"/ssl
 
 log "INFO" "- render nginx configuration file."
 if [ "$SERVER_PROTOCOL" == "http" ]; then
@@ -238,8 +245,6 @@ fi
 ####################################################################################
 log "NORM" "Registry:"
 REGISTRY_CONF_DIR="${CURRENT_DIR}/configs/registry"
-
-log "INFO" "- create config directories."
 mkdirs "$REGISTRY_CONF_DIR"/auth
 
 log "INFO" "- generate registry auth file."
@@ -250,6 +255,7 @@ docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$REGIST
 ####################################################################################
 log "NORM" "Gitaly:"
 GITALY_CONF_DIR="${CURRENT_DIR}/configs/gitaly"
+mkdirs "$GITALY_CONF_DIR"
 
 log "INFO" "- render configuration file."
 sed "s/_GITALY_AUTH_TOKEN/${GITALY_AUTH_TOKEN}/g" "$GITALY_CONF_DIR"/config.toml.sample > "$GITALY_CONF_DIR"/config.toml
@@ -259,6 +265,7 @@ sed "s/_GITALY_AUTH_TOKEN/${GITALY_AUTH_TOKEN}/g" "$GITALY_CONF_DIR"/config.toml
 ####################################################################################
 log "NORM" "Gitlab-Shell:"
 GITLAB_SHELL_CONF_DIR="${CURRENT_DIR}/configs/gitlab-shell"
+mkdirs "$GITLAB_SHELL_CONF_DIR"
 
 log "INFO" "- generate gitaly auth file."
 echo "$GITALY_AUTH_TOKEN" > "$GITLAB_SHELL_CONF_DIR"/.gitlab_shell_secret
@@ -291,6 +298,7 @@ generate_ssh_key "ed25519"
 ####################################################################################
 log "NORM" "Csghub_Space_Builder:"
 CSGHUB_SPACE_BUILDER_CONF_DIR="${CURRENT_DIR}/configs/docker"
+mkdirs "$CSGHUB_SPACE_BUILDER_CONF_DIR"
 
 log "INFO" "- render docker daemon file."
 sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
@@ -310,6 +318,7 @@ sed -e "s/_REGISTRY_USERNAME/${REGISTRY_USERNAME}/g" \
 ####################################################################################
 log "NORM" "Nats:"
 NATS_CONF_DIR="${CURRENT_DIR}/configs/nats"
+mkdirs "$NATS_CONF_DIR"
 
 log "INFO" "- render nats config file."
 NATS_ROOT_PASSWORD_HTPASSWD=$(docker run --rm --entrypoint htpasswd "$CSGHUB_IMAGE_PREFIX"/httpd -Bbn "$NATS_ROOT_USER" "$NATS_ROOT_PASSWORD" | cut -d ':' -f 2)
@@ -322,6 +331,7 @@ sed -e "s/_NATS_ROOT_USER/${NATS_ROOT_USER}/g" \
 ####################################################################################
 log "NORM" "Casdoor:"
 CASDOOR_CONF_DIR="${CURRENT_DIR}/configs/casdoor/conf"
+mkdirs "$CASDOOR_CONF_DIR"
 
 log "INFO" "- render casdoor init_data file."
 sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
