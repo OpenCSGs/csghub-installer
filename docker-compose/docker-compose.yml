@@ -37,7 +37,8 @@ services:
   redis:
     image: ${CSGHUB_IMAGE_PREFIX}/redis:7.2.5
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     volumes:
       - ./data/redis:/data
     restart: always
@@ -59,7 +60,8 @@ services:
     image: ${CSGHUB_IMAGE_PREFIX}/coredns/coredns:1.11.1
     command: [ "-conf", "/etc/coredns/Corefile" ]
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     volumes:
       - ./configs/coredns:/etc/coredns:r
     privileged: true
@@ -78,7 +80,8 @@ services:
   registry:
     image: ${CSGHUB_IMAGE_PREFIX}/registry:2
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     environment:
       # Server
       REGISTRY_AUTH: "htpasswd"
@@ -111,11 +114,12 @@ services:
   postgres:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub/postgres:15.10
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     environment:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal,dataflow"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal"
     volumes:
       - ./data/postgresql/data:/var/lib/postgresql/data
     restart: always
@@ -137,7 +141,8 @@ services:
   minio:
     image: ${CSGHUB_IMAGE_PREFIX}/bitnami/minio:2023
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     environment:
       MINIO_ROOT_USER: "$MINIO_ROOT_USER"
       MINIO_ROOT_PASSWORD: "$MINIO_ROOT_PASSWORD"
@@ -161,7 +166,8 @@ services:
     image: ${CSGHUB_IMAGE_PREFIX}/gitaly:v17.5.0
     command: [ "bash", "-c", "mkdir -p /home/git/repositories && rm -rf /srv/gitlab-shell/hooks/* && touch /srv/gitlab-shell/.gitlab_shell_secret && exec /scripts/process-wrapper" ]
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     environment:
       GITALY_CONFIG_FILE: "/etc/gitaly/config.toml"
     volumes:
@@ -218,7 +224,7 @@ services:
       CSGHUB_PORTAL_SENSITIVE_CHECK: "${SENSITIVE_CONTENT_CHECK:+true}"
       CSGHUB_PORTAL_STARHUB_BASE_URL: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
       CSGHUB_PORTAL_STARHUB_API_KEY: "${HUB_SERVER_API_TOKEN}"
-      CSGHUB_PORTAL_ENABLE_HTTPS: "${SERVER_SSL_CERT:+true}"
+      CSGHUB_PORTAL_ENABLE_HTTPS: "${CSGHUB_PORTAL_ENABLE_HTTPS:-false}"
       # PostgreSQL
       CSGHUB_PORTAL_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_portal?sslmode=disable"
       # Casdoor
@@ -250,12 +256,6 @@ services:
         restart: true
       temporal:
         condition: service_healthy
-        restart: true
-      dataflow:
-        condition: service_started
-        restart: true
-      csghub-dataviewer:
-        condition: service_started
         restart: true
     environment:
       # Server
@@ -409,7 +409,7 @@ services:
       - 192.171.100.102
 
   csghub-user:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
     depends_on:
       - csghub-server
@@ -613,7 +613,6 @@ services:
     depends_on:
       registry:
         condition: service_started
-        restart: true
     environment:
       DOCKER_HOST: "tcp://localhost:2375"
       DOCKER_TLS_CERTDIR: ""
@@ -644,7 +643,6 @@ services:
     depends_on:
       docker-server:
         condition: service_healthy
-        restart: true
     environment:
       # Server
       SPACE_DATA_PATH: "/opt/data"
@@ -675,7 +673,8 @@ services:
   nats:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_nats:2.10.16
     depends_on:
-      - fluentd
+      fluentd:
+        condition: service_healthy
     volumes:
       - ./configs/nats/nats-server.conf:/nats-server.conf
       - ./data/nats:/data/jetstream
@@ -843,6 +842,11 @@ services:
       - ./logs/fluentd/buffer:/fluentd/buffer
     restart: always
     privileged: true
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z fluentd 24224" ]
+      interval: 10s
+      timeout: 30s
+      retries: 30
     networks:
       opencsg:
         ipv4_address: 192.171.100.127
