@@ -57,9 +57,9 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Waiting for server can be connected'; sleep 2; done" ]
       containers:
         - name: psql
-          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/postgres:15.7
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/opencsg/psql:latest
           imagePullPolicy: {{ $conf.image.pullPolicy }}
-          command: [ "psql", "-h", "$(STARHUB_DATABASE_HOST)", "-p", "$(STARHUB_DATABASE_PORT)", "-U", "$(STARHUB_DATABASE_USERNAME)", "-d", "$(STARHUB_DATABASE_NAME)", "-f", "/data/initialize.sql" ]
+          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
@@ -68,6 +68,14 @@ spec:
                 name: {{ include  "common.names.custom" (list . "postgresql") }}
             {{- end  }}
           env:
+            - name: PGHOST
+              value: "$(STARHUB_DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(STARHUB_DATABASE_PORT)"
+            - name: PGUSER
+              value: "$(STARHUB_DATABASE_USERNAME)"
+            - name: PGDATABASE
+              value: "$(STARHUB_DATABASE_NAME)"
             - name: PGPASSWORD
               {{- if .Values.global.postgresql.enabled }}
               value: "$(csghub_server)"
@@ -76,7 +84,7 @@ spec:
               {{- end }}
           volumeMounts:
             - name: init
-              mountPath: /data
+              mountPath: /scripts
       volumes:
         - name: init
           configMap:

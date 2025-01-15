@@ -526,7 +526,7 @@ services:
         ipv4_address: 192.171.100.116
 
   csghub-db-init:
-    image: ${CSGHUB_IMAGE_PREFIX}/governmentpaas/psql:329
+    image: ${CSGHUB_IMAGE_PREFIX}/opencsg/psql:latest
     depends_on:
       csghub-server:
         condition: service_healthy
@@ -538,7 +538,7 @@ services:
       PGDATABASE: "csghub_server"
     volumes:
       - ./configs/server/scripts:/scripts
-    entrypoint: [ "sh", "-c", "until nc -zv csghub-server 8080 ; do echo 'sleep 10s...'; sleep 10; done; echo 'begin to do db init scripts'; until pg_isready; do sleep 5; done; psql -f /scripts/initialize.sql" ]
+    entrypoint: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
     logging:
       driver: fluentd
       options:
