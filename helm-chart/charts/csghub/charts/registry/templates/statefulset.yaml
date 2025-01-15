@@ -67,12 +67,12 @@ spec:
             - name: REGISTRY_HTTP_TLS_KEY
               value: "/opt/certs/x509/tls.key"
           {{- end }}
-          {{- if .Values.global.minio.enabled }}
-            - name: REGISTRY_STORAGE_S3_ACCESSKEY
-              value: "$(MINIO_ROOT_USER)"
-            - name: REGISTRY_STORAGE_S3_SECRETKEY
-              value: "$(MINIO_ROOT_PASSWORD)"
-          {{- end }}
+{{/*          {{- if .Values.global.minio.enabled }}*/}}
+{{/*            - name: REGISTRY_STORAGE_S3_ACCESSKEY*/}}
+{{/*              value: "$(MINIO_ROOT_USER)"*/}}
+{{/*            - name: REGISTRY_STORAGE_S3_SECRETKEY*/}}
+{{/*              value: "$(MINIO_ROOT_PASSWORD)"*/}}
+{{/*          {{- end }}*/}}
           {{- with $conf.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
