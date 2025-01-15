@@ -24,13 +24,16 @@ data:
   {{- if .Values.global.minio.enabled }}
   {{- if .Values.global.ingress.tls.enabled }}
   REGISTRY_STORAGE_S3_ENCRYPT: "true"
+  REGISTRY_STORAGE_S3_SECURE: "true"
   {{- else }}
   REGISTRY_STORAGE_S3_ENCRYPT: "false"
+  REGISTRY_STORAGE_S3_SECURE: "false"
   {{- end }}
   REGISTRY_STORAGE_S3_SECURE: "false"
   REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "minio.external.endpoint" . }} # used to generate download links for lfs files
   REGISTRY_STORAGE_S3_BUCKET: "csghub-git"
   REGISTRY_STORAGE_S3_REGION: "cn-north-1"
+  REGISTRY_STORAGE_S3_FORCEPATHSTYLE: "true"
   {{- else }}
   {{- with $conf.objectStore }}
   REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ .endpoint }}
@@ -40,6 +43,7 @@ data:
   REGISTRY_STORAGE_S3_REGION: {{ .region }}
   REGISTRY_STORAGE_S3_ENCRYPT: {{ .encrypt }}
   REGISTRY_STORAGE_S3_SECURE: {{ .secure }}
+  REGISTRY_STORAGE_S3_FORCEPATHSTYLE: {{ .pathStyle }}
   {{- end }}
   {{- end }}
 {{- end }}
