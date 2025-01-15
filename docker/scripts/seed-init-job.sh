@@ -93,6 +93,9 @@ else
    EXECUTE FUNCTION promote_root_to_admin();"
 fi
 
+echo "Update login redirectURLs..."
+execute_sql "$POSTGRES_CASDOOR_USER" "UPDATE application SET redirect_uris='[\"$SERVER_ENDPOINT\"]' WHERE name = 'CSGHub'"
+
 echo "Create admin user for csghub..."
 UUID=""
 until [[ -n "$UUID" ]]; do

@@ -87,13 +87,6 @@ data:
   {{- end }}
   {{- end }}
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
-{{/*  {{- if .Values.global.moderation.enabled }}*/}}
-{{/*  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"*/}}
-{{/*  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "moderation.internal.domain" .)}}*/}}
-{{/*  OPENCSG_MODERATION_SERVER_PORT: {{ include "moderation.internal.port" . | quote }}*/}}
-{{/*  {{- else }}*/}}
-{{/*  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"*/}}
-{{/*  {{- end }}*/}}
   OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
 ---
 apiVersion: v1
@@ -102,7 +95,55 @@ metadata:
   name: {{ include "common.names.custom" (list . "server-init") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ $conf.annotations | toYaml | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: "{{ include "common.names.custom" . }} {{ include "common.names.custom" (list . "user") }} {{ include "common.names.custom" (list . "accounting") }} {{ include "common.names.custom" (list . "casdoor") }} {{ include "common.names.custom" (list . "mirror") }} {{ include "common.names.custom" (list . "portal") }} {{ include "common.names.custom" (list . "proxy") }} {{ include "common.names.custom" (list . "runner") }}"
+    {{- with $conf.annotations }}
+      {{- . | toYaml | nindent 4 }}
+    {{- end }}
 data:
-  initialize.sql: |
-    {{ .Files.Get "initialize.sql" | nindent 4 }}
+  update_casdoor.sql: |
+    --
+    -- Record Timestamp
+    --
+    SELECT now() as "Execute Timestamp";
+
+    --
+    -- PostgreSQL database dump
+    --
+    SET exit_on_error = on;
+    SET statement_timeout = 0;
+    SET lock_timeout = 0;
+    SET idle_in_transaction_session_timeout = 0;
+    SET client_encoding = 'UTF8';
+    SET standard_conforming_strings = on;
+    SET check_function_bodies = false;
+    SET xmloption = content;
+    SET client_min_messages = warning;
+    SET row_security = off;
+
+    --
+    -- Set Default Schema for All Tables
+    --
+
+    SELECT pg_catalog.set_config('search_path', 'public', false);
+
+    --
+    -- Name: application; Type: TABLE; Schema: public; Owner: csghub
+    --
+    -- Connect to casdoor management database
+    \connect casdoor
+
+    -- Update RedirectURLs
+    UPDATE
+        application
+    SET
+        redirect_uris = '["{{ include "csghub.external.endpoint" . }}/api/v1/callback/casdoor"]'
+    WHERE
+        name = 'CSGHub';
+  {{- $currentScope := . }}
+  {{- range $path, $_ := .Files.Glob "scripts/*.sql" }}
+    {{- with $currentScope }}
+    {{- base $path | nindent 2 }}: |
+      {{- .Files.Get $path | nindent 4 }}
+    {{- end }}
+  {{- end }}

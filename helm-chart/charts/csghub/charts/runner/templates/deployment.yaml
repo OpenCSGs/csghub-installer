@@ -130,8 +130,8 @@ spec:
             {{- $exists := lookup "v1" "Secret" .Release.Namespace .Values.global.runner.kubeConfig.secretName }}
             {{- if $exists }}
             secretName: {{ .Values.global.runner.kubeConfig.secretName }}
-            {{- else }}
-              {{ fail "You must specify a kube config secret (you need to create it yourself)" }}
+{{/*            {{- else }}*/}}
+{{/*              {{ fail "You must specify a kube config secret (you need to create it yourself)" }}*/}}
             {{- end }}
         - name: docker-daemon
           configMap:
