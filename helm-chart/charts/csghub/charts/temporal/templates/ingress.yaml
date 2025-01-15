@@ -60,9 +60,9 @@ spec:
               service:
                 name: {{ include "common.names.custom" . }}
                 port:
-                  number: 8180
+                  number: 8080
               {{- else }}
               serviceName: {{ include "common.names.custom" . }}
-              servicePort: 8180
+              servicePort: 8080
               {{- end }}
 {{- end }}
