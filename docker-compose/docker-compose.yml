@@ -289,7 +289,7 @@ services:
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
       STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
       # Csghub Space Builder
-      STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-space-builder:8080"
+      STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-builder:8080"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
       # Csghub Proxy
       STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
@@ -578,7 +578,7 @@ services:
       opencsg:
         ipv4_address: 192.171.100.118
 
-  csghub-space-builder:
+  csghub-builder:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_space_builder:latest
     depends_on:
       docker-server:
@@ -605,7 +605,7 @@ services:
       driver: fluentd
       options:
         fluentd-address: localhost:24224
-        tag: csghub-space-builder
+        tag: csghub-builder
     networks:
       opencsg:
         ipv4_address: 192.171.100.119

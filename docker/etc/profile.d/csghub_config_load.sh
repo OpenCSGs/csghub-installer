@@ -52,7 +52,7 @@ export SPACE_APP_NS=${SPACE_APP_NS:-space}
 export SPACE_APP_DOMAIN=${SPACE_APP_DOMAIN:-app.internal}
 export SPACE_APP_HOST=${SPACE_APP_HOST:-127.0.0.1}
 export SPACE_APP_PORT=${SPACE_APP_PORT:-80}
-export SPACE_DATA_PATH=${SPACE_DATA_PATH:-/var/opt/space-builder}
+export SPACE_DATA_PATH=${SPACE_DATA_PATH:-/var/opt/csghub-builder}
 export SPACE_SESSION_SECRET_KEY=${SPACE_SESSION_SECRET_KEY:-c8f771f2a178089b99172cbbd7e3b01d}
 
 # Runner Environments
