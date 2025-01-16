@@ -280,6 +280,8 @@ http {
             # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
             proxy_http_version 1.1;
             proxy_set_header Connection "";
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
             chunked_transfer_encoding off;
 
             proxy_pass http://minio:9001;
