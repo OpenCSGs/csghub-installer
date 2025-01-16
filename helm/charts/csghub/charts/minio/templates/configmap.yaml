@@ -33,4 +33,9 @@ data:
       {{- printf "mc mb --region=%s $ALIAS/%s" $REGION $BUCKET | nindent 6 }}
     fi
     {{- end }}
+    {{- if .Values.buckets.versioning }}
+    {{- range $BUCKET := .Values.buckets.defaults }}
+    mc version enable $ALIAS/{{ $BUCKET }}
+    {{- end }}
+    {{- end }}
 {{- end }}
