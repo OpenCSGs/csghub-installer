@@ -842,6 +842,7 @@ services:
       - ./logs/fluentd/buffer:/fluentd/buffer
     restart: always
     privileged: true
+    user: "root"
     healthcheck:
       test: [ "CMD-SHELL", "nc -z fluentd 24224" ]
       interval: 10s
