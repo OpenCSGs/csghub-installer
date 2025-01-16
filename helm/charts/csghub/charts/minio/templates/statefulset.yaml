@@ -1,0 +1,119 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.enabled }}
+apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
+kind: StatefulSet
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  serviceName: {{ include "common.names.custom" . }}
+  replicas: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or .Values.images.pullSecrets .Values.global.images.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - name: minio
+          image: {{ .Values.images.prefix}}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: ["server", "/data", "--console-address", ":9001"]
+          ports:
+            - containerPort: 9000
+              name: api
+              protocol: TCP
+            - containerPort: 9001
+              name: console
+              protocol: TCP
+          envFrom:
+            - secretRef:
+                name: {{ include "common.names.custom" . }}
+          env:
+            - name: MINIO_BROWSER_REDIRECT_URL
+              value: {{ include "minio.external.endpoint" . }}/console/
+            - name: MINIO_SERVER_URL
+              value: {{ include "minio.external.endpoint" . }}
+          {{- with .Values.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          securityContext:
+            {{- .Values.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: data
+        namespace: {{ .Release.Namespace }}
+        labels:
+          {{- include "common.labels" . | nindent 10 }}
+        annotations:
+          helm.sh/resource-policy: keep
+          {{- with .Values.annotations }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+      spec:
+        accessModes: {{ .Values.persistence.accessMode }}
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+{{- end }}
