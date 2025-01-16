@@ -7,8 +7,6 @@ global:
     pullSecrets: [ ]
     prefix: ""
 
-  domain: example.com
-
   ingress:
     domain: example.com
     ## According to the characteristics of the program,
