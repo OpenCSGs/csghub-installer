@@ -27,7 +27,7 @@ This script enables the one-click deployment of an all-in-one CSGHub instance, i
 
 - **csghub-runner:** Responsible for deploying application instances to the Kubernetes cluster.
 
-- **csghub-space-builder:** Mainly responsible for building application images and uploading them to the container image repository.
+- **csghub-builder:** Mainly responsible for building application images and uploading them to the container image repository.
 
 - **gitaly:** CSGHub's Git storage backend, providing efficient implementation of Git operations.
 
