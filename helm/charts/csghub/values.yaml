@@ -1,0 +1,25 @@
+## All modifications in this configuration file are only performed under global configuration block.
+## Any configuration outside global configuration block is an automatic adaptation configuration and should not be modified.
+
+## Global configuration
+global:
+  images:
+    pullSecrets: [ ]
+    prefix: ""
+
+  domain: example.com
+
+  ingress:
+    domain: example.com
+    ## According to the characteristics of the program,
+    ##   it is not allowed to configure whether to enable TLS for each subChart separately,
+    ##   but subCharts are allowed to define their own TLS secretName.
+    tls: { }
+      # enabled: false
+      ## Specify the tls secret containing the wildcard domain name certificate.
+      # secretName: ""
+    service:
+      type: LoadBalancer
+
+
+
