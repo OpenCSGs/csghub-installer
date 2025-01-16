@@ -19,5 +19,55 @@ global:
     service:
       type: LoadBalancer
 
+  ## This section configures whether to use an external container image repository.
+  registry:
+    ## Indicates whether the registry is external (true) or internal (false)
+    external: false
+    ## The URL of the Docker registry service; default is Docker Hub
+    repository: "docker.io"
+    ## The namespace (or organization) under which the images are stored in the registry
+    namespace: "csghub"
+    ## The username for authenticating to the registry
+    username: ""
+    ## The password for authenticating to the registry
+    password: ""
+
+  ## The following is a unified object storage configuration.
+  ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
+  ## If you use external object storage, make sure the bucket has been created.
+  objectStore:
+    ## If you use external object storage, set this to true, otherwise set this to false to use built-in object storage.
+    external: false
+    ## Configuring external object storage
+    connection:
+      ## The endpoint of the object storage service, e.g., S3 compatible service URL
+      endpoint: ""
+      ## The access key used for authentication
+      accessKey: ""
+      ## The secret key used for authentication
+      accessSecret: ""
+      ## The location used for authentication
+      region: ""
+      ## Indicates whether to encrypt data in transit
+      encrypt: ""
+      ## Indicates whether to use path-style requests
+      pathStyle: ""
+    buckets:
+      ## These are the bucket names you wish to create or utilize in the object storage
+      ## Bucket for csghub-portal data storage
+      portal: ""
+      ## Bucket for csghub-server data storage
+      server: ""
+      ## Bucket for gitaly lfs data storage
+      git: ""
+      ## Bucket for distribution registry data storage
+      ## If the built-in registry is not enabled, no configuration is required
+      registry: ""
+
+  deployment:
+    kubeSecret: "kube-configs"
+    namespace: "spaces"
+
+
 
 
