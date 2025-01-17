@@ -1,0 +1,58 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: before-hook-creation, hook-succeeded
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or .Values.images.pullSecrets .Values.global.images.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: psql
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done; psql -f /scripts/initialize.sql" ]
+          env:
+            - name: PGHOST
+              value: {{ include "postgresql.internal.domain" . }}
+            - name: PGPORT
+              value: {{ include "postgresql.internal.port" . | quote }}
+            - name: PGDATABASE
+              value: "postgres"
+            - name: PGUSER
+              value: "postgres"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.custom" . }}
+                  key: postgres
+          volumeMounts:
+            - name: init
+              mountPath: /scripts
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" . }}
+{{- end }}
