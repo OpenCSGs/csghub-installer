@@ -24,13 +24,13 @@ global:
     ## Indicates whether the registry is external (true) or internal (false)
     external: false
     ## The URL of the Docker registry service; default is Docker Hub
-    repository: "docker.io"
+    # repository: "docker.io"
     ## The namespace (or organization) under which the images are stored in the registry
-    namespace: "csghub"
+    # namespace: "csghub"
     ## The username for authenticating to the registry
-    username: ""
+    # username: ""
     ## The password for authenticating to the registry
-    password: ""
+    # password: ""
 
   ## The following is a unified object storage configuration.
   ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
@@ -39,30 +39,30 @@ global:
     ## If you use external object storage, set this to true, otherwise set this to false to use built-in object storage.
     external: false
     ## Configuring external object storage
-    connection:
+    connection: { }
       ## The endpoint of the object storage service, e.g., S3 compatible service URL
-      endpoint: ""
+      # endpoint: ""
       ## The access key used for authentication
-      accessKey: ""
+      # accessKey: ""
       ## The secret key used for authentication
-      accessSecret: ""
+      # accessSecret: ""
       ## The location used for authentication
-      region: ""
+      # region: ""
       ## Indicates whether to encrypt data in transit
-      encrypt: ""
+      # encrypt: ""
       ## Indicates whether to use path-style requests
-      pathStyle: ""
-    buckets:
+      # pathStyle: ""
+    buckets: { }
       ## These are the bucket names you wish to create or utilize in the object storage
       ## Bucket for csghub-portal data storage
-      portal: ""
+      # portal: "csghub-portal"
       ## Bucket for csghub-server data storage
-      server: ""
+      # server: "csghub-server"
       ## Bucket for gitaly lfs data storage
-      git: ""
+      # git: "csghub-git"
       ## Bucket for distribution registry data storage
       ## If the built-in registry is not enabled, no configuration is required
-      registry: ""
+      # registry: "csghub-registry"
 
   deployment:
     kubeSecret: "kube-configs"
