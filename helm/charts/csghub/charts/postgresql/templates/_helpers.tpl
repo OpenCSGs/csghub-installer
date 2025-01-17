@@ -15,11 +15,9 @@ Define the internal port for postgresql
 */}}
 {{- define "postgresql.internal.port" -}}
 {{- $port := "5432" }}
-{{- if hasKey .Values.global "postgresql" }}
-  {{- if hasKey .Values.global.postgresql "service" }}
-    {{- if hasKey .Values.global.postgresql.service "port" }}
-      {{- $port = .Values.global.postgresql.service.port | toString }}
-    {{- end }}
+{{- if hasKey .Values "service" }}
+  {{- if hasKey .Values.service "port" }}
+    {{- $port = .Values.service.port | toString }}
   {{- end }}
 {{- end }}
 {{- $port -}}
