@@ -15,9 +15,11 @@ Define the internal port for redis
 */}}
 {{- define "redis.internal.port" -}}
 {{- $port := "6379" }}
-{{- if hasKey .Values "service" }}
-  {{- if hasKey .Values.service "port" }}
-    {{- $port = .Values.service.port | toString }}
+{{- if hasKey .Values.global "redis" }}
+  {{- if hasKey .Values.global.redis "service" }}
+    {{- if hasKey .Values.global.redis.service "port" }}
+      {{- $port = .Values.global.redis.service.port | toString }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $port -}}
