@@ -32,6 +32,21 @@ global:
     ## The password for authenticating to the registry
     # password: ""
 
+  ## This section configures whether to use an external postgresql database.
+  postgresql:
+    ## Specifies whether to use an external PostgreSQL instance or a built-in one
+    external: false
+    ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
+    host: ""
+    ## Port on which the PostgreSQL database is running. Default is usually 5432.
+    port: ""
+    ## Name of the database to connect to.
+    database: ""
+    ## Username for authenticating with the PostgreSQL database.
+    username: ""
+    ## Password for the PostgreSQL user specified above.
+    password: ""
+
   ## The following is a unified object storage configuration.
   ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
   ## If you use external object storage, make sure the bucket has been created.
@@ -65,15 +80,24 @@ global:
       # registry: "csghub-registry"
 
   deployment:
+    ## Enable or disable the deployment of this application.
     enabled: true
+    ## Name of the Kubernetes Secret to be used for configuration or credentials.
     kubeSecret: "kube-configs"
+    ## Kubernetes namespace where the deployment will be created.
     namespace: "spaces"
     knative:
       serving:
+        ## Configuration for Knative serving services.
         services:
+          ## Definition of a specific Knative service.
+          ## The name of the service.
           - name: example-service-1
+            ## The hostname through which the service can be accessed.
             host: "app.internal"
+            ## The IP address assigned to the service.
             ip: "192.168.8.3"
+            ## The port on which the service is exposed.
             port: "30213"
 
 
