@@ -15,10 +15,10 @@ Define the internal port for minio
 */}}
 {{- define "minio.internal.port" -}}
 {{- $port := "9000" }}
-{{- if hasKey .Values.global "minio" }}
-  {{- if hasKey .Values.global.minio "service" }}
-    {{- if hasKey .Values.global.minio.service "port" }}
-      {{- $port = .Values.global.minio.service.port | toString }}
+{{- if hasKey .Values "service" }}
+  {{- if hasKey .Values.service "ports" }}
+    {{- if hasKey .Values.service.ports "api" }}
+      {{- $port = .Values.service.ports.api | toString }}
     {{- end }}
   {{- end }}
 {{- end }}
