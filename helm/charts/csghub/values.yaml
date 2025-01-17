@@ -65,8 +65,17 @@ global:
       # registry: "csghub-registry"
 
   deployment:
+    enabled: true
     kubeSecret: "kube-configs"
     namespace: "spaces"
+    knative:
+      serving:
+        services:
+          - name: example-service-1
+            host: "app.internal"
+            ip: "192.168.8.3"
+            port: "30213"
+
 
 
 
