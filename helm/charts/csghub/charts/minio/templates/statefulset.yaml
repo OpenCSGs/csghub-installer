@@ -46,7 +46,7 @@ spec:
       {{- end }}
       containers:
         - name: minio
-          image: {{ .Values.images.prefix}}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: ["server", "/data", "--console-address", ":9001"]
           ports:

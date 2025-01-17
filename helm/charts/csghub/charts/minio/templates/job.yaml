@@ -31,12 +31,12 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-minio
-          image: {{ .Values.images.prefix }}/busybox:latest
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until wget --spider {{ include "minio.internal.endpoint" . }}/minio/health/live; do echo 'Wait for minio to be ready'; sleep 2; done" ]
       containers:
         - name: mc
-          image: {{ .Values.images.prefix }}/minio/mc:RELEASE.2024-06-01T15-03-35Z
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/minio/mc:RELEASE.2024-06-01T15-03-35Z
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["/bin/bash", "/scripts/initialize.sh"]
           envFrom:
