@@ -15,9 +15,11 @@ Define the internal port for gitaly
 */}}
 {{- define "gitaly.internal.port" -}}
 {{- $port := "8075" }}
-{{- if hasKey .Values "service" }}
-  {{- if hasKey .Values.service "port" }}
-    {{- $port = .Values.service.port | toString }}
+{{- if hasKey .Values.global "gitaly" }}
+  {{- if hasKey .Values.global.gitaly "service" }}
+    {{- if hasKey .Values.global.gitaly.service "port" }}
+      {{- $port = .Values.global.gitaly.service.port | toString }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $port -}}
