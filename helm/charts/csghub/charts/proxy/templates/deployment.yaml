@@ -1,0 +1,146 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.global.deployment.enabled }}
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - {{ include "coredns.csghub" . }}
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      {{- end }}
+      containers:
+        - name: proxy
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub start rproxy" ]
+          ports:
+            - containerPort: 8083
+              name: proxy
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
+            {{- if not .Values.global.redis.external }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
+          env:
+            {{- if not .Values.global.redis.external }}
+            - name: STARHUB_SERVER_REDIS_PASSWORD
+              value: "$(REDIS_PASSWD)"
+            {{- end }}
+            - name: STARHUB_SERVER_SPACE_SESSION_SECRET_KEY
+              value: {{ sha256sum .Release.Name | trunc 32 | quote }}
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
+            {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+            - name: STARHUB_SERVER_ENABLE_HTTPS
+              value: "true"
+            {{- end }}
+            {{- with .Values.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8083
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.podSecurityContext | toYaml | nindent 12 }}
+        - name: nginx
+          image:  {{ or .Values.global.images.prefix .Values.images.prefix }}/nginx:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
+          ports:
+            - containerPort: 80
+              name: proxy-nginx
+              protocol: TCP
+            {{- with .Values.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: false
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "common.names.custom" . }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
