@@ -67,17 +67,12 @@ global:
       # encrypt: ""
       ## Indicates whether to use path-style requests
       # pathStyle: ""
-    buckets: { }
-      ## These are the bucket names you wish to create or utilize in the object storage
-      ## Bucket for csghub-portal data storage
-      # portal: "csghub-portal"
-      ## Bucket for csghub-server data storage
-      # server: "csghub-server"
-      ## Bucket for gitaly lfs data storage
-      # git: "csghub-git"
-      ## Bucket for distribution registry data storage
-      ## If the built-in registry is not enabled, no configuration is required
-      # registry: "csghub-registry"
+      ## By default (in the case of comments), the following bucket is used:
+      ##   - csghub-portal
+      ##   - csghub-server
+      ##   - csghub-git
+      ##   - csghub-registry
+      # bucket: ""
 
   deployment:
     ## Enable or disable the deployment of this application.
