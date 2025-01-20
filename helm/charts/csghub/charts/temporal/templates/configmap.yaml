@@ -11,13 +11,13 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
-    resource.dependencies/deployments: >
+    resource.dependencies/deployments: |
       {{ include "common.names.custom" . }}
 data:
   DB: "postgres12"
   DEFAULT_NAMESPACE_RETENTION: "7d"
   DBNAME: {{ include "csghub.postgresql.database" . }}
-  DB_PORT: {{ include "csghub.postgresql.port" . }}
+  DB_PORT: {{ include "csghub.postgresql.port" . | quote }}
   POSTGRES_SEEDS: {{ include "csghub.postgresql.host" . }}
   {{- $user := include "csghub.postgresql.user" . }}
   POSTGRES_USER: {{ include "csghub.postgresql.user" . }}

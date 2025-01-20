@@ -11,7 +11,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
-    resource.dependencies/statefulsets: >
+    resource.dependencies/statefulsets: |
       {{ include "common.names.custom" . }}
 data:
   .gitlab_shell_secret: {{ include "gitaly.internal.token" . }}

@@ -18,18 +18,18 @@ Define the internal port for temporal
 {{- if hasKey .Values.global "temporal" }}
   {{- if hasKey .Values.global.temporal "service" }}
     {{- if hasKey .Values.global.temporal.service "port" }}
-      {{- $port = .Values.global.temporal.service.port | toString }}
+      {{- $port = .Values.global.temporal.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*
 Define the internal endpoint for temporal
 */}}
 {{- define "temporal.internal.endpoint" -}}
-{{- printf "%s:%s" (include "temporal.internal.domain" .) (include "temporal.internal.port" .) }}
+{{- printf "%s:%s" (include "temporal.internal.domain" .) (include "temporal.internal.port" .) -}}
 {{- end }}
 
 {{/*

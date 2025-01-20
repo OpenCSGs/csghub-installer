@@ -11,7 +11,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
-    resource.dependencies/deployments: >
+    resource.dependencies/deployments: |
       {{ include "common.names.custom" . }}
       {{ include "common.names.custom" (list . "portal") }}
       {{ include "common.names.custom" (list . "user") }}

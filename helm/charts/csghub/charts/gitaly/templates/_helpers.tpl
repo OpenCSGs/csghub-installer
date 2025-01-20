@@ -18,23 +18,23 @@ Define the internal port for gitaly
 {{- if hasKey .Values.global "gitaly" }}
   {{- if hasKey .Values.global.gitaly "service" }}
     {{- if hasKey .Values.global.gitaly.service "port" }}
-      {{- $port = .Values.global.gitaly.service.port | toString }}
+      {{- $port = .Values.global.gitaly.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*
 Define the internal token for gitaly
 */}}
 {{- define "gitaly.internal.token" -}}
-{{- printf "%s@1234!" .Release.Name | b64enc }}
+{{- printf "%s@1234!" .Release.Name | b64enc -}}
 {{- end }}
 
 {{/*
 Define the internal endpoint for gitaly
 */}}
 {{- define "gitaly.internal.endpoint" -}}
-{{- printf "http://%s:%s" (include "gitaly.internal.domain" .) (include "gitaly.internal.port" .) }}
+{{- printf "http://%s:%s" (include "gitaly.internal.domain" .) (include "gitaly.internal.port" .) -}}
 {{- end }}

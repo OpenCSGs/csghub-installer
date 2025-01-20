@@ -18,18 +18,18 @@ Define the internal port for minio
 {{- if hasKey .Values.global "minio" }}
   {{- if hasKey .Values.global.minio "service" }}
     {{- if hasKey .Values.global.minio.service "port" }}
-      {{- $port = .Values.global.minio.service.port | toString }}
+      {{- $port = .Values.global.minio.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*
 Define the internal endpoint for minio
 */}}
 {{- define "minio.internal.endpoint" -}}
-{{- printf "http://%s:%s" (include "minio.internal.domain" .) (include "minio.internal.port" .) }}
+{{- printf "http://%s:%s" (include "minio.internal.domain" .) (include "minio.internal.port" .) -}}
 {{- end }}
 
 {{/*
