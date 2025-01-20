@@ -20,6 +20,9 @@ data:
     {{- if $secretData }}
     {{- $password = index $secretData $username | b64dec }}
     {{- end }}
+    {{- if contains "temporal" $database }}
+    {{- $username = "csghub_temporal" }}
+    {{- end }}
     -- Create database {{ $database }} owner {{ $username }}
     CREATE USER {{ $username | quote }} WITH ENCRYPTED PASSWORD {{ $password | squote }} CREATEDB;
     CREATE DATABASE {{ $database }} ENCODING 'UTF-8' OWNER {{ $username | quote }};
