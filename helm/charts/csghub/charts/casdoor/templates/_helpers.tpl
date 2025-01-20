@@ -67,13 +67,13 @@ Define postgresql dsn for casdoor
 {{- if not .Values.global.postgresql.external }}
 {{- $host := include "postgresql.internal.domain" . }}
 {{- $port := include "postgresql.internal.port" . }}
-{{- $database := "casdoor" }}
+{{- $database := "csghub_casdoor" }}
 {{- $user := $database }}
 {{- $password := include "postgresql.initPass" $database }}
 {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
 {{- if $secretData }}
-{{- $password = index $secretData "casdoor" | b64dec }}
+{{- $password = index $secretData "csghub_casdoor" | b64dec }}
 {{- end }}
 {{- $postgres_dsn = (printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database) }}
 {{- else }}

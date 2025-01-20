@@ -42,8 +42,9 @@ parameters: { }
 databases:
   - csghub_portal
   - csghub_server
-  - casdoor
-  - temporal
+  - csghub_casdoor
+  - csghub_temporal
+  - csghub_temporal_visibility
 
 ## Persistence settings for the PostgreSQL data.
 persistence:

@@ -67,14 +67,14 @@ spec:
             - name: PGPORT
               value: {{ include "postgresql.internal.port" . | quote }}
             - name: PGDATABASE
-              value: "casdoor"
+              value: "csghub_casdoor"
             - name: PGUSER
-              value: "casdoor"
+              value: "csghub_casdoor"
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "common.names.custom" (list . "postgresql") }}
-                  key: "casdoor"
+                  key: "csghub_casdoor"
             {{- else }}
             {{- with .Values.global.postgresql }}
             - name: PGHOST
