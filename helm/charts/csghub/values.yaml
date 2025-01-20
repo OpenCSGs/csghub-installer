@@ -1,7 +1,7 @@
 ## All modifications in this configuration file are only performed under global configuration block.
 ## Any configuration outside global configuration block is an automatic adaptation configuration and should not be modified.
 
-## Global configuration
+## Global configuration will override subChart's configuration
 global:
   images:
     pullSecrets: [ ]
@@ -23,29 +23,42 @@ global:
   registry:
     ## Indicates whether the registry is external (true) or internal (false)
     external: false
-    ## The URL of the Docker registry service; default is Docker Hub
-    # repository: "docker.io"
-    ## The namespace (or organization) under which the images are stored in the registry
-    # namespace: "csghub"
-    ## The username for authenticating to the registry
-    # username: ""
-    ## The password for authenticating to the registry
-    # password: ""
+    connection: { }
+      ## The URL of the Docker registry service; default is Docker Hub
+      # repository: "docker.io"
+      ## The namespace (or organization) under which the images are stored in the registry
+      # namespace: "csghub"
+      ## The username for authenticating to the registry
+      # username: ""
+      ## The password for authenticating to the registry
+      # password: ""
 
   ## This section configures whether to use an external postgresql database.
   postgresql:
     ## Specifies whether to use an external PostgreSQL instance or a built-in one
     external: false
-    ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
-    host: ""
-    ## Port on which the PostgreSQL database is running. Default is usually 5432.
-    port: ""
-    ## Name of the database to connect to.
-    database: ""
-    ## Username for authenticating with the PostgreSQL database.
-    username: ""
-    ## Password for the PostgreSQL user specified above.
-    password: ""
+    connection: { }
+      ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
+      # host: ""
+      ## Port on which the PostgreSQL database is running. Default is usually 5432.
+      # port: ""
+      ## Prefix of the database to connect to.
+      ## Priority:
+      ##       postgresql.database > subChart.postgresql{}
+      ## This method will store all metadata data in the same database, which is not recommended,
+      ##   as it may cause data table conflicts.
+      ## The recommended way is to comment this parameter and use the default database:
+      ##   - csghub_portal
+      ##   - csghub_server
+      ##   - csghub_casdoor
+      ##   - csghub_temporal
+      ##   - csghub_temporal_visibility
+      ## Please make sure that the above databases have been created
+      # database: ""
+      ## Username for authenticating with the PostgreSQL database.
+      # user: ""
+      ## Password for the PostgreSQL user specified above.
+      # password: ""
 
   ## The following is a unified object storage configuration.
   ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.

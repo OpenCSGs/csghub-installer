@@ -64,22 +64,15 @@ Define postgresql dsn for casdoor
 */}}
 {{- define "casdoor.postgresql.dsn" -}}
 {{- $postgres_dsn := "" }}
-{{- if not .Values.global.postgresql.external }}
-{{- $host := include "postgresql.internal.domain" . }}
-{{- $port := include "postgresql.internal.port" . }}
-{{- $database := "csghub_casdoor" }}
-{{- $user := $database }}
-{{- $password := include "postgresql.initPass" $database }}
+{{- $host := include "csghub.postgresql.host" . }}
+{{- $port := include "csghub.postgresql.port" . | trimAll "\"" }}
+{{- $database := include "csghub.postgresql.database" . }}
+{{- $user := include "csghub.postgresql.user" . }}
+{{- $password := or (include "csghub.postgresql.password" .) (include "postgresql.initPass" $database) }}
 {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
 {{- if $secretData }}
-{{- $password = index $secretData "csghub_casdoor" | b64dec }}
+{{- $password = index $secretData $user | b64dec }}
 {{- end }}
-{{- $postgres_dsn = (printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database) }}
-{{- else }}
-{{- with .Values.global.postgresql }}
-{{- $postgres_dsn = (printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" .username .password .host .port .database) }}
-{{- end }}
-{{- end }}
-{{- $postgres_dsn -}}
+{{- printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database -}}
 {{- end }}

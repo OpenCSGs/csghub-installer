@@ -59,36 +59,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ .Values.images.prefix }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
-          env:
-            {{- if not .Values.global.postgresql.external }}
-            - name: PGHOST
-              value: {{ include "postgresql.internal.domain" . }}
-            - name: PGPORT
-              value: {{ include "postgresql.internal.port" . | quote }}
-            - name: PGDATABASE
-              value: "csghub_casdoor"
-            - name: PGUSER
-              value: "csghub_casdoor"
-            - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common.names.custom" (list . "postgresql") }}
-                  key: "csghub_casdoor"
-            {{- else }}
-            {{- with .Values.global.postgresql }}
-            - name: PGHOST
-              value: {{ .host }}
-            - name: PGPORT
-              value: {{ .port | quote }}
-            - name: PGDATABASE
-              value: {{ .database }}
-            - name: PGUSER
-              value: {{ .username }}
-            - name: PGPASSWORD
-              value: {{ .password }}
-            {{- end }}
-            {{- end }}
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "casdoor.postgresql.dsn" . }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: casdoor
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}

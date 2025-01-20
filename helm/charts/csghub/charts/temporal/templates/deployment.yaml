@@ -43,39 +43,24 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
+        - name: wait-for-postgresqlwait-for-postgresql
           image: {{ .Values.images.prefix }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
           env:
-            {{- if not .Values.global.postgresql.external }}
             - name: PGHOST
-              value: {{ include "postgresql.internal.domain" . }}
+              value: "$(POSTGRES_SEEDS)"
             - name: PGPORT
-              value: {{ include "postgresql.internal.port" . | quote }}
+              value: "$(DB_PORT)"
             - name: PGDATABASE
-              value: "csghub_temporal"
+              value: "$(DBNAME)"
             - name: PGUSER
-              value: "csghub_temporal"
+              value: "$(POSTGRES_USER)"
             - name: PGPASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common.names.custom" (list . "postgresql") }}
-                  key: "csghub_temporal"
-            {{- else }}
-            {{- with .Values.global.postgresql }}
-            - name: PGHOST
-              value: {{ .host }}
-            - name: PGPORT
-              value: {{ .port | quote }}
-            - name: PGDATABASE
-              value: {{ .database }}
-            - name: PGUSER
-              value: {{ .username }}
-            - name: PGPASSWORD
-              value: {{ .password }}
-            {{- end }}
-            {{- end }}
+              value: "$(POSTGRES_PWD)"
       containers:
         - name: temporal
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -91,17 +76,13 @@ spec:
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
             {{- end }}
+          {{- with .Values.environments }}
           env:
-            {{- if not .Values.global.postgresql.external }}
-            - name: POSTGRES_PWD
-              value: "$(csghub_temporal)"
-            {{- end }}
-            {{- with .Values.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- end }}
+          {{- end }}
           resources:
             {{- .Values.resources | toYaml | nindent 12 }}
           livenessProbe:
