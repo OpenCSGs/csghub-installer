@@ -43,7 +43,7 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresqlwait-for-postgresql
+        - name: wait-for-postgresql
           image: {{ .Values.images.prefix }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
