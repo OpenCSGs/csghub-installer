@@ -16,20 +16,17 @@ metadata:
 data:
   DB: "postgres12"
   DEFAULT_NAMESPACE_RETENTION: "7d"
-  {{- if not .Values.global.postgresql.external }}
-  DBNAME: "csghub_temporal"
-  DB_PORT: {{ include "postgresql.internal.port" . | quote }}
-  POSTGRES_SEEDS: {{ include "postgresql.internal.domain" . }}
-  POSTGRES_USER: "csghub_temporal"
-  VISIBILITY_DBNAME: "csghub_temporal_visibility"
-  {{- else }}
-  {{- with .Values.global.postgresql }}
-  DBNAME: {{ .database }}
-  DB_PORT: {{ .port | quote }}
-  POSTGRES_SEEDS: {{ .host }}
-  POSTGRES_USER: {{ .username }}
-  POSTGRES_PWD: {{ .password }}
-  VISIBILITY_DBNAME: {{ printf "%s_visibility" .database }}
+  DBNAME: {{ include "csghub.postgresql.database" . }}
+  DB_PORT: {{ include "csghub.postgresql.port" . }}
+  POSTGRES_SEEDS: {{ include "csghub.postgresql.host" . }}
+  {{- $user := include "csghub.postgresql.user" . }}
+  POSTGRES_USER: {{ include "csghub.postgresql.user" . }}
+  {{- $password := include "postgresql.initPass" $user }}
+  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
+  {{- if $secretData }}
+  {{- $password = index $secretData $user | b64dec }}
   {{- end }}
-  {{- end }}
+  POSTGRES_PWD: {{ or (include "csghub.postgresql.password" .) $password }}
+  VISIBILITY_DBNAME: {{ printf "%s_visibility" (include "csghub.postgresql.database" .) }}
 {{- end }}
