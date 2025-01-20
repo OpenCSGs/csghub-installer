@@ -38,7 +38,7 @@ Define the port for csghub postgresql
 {{- end }}
 {{- end }}
 {{- end }}
-{{- $port | quote -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*

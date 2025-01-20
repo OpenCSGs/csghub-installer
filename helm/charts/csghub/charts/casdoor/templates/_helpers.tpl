@@ -18,18 +18,18 @@ Define the internal port for casdoor
 {{- if hasKey .Values.global "casdoor" }}
   {{- if hasKey .Values.global.casdoor "service" }}
     {{- if hasKey .Values.global.casdoor.service "port" }}
-      {{- $port = .Values.global.casdoor.service.port | toString }}
+      {{- $port = .Values.global.casdoor.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*
 Define the internal endpoint for casdoor
 */}}
 {{- define "casdoor.internal.endpoint" -}}
-{{- printf "http://%s:%s" (include "casdoor.internal.domain" .) (include "casdoor.internal.port" .) }}
+{{- printf "http://%s:%s" (include "casdoor.internal.domain" .) (include "casdoor.internal.port" .) -}}
 {{- end }}
 
 {{/*
@@ -65,7 +65,7 @@ Define postgresql dsn for casdoor
 {{- define "casdoor.postgresql.dsn" -}}
 {{- $postgres_dsn := "" }}
 {{- $host := include "csghub.postgresql.host" . }}
-{{- $port := include "csghub.postgresql.port" . | trimAll "\"" }}
+{{- $port := include "csghub.postgresql.port" . }}
 {{- $database := include "csghub.postgresql.database" . }}
 {{- $user := include "csghub.postgresql.user" . }}
 {{- $password := or (include "csghub.postgresql.password" .) (include "postgresql.initPass" $database) }}

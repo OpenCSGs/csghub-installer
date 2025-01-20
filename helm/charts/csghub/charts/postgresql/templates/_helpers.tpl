@@ -18,11 +18,11 @@ Define the internal port for postgresql
 {{- if hasKey .Values.global "postgresql" }}
   {{- if hasKey .Values.global.postgresql "service" }}
     {{- if hasKey .Values.global.postgresql.service "port" }}
-      {{- $port = .Values.global.postgresql.service.port | toString }}
+      {{- $port = .Values.global.postgresql.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*

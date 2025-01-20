@@ -18,18 +18,18 @@ Define the internal port for gitlab-shell
 {{- if hasKey .Values.global "gitlabShell" }}
   {{- if hasKey .Values.global.gitlabShell "service" }}
     {{- if hasKey .Values.global.gitlabShell.service "port" }}
-      {{- $port = .Values.global.gitlabShell.service.port | toString }}
+      {{- $port = .Values.global.gitlabShell.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
-{{- $port -}}
+{{- $port | toString -}}
 {{- end }}
 
 {{/*
 Define the internal endpoint for gitlab-shell
 */}}
 {{- define "gitlab-shell.internal.endpoint" -}}
-{{- printf "http://%s:%s" (include "gitlab-shell.internal.domain" .) (include "gitlab-shell.internal.port" .) }}
+{{- printf "http://%s:%s" (include "gitlab-shell.internal.domain" .) (include "gitlab-shell.internal.port" .) -}}
 {{- end }}
 
 {{/*

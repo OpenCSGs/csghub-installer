@@ -59,6 +59,21 @@ global:
       # user: ""
       ## Password for the PostgreSQL user specified above.
       # password: ""
+      ## Timezone for PostgreSQL
+      # timezone: "Asia/Shanghai"
+
+  ## This section configures whether to use an external redis cache.
+  redis:
+    ## Set to false to use internal Redis service
+    external: false
+    ## Redis connection configuration
+    connection: { }
+      ## Host for accessing Redis
+      # host: ""
+      ## Port for accessing Redis
+      # port: ""
+      ## Password for accessing Redis
+      # password: ""
 
   ## The following is a unified object storage configuration.
   ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
@@ -102,13 +117,8 @@ global:
           ## The name of the service.
           - name: example-service-1
             ## The hostname through which the service can be accessed.
-            host: "app.internal"
+            domain: "app.internal"
             ## The IP address assigned to the service.
-            ip: "192.168.8.3"
+            host: "192.168.8.3"
             ## The port on which the service is exposed.
             port: "30213"
-
-
-
-
-
