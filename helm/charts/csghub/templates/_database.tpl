@@ -97,3 +97,22 @@ Define the password for csghub postgresql
 {{- end }}
 {{- $password -}}
 {{- end }}
+
+{{/*
+Define the timezone for csghub postgresql
+*/}}
+{{- define "csghub.postgresql.timezone" -}}
+{{- $timezone := .Values.postgresql.timezone }}
+{{- if hasKey .Values.global "postgresql" }}
+{{- if hasKey .Values.global.postgresql "external" }}
+{{- if .Values.global.postgresql.external }}
+{{- if hasKey .Values.global.postgresql "connection" }}
+{{- if hasKey .Values.global.postgresql.connection "timezone" }}
+{{- $timezone = .Values.global.postgresql.connection.timezone }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $timezone -}}
+{{- end }}
