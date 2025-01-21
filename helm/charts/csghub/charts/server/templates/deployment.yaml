@@ -46,7 +46,7 @@ spec:
         - name: wait-for-redis
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/redis:7.2.5
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "redis-cli", "-h", "{{ include "csghub.redis.host" . }}", "-p", "{{ include "csghub.redis.port" . }}", "ping" ]
+          command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
