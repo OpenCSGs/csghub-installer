@@ -12,7 +12,7 @@ Define the repository for csghub registry
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
 {{- if hasKey .Values.global.registry "connection" }}
-{{- if hasKey .Values.global.registry.connection "host" }}
+{{- if hasKey .Values.global.registry.connection "repository" }}
 {{- $repository = .Values.global.registry.connection.repository }}
 {{- end }}
 {{- end }}
