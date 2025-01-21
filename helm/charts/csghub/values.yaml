@@ -4,8 +4,14 @@
 ## Global configuration will override subChart's configuration
 global:
   images:
+    ## List of Kubernetes secrets to use for pulling images (e.g., for private registry).
     pullSecrets: [ ]
-    prefix: ""
+    ## Specify path prefix of images, no need to add the final slash `/`
+    ## eg: docker.io/minio/minio:latest ==> {{ prefix }}/minio/minio:latest
+    # prefix: ""
+    ## Globally specify the image version to be used by csghub_server.
+    ## Example: latest, v1.0.0, etc.
+    # tag: ""
 
   ingress:
     domain: example.com
