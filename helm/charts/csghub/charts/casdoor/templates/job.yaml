@@ -57,7 +57,7 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: psql
-          image: {{ .Values.images.prefix }}/opencsg/psql:latest
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
           env:

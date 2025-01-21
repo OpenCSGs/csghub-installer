@@ -57,7 +57,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ .Values.images.prefix }}/opencsg/psql:latest
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "casdoor.postgresql.dsn" . }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:

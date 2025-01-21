@@ -101,7 +101,7 @@ spec:
           securityContext:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
         - name: nginx
-          image:  {{ or .Values.global.images.prefix .Values.images.prefix }}/nginx:latest
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/nginx:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
           ports:
