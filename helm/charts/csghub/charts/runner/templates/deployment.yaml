@@ -97,6 +97,8 @@ spec:
               value: {{ include "common.names.custom" (list . "runner-docker-config") }}
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
+            - name: STARHUB_SERVER_ARGO_S3_PUBLIC_BUCKET
+              value: {{ include "csghub.objectStore.bucket" . }}
             {{- if not .Values.global.objectStore.external }}
             - name: STARHUB_SERVER_S3_ACCESS_KEY_ID
               value: "$(MINIO_ROOT_USER)"

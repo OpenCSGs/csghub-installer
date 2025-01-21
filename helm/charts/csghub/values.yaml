@@ -90,16 +90,16 @@ global:
       ## The secret key used for authentication
       # accessSecret: ""
       ## The location used for authentication
-      # region: ""
+      # region: "cn-north-1"
       ## Indicates whether to encrypt data in transit
-      # encrypt: ""
+      # encrypt: "true"
       ## Indicates whether to use path-style requests
-      # pathStyle: ""
+      # pathStyle: "true"
       ## By default (in the case of comments), the following bucket is used:
       ##   - csghub-portal
       ##   - csghub-server
-      ##   - csghub-git
       ##   - csghub-registry
+      ##   - csghub-workflow
       # bucket: ""
 
   deployment:
