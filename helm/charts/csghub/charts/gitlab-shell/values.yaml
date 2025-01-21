@@ -45,9 +45,9 @@ persistence:
 
 serviceAccount:
   ## Determines whether a service account should be created.
-  create: false
+  create: true
   ## Controls whether the service account token should be automatically mounted.
-  automount: false
+  automount: true
   ## Allows for annotations to be added to the service account.
   annotations: {}
 
