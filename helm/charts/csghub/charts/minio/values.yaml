@@ -56,7 +56,6 @@ buckets:
   defaults:
     - csghub-portal
     - csghub-server
-    - csghub-git
     - csghub-registry
 
 ## Persistence settings for the Minio data.
