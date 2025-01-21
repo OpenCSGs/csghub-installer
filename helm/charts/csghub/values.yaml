@@ -13,14 +13,18 @@ global:
     ## Example: latest, v1.0.0, etc.
     # tag: ""
 
+  ## Define the access domain name of csghub and whether to enable encrypted access.
   ingress:
+    ## Ideally, it is best to have a registered domain name, +
+    ## because local domain names may require some additional configuration
     domain: example.com
-    ## According to the characteristics of the program,
-    ##   it is not allowed to configure whether to enable TLS for each subChart separately,
-    ##   but subCharts are allowed to define their own TLS secretName.
+    ## According to the characteristics of the program, +
+    ## it is not allowed to configure whether to enable TLS for each subChart separately, +
+    ## but subCharts are allowed to define their own TLS secretName.
     tls: { }
       # enabled: false
-      ## Specify the tls secret containing the wildcard domain name certificate.
+      ## Specify the tls secret containing the wildcard domain name certificate. +
+      ## You need to prepare certificates and create TLS secrets yourself.
       # secretName: ""
     service:
       type: LoadBalancer
@@ -108,6 +112,8 @@ global:
       ##   - csghub-workflow
       # bucket: ""
 
+  ## This section of configuration is used to integrate k8s to run various instances, +
+  ## such as Space applications, fine-tuning, and inference instances.
   deployment:
     ## Enable or disable the deployment of this application.
     enabled: true
@@ -115,6 +121,8 @@ global:
     kubeSecret: "kube-configs"
     ## Kubernetes namespace where the deployment will be created.
     namespace: "spaces"
+    ## csghub uses knative serving to assist in instance construction, |
+    ## so if this function is required, you need to configure the following information
     knative:
       serving:
         ## Configuration for Knative serving services.
@@ -129,14 +137,34 @@ global:
             ## The port on which the service is exposed.
             port: "30213"
 
+## In order to make the maintenance of csghub helm easier, the official ingress-nginx is directly referenced here as a subChart.
+## This section of configuration is added for better adaptation, but this section of configuration is not within your modification scope.
+## Unless you know what you are doing, please do not modify this section of configuration.
+## PLEASE DO NOT UPDATE!!!
 ingress-nginx:
+  ## Enable the NGINX Ingress Controller
   enabled: true
+  ## TCP services configuration
   tcp:
+    ## Forward TCP traffic on port 22 to the specified service
     22: csghub/csghub-gitlab-shell:22
+  ## NGINX Ingress Controller configuration
   controller:
+    ## Configuration settings for the Ingress Controller
+    config:
+      ## Set the risk level for annotations; critical indicates high risk
+      annotations-risk-level: Critical
+    ## Allow the use of server snippets in annotations
+    allowSnippetAnnotations: true
+    ## Configuration for the service exposed by the Ingress Controller
     service:
+      ## Node ports for HTTP and HTTPS traffic
       nodePorts:
+        ## Node port for HTTP traffic
         http: 30080
+        ## Node port for HTTPS traffic
         https: 30443
+        ## Node port for TCP traffic
         tcp:
+          ## Node port for TCP traffic on port 22
           22: 30022
