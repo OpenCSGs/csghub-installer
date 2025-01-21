@@ -65,7 +65,7 @@ data:
   STARHUB_SERVER_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   STARHUB_SERVER_S3_REGION: {{ include "csghub.objectStore.region" . }}
   {{- if eq (include "csghub.objectStore.pathStyle" .) "true" }}
-  STARHUB_SERVER_S3_BUCKET_LOOKUP: "true"
+  STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
   {{- else }}
   STARHUB_SERVER_S3_BUCKET_LOOKUP: "auto"
   {{- end }}
