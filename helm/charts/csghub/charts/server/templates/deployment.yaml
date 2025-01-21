@@ -44,7 +44,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-redis
-          image:  {{ or .Values.global.images.prefix .Values.images.prefix }}/redis:7.2.5
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/redis:7.2.5
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "redis-cli", "-h", "{{ include "csghub.redis.host" . }}", "-p", "{{ include "csghub.redis.port" . }}", "ping" ]
           envFrom:
