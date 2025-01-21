@@ -42,6 +42,24 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       initContainers:
+        - name: wait-for-postgresql
+          image:  {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+          env:
+            - name: PGHOST
+              value: "$(STARHUB_DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(STARHUB_DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(STARHUB_DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(STARHUB_DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(STARHUB_DATABASE_PASSWORD)"
         - name: wait-for-server
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
