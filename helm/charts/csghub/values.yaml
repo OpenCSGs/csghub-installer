@@ -168,3 +168,50 @@ ingress-nginx:
         tcp:
           ## Node port for TCP traffic on port 22
           22: 30022
+
+## More subChart configuration mappings are omitted here.
+## Under normal circumstances, these configurations are not necessary.
+## If necessary, you can check which parameters the subChart can configure and modify them.
+## However, it should be noted that the current `autoscaling` is not adapted.
+
+## The following configuration is just an example. Normally, +
+## no modification is required and the default configuration will be applied.
+
+## For Gitaly
+gitaly:
+  enabled: true
+  ## Log output level
+  logging:
+    level: "info"
+  ## Persistence settings for the Gitaly data.
+  persistence:
+    ## Specifies the StorageClass used for provisioning the volume.
+    ## An empty value means the default StorageClass is used.
+    ## StorageClass defines the type of storage used and can affect performance and cost.
+    storageClass: ""
+    ## Defines the access modes of the volume.
+    ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+    ## This is suitable for most use cases where a single instance of Gitaly is running.
+    accessMode: [ "ReadWriteOnce" ]
+    ## Specifies the size of the persistent volume.
+    ## This should be adjusted based on expected usage and data growth over time.
+    size: 200Gi
+
+## For PostgreSQL
+postgresql:
+  ## Specify the database parameters that need to be optimized here.
+  ## Under normal circumstances, the configuration can be automatically applied.
+  parameters: { }
+  ## List of databases to be created upon deployment
+  # databases:
+  #   - csghub_portal
+  #   - csghub_server
+  #   - casdoor
+  #   - temporal
+
+## For Minio
+minio:
+  ## Specify the bucket to be created and whether to enable version control.
+  buckets:
+    ## Default `true`
+    versioning: true
