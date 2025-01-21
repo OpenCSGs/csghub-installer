@@ -15,7 +15,7 @@ image:
   ## Specifies the location of the Accounting Docker image in the Accounting.
   repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server_ee
   ## Defines the specific version of the Accounting image to use.
-  # tag: v1.2.0
+  # tag: "v1.3.0"
   ## Determines how the image should be pulled from the Accounting.
   pullPolicy: "IfNotPresent"
 

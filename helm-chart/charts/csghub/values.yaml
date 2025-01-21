@@ -577,7 +577,7 @@ global:
       ## Specifies the location of the Runner Docker image in the Runner.
       repository: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/dataflow
       ## Defines the specific version of the Runner image to use.
-      tag: latest
+      tag: "v1.3.0"
     openAI: { }
       ## The endpoint URL for the OpenAI API.
       # endpoint: ""
