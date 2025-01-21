@@ -74,6 +74,10 @@ postgresql:
   ## It is empty by default for security reasons and should be set through secure means.
   password: ""
 
+authentication:
+  username: "temporal"
+  password: "Temporal@2025!"
+
 ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
 ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
 podAnnotations: {}
