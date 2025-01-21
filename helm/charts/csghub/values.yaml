@@ -128,3 +128,15 @@ global:
             host: "192.168.8.3"
             ## The port on which the service is exposed.
             port: "30213"
+
+ingress-nginx:
+  enabled: true
+  tcp:
+    22: csghub/csghub-gitlab-shell:22
+  controller:
+    service:
+      nodePorts:
+        http: 30080
+        https: 30443
+        tcp:
+          22: 30022
