@@ -24,18 +24,14 @@ data:
     mc admin service restart "$ALIAS" --quiet
 
     set +e
+    {{- $ARGS := "" }}
+    {{- if $.Values.buckets.versioning }}
+    {{- $ARGS = printf "--region=%s --ignore-existing --with-versioning" $REGION }}
+    {{- else }}
+    {{- $ARGS = printf "--region=%s --ignore-existing" $REGION }}
+    {{- end }}
     # Create buckets
     {{- range $BUCKET := .Values.buckets.defaults }}
-    if mc ls $ALIAS/{{ $BUCKET }} &>/dev/null; then
-      echo "Bucket \`$ALIAS/{{ $BUCKET }}\` already exists."
-    else
-      # Assemble the command for bucket creation
-      {{- printf "mc mb --region=%s $ALIAS/%s" $REGION $BUCKET | nindent 6 }}
-    fi
-    {{- end }}
-    {{- if .Values.buckets.versioning }}
-    {{- range $BUCKET := .Values.buckets.defaults }}
-    mc version enable $ALIAS/{{ $BUCKET }}
+    {{- printf "mc mb %s $ALIAS/%s" $ARGS $BUCKET | nindent 4 }}
     {{- end }}
     {{- end }}
-{{- end }}
