@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and .Values.enabled .Values.serviceAccount.create }}
+{{- if .Values.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -11,11 +11,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
-    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook: post-upgrade
     helm.sh/hook-weight: "1"
     helm.sh/hook-delete-policy: before-hook-creation
 spec:
-  ttlSecondsAfterFinished: 1200
+  ttlSecondsAfterFinished: 3600
   backoffLimit: 4
   activeDeadlineSeconds: 1200
   template:
@@ -23,10 +23,6 @@ spec:
       name: {{ include "common.names.custom" . }}
       labels: {{ include "common.labels" . | nindent 8 }}
     spec:
-      {{- if .Values.serviceAccount.create }}
-      serviceAccountName: {{ include "common.names.custom" . }}
-      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
-      {{- end }}
       restartPolicy: OnFailure
       {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
       imagePullSecrets:
@@ -40,14 +36,18 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until wget --spider {{ include "minio.internal.endpoint" . }}/minio/health/live; do echo 'Wait for minio to be ready'; sleep 2; done" ]
       containers:
-        - name: kubectl
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/bitnami/kubectl:latest
+        - name: mc
+          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/minio/mc:RELEASE.2024-06-01T15-03-35Z
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c" ]
-          args:
-            - |
-              kubectl patch configmap {{ printf "%s-ingress-nginx-tcp" .Release.Name }} \
-                --namespace {{ .Release.Namespace }} \
-                --type merge \
-                --patch '{"data":{"22":"{{ printf "%s/%s:22" .Release.Namespace (include "gitlab-shell.internal.domain" .) }}"}}'
+          command: ["/bin/bash", "/scripts/initialize.sh"]
+          envFrom:
+            - secretRef:
+                name: {{ include "common.names.custom" . }}
+          volumeMounts:
+            - name: init
+              mountPath: /scripts
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" . }}
 {{- end }}
