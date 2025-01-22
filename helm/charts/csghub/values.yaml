@@ -27,7 +27,8 @@ global:
       ## You need to prepare certificates and create TLS secrets yourself.
       # secretName: ""
     service:
-      type: LoadBalancer
+      ## `&type` is an internal anchor, do not delete it
+      type: &type LoadBalancer
 
   ## This section configures whether to use an external container image repository.
   registry:
@@ -205,6 +206,7 @@ ingress-nginx:
     allowSnippetAnnotations: true
     ## Configuration for the service exposed by the Ingress Controller
     service:
+      type: *type
       ## Node ports for HTTP and HTTPS traffic
       nodePorts:
         ## Node port for HTTP traffic
