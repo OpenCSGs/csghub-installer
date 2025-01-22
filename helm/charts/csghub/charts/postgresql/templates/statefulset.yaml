@@ -48,6 +48,7 @@ spec:
         - name: postgresql
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [ "-c", "config_file=/etc/postgresql/postgresql.conf" ]
           ports:
             - containerPort: 5432
               name: postgresql
@@ -82,6 +83,12 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/lib/postgresql/data
+            - name: config
+              mountPath: /etc/postgresql
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "common.names.custom" . }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
