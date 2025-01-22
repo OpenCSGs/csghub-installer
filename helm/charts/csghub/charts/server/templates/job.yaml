@@ -3,6 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if .Values.global.deployment.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -78,3 +79,4 @@ spec:
         - name: init
           configMap:
             name: {{ include "common.names.custom" (list . "server-init") }}
+{{- end }}
