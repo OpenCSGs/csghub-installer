@@ -76,7 +76,7 @@ postgresql:
 
 authentication:
   username: "temporal"
-  password: "Temporal@2025!"
+  password: ""
 
 ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
 ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
