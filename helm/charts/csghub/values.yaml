@@ -137,38 +137,6 @@ global:
             ## The port on which the service is exposed.
             port: "30213"
 
-## In order to make the maintenance of csghub helm easier, the official ingress-nginx is directly referenced here as a subChart.
-## This section of configuration is added for better adaptation, but this section of configuration is not within your modification scope.
-## Unless you know what you are doing, please do not modify this section of configuration.
-## PLEASE DO NOT UPDATE!!!
-ingress-nginx:
-  ## Enable the NGINX Ingress Controller
-  enabled: true
-  ## TCP services configuration
-  tcp:
-    ## Forward TCP traffic on port 22 to the specified service
-    22: csghub/csghub-gitlab-shell:22
-  ## NGINX Ingress Controller configuration
-  controller:
-    ## Configuration settings for the Ingress Controller
-    config:
-      ## Set the risk level for annotations; critical indicates high risk
-      annotations-risk-level: Critical
-    ## Allow the use of server snippets in annotations
-    allowSnippetAnnotations: true
-    ## Configuration for the service exposed by the Ingress Controller
-    service:
-      ## Node ports for HTTP and HTTPS traffic
-      nodePorts:
-        ## Node port for HTTP traffic
-        http: 30080
-        ## Node port for HTTPS traffic
-        https: 30443
-        ## Node port for TCP traffic
-        tcp:
-          ## Node port for TCP traffic on port 22
-          22: 30022
-
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
 ## If necessary, you can check which parameters the subChart can configure and modify them.
@@ -215,3 +183,111 @@ minio:
   buckets:
     ## Default `true`
     versioning: true
+
+## In order to make the maintenance of csghub helm easier, the official ingress-nginx is directly referenced here as a subChart.
+## This section of configuration is added for better adaptation, but this section of configuration is not within your modification scope.
+## Unless you know what you are doing, please do not modify this section of configuration.
+## PLEASE DO NOT UPDATE!!!
+ingress-nginx:
+  ## Enable the NGINX Ingress Controller
+  enabled: true
+  ## TCP services configuration
+  tcp:
+    ## Forward TCP traffic on port 22 to the specified service
+    22: csghub/csghub-gitlab-shell:22
+  ## NGINX Ingress Controller configuration
+  controller:
+    ## Configuration settings for the Ingress Controller
+    config:
+      ## Set the risk level for annotations; critical indicates high risk
+      annotations-risk-level: Critical
+    ## Allow the use of server snippets in annotations
+    allowSnippetAnnotations: true
+    ## Configuration for the service exposed by the Ingress Controller
+    service:
+      ## Node ports for HTTP and HTTPS traffic
+      nodePorts:
+        ## Node port for HTTP traffic
+        http: 30080
+        ## Node port for HTTPS traffic
+        https: 30443
+        ## Node port for TCP traffic
+        tcp:
+          ## Node port for TCP traffic on port 22
+          22: 30022
+
+## This section is used to configure how to collect pod logs in the current namespace.
+## By default, they are directly output to the fluentd standard output in json format.
+fluentd:
+  enabled: true
+  # Configuration for Fluentd file sources
+  fileConfigs:
+    # Configuration for sources
+    01_sources.conf: |-
+      <source>
+        @type tail
+        @id in_tail_container_logs
+        @label @KUBERNETES
+        path /var/log/containers/*.log
+        pos_file /var/log/fluentd-containers.log.pos
+        tag kubernetes.*
+        read_from_head true
+        <parse>
+          @type json
+        </parse>
+        emit_unmatched_lines false
+      </source>
+      # expose metrics in prometheus format
+      <source>
+        @type prometheus
+        bind 0.0.0.0
+        port 24231
+        metrics_path /metrics
+      </source>
+      <system>
+        log_level debug
+      </system>
+    # Configuration for filters
+    02_filters.conf: |-
+      <label @KUBERNETES>
+        <filter kubernetes.**>
+          @type kubernetes_metadata
+          @id filter_kube_metadata
+          lookup_from_k8s_field true
+          skip_namespace_metadata true
+          skip_master_url true
+        </filter>
+        <filter kubernetes.var.log.containers.**>
+          @type grep
+          <regexp>
+            key $.kubernetes.labels
+            pattern /csghub/
+          </regexp>
+        </filter>
+        <match kubernetes.var.log.containers.**fluentd**>
+          @type null
+        </match>
+        <match **>
+          @type relabel
+          @label @DISPATCH
+        </match>
+      </label>
+    # Configuration for dispatching logs
+    03_dispatch.conf: |-
+      <label @DISPATCH>
+        <match **>
+          @type relabel
+          @label @OUTPUT
+        </match>
+      </label>
+    # Configuration for outputs
+    04_outputs.conf: |-
+      <label @OUTPUT>
+        <match **>
+          @type stdout
+          <format>
+            @type json
+            localtime true
+          </format>
+        </match>
+      </label>

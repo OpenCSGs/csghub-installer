@@ -30,5 +30,9 @@ appVersion: "v1.3.0"
 dependencies:
   - name: ingress-nginx
     version: "4.12.0"
-    repository: "file://charts/ingress-nginx"
+    repository: file://charts/ingress-nginx
     condition: ingress-nginx.enabled
+  - name: fluentd
+    version: "0.5.2"
+    repository: file://charts/fluentd
+    condition: fluentd.enabled
