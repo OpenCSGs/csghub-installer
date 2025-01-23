@@ -21,7 +21,7 @@ containers:
   - name: {{ .Chart.Name }}
     securityContext:
       {{- toYaml .Values.securityContext | nindent 6 }}
-    image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default $defaultTag }}"
+    image: "{{ .Values.global.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag | default $defaultTag }}"
     imagePullPolicy: {{ .Values.image.pullPolicy }}
   {{- if .Values.plugins }}
     command:

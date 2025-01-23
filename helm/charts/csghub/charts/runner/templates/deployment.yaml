@@ -38,7 +38,7 @@ spec:
         options:
           - name: ndots
             value: "5"
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -55,7 +55,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image:  {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          image:  {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
           envFrom:
@@ -73,12 +73,12 @@ spec:
             - name: PGPASSWORD
               value: "$(STARHUB_DATABASE_PASSWORD)"
         - name: wait-for-server
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/busybox:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: runner
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ or .Values.global.images.tag .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "deploy", "runner" ]
           ports:

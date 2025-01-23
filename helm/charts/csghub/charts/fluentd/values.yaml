@@ -1,3 +1,8 @@
+
+global:
+  image:
+    registry: "docker.io"
+
 nameOverride: ""
 fullnameOverride: ""
 

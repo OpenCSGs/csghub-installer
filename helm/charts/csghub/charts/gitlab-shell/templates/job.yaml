@@ -28,7 +28,7 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       restartPolicy: OnFailure
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -36,7 +36,7 @@ spec:
       {{- end }}
       containers:
         - name: kubectl
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/bitnami/kubectl:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/bitnami/kubectl:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c" ]
           args:

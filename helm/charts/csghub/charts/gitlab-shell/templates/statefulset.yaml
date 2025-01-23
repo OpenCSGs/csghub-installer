@@ -28,7 +28,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -45,7 +45,7 @@ spec:
       {{- end }}
       initContainers:
         - name: init-host-keys
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/alpine:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/alpine:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "cat /scripts/init_host_keys.sh | /bin/sh" ]
           volumeMounts:
@@ -56,7 +56,7 @@ spec:
               mountPath: /srv/gitlab-shell/keys
       containers:
         - name: gitlab-shell
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/bash", "-c", "/scripts/process-wrapper" ]
           ports:

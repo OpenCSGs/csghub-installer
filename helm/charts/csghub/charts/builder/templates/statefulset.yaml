@@ -28,7 +28,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -45,7 +45,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-redis
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/redis:7.2.5
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/redis:7.2.5
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
@@ -60,7 +60,7 @@ spec:
               value: "$(REDIS_PASSWD)"
       containers:
         - name: builder
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080
@@ -103,7 +103,7 @@ spec:
               mountPath: /root/.docker
               readOnly: true
         - name: docker
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/docker:27.1.2-dind
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/docker:27.1.2-dind
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 2375

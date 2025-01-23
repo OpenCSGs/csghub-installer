@@ -24,7 +24,7 @@ spec:
       labels: {{ include "common.labels" . | nindent 8 }}
     spec:
       restartPolicy: OnFailure
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -32,7 +32,7 @@ spec:
       {{- end }}
       containers:
         - name: psql
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done; psql -f /scripts/initialize.sql" ]
           env:
