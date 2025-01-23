@@ -27,7 +27,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -44,7 +44,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
           envFrom:
@@ -63,7 +63,7 @@ spec:
               value: "$(POSTGRES_PWD)"
       containers:
         - name: temporal
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 7233
@@ -94,7 +94,7 @@ spec:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
         {{- if .Values.ingress.enabled }}
         - name: temporal-ui
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.ui.repository }}:{{ .Values.image.ui.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.ui.repository }}:{{ .Values.image.ui.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080

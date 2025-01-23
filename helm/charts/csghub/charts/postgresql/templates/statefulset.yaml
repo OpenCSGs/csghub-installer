@@ -29,7 +29,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -46,7 +46,7 @@ spec:
       {{- end }}
       containers:
         - name: postgresql
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: [ "-c", "config_file=/etc/postgresql/postgresql.conf" ]
           ports:

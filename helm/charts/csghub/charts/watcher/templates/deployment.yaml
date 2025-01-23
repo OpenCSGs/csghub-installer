@@ -30,7 +30,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -47,7 +47,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-ready
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/bitnami/kubectl:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/bitnami/kubectl:latest
           imagePullPolicy: "IfNotPresent"
           command: [ "/bin/bash", "/scripts/wait-for-ready.sh" ]
           volumeMounts:
@@ -55,7 +55,7 @@ spec:
               mountPath: /scripts
       containers:
         - name: watcher
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
             - name: NAMESPACE

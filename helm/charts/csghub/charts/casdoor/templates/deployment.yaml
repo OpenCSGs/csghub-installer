@@ -40,7 +40,7 @@ spec:
         options:
           - name: ndots
             value: "5"
-      {{- with (or .Values.global.images.pullSecrets .Values.images.pullSecrets) }}
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -57,12 +57,12 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/opencsg/psql:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "casdoor.postgresql.dsn" . }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: casdoor
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8000
