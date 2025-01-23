@@ -25,3 +25,10 @@ Define the external endpoint for registry
 {{- printf "%s" $domain -}}
 {{- end }}
 {{- end }}
+
+{{/*
+Random Password for which password not set
+*/}}
+{{- define "registry.initPass" -}}
+{{- printf "%s@%s" (now | date "15/04") . | sha256sum | trunc 16 | b64enc | b64enc -}}
+{{- end }}

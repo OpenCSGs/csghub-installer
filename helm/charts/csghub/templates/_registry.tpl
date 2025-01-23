@@ -26,10 +26,10 @@ Define the repository for csghub registry
 Define the namespace for csghub registry
 */}}
 {{- define "csghub.registry.namespace" -}}
-{{- $namespace := "" }}
-{{- if hasKey .Values "registry" }}
-{{- if hasKey .Values.registry "namespace" }}
-{{- $namespace = .Values.registry.namespace | default "csghub" }}
+{{- $namespace := "csghub" }}
+{{- if hasKey .Values "connection" }}
+{{- if hasKey .Values.connection "namespace" }}
+{{- $namespace = .Values.connection.namespace }}
 {{- end }}
 {{- end }}
 {{- if hasKey .Values.global "registry" }}
@@ -50,7 +50,12 @@ Define the namespace for csghub registry
 Define the username for csghub registry
 */}}
 {{- define "csghub.registry.username" -}}
-{{- $username := .Values.registry.username }}
+{{- $username := "registry" }}
+{{- if hasKey .Values "connection" }}
+{{- if hasKey .Values.connection "username" }}
+{{- $username = .Values.connection.username }}
+{{- end }}
+{{- end }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
@@ -69,7 +74,12 @@ Define the username for csghub registry
 Define the password for csghub registry
 */}}
 {{- define "csghub.registry.password" -}}
-{{- $password := .Values.registry.password }}
+{{- $password := include "registry.initPass" (include "csghub.registry.username" .) }}
+{{- if hasKey .Values "connection" }}
+{{- if hasKey .Values.connection "password" }}
+{{- $password = .Values.connection.password }}
+{{- end }}
+{{- end }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
