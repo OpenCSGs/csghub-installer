@@ -34,11 +34,6 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}
-      initContainers:
-        - name: wait-for-minio
-          image: {{ or .Values.global.images.prefix .Values.images.prefix }}/busybox:latest
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until wget --spider {{ include "minio.internal.endpoint" . }}/minio/health/live; do echo 'Wait for minio to be ready'; sleep 2; done" ]
       containers:
         - name: kubectl
           image: {{ or .Values.global.images.prefix .Values.images.prefix }}/bitnami/kubectl:latest
