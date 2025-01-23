@@ -1,0 +1,76 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.global.deployment.enabled .Values.global.deployment.knative.serving.autoConfigure }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" (list . "post-configure") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 1200
+  backoffLimit: 4
+  activeDeadlineSeconds: 600
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      {{- end }}
+      restartPolicy: OnFailure
+      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: kubectl
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/bitnami/kubectl:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/bash", "/scripts/configure.sh" ]
+          volumeMounts:
+            - name: kube-configs
+              mountPath: /.kube
+            - name: configure
+              mountPath: /scripts
+              readOnly: false
+            - name: argo
+              mountPath: /argo
+            - name: knative
+              mountPath: /knative
+            - name: space
+              mountPath: /space
+      volumes:
+        - name: kube-configs
+          secret:
+            {{- $secret := or .Values.global.deployment.kubeSecret .Values.deployment.kubeSecret }}
+            {{- $exists := lookup "v1" "Secret" .Release.Namespace $secret }}
+            {{- if $exists }}
+            secretName: {{ $secret }}
+            {{- else }}
+              {{ fail "You must specify a kube config secret already created" }}
+            {{- end }}
+        - name: configure
+          configMap:
+            name: {{ include "common.names.custom" . }}
+        - name: argo
+          configMap:
+            name: {{ include "common.names.custom" (list . "runner-argo") }}
+        - name: knative
+          configMap:
+            name: {{ include "common.names.custom" (list . "runner-knative") }}
+        - name: space
+          configMap:
+            name: {{ include "common.names.custom" (list . "runner-space") }}
+{{- end }}
