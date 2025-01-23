@@ -127,6 +127,7 @@ global:
     ## so if this function is required, you need to configure the following information
     knative:
       serving:
+        autoConfigure: true
         ## Configuration for Knative serving services.
         services:
           ## Definition of a specific Knative service.
