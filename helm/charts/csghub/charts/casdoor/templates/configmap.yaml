@@ -202,7 +202,7 @@ data:
         {
           "owner": "admin",
           "name": "CSGHub",
-          "displayName": "CSGHub",
+          "displayName": "OpenCSG",
           "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
           "homepageUrl": {{ include "csghub.external.endpoint" . | quote }},
           "organization": "OpenCSG",
@@ -409,7 +409,7 @@ data:
             "isCompact": false,
             "isEnabled": true
           },
-          "footerHtml": "<C2><A9>2024 OpenCSG. All rights reserved.",
+          "footerHtml": "<C2><A9>2025 OpenCSG. All rights reserved.",
           "formCSS": "",
           "formOffset": 2,
           "formSideHtml": "<style>  .left-model{    text-align: center;    padding: 60px;    background-image: url('https://cdn.jsdelivr.net/gh/OpenCSGs/images/background.png');    background-size: cover;    background-position: center;    position: absolute;    transform: none;    width: 100%;    height: 100%;  }  .side-logo {    display: flex;    align-items: center;  }  .side-logo span {    font-family: Montserrat, sans-serif;    font-weight: 900;    font-size: 2.4rem;    line-height: 1.3;    margin-left: 16px;    color: #404040;  }  .img{    max-width: none;    margin: 41px 0 13px;  }</style><div class='left-model'>  <span class='side-logo'> <img src='' alt='' style='width: 120px'>   </span>  <div class='img'>    <img src='' alt='' style='width: 120px'/>  </div></div>",
