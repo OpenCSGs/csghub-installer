@@ -36,7 +36,7 @@ Define the internal endpoint for minio
 Define the external domain for minio
 */}}
 {{- define "minio.external.domain" -}}
-{{- include "global.domain" (list . "minio-stg") }}
+{{- include "global.domain" (list . "minio") }}
 {{- end }}
 
 {{/*
