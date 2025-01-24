@@ -13503,20 +13503,8 @@ data:
       annotations:
         knative.dev/example-checksum: "720ddb97"
     data:
+      registries-skipping-tag-resolving: "{{ include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}"
       queue-sidecar-image: {{ $registry }}/serving/cmd/queue:v1.16.1
-      _example: |-
-        registries-skipping-tag-resolving: "kind.local,ko.local,dev.local"
-        digest-resolution-timeout: "10s"
-        progress-deadline: "600s"
-        queue-sidecar-cpu-request: "25m"
-        queue-sidecar-cpu-limit: "1000m"
-        queue-sidecar-memory-request: "400Mi"
-        queue-sidecar-memory-limit: "800Mi"
-        queue-sidecar-ephemeral-storage-request: "512Mi"
-        queue-sidecar-ephemeral-storage-limit: "1024Mi"
-        queue-sidecar-token-audiences: ""
-        queue-sidecar-rootca: ""
-        runtime-class-name: ""
     ---
     apiVersion: v1
     kind: ConfigMap
@@ -14848,10 +14836,26 @@ data:
           port: 80
           protocol: TCP
           targetPort: 8080
+          {{- if eq .Values.global.ingress.service.type "NodePort" }}
+          {{- range .Values.global.deployment.knative.serving.services }}
+          {{- if .port }}
+          nodePort: {{ .port }}
+          {{- break }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
         - name: https
           port: 443
           protocol: TCP
           targetPort: 8443
+          {{- if eq .Values.global.ingress.service.type "NodePort" }}
+          {{- range .Values.global.deployment.knative.serving.services }}
+          {{- if .port }}
+          nodePort: 30910
+          {{- break }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
       selector:
         app: 3scale-kourier-gateway
       type: {{ .Values.global.ingress.service.type }}
