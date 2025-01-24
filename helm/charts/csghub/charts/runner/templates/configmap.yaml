@@ -38,6 +38,7 @@ data:
     space_install() {
       echo "Starting Space Application pre-install..."
       kubectl apply -f /space/space-app.yaml
+      echo ""
     }
 
     # Function to check namespace, deployment, and service
