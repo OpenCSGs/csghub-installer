@@ -47,7 +47,7 @@ spec:
         - name: init-host-keys
           image: {{ or .Values.global.image.registry .Values.image.registry }}/alpine:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "cat /scripts/init_host_keys.sh | /bin/sh" ]
+          command: [ "/bin/sh", "/scripts/init_host_keys.sh" ]
           volumeMounts:
             - name: config
               mountPath: /scripts/init_host_keys.sh
