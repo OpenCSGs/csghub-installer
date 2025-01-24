@@ -29,12 +29,15 @@ global:
       # secretName: ""
     service:
       ## `&type` is an internal anchor, do not delete it
+      ##  `ingress-nginx-controller` and `kourier` will also the same
       type: &type LoadBalancer
 
   ## This section configures whether to use an external container image repository.
   registry:
     ## Indicates whether the registry is external (true) or internal (false)
     external: false
+    ## Configuring external registry
+    ## If `external` set to `true`, `connection` is needed.
     connection: { }
       ## The URL of the Docker registry service; default is Docker Hub
       # repository: "docker.io"
@@ -49,6 +52,8 @@ global:
   postgresql:
     ## Specifies whether to use an external PostgreSQL instance or a built-in one
     external: false
+    ## Configuring external postgresql database
+    ## If `external` set to `true`, `connection` is needed.
     connection: { }
       ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
       # host: ""
@@ -78,7 +83,8 @@ global:
   redis:
     ## Set to false to use internal Redis service
     external: false
-    ## Redis connection configuration
+    ## Configuring external redis cache
+    ## If `external` set to `true`, `connection` is needed.
     connection: { }
       ## Host for accessing Redis
       # host: ""
@@ -94,6 +100,7 @@ global:
     ## If you use external object storage, set this to true, otherwise set this to false to use built-in object storage.
     external: false
     ## Configuring external object storage
+    ## If `external` set to `true`, `connection` is needed.
     connection: { }
       ## The endpoint of the object storage service, e.g., S3 compatible service URL
       # endpoint: ""
@@ -129,6 +136,8 @@ global:
       serving:
         autoConfigure: true
         ## Configuration for Knative serving services.
+        ## If `autoConfigure` set to `true`, +
+        ## it will be configured using following dict except `host`
         services:
           ## Definition of a specific Knative service.
           ## The name of the service.
@@ -136,8 +145,11 @@ global:
             ## The hostname through which the service can be accessed.
             domain: "app.internal"
             ## The IP address assigned to the service.
+            ## Usually remote k8s api-server node address.
             host: "192.168.8.3"
             ## The port on which the service is exposed.
+            ## If `ingress.service.type` set to `LoadBalancer`, +
+            ## port should be set to `80` or `443`
             port: "30213"
 
 ## More subChart configuration mappings are omitted here.
@@ -202,6 +214,7 @@ ingress-nginx:
   controller:
     ## Configuration for the controller image
     ## Reset digest to use third-party repository
+    ## DO NOT UPDATE!!! image.digest and admissionWebhooks.patch.image.digest
     image:
       ## Digest of the image for the controller
       digest: ""
