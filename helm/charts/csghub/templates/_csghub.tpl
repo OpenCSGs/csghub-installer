@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the external domain for csghub
 */}}
 {{- define "csghub.external.domain" -}}
-{{- include "global.domain" (list . "csghub-stg") }}
+{{- include "global.domain" (list . "csghub") }}
 {{- end }}
 
 {{/*
