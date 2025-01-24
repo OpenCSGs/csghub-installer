@@ -15,6 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/use-gzip: "true"
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* "^/endpoint/" {
         proxy_pass http://{{ include "proxy.internal.domain" . }}:{{ include "proxy.internal.port" . }};
