@@ -23,7 +23,7 @@ Visit the Temporal console at the following address:
 
 Visit the Minio console at the following address:
 
-    Address: {{ include "minio.external.endpoint" . }}
+    Address: {{ include "minio.external.endpoint" . }}/console/
     Credentials:
         Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
         Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
