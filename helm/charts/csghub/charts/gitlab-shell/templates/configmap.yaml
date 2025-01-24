@@ -20,8 +20,8 @@ data:
     # Check if there are any files starting with ssh_host_ in the /srv/gitlab-shell/keys directory
     if ! find /srv/gitlab-shell/keys -name 'ssh_host_*' | grep -q .; then
       # If SSH host keys are not found, execute the following steps:
-      # Modify the APK repository to use Tsinghua University's mirror for faster package downloads
-      sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+      # Modify the APK repository to use huawei mirror for faster package downloads
+      sed -i 's/dl-cdn.alpinelinux.org/repo.huaweicloud.com/g' /etc/apk/repositories
       # Update the APK package index
       apk update || { echo "Failed to update APK repositories"; exit 1; }
       # Install the OpenSSH package to generate SSH host keys
