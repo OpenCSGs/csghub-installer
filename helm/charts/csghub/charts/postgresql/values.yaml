@@ -33,7 +33,7 @@ parameters: { }
   ## Set the parameters for the PostgreSQL database
   ## The online reload parameter can take effect automatically.
   ## If you need to restart the database, please restart it manually.
-  # timezone: "Asia/Shanghai"
+  # timezone: "Etc/UTC"
 
 ## List of databases to be created upon deployment
 databases:

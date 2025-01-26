@@ -57,7 +57,7 @@ postgresql:
   ## The name of the database to connect to on the PostgreSQL server.
   database: "csghub_portal"
   ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
-  timezone: "Asia/Shanghai"
+  timezone: "Etc/UTC"
 
 ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
 objectStore:
