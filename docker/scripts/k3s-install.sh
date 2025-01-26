@@ -320,14 +320,14 @@ fi
 if [ "$ENABLE_ARGO_WORKFLOW" == "true" ]; then
   # Install argo workflow
   log "INFO" "Install the ARGO Workflow component."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
 fi
 if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
   # Install Knative Serving
   log "INFO" "Install the Knative Serving component."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-crds.yaml
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/serving-core.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-crds.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-core.yaml
   retry kubectl patch cm config-autoscaler -n knative-serving -p='{"data":{"enable-scale-to-zero":"false"}}'
   retry kubectl patch cm config-features -n knative-serving -p='{"data":{"kubernetes.podspec-nodeselector":"enabled"}}'
   # Verify if KNative serving resources created successful
@@ -339,7 +339,7 @@ if [ "$ENABLE_KNATIVE_SERVING" == "true" ]; then
   fi
 
   log "INFO" "Install a networking layer."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/knative/kourier.yaml
+  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/kourier.yaml
   # Verify if networking layer installed
   if [ $? -ne 0 ]; then
     log "ERRO" "Failed to install kourier networking layer."
