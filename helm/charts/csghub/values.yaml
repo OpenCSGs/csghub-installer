@@ -77,7 +77,7 @@ global:
       ## Password for the PostgreSQL user specified above.
       # password: ""
       ## Timezone for PostgreSQL
-      # timezone: "Asia/Shanghai"
+      # timezone: "Etc/UTC"
 
   ## This section configures whether to use an external redis cache.
   redis:
