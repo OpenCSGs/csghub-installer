@@ -16,7 +16,6 @@ fi
 : "${ENABLE_K3S:=true}"
 : "${ENABLE_DYNAMIC_PV:=false}"
 : "${ENABLE_NVIDIA_GPU:=false}"
-: "${ENABLE_HTTPS:=false}"
 : "${HOSTS_ALIAS:=true}"
 : "${INSTALL_HELM:=true}"
 : "${KNATIVE_INTERNAL_DOMAIN:=app.internal}"
