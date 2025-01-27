@@ -159,7 +159,7 @@ global:
             domain: "app.internal"
             ## The IP address assigned to the service.
             ## Usually remote k8s api-server node address.
-            host: "192.168.8.3"
+            host: "192.168.18.3"
             ## The port on which the service is exposed.
             ## If `ingress.service.type` set to `LoadBalancer`, +
             ## port should be set to `80` or `443`
