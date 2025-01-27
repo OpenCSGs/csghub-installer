@@ -29,7 +29,7 @@ Define the internal port for postgresql
 Random Password for which password not set
 */}}
 {{- define "postgresql.initPass" -}}
-{{- printf "%s@%s" (now | date "15/04") . | sha256sum | trunc 16 | b64enc | b64enc -}}
+{{- printf "%s@%s" (now | date "15/04") . | sha256sum | trunc 16 | b64enc -}}
 {{- end }}
 
 {{/*
