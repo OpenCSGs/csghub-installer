@@ -207,6 +207,30 @@ postgresql:
   #   - csghub_temporal_visibility
   #   - csghub_dataflow
 
+## For Moderation
+moderation:
+  ## Configuration for content moderation settings
+  moderation: { }
+    ## The access key ID for authentication with the moderation service
+    # accessKeyId: ""
+    ## The access key secret for authentication with the moderation service
+    # accessKeySecret: ""
+    ## The region where the moderation service is hosted
+    # region: ""
+
+## For Dataflow
+dataflow:
+  ## Configure AI Service
+  openAI: { }
+    ## The API endpoint address, e.g., "https://api.openai.com/v1/"
+    # endpoint: ""
+    ##  Your OpenAI API key used for authentication
+    # apiKey: ""
+    ## The version of the API being used, e.g., "v1"
+    # apiVersion: ""
+    ## The name of the model you want to use, e.g., "text-davinci-003"
+    # model: ""
+
 ## For Minio
 minio:
   ## Specify the bucket to be created and whether to enable version control.
