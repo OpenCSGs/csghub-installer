@@ -7,8 +7,14 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $username := "natsadmin" -}}
 {{- $password := randAlphaNum 15 -}}
 {{- if $secretData }}
-{{- $username = index $secretData "NATS_USERNAME" | b64dec -}}
-{{- $password = index $secretData "NATS_PASSWORD" | b64dec -}}
+{{- $secretUsername := index $secretData "NATS_USERNAME" }}
+{{- if $secretUsername }}
+{{- $username = $secretUsername | b64dec }}
+{{- end }}
+{{- $secretPassword := index $secretData "NATS_PASSWORD" }}
+{{- if $secretPassword }}
+{{- $password = $secretPassword | b64dec }}
+{{- end }}
 {{- end -}}
 apiVersion: v1
 kind: Secret

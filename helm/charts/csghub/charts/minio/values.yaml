@@ -68,7 +68,7 @@ persistence:
   accessMode: ["ReadWriteOnce"]
   ## Specifies the size of the persistent volume.
   ## This should be adjusted based on expected usage and data growth over time.
-  size: 500Gi
+  size: 200Gi
 
 serviceAccount:
   ## Determines whether a service account should be created.

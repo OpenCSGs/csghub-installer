@@ -31,7 +31,10 @@ data:
   {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
   {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
   {{- if $secretData }}
-  {{- $password = index $secretData $user | b64dec }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
   {{- end }}
   CSGHUB_PORTAL_DATABASE_USERNAME: {{ $user }}
   CSGHUB_PORTAL_DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
