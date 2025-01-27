@@ -134,7 +134,7 @@ Wait for the program to automatically configure and start.
 
 ### PostgreSQL
 
-***Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal by yourself.* 
+***Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal, dataflow by yourself.* 
 
 | Variable | Type | Default | Description |
 | :---------------- | :----- | :------------ | :----------------------------------------------- |

@@ -161,7 +161,7 @@ The above deployment will automatically install/configure the following resource
 
     - PV 200Gi * 1 (for Gitaly)
 
-    - PV 50Gi * 2 (for PostgreSQL, Builder)
+    - PV 50Gi * 3 (for PostgreSQL, Builder, Dataflow)
 
     - PV 10Gi * 2 (for Redis, Nats)
 
@@ -294,16 +294,16 @@ The above deployment will automatically install/configure the following resource
 
 ### PostgreSQL
 
-| Parameter Configuration | Field Type | Default Value | Description |
-| :------------------------------------ | :------- | :------ | :----------------------------------------------------------- |
-| global.postgresql.external | bool | false | false: Use built-in PostgreSQL<br/>true: Use external PostgreSQL. |
-| global.postgresql.connection | dict | { } | Default is empty, external database is not configured. |
-| global.postgresql.connection.host | string | Null | The IP address of the external database. |
-| global.postgresql.connection.port | string | Null | The port number of the external database. |
-| global.postgresql.connection.database | string | Null | The database name of the external database. <br>If the value is empty, the database name of csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility is used by default. If the database name is specified, the contents of all the above databases will be stored in the same database (this method is not recommended and may cause data table conflicts). <br/>In either case, the database needs to be created by yourself. |
-| global.postgresql.connection.user | string | Null | The user to connect to the external database. |
-| global.postgresql.connection.password | string | Null | The password to connect to the external database. |
-| global.postgresql.connection.timezone | string | Etc/UTC | Please use `Etc/UTC`. Currently only used for pre-configuration, no practical significance. |
+| Parameter Configuration | Field Type | Default Value | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| :------------------------------------ | :------- | :------ |:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| global.postgresql.external | bool | false | false: Use built-in PostgreSQL<br/>true: Use external PostgreSQL.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| global.postgresql.connection | dict | { } | Default is empty, external database is not configured.                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| global.postgresql.connection.host | string | Null | The IP address of the external database.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| global.postgresql.connection.port | string | Null | The port number of the external database.                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| global.postgresql.connection.database | string | Null | The database name of the external database. <br>If the value is empty, the database name of csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility, csghub_dataflow is used by default. If the database name is specified, the contents of all the above databases will be stored in the same database (this method is not recommended and may cause data table conflicts). <br/>In either case, the database needs to be created by yourself. |
+| global.postgresql.connection.user | string | Null | The user to connect to the external database.                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| global.postgresql.connection.password | string | Null | The password to connect to the external database.                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| global.postgresql.connection.timezone | string | Etc/UTC | Please use `Etc/UTC`. Currently only used for pre-configuration, no practical significance.                                                                                                                                                                                                                                                                                                                                                                                       |
 
 ### Redis
 
@@ -382,10 +382,10 @@ The above deployment will automatically install/configure the following resource
 
 #### postgresql
 
-| Parameter configuration | Field type | Default value | Description |
-| :-------------------- | :------- | :----------------------------------------------------------- | :---------------------------------------------------- |
-| postgresql.parameters | map | Null | Specify the database parameters to be set, sighup and postmaster are both acceptable. |
-| postgresql.databases | list | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility | Databases created by default. |
+| Parameter configuration | Field type | Default value                                                                                                        | Description |
+| :-------------------- | :------- |:---------------------------------------------------------------------------------------------------------------------| :---------------------------------------------------- |
+| postgresql.parameters | map | Null                                                                                                                 | Specify the database parameters to be set, sighup and postmaster are both acceptable. |
+| postgresql.databases | list | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility<br>csghub_dataflow | Databases created by default. |
 
 #### temporal
 

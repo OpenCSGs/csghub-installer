@@ -288,16 +288,16 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
 
 ### PostgreSQL
 
-| 参数配置                              | 字段类型 | 默认值  | 说明                                                         |
-| :------------------------------------ | :------- | :------ | :----------------------------------------------------------- |
-| global.postgresql.external            | bool     | false   | false：使用内置 PostgreSQL<br/>true: 使用外部 PostgreSQL。   |
-| global.postgresql.connection          | dict     | { }     | 默认为空，外部数据库未配置。                                 |
-| global.postgresql.connection.host     | string   | Null    | 连接外部数据库IP地址。                                       |
-| global.postgresql.connection.port     | string   | Null    | 连接外部数据库端口号。                                       |
-| global.postgresql.connection.database | string   | Null    | 连接外部数据库数据库名。<br>如果值为空，则默认使用 csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility 数据库名字。如果指定了数据库名字，则以上所有数据库的内容都将存储到同一个数据库中（此种方式不建议，可能导致数据表冲突）。<br/>无论是哪种方式数据库都需要自行创建。 |
-| global.postgresql.connection.user     | string   | Null    | 连接外部数据库的用户。                                       |
-| global.postgresql.connection.password | string   | Null    | 连接外部数据库的密码。                                       |
-| global.postgresql.connection.timezone | string   | Etc/UTC | 请使用`Etc/UTC`。当前仅为预配置使用，暂无实际意义。          |
+| 参数配置                              | 字段类型 | 默认值  | 说明                                                                                                                                                                                                                         |
+| :------------------------------------ | :------- | :------ |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| global.postgresql.external            | bool     | false   | false：使用内置 PostgreSQL<br/>true: 使用外部 PostgreSQL。                                                                                                                                                                           |
+| global.postgresql.connection          | dict     | { }     | 默认为空，外部数据库未配置。                                                                                                                                                                                                             |
+| global.postgresql.connection.host     | string   | Null    | 连接外部数据库IP地址。                                                                                                                                                                                                               |
+| global.postgresql.connection.port     | string   | Null    | 连接外部数据库端口号。                                                                                                                                                                                                                |
+| global.postgresql.connection.database | string   | Null    | 连接外部数据库数据库名。<br>如果值为空，则默认使用 csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility, csghub_dataflow 数据库名字。如果指定了数据库名字，则以上所有数据库的内容都将存储到同一个数据库中（此种方式不建议，可能导致数据表冲突）。<br/>无论是哪种方式数据库都需要自行创建。 |
+| global.postgresql.connection.user     | string   | Null    | 连接外部数据库的用户。                                                                                                                                                                                                                |
+| global.postgresql.connection.password | string   | Null    | 连接外部数据库的密码。                                                                                                                                                                                                                |
+| global.postgresql.connection.timezone | string   | Etc/UTC | 请使用`Etc/UTC`。当前仅为预配置使用，暂无实际意义。                                                                                                                                                                                             |
 
 ### Redis
 
@@ -376,10 +376,10 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
 
 #### postgresql
 
-| 参数配置              | 字段类型 | 默认值                                                       | 说明                                                  |
-| :-------------------- | :------- | :----------------------------------------------------------- | :---------------------------------------------------- |
-| postgresql.parameters | map      | Null                                                         | 指定需要设置的数据库参数，sighup 和 postmaster 均可。 |
-| postgresql.databases  | list     | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility | 默认创建的数据库。                                    |
+| 参数配置              | 字段类型 | 默认值                                                                                                                  | 说明                                                  |
+| :-------------------- | :------- |:---------------------------------------------------------------------------------------------------------------------| :---------------------------------------------------- |
+| postgresql.parameters | map      | Null                                                                                                                 | 指定需要设置的数据库参数，sighup 和 postmaster 均可。 |
+| postgresql.databases  | list     | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility<br>csghub_dataflow | 默认创建的数据库。                                    |
 
 #### temporal
 

@@ -1,0 +1,48 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+      {{ include "common.names.custom" (list . "user") }}
+data:
+  CSGHUB_ENDPOINT: "{{ include "csghub.external.endpoint" . }}"
+  DATA_DIR: "/data"
+  MAX_WORKERS: "99"
+  RAY_ADDRESS: "auto"
+  RAY_ENABLE: "false"
+  RAY_LOG_DIR: "/var/log/dataflow"
+  API_SERVER: "0.0.0.0"
+  API_PORT: "8000"
+  ENABLE_OPENTELEMETRY: "false"
+  {{- with .Values.openAI }}
+  AZURE_OPENAI_ENDPOINT: {{ .endpoint }}
+  AZURE_OPENAI_API_KEY: {{ .apiKey }}
+  OPENAI_API_VERSION: {{ .apiVersion }}
+  AZURE_MODEL: {{ .model }}
+  {{- end }}
+  DATABASE_HOSTNAME: {{ include "csghub.postgresql.host" . }}
+  DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
+  {{- $user := include "csghub.postgresql.user" . }}
+  {{- $password := include "postgresql.initPass" $user }}
+  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
+  {{- if $secretData }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
+  {{- end }}
+  DATABASE_USERNAME: {{ $user }}
+  DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
+  DATABASE_DB: {{ include "csghub.postgresql.database" . }}
+{{- end }}

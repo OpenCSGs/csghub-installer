@@ -100,6 +100,9 @@ data:
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
   # Workflow
   OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
+  # Database
+  OPENCSG_DATAFLOW_SERVER_HOST: {{ printf "http://%s" (include "dataflow.internal.domain" .) }}
+  OPENCSG_DATAFLOW_SERVER_PORT: {{ include "dataflow.internal.port" . | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

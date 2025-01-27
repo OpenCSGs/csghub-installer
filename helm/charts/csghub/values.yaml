@@ -70,6 +70,7 @@ global:
       ##   - csghub_casdoor
       ##   - csghub_temporal
       ##   - csghub_temporal_visibility
+      ##   - csghub_dataflow
       ## Please make sure that the above databases have been created
       # database: ""
       ## Username for authenticating with the PostgreSQL database.
@@ -189,8 +190,10 @@ postgresql:
   # databases:
   #   - csghub_portal
   #   - csghub_server
-  #   - casdoor
-  #   - temporal
+  #   - csghub_casdoor
+  #   - csghub_temporal
+  #   - csghub_temporal_visibility
+  #   - csghub_dataflow
 
 ## For Minio
 minio:

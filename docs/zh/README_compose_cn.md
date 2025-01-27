@@ -134,7 +134,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghu
 
 ### PostgreSQL
 
-***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal 。*
+***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal, dataflow 。*
 
 | 变量              | 类型   | 默认值        | 说明                                             |
 | :---------------- | :----- | :------------ | :----------------------------------------------- |
