@@ -1,199 +1,298 @@
-# CSGHub Docker Compose Deployment Guide
+# CSGHub Docker Compose deployment document
 
-> **Tips:**
->
-> - v0.4.0 supports Space Application.
-> - v0.7.0 supports Model Finetune and Inference.
-> - v1.2.0 supports Model Evaluation.
-> - [中文文档](../docs/zh/README_cn_docker_compose.md)
+## Introduction
 
-## Overview
+Docker Compose is one of the common installation methods of CSGHub, which has many advantages. For example, simple service management, flexible and easy deployment, fast configuration and startup, etc. If it is deployed in a production environment, this method will be one of the optional methods.
 
-This script enables the one-click deployment of an all-in-one CSGHub instance, including all related components:
+## Software/Hardware Support
 
-- **csghub-server:** Provides the main service logic and API interface to handle client requests and service interactions.
+Hardware environment requirements:
 
-- **csghub-portal:** Responsible for the management and display of the user interface, allowing users to interact directly with the system.
+- \>= 4c 8g 100gb
 
-- **csghub-user:** Manage user identity, authentication, and related operations to ensure user security and data privacy.
+- amd64/arm64
 
-- **nats:** Implement messaging and event-driven architecture between microservices, and provide efficient asynchronous communication capabilities.
+Software environment requirements:
 
-- **csghub-proxy:** Used for request forwarding and load balancing to ensure smooth communication between different services in the system.
+- Docker Engine (>=5:20.10.24)
 
-- **csghub-accounting:** Responsible for financial and accounting processing, monitoring transactions and generating relevant reports.
+- Docker Compose (>=2.20.0)
 
-- **csghub-mirror-repo/csghub-mirror-lfs:** Provide warehouse synchronization services to ensure efficient synchronization of warehouse data.
+## Version Description
 
-- **csghub-runner:** Responsible for deploying application instances to the Kubernetes cluster.
+CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` version is updated as needed.
 
-- **csghub-builder:** Mainly responsible for building application images and uploading them to the container image repository.
+| Chart version | Csghub version | Description |
+| :--------: | :---------: | ----------------------------- |
+| 0.8.x | 0.8.x | |
+| 0.9.x | 0.9.x | Added components Gitaly, Gitlab-Shell |
+| 1.0.x | 1.0.x | |
+| 1.1.x | 1.1.x | Added component Temporal |
+| 1.2.x | 1.2.x | |
+| 1.3.x | 1.3.x | Removed component Gitea |
 
-- **gitaly:** CSGHub's Git storage backend, providing efficient implementation of Git operations.
+## Domain name and IP
 
-- **gitlab-shell:** Provides Git over SSH interaction between CSGHub and Gitaly repositories for SSH access for Git operations.
+CSGHub Docker Compose deployment method is more flexible in the use of domain name and IP, which can use either `domain name` or `IPv4`.
 
-- **minio:** Provides object storage services for csghub_server, csghub_portal, and gitaly to support file storage and access.
+- **Domain name**
 
-- **postgresql:** A relational database management system responsible for storing and managing (csghub_server/csghub_portal/casdoor) structured data.
+Domain name can use public domain name or custom domain name. CSGHub Docker Compose uses a single domain name for deployment and access. Compared with the CSGHub Helm Chart method, the domain name usage is much simpler.
 
-- **registry:** Provides a container image repository to facilitate the storage and distribution of container images.
+***Note:** If it is a custom domain name, please configure Hosts resolution yourself. For public domain names, please configure DNS cloud resolution.* 
 
-- **redis:** Provides high-performance cache and data storage services for csghub_builder and csghub_mirror, supporting fast data reading and writing.
+- **IPv4**
 
-- **casdoor:** Responsible for user authentication and authorization, providing single sign-on (SSO) and multiple authentication methods.
+IP address selection needs to use addresses other than `127.0.0.1` and `localhost`.
 
-- **coredns:** Used to handle and resolve internal DNS resolution.
+## .kube/config
 
-- **temporal:** Asynchronous task management service.
+The `.kube/config` file is an important configuration file for accessing the Kubernetes cluster. It is directly provided to the installer as a file path during the CSGHub Docker Compose deployment process. This `.kube/config` must at least contain full read and write permissions for the namespace where the target cluster deployment instance is located.
 
-- **temporal-ui:** Provide asynchronous task viewing dashboard. 
+***Note:** If the automatic configuration of argo and KnativeServing is enabled in subsequent versions, more permissions such as creating namespaces are required.* 
 
-- **nginx:** Provide routing forwarding.
+## Data persistence
 
-## Prerequisites
+For ease of use and management, this deployment method directly uses `Volume Mount/Directory Mapping` to store persistent data. By default, it is stored in the `data` directory under the installation directory and is stored separately in the `./data/<component>` format.
 
-* **Hardware**
-    * Minimum: 4 CPU/8GB RAM/50GB Hard Disk
-    * Recommended: 8 CPU/16GB RAM/500GB Hard Disk
+In addition, all configuration files are stored in the `./configs` directory.
 
-* **Software**
-    - Linux/AMD64, Linux/ARM64
-    - Docker Engine (>=5:20.10.24)
-    - Docker Compose (>=2.20.0)
+## Deployment example
 
-## Usage
+### Installation package download
 
-1. Navigate to the `docker-compose` directory.
-2. Edit the `.env` file and set `SERVER_DOMAIN` to the current host's IP address or domain name. (DO NOT use `127.0.0.1` or `localhost`!!!).
-3. The Space and Registry related configurations in .env can be ignored without Kubernetes cluster. The configuration for integration with the existing Kubernetes cluster can be found in following [section](#Configure-kubernetes).
-4. Run the `configure` script. Once all services are started, you can visit the self-deployed CSGHub service at `http://[SERVER_DOMAIN]`. If SERVER_PORT not 80 default, please visit by adding `:[SERVER_PORT]`.
-5. Once CSGHub instance startup, you can login with default admin account with `root/Root@1234`.
-6. All other user/password can be found in `.env`.
+Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
-*NOTES: Please use `configure` to apply the modified configuration (at any time).*
-
-### Notes
-
-1. Self-deployed CSGHub uses local-type Docker volumes for persistence, such as for PostgreSQL and Minio. Ensure that Docker local volumes have sufficient disk space.
-2. Ensure following node ports exposed (default):
-    - 2222: Git Over SSH
-    - 5000: Registry
-    - 8000: Casdoor
-    - 9000: Minio API
-    - 9001: Minio Console
-3. By default, only HTTP protocol is supported for CSGHub services. If HTTPS is required, configure it accordingly.
-4. Completely remove CSGHub instance with below command:
-```
-docker compose -f docker-compose.yml down -v
+```shell
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghub-docker-compose-v1.3.0.tgz
 ```
 
-## Configure Kubernetes
+### Installation Configuration
 
-### Prerequisites
+- Unzip Program
 
-- Kubernetes version > 1.20+.
-- Minimum server configuration 8c16g, X86_64 architecture (non-X86_64 system architecture is not supported yet).
-- Kubernetes can be deployed in a variety of ways, such as Docker Desktop, [K3s](https://docs.k3s.io/quick-start), [Kubeadm](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/).
-- CSGHub instance running with Docker Compose installation scripts.
-
-### Knative Configuration
-
-Please refer to [Knative installation](https://opencsg.com/docs/csghub/101/helm/installation) for knative configuration.
-
-### Argo Workflow Configuration
-
-Please refer to [Argo installation](https://opencsg.com/docs/csghub/101/helm/installation) for argo configuration.
-
-### CSGHub Configuration
-
-Reconfigure CSGHub instance to connect to the specified Kubernetes cluster. Assume the following information:
-- CSGHub IP：`110.95.70.140`
-- Kubernetes Master node: `101.201.52.76`
-- Kubernetes Worker node: `59.10.62.160`
-- Using service type `NodePort` to expose Knative service，its value is`30541`.
-
-Refer to [Knative config](https://opencsg.com/docs/csghub/101/helm/installation#%E5%AE%89%E8%A3%85%E7%BD%91%E7%BB%9C%E7%BB%84%E4%BB%B6) for more details. 
-
-### Reconfigure CSGHub instance
-
-Based on the above information, first change the `.env` file content as follows:
+```shell
+tar -zxf csghub-docker-compose-v1.3.0.tgz && cd ./csghub
 ```
-## External URL
-## Default it should be your server ipv4 address or domain.
-SERVER_DOMAIN="110.95.70.140"
-SERVER_PORT=80
 
-SPACE_APP_NAMESPACE="space"
-## Define knative serving internal domain.
-## It is knative network layer endpoint.
-## it can be an internal lb or ip which will not be exposed to external
-SPACE_APP_INTERNAL_DOMAIN="app.internal"
-## Define kourier network plugin service ip and port.
-SPACE_APP_INTERNAL_HOST="59.10.62.160"
-## If ServiceType is LoadBalancer SPACE_APP_INTERNAL_PORT should be 80 or 443
-SPACE_APP_INTERNAL_PORT="30541"
+- Configuration Update
 
-## If you want to use k8s cluster, you should set this to 1.
+Currently, this deployment method recommends that all configurations be configured in the `.env` file. The minimum configuration only requires the following parameters.
+
+```shell
+SERVER_DOMAIN="<domain or ipv4>"
+SERVER_PORT="80"
+SERVER_PROTOCOL="http"
+
+# Specify whether to connect to K8S. 0 for access, 1 for non-access
 CSGHUB_WITH_K8S=1
-## If using Space/Finetune/Inference/Model Evaluation/Dataflow functions and so on.
-KUBE_CONFIG_DIR="/root/.kube"
+KUBE_CONFIG_DIR=".kube/config"
+
+# SPACE_APP Some configurations need to be configured in advance
+SPACE_APP_NAMESPACE="spaces"
+SPACE_APP_INTERNAL_DOMAIN="app.internal" # Default is
+SPACE_APP_INTERNAL_HOST="<Kourier Service IP>"
+SPACE_APP_INTERNAL_PORT="<Kourier Service Port>"
 ```
-You can then run the following command to reconfigure CSGHub instance:
-```
+
+- Start configuration
+
+This command can be used for the first deployment and can also be used to start CSGHub, replacing `docker compose up -d`. Because this script will render the configuration file each time it is executed, the configuration consistency is maintained.
+
+```shell
 ./configure
 ```
 
-#### Reconfigure Kubernetes
+Wait for the program to automatically configure and start.
 
-- Enable CSGHub's insecure docker registry for Kubernetes
+- Access address
 
-    The default installation of CSGHub uses an insecure registry (that is, the one mentioned above: 110.95.70.140:5000). You need to ensure that Kubernetes can pull images from this registry. Perform the following operations on each worker node of Kubernetes:
+| Service | Address | Admin | Notes |
+| :------: | :-------------------------------: | :----------------------------: | :------------------------------------------------: |
+| CSGhub | http://\<ip address> | root/Root@1234 | Can be modified in Casdoor |
+| Minio | http://\<ip address>:9001 | *Please check the default account defined in .env* | MINIO_ROOT_USER<br>MINIO_ROOT_PASSWORD |
+| Temporal | http://\<ip address>/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br>TEMPORAL_CONSOLE_PASSWORD |
+| Casdoor | http://\<ip address>:8000 | admin/123 | Can be modified in Casdoor |
+| Registry | \<ip address>:5000 | *Please check the default account defined in .env* | REGISTRY_USERNAME<br/>REGISTRY_PASSWORD |
 
-    Before configuration, please confirm whether the configuration file `/etc/containerd/config.toml` exists or not. If not, you can create it with the following command.
+## External resources
 
-    ```shell
-    mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.toml
-    ```
+> **Tip:** If the built-in service is not disabled while using an external service, the service will still start normally.
 
-1. config_path settings 
+***Note:** Because the service startup control in docker compose is not very flexible, if the following variables are directly configured as external services, you can also switch to using external services. At the same time, the following configuration can also modify the internal service configuration.* 
 
-   - Containerd 2.x
+### Registry
 
-     ```toml
-      version = 3
+| Variable | Type | Default value | Description |
+| :----------------- | :----- | :-------------------------------- | :------------------------------------------- |
+| REGISTRY_ENABLED | number | 1 | 1: Use built-in Registry<br>0: Disable built-in Registry |
+| REGISTRY_PORT | number | 5000 | Registry service port number, 80, please leave it blank. |
+| REGISTRY_ADDRESS | string | ${SERVER_DOMAIN}:${REGISTRY_PORT} | Specify the registry endpoint. |
+| REGISTRY_NAMESPACE | string | csghub | Specify the namespace used by the registry. |
+| REGISTRY_USERNAME | string | registry | Specify the username for accessing the registry |
+| REGISTRY_PASSWORD | string | registry@2025! | Specify the password for accessing the registry |
 
-      [plugins."io.containerd.cri.v1.images".registry]
-           config_path = "/etc/containerd/certs.d"
-     ```
+### PostgreSQL
 
-   - Containerd 1.x
+***Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal by yourself.* 
 
-     ```toml
-     version = 2
+| Variable | Type | Default | Description |
+| :---------------- | :----- | :------------ | :----------------------------------------------- |
+| POSTGRES_ENABLED | number | 1 | 1: Use built-in PostgreSQL<br>0: Disable built-in PostgreSQL |
+| POSTGRES_HOST | string | postgres | PostgreSQL service address. |
+| POSTGRES_PORT | number | 5432 | Specify the PostgreSQL service port number. |
+| POSTGRES_TIMEZONE | string | Asia/Shanghai | Default. No actual meaning, no configuration required. |
+| POSTGRES_USER| string | csghub | Specifies the username for connecting to PostgreSQL |
+| POSTGRES_PASSWORD | string | Csghub@2025! | Specifies the password for connecting to PostgreSQL |
+
+### ObjectStore
+
+| Variable | Type | Default | Description |
+| :---------------------- | :----- | :--------------------------------- | :--------------------------------------------- |
+| MINIO_ENABLED | number | 1 | 1: Use built-in object storage<br>0: Disable built-in object storage |
+| MINIO_API_PORT | number | 9000 | Minio API service port number. |
+| MINIO_CONSOLE_PORT | number | 9001 | Minio Console service port number. |
+| MINIO_ENDPOINT | string | ${SERVER_DOMAIN}:${MINIO_API_PORT} | Specifies the namespace used by the object store. |
+| MINIO_EXTERNAL_ENDPOINT | string | / | The external object storage is consistent with MINIO_ENDPOINT, otherwise it is left blank. |
+| MINIO_ROOT_USER | string | minio | Specifies the username for accessing the object storage. |
+| MINIO_ROOT_PASSWORD | string | Minio@2025! | Specifies the password for accessing the object storage. |
+| MINIO_REGION | string | cn-north-1 | Specifies the object storage region. |
+| MINIO_ENABLE_SSL | bool | false | Specifies whether to enable encrypted access to the object storage. |
+| USING_PATH_STYLE | bool | true | Whether to use the path method for accessing the object storage bucket. |
+
+## Other variables
+
+### Image configuration
+
+| Variable | Type | Default | Description |
+| :------------------ | :----- | :----------------------------------------- | :--------------------------------------------------- |
+| CSGHUB_IMAGE_PREFIX | string | opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public | Only public image repositories are supported here. |
+| CSGHUB_VERSION | string | latest | Specifies the image version of csghub_portal and csghub_server services. |
+
+### Nginx configuration
+
+| Variable | Type | Default | Description |
+| :---------- | :----- | :---------------- | :------------------------------------------ |
+| SERVER_DOMAIN | string | csghub.example.com | Specifies the domain name or IPv4 used to configure CSGHub. |
+| SERVER_PORT | number | 80 | Specifies the NGINX listening port. For encrypted access, please configure it to 443. |
+| SERVER_PROTOCOL | string | http | Specifies the URL protocol. For encrypted access, please configure it to https. |
+| SERVER_SSL_CERT | string | / | Refers to the certificate for enabling encrypted access. |
+| SERVER_SSL_KEY | string | / | Refers to the private key for enabling encrypted access. |
+
+### CSGHub Portal Configuration
+
+| Variable | Type | Default Value | Description |
+| :------------------------- | :--- | :----- | :--------------------------------------------- |
+| CSGHUB_PORTAL_ENABLE_HTTPS | bool | false | If NGINX is configured for encrypted access, this needs to be configured to true. |
+
+### Git Configuration
+
+| Variable         | Type   | Default | Description                                                       |
+| :----------- | :----- | :----- | :--------------------------------------------------------- |
+| GIT_SSH_PORT | number | 2222   | Configure the port number used by Git Over SSH. It cannot conflict with the local SSHD service. |
+
+### Kubernetes Configuration
+
+| Variable | Type | Default | Description |
+| :---------- | :----- | :---------- | :---------------------------------------------------------- |
+| CSGHUB_WITH_K8S | number | 0 | 1: Connect to K8S<br/>0: Do not connect to K8S. |
+| KUBE_CONFIG_DIR | string | /root/.kube | The path to store config files. Multiple config files need to be renamed to files starting with config. |
+
+### Space Application Configuration
+
+| Variable | Type | Default Value | Description |
+| :------------------------ | :----- | :----------- | :----------------------------------------------------------- |
+| SPACE_APP_NAMESPACE | string | spaces | Create the K8S namespace where various deployment instances are located (will be created automatically). |
+| SPACE_APP_INTERNAL_DOMAIN | string | app.internal | The domain name used by KnativeServing configuration. |
+| SPACE_APP_INTERNAL_HOST | string | 127.0.0.1 | The access address of Kourier used by KnativeServing configuration. Fill in according to the actual situation. It cannot be set to 127.0.0.1 or localhost. |
+| SPACE_APP_INTERNAL_PORT | number | 30541 | The access port of Kourier used by KnativeServing configuration. Fill in according to the actual situation. |
+
+### Gitaly Configuration
+
+| Variable | Type | Default | Description |
+| :------------------- | :----- | :---------------- | :------------------------- |
+| GITALY_ENABLED | number | 1 | 1: Use built-in Gitaly<br>0: Disable built-in Gitaly. |
+| GITALY_SERVER_SOCKET | string | tcp://gitaly:8075 | Gitaly service address. |
+| GITALY_STORAGE | string | default | Keep the default. |
+| GITALY_AUTH_TOKEN | string | Gitaly@2025! | Specify the authentication token for connecting to the Gitaly service. |
+
+### Temporal Configuration
+
+| Variable | Type| Default value | Description |
+| :------------------------ | :----- | :------------- | :------------------------------- |
+| TEMPORAL_UI_ENABLED | number | 1 | Enable UI access service. |
+| TEMPORAL_CONSOLE_USER | string | temporal | Specify the username for accessing Temporal service. |
+| TEMPORAL_CONSOLE_PASSWORD | string | Temporal@2025! | Specify the password for accessing Temporal service. |
+
+### Casdoor Configuration
+
+Please keep the default.
+
+### Nats Configuration
+
+Please keep the default.
+
+### Fixed Configuration
+
+Please keep the default.
+
+## Troubleshooting
+
+### http: server gave HTTP response to HTTPS client
+
+CSGHub is installed by default using an insecure registry (i.e., `<domain or IPv4>:5000` as mentioned above). You need to ensure that Kubernetes can pull images from this registry. Therefore, the following configuration needs to be done on each Kubernetes node:
+
+1. Before configuration, please confirm whether the configuration file `/etc/containerd/config.toml` exists. If it does not exist, you can use the following command to create it.
+
+```shell
+mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.toml
+```
+
+ 2. Configure `config_path` 
+
+     - Containerd 1.x
+
+        ```toml
+        version = 2
+        
+        [plugins."io.containerd.grpc.v1.cri".registry]
+             config_path = "/etc/containerd/certs.d"
+        ```
+       
+    - Containerd 2.x
+    
+       ```toml
+        version = 3
+       
+        [plugins."io.containerd.cri.v1.images".registry]
+             config_path = "/etc/containerd/certs.d"
+       ```
+    
+3. Configure `hosts.toml`
+
+     ```shell
+     # Create Registry configuration directories
+     mkdir /etc/containerd/certs.d/<domain or IPv4>:5000
      
-     [plugins."io.containerd.grpc.v1.cri".registry]
-          config_path = "/etc/containerd/certs.d"
+     # Add configuraion
+     cat /etc/containerd/certs.d/<domain or IPv4>:5000/hosts.toml
+     server = "http://<domain or IPv4>:5000"
+     
+     [host."http://<domain or IPv4>:5000"]
+        capabilities = ["pull", "resolve", "push"]
+        skip_verify = true
+        plain-http = true
+     EOF
      ```
 
-2. restart `containerd` service
+4. Restart `containerd` service
 
-    ```shell
-    systemctl restart containerd
-    ```
+     ```shell
+     systemctl restart containerd
+     ```
 
-3. hosts.toml settings
+## Feedback
 
-    ```shell
-    mkdir /etc/containerd/certs.d/110.95.70.140:5000
-    
-    cat <<EOF > /etc/containerd/certs.d/110.95.70.140:5000/hosts.toml
-    server = "http://110.95.70.140:5000"
-    
-    [host."http://110.95.70.140:5000"]
-            capabilities = ["pull", "resolve", "push"]
-            skip_verify = true
-    EOF
-    ```
+If you encounter any problems during use, you can submit feedback through:
 
-​	*Note: This configuration takes effect directly.*
+- [Feedback](https://github.com/OpenCSGs/csghub-installer/issues)

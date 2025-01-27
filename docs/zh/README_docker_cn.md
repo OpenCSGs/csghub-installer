@@ -1,4 +1,4 @@
-# CSGHub Omnibus 快速部署文档
+# CSGHub Docker 快速部署文档
 
 > 提示：
 >
