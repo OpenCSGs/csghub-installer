@@ -13,6 +13,7 @@ metadata:
     resource.dependencies/deployments: |
       {{ include "common.names.custom" . }}
 data:
+  CSGHUB_PORTAL_APP_ENV: "production"
   {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
   CSGHUB_PORTAL_ENABLE_HTTPS: "true"
   {{- else }}
