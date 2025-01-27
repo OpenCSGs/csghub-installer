@@ -106,6 +106,14 @@ data:
   # Dataviewer
   OPENCSG_DATAVIEWER_SERVER_HOST: {{ printf "http://%s" (include "dataviewer.internal.domain" .) }}
   OPENCSG_DATAVIEWER_SERVER_PORT: {{ include "dataviewer.internal.port" . | quote }}
+  # Moderation
+  {{- if .Values.global.moderation.enabled }}
+  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"
+  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "moderation.internal.domain" .)}}
+  OPENCSG_MODERATION_SERVER_PORT: {{ include "moderation.internal.port" . | quote }}
+  {{- else }}
+  STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"
+  {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
