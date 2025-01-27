@@ -432,17 +432,43 @@ data:
   example.server: |
     example.com {
       hosts {
-        172.25.11.131 csghub.example.com csghub
-        172.25.11.131 casdoor.example.com casdoor
-        172.25.11.131 registry.example.com registry
-        172.25.11.131 minio.example.com minio
+        192.168.18.3 csghub.example.com csghub
+        192.168.18.3 casdoor.example.com casdoor
+        192.168.18.3 registry.example.com registry
+        192.168.18.3 minio.example.com minio
+        192.168.18.3 temporal.example.com temporal
       }
     }
 EOF
+或者
+$ kubectl edit cm coredns -n kube-system
+data:
+  Corefile: |
+    .:53 {
+        ...
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+           pods insecure
+           fallthrough in-addr.arpa ip6.arpa
+           ttl 30
+        }
+        hosts { # 添加此部分内容
+           192.168.18.3 csghub.example.com csghub
+           192.168.18.3 casdoor.example.com casdoor
+           192.168.18.3 registry.example.com registry
+           192.168.18.3 minio.example.com minio
+           192.168.18.3 temporal.example.com minio
+           fallthrough
+        }
+       ...
+    }
 
 # 更新 coredns pods
 $ kubectl -n kube-system rollout restart deploy coredns
 ```
+
+### failed to get token from casdoor,error:oauth2: cannot fetch token: 502 Bad Gateway
+
+如果您使用的是自定义域名，那么此问题通常是因为 DNS 污染或者开启 VPN 导致。请尝试关闭 VPN 或者重启电脑以及清理 DNS 缓存。
 
 ### ssh: connect to host csghub.example.com port 22: Connection refused
 

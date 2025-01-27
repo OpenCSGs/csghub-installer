@@ -44,6 +44,9 @@ The CSGHub project consists of multiple components, each of which has specific r
 - **csghub_mirror**: Provides warehouse data synchronization services, responsible for synchronizing opencsg.com models and datasets to local.
 - **csghub_runner**: Responsible for deploying and managing application instances in the Kubernetes cluster to ensure fast building and continuous delivery of applications.
 - **csghub_builder**: Responsible for building application images and uploading them to the container image repository to simplify the packaging and release process of applications.
+- **csghub_dataflow**: Responsible for data set processing and providing data for model training.
+- **csghub_dataviewer**: Helps users to preview datasets more quickly on the page.
+- **csghub_moderation**: Sensitive content detection.
 - **csghub_watcher**: Monitor all Secret and ConfigMap changes of CSGHub and update related dependent resources.
 - **gitaly**: Used for Git storage backend, providing high-performance Git operations, and achieving fast and efficient code version control and management.
 - **gitlab-shell**: Provides an interactive interface for Git over SSH for secure Git operations to ensure the security of data transmission.

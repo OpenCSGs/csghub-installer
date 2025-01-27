@@ -427,7 +427,7 @@ For other parameters, please refer to the component `values.yaml` file.
 This problem occurs because the cluster cannot resolve the domain name. If it is a public domain name, please configure domain name resolution. If it is a custom domain name, please configure CoreDNS and Hosts resolution. CoreDNS resolution configuration is as follows:
 
 ```shell
-# Add custom domain name resolution
+# 添加自定义域名解析
 $ kubectl apply -f - <<EOF
 apiVersion: v1
 kind: ConfigMap
@@ -438,17 +438,45 @@ data:
   example.server: |
     example.com {
       hosts {
-        172.25.11.131 csghub.example.com csghub
-        172.25.11.131 casdoor.example.com casdoor
-        172.25.11.131 registry.example.com registry
-        172.25.11.131 minio.example.com minio
+        192.168.18.3 csghub.example.com csghub
+        192.168.18.3 casdoor.example.com casdoor
+        192.168.18.3 registry.example.com registry
+        192.168.18.3 minio.example.com minio
+        192.168.18.3 temporal.example.com temporal
       }
     }
 EOF
 
-# Update coredns pods
+Or
+
+$ kubectl edit cm coredns -n kube-system
+data:
+  Corefile: |
+    .:53 {
+        ...
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+           pods insecure
+           fallthrough in-addr.arpa ip6.arpa
+           ttl 30
+        }
+        hosts { # 添加此部分内容
+           192.168.18.3 csghub.example.com csghub
+           192.168.18.3 casdoor.example.com casdoor
+           192.168.18.3 registry.example.com registry
+           192.168.18.3 minio.example.com minio
+           192.168.18.3 temporal.example.com minio
+           fallthrough
+        }
+       ...
+    }
+
+# 更新 coredns pods
 $ kubectl -n kube-system rollout restart deploy coredns
 ```
+
+### failed to get token from casdoor,error:oauth2: cannot fetch token: 502 Bad Gateway
+
+If you are using a custom domain, this problem is usually caused by DNS pollution or VPN. Please try turning off the VPN or restarting the computer and clearing the DNS cache.
 
 ### ssh: connect to host csghub.example.com port 22: Connection refused
 
