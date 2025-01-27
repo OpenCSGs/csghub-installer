@@ -25,7 +25,10 @@ data:
   {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
   {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
   {{- if $secretData }}
-  {{- $password = index $secretData $user | b64dec }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
   {{- end }}
   POSTGRES_PWD: {{ or (include "csghub.postgresql.password" .) $password }}
   VISIBILITY_DBNAME: {{ printf "%s_visibility" (include "csghub.postgresql.database" .) }}
