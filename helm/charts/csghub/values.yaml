@@ -197,8 +197,8 @@ postgresql:
 minio:
   ## Specify the bucket to be created and whether to enable version control.
   buckets:
-    ## Default `true`
-    versioning: true
+    ## Default `false`
+    versioning: false
 
 ## In order to make the maintenance of csghub helm easier, the official ingress-nginx is directly referenced here as a subChart.
 ## This section of configuration is added for better adaptation, but this section of configuration is not within your modification scope.
