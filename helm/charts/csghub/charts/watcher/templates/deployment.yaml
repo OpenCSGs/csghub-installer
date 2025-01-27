@@ -30,7 +30,7 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      {{- with (or .Values.global.image.PullSecrets .Values.image.PullSecrets) }}
+      {{- with (or .Values.global.image.pullSecrets .Values.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
