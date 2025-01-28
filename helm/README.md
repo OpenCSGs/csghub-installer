@@ -192,12 +192,12 @@ The above deployment will automatically install/configure the following resource
     | Parameters | Default value | Example value | Description                                                                                                                                                                                                                                                                                  |
     | :--------------------------------------------------: | :----------: | :----------: |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
     | global.ingress.domain | example.com | example.com | [Service domain name](#domain name)                                                                                                                                                                                                                                                          |
-    | global.ingress.service.type | LoadBalancer | NodePort | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier.                                                                                                 |
+    | global.ingress.service.type | LoadBalancer | NodePort | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service.                                                                                                 |
     | ingress-nginx.controller.service.type | LoadBalancer | NodePort | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor.                                                                                                                                                            |
     | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | This is pre-specified and will be automatically configured to KnativeServing.                                                                                                                                                                                                                |
     | global.deployment.knative.serving.services[0].host | 192.168.18.3 | IPv4 address | Please specify the actual IPv4 address of the target Kubernetes cluster during actual configuration.                                                                                                                                                                                         |
-    | global.deployment.knative.serving.services[0].port | 80 | 30213 | This is pre-specified and will be automatically configured to KnativeServing. <br>If global.ingress.service.type is configured as LoadBalancer, use the default value 80. <br>If global.ingress.service.type is configured as NodePort, any 5-digit legal port number can be specified here. |
-    | global.deployment.kubeSecret | kube-configs | kube-configs | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them.                                                                                                                                       | 
+    | global.deployment.knative.serving.services[0].port | 30213 | 30213 | This is pre-specified and will be automatically configured to KnativeServing. <br>Any 5-digit legal port number can be specified here. |
+    | global.deployment.kubeSecret | kube-configs | kube-configs | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them.                                                                                                                                       |
 
     - **LoadBalancer** 
       ```shell 
@@ -207,7 +207,7 @@ The above deployment will automatically install/configure the following resource
         --set global.ingress.domain="example.com" \ 
         --set global.deployment.knative.serving.services[0].domain="app.internal" \ 
         --set global.deployment.knative.serving.services[0].host="192.168.18.3" \ 
-        --set global.deployment.knative.serving.services[0].port="80" 
+        --set global.deployment.knative.serving.services[0].port="30213" 
       ```
 
     - **NodePort** 

@@ -182,13 +182,13 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
   **示例安装信息：**
 
   |                         参数                         |    默认值    |    示例值    | 说明                                                         |
-      | :--------------------------------------------------: | :----------: | :----------: | :----------------------------------------------------------- |
+  | :--------------------------------------------------: | :----------: | :----------: | :----------------------------------------------------------- |
   |                global.ingress.domain                 | example.com  | example.com  | [服务域名](#域名)                                            |
-  |             global.ingress.service.type              | LoadBalancer |   NodePort   | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
+  |             global.ingress.service.type              | LoadBalancer |   NodePort   | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller 服务。 |
   |        ingress-nginx.controller.service.type         | LoadBalancer |   NodePort   | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
   | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | 这里为预指定，会自动配置到 KnativeServing。                  |
   |  global.deployment.knative.serving.services[0].host  | 192.168.18.3 | IPv4 address | 实际配置时请指定实际的目标 Kubernetes 集群的 IPv4 地址。     |
-  |  global.deployment.knative.serving.services[0].port  |      80      |    30213     | 这里为预指定，会自动配置到 KnativeServing。<br>如果 global.ingress.service.type 配置为 LoadBalancer ，请使用默认值 80。<br>如果 global.ingress.service.type 配置为 NodePort ，这里可以指定为任意 5 位合法端口号。 |
+  |  global.deployment.knative.serving.services[0].port  |    30213     |    30213     | 这里为预指定，会自动配置到 KnativeServing。<br>这里可以指定为任意 5 位合法端口号。 |
   |             global.deployment.kubeSecret             | kube-configs | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
 
     - **LoadBalancer**
@@ -200,7 +200,7 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
           --set global.ingress.domain="example.com" \
           --set global.deployment.knative.serving.services[0].domain="app.internal" \
           --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
-          --set global.deployment.knative.serving.services[0].port="80"
+          --set global.deployment.knative.serving.services[0].port="30213"
         ```
 
     - **NodePort**
