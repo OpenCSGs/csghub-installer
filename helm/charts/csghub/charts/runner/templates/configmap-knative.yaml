@@ -14816,29 +14816,15 @@ data:
           port: 80
           protocol: TCP
           targetPort: 8080
-          {{- if eq .Values.global.ingress.service.type "NodePort" }}
-          {{- range .Values.global.deployment.knative.serving.services }}
-          {{- if .port }}
-          nodePort: {{ .port }}
-          {{- break }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
+          nodePort: 30213
         - name: https
           port: 443
           protocol: TCP
           targetPort: 8443
-          {{- if eq .Values.global.ingress.service.type "NodePort" }}
-          {{- range .Values.global.deployment.knative.serving.services }}
-          {{- if .port }}
           nodePort: 30910
-          {{- break }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
       selector:
         app: 3scale-kourier-gateway
-      type: {{ .Values.global.ingress.service.type }}
+      type: NodePort
     ---
     apiVersion: v1
     kind: Service
