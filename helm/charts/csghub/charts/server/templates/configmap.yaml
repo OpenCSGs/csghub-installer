@@ -1,0 +1,127 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+      {{ include "common.names.custom" (list . "user") }}
+      {{ include "common.names.custom" (list . "accounting") }}
+      {{ include "common.names.custom" (list . "casdoor") }}
+      {{ include "common.names.custom" (list . "mirror") }}
+      {{ include "common.names.custom" (list . "portal") }}
+      {{ include "common.names.custom" (list . "proxy") }}
+      {{ include "common.names.custom" (list . "runner") }}
+data:
+  GIN_MODE: release
+  STARHUB_SERVER_SAAS: "false"
+  STARHUB_SERVER_MIRRORSERVER_ENABLE: "false"
+  STARHUB_SERVER_MIRRORSERVER_HOST: ""
+  {{- $token := include "server.hub.api.token" . }}
+  {{- $tokenConfigMap := include "common.names.custom" . -}}
+  {{- $tokenConfigMapData := (lookup "v1" "ConfigMap" .Release.Namespace $tokenConfigMap).data }}
+  {{- if $tokenConfigMapData }}
+  {{- $tokenFromConfigMap := index $tokenConfigMapData "STARHUB_SERVER_API_TOKEN" }}
+  {{- if eq (len $tokenFromConfigMap) 128 }}
+  {{- $token = $tokenFromConfigMap }}
+  {{- end }}
+  {{- end }}
+  STARHUB_SERVER_API_TOKEN: {{ $token | quote }}
+  STARHUB_SERVER_MIRROR_REMOTE: "false"
+  STARHUB_SERVER_MODEL_DOWNLOAD_ENDPOINT: {{ include "csghub.external.endpoint" . }}
+  STARHUB_JWT_SIGNING_KEY: "e2kk6awudc3620ed9a"
+  # Multiple-Sync Enabled
+  STARHUB_SERVER_MULTI_SYNC_ENABLED: "true"
+  # Redis Connection Info
+  STARHUB_SERVER_REDIS_ENDPOINT: {{ include "csghub.redis.endpoint" . }}
+  STARHUB_SERVER_REDIS_PASSWORD: {{ include "csghub.redis.password" . }}
+  # PostgreSQL Connection Info
+  STARHUB_DATABASE_HOST: {{ include "csghub.postgresql.host" . }}
+  STARHUB_DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
+  {{- $user := include "csghub.postgresql.user" . }}
+  {{- $password := include "postgresql.initPass" $user }}
+  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
+  {{- if $secretData }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
+  {{- end }}
+  STARHUB_DATABASE_USERNAME: {{ $user }}
+  STARHUB_DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
+  STARHUB_DATABASE_NAME: {{ include "csghub.postgresql.database" . }}
+  STARHUB_DATABASE_TIMEZONE: {{ include "csghub.postgresql.timezone" . }}
+  STARHUB_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user $password (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
+  # Object Storage Connection Info
+  STARHUB_SERVER_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
+  STARHUB_SERVER_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
+  STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ include "csghub.objectStore.accessKey" . }}
+  STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ include "csghub.objectStore.accessSecret" . }}
+  STARHUB_SERVER_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
+  STARHUB_SERVER_S3_REGION: {{ include "csghub.objectStore.region" . }}
+  {{- if eq (include "csghub.objectStore.pathStyle" .) "true" }}
+  STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
+  {{- else }}
+  STARHUB_SERVER_S3_BUCKET_LOOKUP: "auto"
+  {{- end }}
+  # Gitaly Connection Info
+  STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+  STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ printf "tcp://%s:%s" (include "gitaly.internal.domain" .) (include "gitaly.internal.port" .) }}
+  STARHUB_SERVER_GITALY_STORAGE: default
+  {{- if eq (include "gitlab-shell.external.port" .) "22" }}
+  STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s" (include "csghub.external.domain" .)}}
+  {{- else }}
+  STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s:%s" (include "csghub.external.domain" .) (include "gitlab-shell.external.port" .) }}
+  {{- end }}
+  STARHUB_SERVER_GITALY_TOKEN: {{ include "gitaly.internal.token" . }}
+  # Accounting
+  OPENCSG_ACCOUNTING_SERVER_HOST: {{ printf "http://%s" (include "accounting.internal.domain" .) }}
+  OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "accounting.internal.port" . | quote }}
+  # User
+  OPENCSG_USER_SERVER_HOST: {{ printf "http://%s" (include "user.internal.domain" .) }}
+  OPENCSG_USER_SERVER_PORT: {{ include "user.internal.port" . | quote }}
+  # Space Application
+  STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.internal.endpoint" . }}
+  STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: {{ include "runner.internal.endpoint" . }}
+  STARHUB_SERVER_PUBLIC_DOMAIN: {{ include "csghub.external.endpoint" . }}
+  # Deprecated
+  STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
+  # Deprecated
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.deployment.namespace (include "proxy.internal.port" .) }}
+  # Casdoor
+  STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
+  # Workflow
+  OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" (list . "server-init") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+      {{ include "common.names.custom" (list . "user") }}
+      {{ include "common.names.custom" (list . "accounting") }}
+      {{ include "common.names.custom" (list . "casdoor") }}
+      {{ include "common.names.custom" (list . "mirror") }}
+      {{ include "common.names.custom" (list . "portal") }}
+      {{ include "common.names.custom" (list . "proxy") }}
+      {{ include "common.names.custom" (list . "runner") }}
+data:
+  {{- $currentScope := . }}
+  {{- range $path, $_ := .Files.Glob "scripts/*.sql" }}
+    {{- with $currentScope }}
+    {{- base $path | nindent 2 }}: |
+      {{- .Files.Get $path | nindent 4 }}
+    {{- end }}
+  {{- end }}

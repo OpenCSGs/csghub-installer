@@ -1,0 +1,37 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+data:
+  initialize.sh: |
+    #!/bin/bash
+    set -eu
+    # Create alias
+    ALIAS="myMinio"
+    {{ printf "mc alias set $ALIAS %s $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD" (include "minio.internal.endpoint" .) }}
+
+    # Apply region
+    {{- $REGION := .Values.region | default "cn-north-1" }}
+    mc admin config set "$ALIAS" region name={{ $REGION }}
+    mc admin service restart "$ALIAS" --quiet
+
+    set +e
+    {{- $ARGS := "" }}
+    {{- if $.Values.buckets.versioning }}
+    {{- $ARGS = printf "--region=%s --ignore-existing --with-versioning" $REGION }}
+    {{- else }}
+    {{- $ARGS = printf "--region=%s --ignore-existing" $REGION }}
+    {{- end }}
+    # Create buckets
+    {{- range $BUCKET := .Values.buckets.defaults }}
+    {{- printf "mc mb %s $ALIAS/%s" $ARGS $BUCKET | nindent 4 }}
+    {{- end }}
+    {{- end }}

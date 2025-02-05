@@ -1,0 +1,727 @@
+services:
+  nginx:
+    image: ${CSGHUB_IMAGE_PREFIX}/nginx:latest
+    depends_on:
+      csghub-portal:
+        condition: service_started
+        restart: true
+      csghub-server:
+        condition: service_healthy
+        restart: true
+      casdoor:
+        condition: service_healthy
+        restart: true
+    ports:
+      - "${SERVER_PORT:-80}:${SERVER_PORT:-80}"
+      - "${GIT_SSH_PORT:-2222}:2222"
+      - "${REGISTRY_PORT:-5000}:5000"
+      - "${CASDOOR_PORT:-8000}:8000"
+      - "${MINIO_API_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - ./configs/nginx/nginx.conf:/etc/nginx/nginx.conf:r
+      - ./configs/nginx/ssl:/etc/nginx/ssl:r
+      - ./configs/nginx/tmpdata:/var/nginx/client_body_temp
+      - ./logs/nginx:/var/log/nginx
+    privileged: true
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: nginx
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.100
+
+  redis:
+    image: ${CSGHUB_IMAGE_PREFIX}/redis:7.2.5
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    volumes:
+      - ./data/redis:/data
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: redis
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.101
+
+  coredns:
+    image: ${CSGHUB_IMAGE_PREFIX}/coredns/coredns:1.11.1
+    command: [ "-conf", "/etc/coredns/Corefile" ]
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    volumes:
+      - ./configs/coredns:/etc/coredns:r
+    privileged: true
+    restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-0}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: coredns
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.102
+
+  registry:
+    image: ${CSGHUB_IMAGE_PREFIX}/registry:2
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    environment:
+      # Server
+      REGISTRY_AUTH: "htpasswd"
+      REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+      REGISTRY_AUTH_HTPASSWD_PATH: "/auth/.htpasswd"
+      # S3
+      REGISTRY_STORAGE: "s3"
+      REGISTRY_STORAGE_S3_REGIONENDPOINT: "http://$MINIO_ENDPOINT"
+      REGISTRY_STORAGE_S3_ACCESSKEY: "$MINIO_ROOT_USER"
+      REGISTRY_STORAGE_S3_SECRETKEY: "$MINIO_ROOT_PASSWORD"
+      REGISTRY_STORAGE_S3_REGION: "$MINIO_REGION"
+      REGISTRY_STORAGE_S3_BUCKET: "opencsg-registry-storage"
+      REGISTRY_STORAGE_S3_ENCRYPT: "$MINIO_ENABLE_SSL"
+      REGISTRY_STORAGE_S3_SECURE: "$MINIO_ENABLE_SSL"
+      REGISTRY_STORAGE_S3_FORCEPATHSTYLE: "$USING_PATH_STYLE"
+    volumes:
+      - ./configs/registry/auth:/auth
+    restart: always
+    deploy:
+      replicas: ${REGISTRY_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: registry
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.103
+
+  postgres:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub/postgres:15.10
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    environment:
+      POSTGRES_USER: "$POSTGRES_USER"
+      POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal"
+    volumes:
+      - ./data/postgresql/data:/var/lib/postgresql/data
+    restart: always
+    privileged: true
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "$POSTGRES_USER", "-h", "127.0.0.1"]
+      interval: 5s
+    deploy:
+      replicas: ${POSTGRES_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: postgres
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.104
+
+  minio:
+    image: ${CSGHUB_IMAGE_PREFIX}/bitnami/minio:2023
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: "$MINIO_ROOT_USER"
+      MINIO_ROOT_PASSWORD: "$MINIO_ROOT_PASSWORD"
+      MINIO_DEFAULT_BUCKETS: "opencsg-server-lfs:public,opencsg-portal-storage:public,opencsg-registry-storage:public"
+      MINIO_SCHEME: "http"
+    volumes:
+      - ./data/minio:/bitnami/minio/data
+    restart: always
+    deploy:
+      replicas: ${MINIO_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: minio
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.105
+
+  gitaly:
+    image: ${CSGHUB_IMAGE_PREFIX}/gitaly:v17.5.0
+    command: [ "bash", "-c", "mkdir -p /home/git/repositories && rm -rf /srv/gitlab-shell/hooks/* && touch /srv/gitlab-shell/.gitlab_shell_secret && exec /scripts/process-wrapper" ]
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    environment:
+      GITALY_CONFIG_FILE: "/etc/gitaly/config.toml"
+    volumes:
+      - ./data/gitaly/repositories:/home/git/repositories
+      - ./configs/gitaly:/etc/gitaly
+      - ./logs/gitaly:/var/log/gitaly
+    user: "root"
+    restart: always
+    deploy:
+      replicas: ${GITALY_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: gitaly
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.106
+
+  gitlab-shell:
+    image: ${CSGHUB_IMAGE_PREFIX}/gitlab-shell:v17.5.0
+    command: [ "bash", "-c", "exec /usr/bin/env SSH_DAEMON=gitlab-sshd /scripts/process-wrapper" ]
+    depends_on:
+      - gitaly
+    environment:
+      SSH_DAEMON: "gitlab-sshd"
+      KEYS_DIRECTORY: "/srv/gitlab-shell/keys"
+    volumes:
+      - ./configs/gitlab-shell/config.yml:/srv/gitlab-shell/config.yml
+      - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret
+      - ./data/gitlab-shell/keys:/srv/gitlab-shell/keys
+      - ./logs/gitlab-shell:/srv/gitlab-shell/logs
+    user: "root"
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: gitlab-shell
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.107
+
+  csghub-portal:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_portal:${CSGHUB_VERSION}
+    command: [ "bash", "-c", "./csghub-portal migration init && ./csghub-portal migration migrate && ./csghub-portal start server" ]
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      # Server
+      CSGHUB_PORTAL_APP_ENV: "production"
+      CSGHUB_PORTAL_ON_PREMISE: true
+      CSGHUB_PORTAL_SENSITIVE_CHECK: false
+      CSGHUB_PORTAL_STARHUB_BASE_URL: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
+      CSGHUB_PORTAL_STARHUB_API_KEY: "${HUB_SERVER_API_TOKEN}"
+      CSGHUB_PORTAL_ENABLE_HTTPS: "${CSGHUB_PORTAL_ENABLE_HTTPS:-false}"
+      # PostgreSQL
+      CSGHUB_PORTAL_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_portal?sslmode=disable"
+      # Casdoor
+      CSGHUB_PORTAL_LOGIN_URL: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${CASDOOR_PORT}/login/oauth/authorize?client_id=7a97bc5168cb75ffc514&response_type=code&redirect_uri=${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/api/v1/callback/casdoor&scope=read&state=casdoor"
+      # S3
+      CSGHUB_PORTAL_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      CSGHUB_PORTAL_S3_REGION: "$MINIO_REGION"
+      CSGHUB_PORTAL_S3_ACCESS_KEY_ID: "$MINIO_ROOT_USER"
+      CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET: "$MINIO_ROOT_PASSWORD"
+      CSGHUB_PORTAL_S3_BUCKET: "opencsg-portal-storage"
+      CSGHUB_PORTAL_S3_ENDPOINT: "$MINIO_ENDPOINT"
+    volumes:
+      - ./logs/csghub-portal:/myapp/log
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-portal
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.108
+
+  csghub-server:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    depends_on:
+      nats:
+        condition: service_started
+        restart: true
+      temporal:
+        condition: service_healthy
+        restart: true
+    environment:
+      # Server
+      GIN_MODE: release
+      STARHUB_SERVER_SAAS: false
+      STARHUB_SERVER_API_TOKEN: "${HUB_SERVER_API_TOKEN}"
+      STARHUB_SERVER_MODEL_DOWNLOAD_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
+      STARHUB_SERVER_MIRRORSERVER_ENABLE: false
+      STARHUB_JWT_SIGNING_KEY: "$STARHUB_JWT_SIGNING_KEY"
+      STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: false
+      STARHUB_SERVER_PUBLIC_DOMAIN: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}"
+      STARHUB_SERVER_MULTI_SYNC_ENABLED: true
+      # PostgresSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Redis
+      STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      # Gitlab-Shell
+      STARHUB_SERVER_SSH_DOMAIN: "ssh://git@${SERVER_DOMAIN}:${GIT_SSH_PORT:-2222}"
+      # S3
+      STARHUB_SERVER_S3_ACCESS_KEY_ID: "$MINIO_ROOT_USER"
+      STARHUB_SERVER_S3_ACCESS_KEY_SECRET: "$MINIO_ROOT_PASSWORD"
+      STARHUB_SERVER_S3_ENDPOINT: "$MINIO_ENDPOINT"
+      STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
+      STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
+      STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
+      # Csghub Space Builder
+      STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-builder:8080"
+      STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
+      # Csghub Proxy
+      STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
+      STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: "${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOMAIN}:80"
+      # Casdoor
+      STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"
+      STARHUB_SERVER_CASDOOR_CLIENT_SECRET: "33bd85106818efd90c57fb35ffc787aabbff6f7a"
+      STARHUB_SERVER_CASDOOR_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${CASDOOR_PORT}"
+      STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/token_jwt_key.pem"
+      STARHUB_SERVER_CASDOOR_ORGANIZATION_NAME: "OpenCSG"
+      STARHUB_SERVER_CASDOOR_APPLICATION_NAME: "CSGHub"
+      # Csghub Accounting
+      OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+      OPENCSG_ACCOUNTING_SERVER_HOST: "http://csghub-accounting"
+      OPENCSG_ACCOUNTING_SERVER_PORT: 8086
+      # Csghub User
+      OPENCSG_USER_SERVER_HOST: "http://csghub-user"
+      OPENCSG_USER_SERVER_PORT: 8088
+      # Workflow
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]
+      interval: 10s
+      timeout: 30s
+      retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-server
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.109
+
+  csghub-runner:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "deploy", "runner" ]
+    depends_on:
+      - coredns
+    environment:
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Registry
+      STARHUB_SERVER_DOCKER_REG_BASE: "${REGISTRY_ADDRESS}/${REGISTRY_NAMESPACE}/"
+      STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET: "csghub-docker-config"
+      # Csghub Proxy
+      STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: "${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOMAIN}:80"
+      # S3
+      STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_S3_ACCESS_KEY_ID: "$MINIO_ROOT_USER"
+      STARHUB_SERVER_S3_ACCESS_KEY_SECRET: "$MINIO_ROOT_PASSWORD"
+      STARHUB_SERVER_ARGO_S3_PUBLIC_BUCKET: "opencsg-portal-storage"
+      STARHUB_SERVER_S3_ENDPOINT: "${MINIO_EXTERNAL_ENDPOINT:-minio:9000}"
+      # Csghub Accounting
+      OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+    volumes:
+      - ${KUBE_CONFIG_DIR}:/root/.kube:r
+    restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-0}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-runner
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.110
+    dns:
+      - 192.171.100.102
+
+  csghub-proxy:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "start", "rproxy" ]
+    depends_on:
+      - coredns
+      - csghub-server
+    environment:
+      # Server
+      STARHUB_SERVER_SPACE_SESSION_SECRET_KEY: "c8f771f2a178089b99172cbbd7e3b01d"
+      STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: "${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOMAIN}:80"
+      STARHUB_JWT_SIGNING_KEY: "$STARHUB_JWT_SIGNING_KEY"
+      STARHUB_SERVER_SAAS: false
+      STARHUB_SERVER_MIRRORSERVER_ENABLE: false
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      # Redis
+      STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-proxy
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.111
+    dns:
+      - 192.171.100.102
+
+  csghub-user:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
+    depends_on:
+      - csghub-server
+    environment:
+      # Server
+      STARHUB_SERVER_API_TOKEN: "${HUB_SERVER_API_TOKEN}"
+      STARHUB_JWT_SIGNING_KEY: "$STARHUB_JWT_SIGNING_KEY"
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      # Casdoor
+      STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"
+      STARHUB_SERVER_CASDOOR_CLIENT_SECRET: "33bd85106818efd90c57fb35ffc787aabbff6f7a"
+      STARHUB_SERVER_CASDOOR_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${CASDOOR_PORT}"
+      STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/token_jwt_key.pem"
+      STARHUB_SERVER_CASDOOR_ORGANIZATION_NAME: "OpenCSG"
+      STARHUB_SERVER_CASDOOR_APPLICATION_NAME: "CSGHub"
+      # Csghub User
+      OPENCSG_USER_SERVER_PORT: 8088
+      OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/server/callback"
+      # Workflow
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+    volumes:
+      - ./configs/casdoor:/starhub-bin/casdoor:r
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-user
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.113
+
+  csghub-accounting:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "accounting", "launch" ]
+    depends_on:
+      - csghub-server
+    environment:
+      # Server
+      GIN_MODE: release
+      STARHUB_SERVER_API_TOKEN: "${HUB_SERVER_API_TOKEN}"
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      # Csghub Accounting
+      OPENCSG_ACCOUNTING_SERVER_PORT: 8086
+      OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+      OPENCSG_ACCOUNTING_FEE_EVENT_SUBJECT: "accounting.fee.>"
+      OPENCSG_ACCOUNTING_NOTIFY_NOBALANCE_SUBJECT: "accounting.notify.nobalance"
+      OPENCSG_ACCOUNTING_MSG_FETCH_TIMEOUTINSEC: 5
+      OPENCSG_ACCOUNTING_CHARGING_ENABLE: true
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-accounting
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.114
+
+  csghub-mirror-repo:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "mirror", "repo-sync" ]
+    depends_on:
+      - csghub-server
+    environment:
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Redis
+      STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      STARHUB_SERVER_GITALY_JWT_SECRET: "signing-key"
+      # Workflow
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-mirror-repo
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.115
+
+  csghub-mirror-lfs:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "mirror", "lfs-sync" ]
+    depends_on:
+      - csghub-server
+    environment:
+      # PostgreSQL
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      STARHUB_DATABASE_TIMEZONE: "$POSTGRES_TIMEZONE"
+      # Redis
+      STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+      # S3
+      STARHUB_SERVER_S3_ACCESS_KEY_ID: "$MINIO_ROOT_USER"
+      STARHUB_SERVER_S3_ACCESS_KEY_SECRET: "$MINIO_ROOT_PASSWORD"
+      STARHUB_SERVER_S3_ENDPOINT: "${MINIO_EXTERNAL_ENDPOINT:-minio:9000}"
+      STARHUB_SERVER_S3_BUCKET: "opencsg-server-lfs"
+      STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
+      STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
+      STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-mirror-lfs
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.116
+
+  csghub-db-init:
+    image: ${CSGHUB_IMAGE_PREFIX}/opencsg/psql:latest
+    depends_on:
+      csghub-server:
+        condition: service_healthy
+    environment:
+      PGHOST: "$POSTGRES_HOST"
+      PGPORT: "$POSTGRES_PORT"
+      PGUSER: "$POSTGRES_USER"
+      PGPASSWORD: "$POSTGRES_PASSWORD"
+      PGDATABASE: "csghub_server"
+    volumes:
+      - ./configs/server/scripts:/scripts
+    entrypoint: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-db-init
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.117
+
+  docker-server:
+    image: ${CSGHUB_IMAGE_PREFIX}/docker:27.3-dind
+    depends_on:
+      registry:
+        condition: service_started
+    environment:
+      DOCKER_HOST: "tcp://localhost:2375"
+      DOCKER_TLS_CERTDIR: ""
+      DOCKER_REGISTRY: "$REGISTRY_ADDRESS"
+    volumes:
+      - ./configs/docker/daemon.json:/etc/docker/daemon.json
+      - ./configs/docker/config.json:/root/.docker/config.json:r
+    restart: always
+    privileged: true
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-0}
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "2375" ]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: docker-server
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.118
+
+  csghub-builder:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_builder:latest
+    depends_on:
+      docker-server:
+        condition: service_healthy
+    environment:
+      # Server
+      SPACE_DATA_PATH: "/opt/data"
+      # Redis
+      REDIS_ENDPOINT: "redis:6379"
+      # Docker
+      DOCKER_HOST: "tcp://docker-server:2375"
+      # Registry
+      REGISTRY_ADDRESS: "$REGISTRY_ADDRESS"
+      REGISTRY_USERNAME: "$REGISTRY_USERNAME"
+      REGISTRY_PASSWORD: "$REGISTRY_PASSWORD"
+      REGISTRY_NAMESPACE: "$REGISTRY_NAMESPACE"
+    volumes:
+      - ./data/csghub_builder:/opt/data
+      - ./logs/csghub_builder:/opt/data/logs
+    restart: always
+    deploy:
+      replicas: ${CSGHUB_WITH_K8S:-0}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-builder
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.119
+
+  nats:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_nats:2.10.16
+    depends_on:
+      fluentd:
+        condition: service_healthy
+    volumes:
+      - ./configs/nats/nats-server.conf:/nats-server.conf
+      - ./data/nats:/data/jetstream
+    restart: always
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: nats
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.120
+
+  casdoor:
+    image: ${CSGHUB_IMAGE_PREFIX}/casbin/casdoor:v1.733.0
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    environment:
+      RUNNING_IN_DOCKER: true
+    volumes:
+      - ./configs/casdoor/conf:/conf
+    restart: always
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "8000" ]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: casdoor
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.121
+
+  temporal:
+    image: ${CSGHUB_IMAGE_PREFIX}/temporalio/auto-setup:1.25.1
+    depends_on:
+      postgres:
+        condition: service_healthy
+        restart: true
+    environment:
+      DB: "postgres12"
+      POSTGRES_SEEDS: "$POSTGRES_HOST"
+      DB_PORT: "$POSTGRES_PORT"
+      POSTGRES_USER: "$POSTGRES_USER"
+      POSTGRES_PWD: "$POSTGRES_PASSWORD"
+      DEFAULT_NAMESPACE_RETENTION: "7d"
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z temporal 7233" ]
+      interval: 10s
+      timeout: 30s
+      retries: 30
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: temporal
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.122
+
+  temporal-ui:
+    image: ${CSGHUB_IMAGE_PREFIX}/temporalio/ui:2.30.3
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: "temporal:7233"
+      TEMPORAL_CORS_ORIGINS: "http://localhost:3000"
+      TEMPORAL_UI_PUBLIC_PATH: "/temporal-ui"
+    restart: always
+    deploy:
+      replicas: ${TEMPORAL_UI_ENABLED:-1}
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: temporal-ui
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.123
+
+  fluentd:
+    image: ${CSGHUB_IMAGE_PREFIX}/fluentd:v1.16-1
+    ports:
+      - "24224:24224"
+    volumes:
+      - ./configs/fluentd/fluent.conf:/fluentd/etc/fluent.conf
+      - ./logs/fluentd/archived:/fluentd/log
+      - ./logs/fluentd/buffer:/fluentd/buffer
+    restart: always
+    privileged: true
+    healthcheck:
+      test: [ "CMD-SHELL", "nc -z fluentd 24224" ]
+      interval: 10s
+      timeout: 30s
+      retries: 30
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.124
+
+networks:
+  opencsg:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.171.100.0/24"

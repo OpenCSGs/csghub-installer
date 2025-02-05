@@ -1,0 +1,48 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+data:
+  {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+  CSGHUB_PORTAL_ENABLE_HTTPS: "true"
+  {{- else }}
+  CSGHUB_PORTAL_ENABLE_HTTPS: "false"
+  {{- end }}
+  CSGHUB_PORTAL_ON_PREMISE: "true"
+  CSGHUB_PORTAL_SENSITIVE_CHECK: "false"
+  CSGHUB_PORTAL_STARHUB_BASE_URL: {{ include "csghub.external.endpoint" . }}
+  CSGHUB_PORTAL_STARHUB_API_KEY: {{ include "server.hub.api.token" . | quote }}
+  # PostgreSQL
+  CSGHUB_PORTAL_DATABASE_HOST: {{ include "csghub.postgresql.host" . }}
+  CSGHUB_PORTAL_DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
+  CSGHUB_PORTAL_DATABASE_NAME: {{ include "csghub.postgresql.database" . }}
+  {{- $user := include "csghub.postgresql.user" . }}
+  {{- $password := include "postgresql.initPass" $user }}
+  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
+  {{- if $secretData }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
+  {{- end }}
+  CSGHUB_PORTAL_DATABASE_USERNAME: {{ $user }}
+  CSGHUB_PORTAL_DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
+  CSGHUB_PORTAL_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user $password (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
+  # ObjectStorage
+  CSGHUB_PORTAL_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix  "https://" }}
+  CSGHUB_PORTAL_S3_ACCESS_KEY_ID: {{ include "csghub.objectStore.accessKey" . }}
+  CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET: {{ include "csghub.objectStore.accessSecret" . }}
+  CSGHUB_PORTAL_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
+  CSGHUB_PORTAL_S3_REGION: {{ include "csghub.objectStore.region" . }}
+  CSGHUB_PORTAL_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}

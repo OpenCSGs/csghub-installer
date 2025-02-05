@@ -1,90 +1,58 @@
-# 安装 CSGHub
+# CSGHub 安装指引
 
-## 概述
+> **版本历史：**
+>
+> - 从 v0.9.0 版本开始，CSGHub 将不再继续提供 Gitea 作为 git 后端的支持。
+> - 从 v1.1.0 版本开始，添加 Temporal 组件，作为异步 / 计划任务执行器。
+> - 从 v1.3.0 版本开始，CSGHub 将 gitea 从 docker-compose/helm-chart 安装程序中移除。
+>
+> **说明：**
+>
+> - [多语言文档](../../docs/)
 
-CSGHub 是一个开源、可信的大模型资产管理平台，可帮助用户治理 LLM 及其应用生命周期中涉及到的资产（数据集、模型文件、代码等）。基于 CSGHub，用户可以通过 Web 界面、Git 命令行或者自然语言
- Chatbot 等方式，实现对模型文件、数据集、代码等资产的操作，包括上传、下载、存储、校验和分发；同时平台提供微服务子模块和标准化 API，便于用户与自有系统集成。
+### 介绍
+
+CSGHub 是一个开源、可信的大模型资产管理平台，可帮助用户治理 LLM 及其应用生命周期中涉及到的资产（数据集、模型文件、代码等）。基于 CSGHub，用户可以通过 Web 界面、Git 命令行或者自然语言 Chatbot 等方式，实现对模型文件、数据集、代码等资产的操作，包括上传、下载、存储、校验和分发；同时平台提供微服务子模块和标准化 API，便于用户与自有系统集成。
 
 CSGHub 致力于为用户带来针对大模型原生设计的、可私有化部署离线运行的资产管理平台。CSGHub 提供类似私有化的 Hugging Face 功能，以类似 OpenStack Glance 管理虚拟机镜像、Harbor 管理容器镜>像以及 Sonatype Nexus 管理制品的方式，实现对 LLM 资产的管理。
 
-> **提示:**
->
-> - 从 v0.9.0 版本开始, CSGHub 将使用 [Gitaly](https://gitlab.com/gitlab-org/gitaly) 作为默认的 Git 服务，并且不在继续提供 Gitea 支持。
-> - Docker 和 Helm Chart 部署方式的文档中提供了快速部署 k8s 服务的脚本，但仅用于测试.
+关于 CSGHub 的介绍，请参考：https://github.com/OpenCSGs/csghub
 
-当前项目介绍了部署 CSGHub 的多种方式, 主要有以下：
+### 部署方式
 
-- Docker Engine/Docker Desktop
-- Docker Compose
-- Helm Chart
+本项目主要介绍 CSGHub 的多种安装方式。
 
-## 部署方式
+目前 CSGHub 安装主要包括三种安装方式：
 
-### Docker Engine/Docker Desktop
+- [Docker Engine](../../docker/README.md)（用于测试目的）
+- [Docker Compose](../../docker/compose/README.md)
+- [Helm Chart](../../helm/README.md)
 
-1. Docker Engine 部署方式提供最简易部署（包含完整功能），目前处于测试阶段。
-2. Docker 部署方式分为**快速部署**和**完整部署**两部分，快速部署不包含部分高级功能，例如 Space 应用托管、模型推理与微调等。
-3. 完整功能体验需要 Kubernetes 集群支持部署，文档中已包含快速部署方式（仅供测试与功能体验）。
-4. 快速启动：
-```shell
-export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
-export SERVER_PORT=80
-docker run -it -d \
-    --name omnibus-csghub \
-    --hostname omnibus-csghub \
-    -p ${SERVER_PORT}:80 \
-    -p 2222:2222 \
-    -p 8000:8000 \
-    -p 9000:9000 \
-    -v /srv/csghub/data:/var/opt \
-    -v /srv/csghub/log:/var/log \
-    -e CSGHUB_WITH_K8S=0 \
-    -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-    -e SERVER_PORT=${SERVER_PORT} \
-    opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-```
-5. 更多详细信息请参考[这里](README_cn_docker.md)。
+开源版本中每种部署方式都可以进行完整功能的体验，但是完整功能的体验需要 CSGHub 对接到 Kubernetes 集群。
 
-### Docker Compose
+更多详细请参考各方式部署文档。历史部署方式请参考 release-v1.x 分支。
 
-1. 此方式仅用于测试开发用途，生产环境建议使用 Helm Chart 部署方式。
-2. Docker Compose 部署方式作为 Docker 的增强部署方式，同样需要依赖 k8s 才能体验完整功能，目前的部署方式不包含 k8s 部署。
-3. 快速启动：
-```shell
-curl -L -o csghub.tgz https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghub-docker-compose-v1.3.0.tgz
-tar -zxf csghub.tgz && cd csghub
+## 组件介绍
 
-# 如果 `.env` 发生变化或者是第一次安装，那么必须执行`./configure`以渲染新的配置文件。
-chmod +x configure && ./configure
-```
-4. 更多详细信息请参考[这里](README_cn_docker_compose.md)。
+CSGHub 项目由多个组件组成，每个组件都承担着特定的职责，共同构成一个高效、可扩展的系统架构。以下是各个组件的简要介绍：
 
-### Helm Chart
-
-1. Helm Chart 部署方式适用于对稳定性和可用性要求较高的场景，例如生产环境。
-2. Helm Chart 仅支持`gitaly`作为 git 服务器后端，不支持`gitea`。
-3. 快速启动:
-```shell
-# 如果是第一次安装请参考步骤 4 完成前置条件配置
-# 创建命名空间和 Secret
-kubectl create ns csghub 
-kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
-
-# 添加 CSGHub Helm 仓库
-helm repo add csghub https://opencsgs.github.io/csghub-installer
-helm repo update
-
-# 安装 CSGHub
-# 如果使用的是 ZSH，请替换 `internalDomain[0]`为`internalDomain\[0\]`
-helm install csghub csghub/csghub \
-  	--namespace csghub \
-  	--create-namespace \
-  	--set global.domain=example.com \
-  	--set global.runner.internalDomain[0].domain=app.internal \
-  	--set global.runner.internalDomain[0].host=172.25.11.130 \
-  	--set global.runner.internalDomain[0].port=32497
-```
-4. 更多详细信息请参考[这里](README_cn_helm_chart.md)。
-
-
-有关 CSGHub 的更多详细信息请参见[这里](https://github.com/OpenCSGs/CSGHub)。
+- **csghub_portal**: 负责用户界面的管理和展示，提供直观的界面供用户与系统交互。
+- **csghub_server**: 提供主要的服务逻辑和 API 接口，处理客户端发送的请求。
+- **csghub_user**: 管理用户身份和认证流程，确保用户信息的安全性和隐私保护，支持用户注册、登录及权限管理。
+- **csghub_proxy**: 负责部署实例相关的请求转发，例如 space 应用的操作请求转发到 Knative Serving 服务。
+- **csghub_accounting**: 计费系统，负责资源使用过程中产生的费用统计。
+- **csghub_mirror**: 提供仓库数据的同步服务，负责同步 opencsg.com 模型和数据集到本地。
+- **csghub_runner**: 负责在 Kubernetes 集群中部署和管理应用实例，确保应用的快速构建和持续交付。
+- **csghub_builder**: 负责构建应用镜像并上传到容器镜像仓库，简化应用的打包和发布流程。
+- **csghub_watcher**: 监控 CSGHub  所有 Secret 和 ConfigMap 变动，并更新相关依赖资源。
+- **gitaly**: 用于 Git 存储后端，提供高性能的 Git 操作，实现快速、高效的代码版本控制和管理。
+- **gitlab-shell**: 提供 Git over SSH 的交互接口，用于安全的 Git 操作，确保数据传输的安全性。
+- **nats**: 实现微服务之间的消息传递和事件驱动架构，提供高效的异步通信能力，增强系统的解耦性和响应速度。
+- **minio**: 提供高性能的本地对象存储服务。
+- **postgresql**: 存储各组件元数据，提供高效的数据查询和更新能力。
+- **registry**: 提供容器镜像仓库服务，便于存储、管理和分发容器镜像。
+- **redis**: 提供高性能的缓存和数据存储服务。
+- **casdoor**: 负责用户身份的验证和授权，配合 **csghub_user** 完成用户管理。
+- **coredns**: 用于解析 CSGHub 的内部 DNS 请求，例如 Knative Serving 中使用的内部域名解析。
+- **Temporal**: 异步任务管理服务，用于执行耗时较长任务，比如资源同步任务。
+- **fluentd**: 灵活的日志收集和处理框架，聚合和转发各应用程序日志，便于实时监控、分析和故障排除。

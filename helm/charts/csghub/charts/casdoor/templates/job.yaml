@@ -1,0 +1,88 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 10
+  activeDeadlineSeconds: 1200
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or .Values.global.image.pullSecrets .Values.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          env:
+            - name: PGHOST
+              value: {{ include "csghub.postgresql.host" . }}
+            - name: PGPORT
+              value: {{ include "csghub.postgresql.port" . | quote }}
+            - name: PGDATABASE
+              value: {{ include "csghub.postgresql.database" . }}
+            - name: PGUSER
+              value: {{ include "csghub.postgresql.user" . }}
+            - name: PGPASSWORD
+              {{- if not .Values.global.postgresql.external }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.custom" (list . "postgresql") }}
+                  key: {{ include "csghub.postgresql.user" . }}
+              {{- else }}
+              value: {{ include "csghub.postgresql.password" . }}
+              {{- end }}
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+      containers:
+        - name: psql
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
+          env:
+            - name: PGHOST
+              value: {{ include "csghub.postgresql.host" . }}
+            - name: PGPORT
+              value: {{ include "csghub.postgresql.port" . | quote }}
+            - name: PGDATABASE
+              value: {{ include "csghub.postgresql.database" . }}
+            - name: PGUSER
+              value: {{ include "csghub.postgresql.user" . }}
+            - name: PGPASSWORD
+              {{- if not .Values.global.postgresql.external }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "common.names.custom" (list . "postgresql") }}
+                  key: {{ include "csghub.postgresql.user" . }}
+              {{- else }}
+              value: {{ include "csghub.postgresql.password" . }}
+              {{- end }}
+          volumeMounts:
+            - name: init
+              mountPath: /scripts
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" (list . "casdoor-init") }}

@@ -1,0 +1,125 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.labels.selector" . | nindent 6 }}
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 60
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+    spec:
+      {{- with (or .Values.global.image.pullSecrets .Values.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image:  {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+          env:
+            - name: PGHOST
+              value: "$(CSGHUB_PORTAL_DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(CSGHUB_PORTAL_DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(CSGHUB_PORTAL_DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(CSGHUB_PORTAL_DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(CSGHUB_PORTAL_DATABASE_PASSWORD)"
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+      containers:
+        - name: portal
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "/myapp/csghub-portal migration init && /myapp/csghub-portal migration migrate && /myapp/csghub-portal start server" ]
+          ports:
+            - containerPort: 8090
+              name: portal
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "casdoor") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
+            {{- if not .Values.global.objectStore.external }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "minio") }}
+            {{- end }}
+          env:
+            - name: CSGHUB_PORTAL_LOGIN_URL
+              value: "{{ include "casdoor.external.endpoint" . }}/login/oauth/authorize?client_id=$(STARHUB_SERVER_CASDOOR_CLIENT_ID)&response_type=code&redirect_uri=$(CSGHUB_PORTAL_STARHUB_BASE_URL)/api/v1/callback/casdoor&scope=read&state=casdoor"
+            {{- if not .Values.global.objectStore.external }}
+            - name: CSGHUB_PORTAL_S3_ACCESS_KEY_ID
+              value: "$(MINIO_ROOT_USER)"
+            - name: CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET
+              value: "$(MINIO_ROOT_PASSWORD)"
+            {{- end }}
+            {{- with .Values.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8090
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.podSecurityContext | toYaml | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

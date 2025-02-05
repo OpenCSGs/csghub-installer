@@ -1,0 +1,71 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" (list . "postgresql-init") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+data:
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" .)).data }}
+  initialize.sql: |
+    {{- range $username := .Values.databases }}
+    {{- if ne $username "postgres" }}
+    {{- $database := $username }}
+    {{- $password := include "postgresql.initPass" $database }}
+    {{- if $secretData }}
+    {{- $secretPassword := index $secretData $username }}
+    {{- if $secretPassword }}
+    {{- $password = $secretPassword | b64dec }}
+    {{- end }}
+    {{- end }}
+    {{- if contains "temporal" $database }}
+    {{- $username = "csghub_temporal" }}
+    {{- end }}
+    -- Create database {{ $database }} owner {{ $username }}
+    CREATE USER {{ $username | quote }} WITH ENCRYPTED PASSWORD {{ $password | squote }} CREATEDB;
+    CREATE DATABASE {{ $database }} ENCODING 'UTF-8' OWNER {{ $username | quote }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ $database }} TO {{ $username | quote }};
+    {{- end }}
+    {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+data:
+  postgresql.conf: |
+    listen_addresses = '*'
+    shared_buffers = 256MB
+    max_connections = 200
+    max_wal_size = 1GB
+    min_wal_size = 80MB
+    dynamic_shared_memory_type = posix
+    log_timezone = 'Etc/UTC'
+    datestyle = 'iso, mdy'
+    timezone = 'Etc/UTC'
+    lc_messages = 'en_US.utf8'
+    lc_monetary = 'en_US.utf8'
+    lc_numeric = 'en_US.utf8'
+    lc_time = 'en_US.utf8'
+    default_text_search_config = 'pg_catalog.english'
+    include_if_exists = '/etc/postgresql/runtime.conf'
+  runtime.conf: |
+  {{- range $key, $value := .Values.parameters -}}
+    {{- if and $key $value }}
+    {{ printf "%s = %s" $key ($value | toString) }}
+    {{- end }}
+  {{- end }}
+{{- end }}

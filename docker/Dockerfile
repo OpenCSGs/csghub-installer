@@ -18,7 +18,7 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.3.0 AS portal
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_space_builder:latest AS space-builder
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_builder:latest AS csghub-builder
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 
@@ -127,7 +127,7 @@ COPY --from=nats-server /nats-server /usr/bin/nats-server
 # ============================================================
 #   Init Space Builder Service
 # ============================================================
-COPY --from=space-builder /app/builder /usr/bin/builder
+COPY --from=csghub-builder /app/builder /usr/bin/builder
 
 # ============================================================
 #   Init Temporal Service

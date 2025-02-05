@@ -1,0 +1,28 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if and .Values.enabled .Values.global.deployment.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/statefulsets: "{{ include "common.names.custom" . }}"
+data:
+  REGISTRY_AUTH: "htpasswd"
+  REGISTRY_AUTH_HTPASSWD_REALM: "Registry Realm"
+  REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
+  REGISTRY_STORAGE: s3
+  REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "csghub.objectStore.endpoint" . }}
+  REGISTRY_STORAGE_S3_ACCESSKEY: {{ include "csghub.objectStore.accessKey" . }}
+  REGISTRY_STORAGE_S3_SECRETKEY: {{ include "csghub.objectStore.accessSecret" . }}
+  REGISTRY_STORAGE_S3_REGION: {{ include "csghub.objectStore.region" . }}
+  REGISTRY_STORAGE_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
+  REGISTRY_STORAGE_S3_ENCRYPT: {{ include "csghub.objectStore.encrypt" . | quote }}
+  REGISTRY_STORAGE_S3_SECURE: {{ include "csghub.objectStore.encrypt" . | quote }}
+  REGISTRY_STORAGE_S3_FORCEPATHSTYLE: {{ include "csghub.objectStore.pathStyle" . | quote }}
+{{- end }}

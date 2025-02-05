@@ -1,0 +1,336 @@
+## All modifications in this configuration file are only performed under global configuration block.
+## Any configuration outside global configuration block is an automatic adaptation configuration and should not be modified.
+
+## Global configuration will override subChart's configuration
+global:
+  image:
+    ## List of Kubernetes secrets to use for pulling images (e.g., for private registry).
+    pullSecrets: [ ]
+    ## Specify path prefix of images, no need to add the final slash `/`
+    ## You can add namespace follow registry.
+    ## eg: docker.io/minio/minio:latest ==> {{ registry }}/minio/minio:latest
+    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+    ## Globally specify the image version to be used by csghub_server.
+    ## Example: latest, v1.0.0, etc.
+    # tag: ""
+
+  ## Define the access domain name of csghub and whether to enable encrypted access.
+  ingress:
+    ## Ideally, it is best to have a registered domain name, +
+    ## because local domain names may require some additional configuration
+    domain: example.com
+    ## According to the characteristics of the program, +
+    ## it is not allowed to configure whether to enable TLS for each subChart separately, +
+    ## but subCharts are allowed to define their own TLS secretName.
+    tls: { }
+      # enabled: false
+      ## Specify the tls secret containing the wildcard domain name certificate. +
+      ## You need to prepare certificates and create TLS secrets yourself.
+      # secretName: ""
+    service:
+      ## `&type` is an internal anchor, do not delete it
+      ##  `ingress-nginx-controller` and `kourier` will also the same
+      type: &type LoadBalancer
+
+  ## This section configures whether to use an external container image repository.
+  registry:
+    ## Indicates whether the registry is external (true) or internal (false)
+    external: false
+    ## Configuring external registry
+    ## If `external` set to `true`, `connection` is needed.
+    connection: { }
+      ## The URL of the Docker registry service; default is Docker Hub
+      # repository: "docker.io"
+      ## The namespace (or organization) under which the images are stored in the registry
+      # namespace: "csghub"
+      ## The username for authenticating to the registry
+      # username: ""
+      ## The password for authenticating to the registry
+      # password: ""
+
+  ## This section configures whether to use an external postgresql database.
+  postgresql:
+    ## Specifies whether to use an external PostgreSQL instance or a built-in one
+    external: false
+    ## Configuring external postgresql database
+    ## If `external` set to `true`, `connection` is needed.
+    connection: { }
+      ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
+      # host: ""
+      ## Port on which the PostgreSQL database is running. Default is usually 5432.
+      # port: ""
+      ## Prefix of the database to connect to.
+      ## Priority:
+      ##       postgresql.database > subChart.postgresql{}
+      ## This method will store all metadata data in the same database, which is not recommended,
+      ##   as it may cause data table conflicts.
+      ## The recommended way is to comment this parameter and use the default database:
+      ##   - csghub_portal
+      ##   - csghub_server
+      ##   - csghub_casdoor
+      ##   - csghub_temporal
+      ##   - csghub_temporal_visibility
+      ## Please make sure that the above databases have been created
+      # database: ""
+      ## Username for authenticating with the PostgreSQL database.
+      # user: ""
+      ## Password for the PostgreSQL user specified above.
+      # password: ""
+      ## Timezone for PostgreSQL
+      # timezone: "Etc/UTC"
+
+  ## This section configures whether to use an external redis cache.
+  redis:
+    ## Set to false to use internal Redis service
+    external: false
+    ## Configuring external redis cache
+    ## If `external` set to `true`, `connection` is needed.
+    connection: { }
+      ## Host for accessing Redis
+      # host: ""
+      ## Port for accessing Redis
+      # port: ""
+      ## Password for accessing Redis
+      # password: ""
+
+  ## The following is a unified object storage configuration.
+  ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
+  ## If you use external object storage, make sure the bucket has been created.
+  objectStore:
+    ## If you use external object storage, set this to true, otherwise set this to false to use built-in object storage.
+    external: false
+    ## Configuring external object storage
+    ## If `external` set to `true`, `connection` is needed.
+    connection: { }
+      ## The endpoint of the object storage service, e.g., S3 compatible service URL
+      # endpoint: ""
+      ## The access key used for authentication
+      # accessKey: ""
+      ## The secret key used for authentication
+      # accessSecret: ""
+      ## The location used for authentication
+      # region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "true"
+      ## Indicates whether to use path-style requests
+      # pathStyle: "true"
+      ## By default (in the case of comments), the following bucket is used:
+      ##   - csghub-portal
+      ##   - csghub-server
+      ##   - csghub-registry
+      ##   - csghub-workflow
+      # bucket: ""
+
+  ## Configuration for content moderation settings
+  moderation:
+    enabled: false
+    ## Configuring external content moderation server connection info
+    connection: { }
+      ## The access key ID for authentication with the moderation service
+      # accessKeyId: ""
+      ## The access key secret for authentication with the moderation service
+      # accessKeySecret: ""
+      ## The region where the moderation service is hosted
+      # region: ""
+
+  ## This section of configuration is used to integrate k8s to run various instances, +
+  ## such as Space applications, fine-tuning, and inference instances.
+  deployment:
+    ## Enable or disable the deployment of this application.
+    enabled: true
+    ## Name of the Kubernetes Secret to be used for configuration or credentials.
+    kubeSecret: "kube-configs"
+    ## Kubernetes namespace where the deployment will be created.
+    namespace: "spaces"
+    ## csghub uses knative serving to assist in instance construction, |
+    ## so if this function is required, you need to configure the following information
+    knative:
+      serving:
+        autoConfigure: true
+        ## Configuration for Knative serving services.
+        ## If `autoConfigure` set to `true`, +
+        ## it will be configured using following dict except `host`
+        services:
+          ## Definition of a specific Knative service.
+          ## The name of the service.
+          - name: example-service-1
+            ## The hostname through which the service can be accessed.
+            domain: "app.internal"
+            ## The IP address assigned to the service.
+            ## Usually remote k8s api-server node address.
+            host: "192.168.18.3"
+            ## The port on which the service is exposed.
+            ## If `ingress.service.type` set to `LoadBalancer`, +
+            ## port should be set to `80` or `443`
+            port: "80"
+
+## More subChart configuration mappings are omitted here.
+## Under normal circumstances, these configurations are not necessary.
+## If necessary, you can check which parameters the subChart can configure and modify them.
+## However, it should be noted that the current `autoscaling` is not adapted.
+
+## The following configuration is just an example. Normally, +
+## no modification is required and the default configuration will be applied.
+
+## For Gitaly
+gitaly:
+  enabled: true
+  ## Log output level
+  logging:
+    level: "info"
+  ## Persistence settings for the Gitaly data.
+  persistence:
+    ## Specifies the StorageClass used for provisioning the volume.
+    ## An empty value means the default StorageClass is used.
+    ## StorageClass defines the type of storage used and can affect performance and cost.
+    storageClass: ""
+    ## Defines the access modes of the volume.
+    ## ReadWriteOnce means the volume can be mounted as read-write by a single node.
+    ## This is suitable for most use cases where a single instance of Gitaly is running.
+    accessMode: [ "ReadWriteOnce" ]
+    ## Specifies the size of the persistent volume.
+    ## This should be adjusted based on expected usage and data growth over time.
+    size: 200Gi
+
+## For PostgreSQL
+postgresql:
+  ## Specify the database parameters that need to be optimized here.
+  ## Under normal circumstances, the configuration can be automatically applied.
+  parameters: { }
+  ## List of databases to be created upon deployment
+  # databases:
+  #   - csghub_portal
+  #   - csghub_server
+  #   - csghub_casdoor
+  #   - csghub_temporal
+  #   - csghub_temporal_visibility
+
+## For Minio
+minio:
+  ## Specify the bucket to be created and whether to enable version control.
+  buckets:
+    ## Default `false`
+    versioning: false
+
+## In order to make the maintenance of csghub helm easier, the official ingress-nginx is directly referenced here as a subChart.
+## This section of configuration is added for better adaptation, but this section of configuration is not within your modification scope.
+## Unless you know what you are doing, please do not modify this section of configuration.
+## PLEASE DO NOT UPDATE!!!
+ingress-nginx:
+  ## Enable the NGINX Ingress Controller
+  enabled: true
+  ## TCP services configuration
+  tcp:
+    ## Forward TCP traffic on port 22 to the specified service
+    22: csghub/csghub-gitlab-shell:22
+  ## NGINX Ingress Controller configuration
+  controller:
+    ## Configuration for the controller image
+    ## Reset digest to use third-party repository
+    ## DO NOT UPDATE!!! image.digest and admissionWebhooks.patch.image.digest
+    image:
+      ## Digest of the image for the controller
+      digest: ""
+    ## Configuration for admission webhooks
+    admissionWebhooks:
+      ## Patch settings for admission webhooks
+      patch:
+        ## Digest of the image for the admission webhook
+        image:
+          ## Digest of the image for the admission webhook
+          digest: ""
+    ## Configuration settings for the Ingress Controller
+    config:
+      ## Set the risk level for annotations; critical indicates high risk
+      annotations-risk-level: Critical
+    ## Allow the use of server snippets in annotations
+    allowSnippetAnnotations: true
+    ## Configuration for the service exposed by the Ingress Controller
+    service:
+      type: *type
+      ## Node ports for HTTP and HTTPS traffic
+      nodePorts:
+        ## Node port for HTTP traffic
+        http: 30080
+        ## Node port for HTTPS traffic
+        https: 30443
+        ## Node port for TCP traffic
+        tcp:
+          ## Node port for TCP traffic on port 22
+          22: 30022
+
+## This section is used to configure how to collect pod logs in the current namespace.
+## By default, they are directly output to the fluentd standard output in json format.
+fluentd:
+  enabled: true
+  # Configuration for Fluentd file sources
+  fileConfigs:
+    # Configuration for sources
+    01_sources.conf: |-
+      <source>
+        @type tail
+        @id in_tail_container_logs
+        @label @KUBERNETES
+        path /var/log/containers/*.log
+        pos_file /var/log/fluentd-containers.log.pos
+        tag kubernetes.*
+        read_from_head true
+        <parse>
+          @type json
+        </parse>
+        emit_unmatched_lines false
+      </source>
+      # expose metrics in prometheus format
+      <source>
+        @type prometheus
+        bind 0.0.0.0
+        port 24231
+        metrics_path /metrics
+      </source>
+      <system>
+        log_level debug
+      </system>
+    # Configuration for filters
+    02_filters.conf: |-
+      <label @KUBERNETES>
+        <filter kubernetes.**>
+          @type kubernetes_metadata
+          @id filter_kube_metadata
+          lookup_from_k8s_field true
+          skip_namespace_metadata true
+          skip_master_url true
+        </filter>
+        <filter kubernetes.var.log.containers.**>
+          @type grep
+          <regexp>
+            key $.kubernetes.labels
+            pattern /csghub/
+          </regexp>
+        </filter>
+        <match kubernetes.var.log.containers.**fluentd**>
+          @type null
+        </match>
+        <match **>
+          @type relabel
+          @label @DISPATCH
+        </match>
+      </label>
+    # Configuration for dispatching logs
+    03_dispatch.conf: |-
+      <label @DISPATCH>
+        <match **>
+          @type relabel
+          @label @OUTPUT
+        </match>
+      </label>
+    # Configuration for outputs
+    04_outputs.conf: |-
+      <label @OUTPUT>
+        <match **>
+          @type stdout
+          <format>
+            @type json
+            localtime true
+          </format>
+        </match>
+      </label>
