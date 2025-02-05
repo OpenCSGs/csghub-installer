@@ -189,8 +189,9 @@ postgresql:
   # databases:
   #   - csghub_portal
   #   - csghub_server
-  #   - casdoor
-  #   - temporal
+  #   - csghub_casdoor
+  #   - csghub_temporal
+  #   - csghub_temporal_visibility
 
 ## For Minio
 minio:

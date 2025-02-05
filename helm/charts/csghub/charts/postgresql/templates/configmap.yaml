@@ -21,7 +21,10 @@ data:
     {{- $database := $username }}
     {{- $password := include "postgresql.initPass" $database }}
     {{- if $secretData }}
-    {{- $password = index $secretData $username | b64dec }}
+    {{- $secretPassword := index $secretData $username }}
+    {{- if $secretPassword }}
+    {{- $password = $secretPassword | b64dec }}
+    {{- end }}
     {{- end }}
     {{- if contains "temporal" $database }}
     {{- $username = "csghub_temporal" }}
