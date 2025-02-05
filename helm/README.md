@@ -529,12 +529,12 @@ mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.t
 
     - Containerd 2.x
 
-    ```toml
-     version = 3
-    
-     [plugins."io.containerd.cri.v1.images".registry]
-          config_path = "/etc/containerd/certs.d"
-    ```
+        ```toml
+         version = 3
+        
+         [plugins."io.containerd.cri.v1.images".registry]
+              config_path = "/etc/containerd/certs.d"
+        ```
 
 3. Configure `hosts.toml`
 
