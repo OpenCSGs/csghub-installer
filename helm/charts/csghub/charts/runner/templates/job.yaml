@@ -51,6 +51,27 @@ spec:
               mountPath: /knative
             - name: space
               mountPath: /space
+        - name: gpu-gather
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/gpu_gather:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [ "-d", "/.kube", "-n", "default" ]
+          volumeMounts:
+            - name: kube-configs
+              mountPath: /.kube
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+          env:
+            - name: PGHOST
+              value: "$(STARHUB_DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(STARHUB_DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(STARHUB_DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(STARHUB_DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(STARHUB_DATABASE_PASSWORD)"
       volumes:
         - name: kube-configs
           secret:
