@@ -67,6 +67,25 @@ postgresql:
   ## It is empty by default for security reasons and should be set through secure means.
   password: ""
 
+## If you want to enable SMTP mail service, configure the following parameters
+smtp:
+  ## Enable or disable the SMTP configuration
+  enabled: false
+  ## The hostname of the SMTP server
+  host: "smtp.example.com"
+  ## The port number for the SMTP server (common ports: 25, 587, 465)
+  port: "465"
+  ## Username for SMTP authentication
+  username: ""
+  ## Password for SMTP authentication
+  password: ""
+  ## The email address that will be used as the sender
+  emailFrom: ""
+  ## The name that will appear as the sender in emails
+  emailName: ""
+  ## Whether to use a secure connection (true for SSL/TLS)
+  secure: true
+
 ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
 ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
 podAnnotations: {}
