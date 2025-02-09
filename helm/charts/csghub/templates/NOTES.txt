@@ -12,7 +12,9 @@ Visit CSGHub at the following address:
 Visit the Casdoor administrator console at the following address:
 
     Address: {{ include "casdoor.external.endpoint" . }}
-    Credentials: admin/123
+    Credentials: admin/{{ printf "%s@%s" (now | date "15/04") "admin" | sha256sum | trunc 16 | b64enc }}
+
+*Notes: The admin password is valid only for initial installation.*
 
 Visit the Temporal console at the following address:
 
