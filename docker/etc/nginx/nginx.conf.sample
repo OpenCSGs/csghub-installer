@@ -159,7 +159,7 @@ http {
     }
 
     server {
-        listen ${CASDOOR_PORT};
+        listen 8000;
         server_name ${SERVER_DOMAIN};
 
         location / {
