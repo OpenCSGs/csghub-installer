@@ -37,3 +37,31 @@ SET
 WHERE
     name = 'CSGHub';
 
+-- Reset admin user default password
+UPDATE
+    "user"
+SET
+    password = 'Root@1234'
+WHERE
+    name = 'admin'
+    AND password = '123';
+
+-- Keep user.id for root keep
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE OR REPLACE FUNCTION generate_uuid(input_string TEXT)
+RETURNS UUID AS $$
+DECLARE
+  base_uuid TEXT;
+BEGIN
+  base_uuid := md5(input_string);
+  RETURN uuid_generate_v5(uuid_nil(), base_uuid);
+END;
+$$ LANGUAGE plpgsql;
+
+UPDATE
+  "user"
+SET
+  id = 'ba301b25-3906-4a0a-bdc8-12bc23e2be34'
+WHERE
+  owner = 'OpenCSG'
+  AND name = 'root';
