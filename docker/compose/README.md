@@ -226,7 +226,16 @@ Wait for the program to automatically configure and start.
 
 ### Casdoor Configuration
 
-Please keep the default.
+| Variable                | Type   | Default value | Description                                                  |
+| :---------------------- | :----- | :------------ | :----------------------------------------------------------- |
+| CASDOOR_SMTP_ENABLED    | bool   | false         | Specifies whether SMTP is enabled.                           |
+| CASDOOR_SMTP_HOST       | string | smtp.163.com  | Specify the SMTP service address.                            |
+| CASDOOR_SMTP_PORT       | number | 463           | Specify the SMTP service port.                               |
+| CASDOOR_SMTP_USERNAME   | string | Null          | Specify the user name for authenticating to the SMTP service. |
+| CASDOOR_SMTP_PASSWORD   | string | Null          | Specify the password for authenticating to the SMTP service. |
+| CASDOOR_SMTP_EMAIL_FROM | string | Null          | Specifies the sender (usually the same as username).         |
+| CASDOOR_SMTP_EMAIL_NAME | string | OpenCSG       | Specify the name of the email after sending.                 |
+| CASDOOR_SMTP_USE_SSL    | bool   | true          | Specifies whether SSL/TLS encryption is enabled.             |
 
 ### Nats Configuration
 

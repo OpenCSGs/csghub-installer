@@ -36,6 +36,31 @@ Omnibus CSGHub is a way for OpenCSG to quickly deploy CSGHub using Docker, mainl
 >
 > - Please make sure that your local IP address segment and the docker default address segment (172.17.0.0) do not overlap. If they overlap, please try changing the local network connection (for example, changing the Ethernet network).
 
+#### Pre-installation instructions
+
+- If you need to adjust the port number exposed to the outside, you also need to modify the relevant variables. All adjusted port numbers must be re-entered into the container in the form of variables.
+
+    For example: adjust `SERVER_PORT` to `8080`.
+
+    ```shell
+    export SERVER_PORT=8080
+    docker run -it -d \
+    ...
+    -p ${SERVER_PORT}:80 \
+    ...
+    -e SERVER_PORT=${SERVER_PORT} \
+    opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+
+
+| Port number | Function                                           | Adjustment method                          |
+| :---------: | :------------------------------------------------- | :----------------------------------------- |
+|     80      | Nginx service port, providing csghub access        | SERVER_PORT=`[port]`                       |
+|    2222     | Git SSH service port, providing git clone over SSH | GITLAB_SHELL_SSH_PORT=`[port]`             |
+|    5000     | Registry service port, container image repository  | REGISTRY_ADDRESS=`${SERVER_DOMAIN}:[port]` |
+|    8000     | Casdoor service port, user authentication service  | CASDOOR_PORT=`[port]`                      |
+|    9000     | Minio service port, object storage service         | S3_ENDPOINT=`${SERVER_DOMAIN}:[port]`      |
+
 #### Quick Installation (Space and model inference & fine-tuning functions cannot be used)
 
 - **Linux**
@@ -369,6 +394,96 @@ Currently, a simple command line tool is provided for restarting services and vi
 
     All other command options are inherited from supervisorctl.
 
+### Variable Description
+
+***Tips:** Only configurable parameters are listed. 127.0.0.1 is a local service. By specifying the following variables, third-party services are used, but this does not disable internal services.* 
+
+### Server
+
+| Variable Name | Default Value      | Description                                     |
+| :------------ | :----------------- | :---------------------------------------------- |
+| SERVER_DOMAIN | csghub.example.com | Specifies the access IP address or domain name. |
+| SERVER_PORT   | 80                 | Specifies the access port.                      |
+
+#### PostgreSQL
+
+| Variable Name                                   | Default Value   | Description                                                  |
+| :---------------------------------------------- | :-------------- | :----------------------------------------------------------- |
+| POSTGRES_HOST                                   | 127.0.0.1       | Specifies the database access address.                       |
+| POSTGRES_PORT                                   | 5432            | Execution database port.                                     |
+| POSTGRES_SERVER_USER / POSTGRES_SERVER_PASS     | csghub_server   | Specify the csghub_server service database user and password. |
+| POSTGRES_PORTAL_USER / POSTGRES_PORTAL_PASS     | csghub_portal   | Specify the csghub_portal service database user and password. |
+| POSTGRES_CASDOOR_USER / POSTGRES_CASDOOR_PASS   | csghub_casdoor  | Specify the csghub_casdoor service database user and password. |
+| POSTGRES_TEMPORAL_USER / POSTGRES_TEMPORAL_PASS | csghub_temporal | Specify the csghub_temporal service database user and password. |
+
+#### Redis
+
+| Variable Name  | Default Value  | Description                          |
+| :------------- | :------------- | :----------------------------------- |
+| REDIS_ENDPOINT | 127.0.0.1:6379 | Specifies the Redis service address. |
+
+#### ObjectStorage
+
+| Variable Name      | Default Value   | Description                                                  |
+| :----------------- | :-------------- | :----------------------------------------------------------- |
+| S3_ENDPOINT        | 127.0.0.1:9000  | Specifies the object storage.                                |
+| S3_ACCESS_KEY      | minio           | Specifies the object storage access credentials.             |
+| S3_ACCESS_SECRET   | Minio@2025!     | Specifies the object storage access credentials.             |
+| S3_REGION          | cn-north-1      | Specifies the object storage region.                         |
+| S3_ENABLE_SSL      | false           | Specifies whether SSL encryption is enabled for the object store. |
+| S3_REGISTRY_BUCKET | csghub-registry | Specifies the bucket assigned to the registry.               |
+| S3_PORTAL_BUCKET   | csghub-portal   | Specifies the bucket assigned to csghub-portal.              |
+| S3_SERVER_BUCKET   | csghub-server   | Specifies the bucket assigned to csghub-server.              |
+
+#### Gitlab-Shell
+
+| Variable Name         | Default Value | Description                        |
+| :-------------------- | :------------ | :--------------------------------- |
+| GITLAB_SHELL_SSH_PORT | 2222          | Specifies the Git SSH port number. |
+
+#### Registry
+
+| Variable Name      | Default Value       | Description                                                 |
+| :----------------- | :------------------ | :---------------------------------------------------------- |
+| REGISTRY_ADDRESS   | $SERVER_DOMAIN:5000 | Specifies the address of the Registry service.              |
+| REGISTRY_NAMESPACE | csghub              | Specifies the namespace used by the Registry.               |
+| REGISTRY_USERNAME  | registry            | Specifies the username for the Registry service connection. |
+| REGISTRY_PASSWORD  | Registry@2025!      | Specifies the password for the Registry service connection. |
+
+#### Space
+
+***Tips:** The following configuration will be automatically obtained if `KNATIVE_SERVING_ENABLE = true` is configured.* 
+
+| Variable name    | Default value           | Description                                                  |
+| :--------------- | :---------------------- | :----------------------------------------------------------- |
+| SPACE_APP_NS     | spaces                  | Specifies the default Kubernetes namespace used by Space.    |
+| SPACE_APP_DOMAIN | app.internal            | Specifies the internal domain name used by Knative Serving.  |
+| SPACE_APP_HOST   | 127.0.0.1               | Specifies the gateway of the Knative Serving network component. |
+| SPACE_APP_PORT   | 80                      | Specifies the port of the Knative Serving network component. |
+| SPACE_DATA_PATH  | /var/opt/csghub-builder | Specifies the data storage directory for Space builds.       |
+
+#### Casdoor
+
+| Variable Name | Default Value | Description                 |
+| :------------ | :------------ | :-------------------------- |
+| CASDOOR_PORT  | 8000          | Specifies the CASDOOR port. |
+
+#### Temporal
+
+| Variable Name | Default Value  | Description                                                  |
+| :------------ | :------------- | :----------------------------------------------------------- |
+| TEMPORAL_USER | temporal       | Specifies the user name for authenticating Temporal logins.  |
+| TEMPORAL_PASS | Temporal@2025! | Specifies the user password for authenticating Temporal logins. |
+
+#### Kubernetes
+
+| Variable name          | Default value | Description                                                  |
+| :--------------------- | :------------ | :----------------------------------------------------------- |
+| KNATIVE_SERVING_ENABLE | false         | Specifies whether to automatically install Knative Serving.  |
+| KNATIVE_KOURIER_TYPE   | NodePort      | Specifies the service exposure method of the knative Serving Kourier network component. |
+| NVIDIA_DEVICE_PLUGIN   | false         | Specifies whether to automatically install the nvidia device plugin (the default runtime of the GPU node containerd needs to be configured by yourself). |
+| CSGHUB_WITH_K8S        | 1             | Whether to connect to the Kubernetes cluster.                |
+
 ### Function Exploration
 
 CSGHub provides several key functions:
@@ -398,7 +513,7 @@ If you are not using or need to rebuild the container, you can do the following:
 docker rm -f omnibus-csghub
 ```
 
-If you also need to uninstall the k8s environment, you can do the following:
+If you also need to uninstall the k3s environment, you can do the following:
 
 ```shell
 /usr/local/bin/k3s-uninstall.sh
