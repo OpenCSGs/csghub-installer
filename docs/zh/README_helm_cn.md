@@ -388,9 +388,22 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
 | temporal.authentication.username | string   | Null   | 指定验证登录 Temporal 的用户名。 |
 | temporal.authentication.password | string   | Null   | 指定验证登录 Temporal 的密码。   |
 
+#### casdoor
+
+| 参数配置               | 字段类型 | 默认值       | 说明                                 |
+| :--------------------- | :------- | :----------- | :----------------------------------- |
+| casdoor.smtp.enabled   | bool     | false        | 指定是否启用 SMTP。                  |
+| casdoor.smtp.host      | string   | smtp.163.com | 指定 SMTP 服务地址。                 |
+| casdoor.smtp.port      | number   | 463          | 指定 SMTP 服务端口。                 |
+| casdoor.smtp.username  | string   | Null         | 指定验证 SMTP 服务的用户名。         |
+| casdoor.smtp.password  | string   | Null         | 指定验证 SMTP 服务的密码。           |
+| casdoor.smtp.emailFrom | string   | Null         | 指定发件人（通常和 username 一致）。 |
+| casdoor.smtp.emailName | string   | OpenCSG      | 指定发送后的邮件名称。               |
+| casdoor.smtp.secure    | bool     | true         | 指定是否启用 SSL/TLS 加密。          |
+
 #### Others
 
-**其余参数请自行参考组件**`values.yaml`文件。
+其余参数请自行参考组件`values.yaml`文件。
 
 ### Dependencies
 

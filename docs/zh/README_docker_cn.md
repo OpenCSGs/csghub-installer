@@ -35,6 +35,30 @@ Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种�
 >
 > - 请确保你本地的IP地址段和docker默认的地址段（172.17.0.0）不重叠，如果重叠，请尝试更换本地网络连接（例如更换以太网网络）。
 
+#### 安装前说明
+
+- 如果有需要调整对外暴露的端口号，还需要修改相关变量。所有调整的端口号都要以变量的形式重新传入到容器中。
+
+    例如：调整 `SERVER_PORT`为`8080`。
+
+    ```shell
+    export SERVER_PORT=8080
+    docker run -it -d \
+    		...
+        -p ${SERVER_PORT}:80 \
+    		...
+        -e SERVER_PORT=${SERVER_PORT} \
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+
+| 端口号 | 作用                                      | 调整方式                                   |
+| :----: | :---------------------------------------- | :----------------------------------------- |
+|   80   | Nginx 服务端口，提供 csghub 访问          | SERVER_PORT=`[port]`                       |
+|  2222  | Git SSH 服务端口，提供 git clone over SSH | GITLAB_SHELL_SSH_PORT=`[port]`             |
+|  5000  | Registry 服务端口，容器镜像仓库           | REGISTRY_ADDRESS=`${SERVER_DOMAIN}:[port]` |
+|  8000  | Casdoor 服务端口，用户鉴权服务            | CASDOOR_PORT=`[port]`                      |
+|  9000  | Minio 服务端口，对象存储服务              | S3_ENDPOINT=`${SERVER_DOMAIN}:[port]`      |
+
 #### 快速安装（无法使用 Space、模型推理微调功能）
 
 - **Linux**
@@ -367,6 +391,96 @@ Omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服�
 
     所有其他命令选项继承自`supervisorctl`。
 
+### 变量说明
+
+***提示：**仅列举可配置参数。127.0.0.1 为本地服务，通过指定如下变量使用第三方服务，但这并不会禁用内部服务。*
+
+### Server
+
+| 变量名        | 默认值             | 说明                       |
+| :------------ | :----------------- | :------------------------- |
+| SERVER_DOMAIN | csghub.example.com | 指定是访问 IP 地址或域名。 |
+| SERVER_PORT   | 80                 | 指定访问的端口。           |
+
+#### PostgreSQL
+
+| 变量名                                          | 默认值          | 说明                                        |
+| :---------------------------------------------- | :-------------- | :------------------------------------------ |
+| POSTGRES_HOST                                   | 127.0.0.1       | 指定数据库访问地址。                        |
+| POSTGRES_PORT                                   | 5432            | 执行数据库端口。                            |
+| POSTGRES_SERVER_USER / POSTGRES_SERVER_PASS     | csghub_server   | 指定 csghub_server 服务数据库用户、密码。   |
+| POSTGRES_PORTAL_USER / POSTGRES_PORTAL_PASS     | csghub_portal   | 指定 csghub_portal 服务数据库用户、密码。   |
+| POSTGRES_CASDOOR_USER / POSTGRES_CASDOOR_PASS   | csghub_casdoor  | 指定 csghub_casdoor 服务数据库用户、密码。  |
+| POSTGRES_TEMPORAL_USER / POSTGRES_TEMPORAL_PASS | csghub_temporal | 指定 csghub_temporal 服务数据库用户、密码。 |
+
+#### Redis 
+
+| 变量名         | 默认值         | 说明                  |
+| :------------- | :------------- | :-------------------- |
+| REDIS_ENDPOINT | 127.0.0.1:6379 | 指定 Redis 服务地址。 |
+
+#### ObjectStorage
+
+| 变量名             | 默认值          | 说明                                    |
+| :----------------- | :-------------- | :-------------------------------------- |
+| S3_ENDPOINT        | 127.0.0.1:9000  | 指定对象存储。                          |
+| S3_ACCESS_KEY      | minio           | 指定对象存储访问凭据。                  |
+| S3_ACCESS_SECRET   | Minio@2025!     | 指定对象存储访问凭据。                  |
+| S3_REGION          | cn-north-1      | 指定对象存储地域。                      |
+| S3_ENABLE_SSL      | false           | 指定对象存储是否启用 SSL 加密。         |
+| S3_REGISTRY_BUCKET | csghub-registry | 指定分配给 Registry 使用的存储桶。      |
+| S3_PORTAL_BUCKET   | csghub-portal   | 指定分配给 csghub-portal 使用的存储桶。 |
+| S3_SERVER_BUCKET   | csghub-server   | 指定分配给 csghub-server 使用的存储桶。 |
+
+#### Gitlab-Shell
+
+| 变量名                | 默认值 | 说明                  |
+| :-------------------- | :----- | :-------------------- |
+| GITLAB_SHELL_SSH_PORT | 2222   | 指定 Git SSH 端口号。 |
+
+#### Registry
+
+| 变量名             | 默认值              | 说明                             |
+| :----------------- | :------------------ | :------------------------------- |
+| REGISTRY_ADDRESS   | $SERVER_DOMAIN:5000 | 指定 Registry 服务地址。         |
+| REGISTRY_NAMESPACE | csghub              | 指定 Registry 使用的命名空间。   |
+| REGISTRY_USERNAME  | registry            | 指定 Registry 服务连接用户名。   |
+| REGISTRY_PASSWORD  | Registry@2025!      | 指定 Registry 服务连接用户密码。 |
+
+#### Space
+
+***提示：**以下配置如果配置 `KNATIVE_SERVING_ENABLE = true` 会自动获取。*
+
+| 变量名           | 默认值                  | 说明                                        |
+| :--------------- | :---------------------- | :------------------------------------------ |
+| SPACE_APP_NS     | spaces                  | 指定 Space 默认使用的 Kubernetes 命名空间。 |
+| SPACE_APP_DOMAIN | app.internal            | 指定 Knative Serving 使用的内部域名。       |
+| SPACE_APP_HOST   | 127.0.0.1               | 指定 Knative Serving 网络组件网关。         |
+| SPACE_APP_PORT   | 80                      | 指定 Knative Serving 网络组件端口。         |
+| SPACE_DATA_PATH  | /var/opt/csghub-builder | 指定 Space 构建数据存储目录。               |
+
+#### Casdoor
+
+| 变量名       | 默认值 | 说明                |
+| :----------- | :----- | :------------------ |
+| CASDOOR_PORT | 8000   | 指定 CASDOOR 端口。 |
+
+#### Temporal
+
+| 变量名        | 默认值         | 说明                                |
+| :------------ | :------------- | :---------------------------------- |
+| TEMPORAL_USER | temporal       | 指定验证 Temporal  登录的用户名。   |
+| TEMPORAL_PASS | Temporal@2025! | 指定验证 Temporal  登录的用户密码。 |
+
+#### Kubernetes
+
+| 变量名                 | 默认值   | 说明                                                         |
+| :--------------------- | :------- | :----------------------------------------------------------- |
+| KNATIVE_SERVING_ENABLE | false    | 指定是否自动安装 Knative Serving。                           |
+| KNATIVE_KOURIER_TYPE   | NodePort | 指定 knative Serving Kourier 网络组件服务暴露方式。          |
+| NVIDIA_DEVICE_PLUGIN   | false    | 指定是否自动安装 nvidia device plugin（GPU 节点 containerd 默认 runtime 需要自行配置）。 |
+| CSGHUB_WITH_K8S        | 1        | 是否对接 Kubernetes 集群。                                   |
+
 ### 功能探索
 
 CSGHub 提供了几个关键功能：
@@ -393,7 +507,7 @@ CSGHub 提供了几个关键功能：
 docker rm -f omnibus-csghub
 ```
 
-如果还需要卸载 k8s 环境，可以执行如下操作：
+如果还需要卸载 k3s 环境，可以执行如下操作：
 
 ```shell
 /usr/local/bin/k3s-uninstall.sh
