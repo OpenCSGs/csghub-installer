@@ -35,9 +35,10 @@ check_postgresql
 echo "Initialize postgres databases"
 create_user "csghub_server"
 create_user "csghub_portal"
-create_user "casdoor"
-create_user "temporal"
-promote_user "temporal"
+create_user "csghub_casdoor"
+create_user "csghub_temporal"
+promote_user "csghub_server"
+promote_user "csghub_temporal"
 
 IF_EXISTS=$(/usr/bin/psql -t -A -l | egrep 'csghub|casdoor' | wc -l)
 if [ "$IF_EXISTS" -eq 6 ]; then
