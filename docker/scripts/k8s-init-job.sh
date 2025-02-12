@@ -45,7 +45,7 @@ verify_pods_running() {
   }
 
 create_namespace() {
-  IF_EXISTS=$(kubectl get ns | grep "$SPACE_APP_NS")
+  IF_EXISTS=$(kubectl get ns | grep -w "$SPACE_APP_NS")
   if [ -z "$IF_EXISTS" ]; then
     kubectl create ns $SPACE_APP_NS
   fi
