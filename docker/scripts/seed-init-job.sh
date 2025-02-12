@@ -71,7 +71,7 @@ if [ -f "/root/.kube/config" ]; then
   execute_sql "$POSTGRES_SERVER_USER" /etc/server/initialize.sql
 else
   execute_sql "$POSTGRES_SERVER_USER" "CREATE OR REPLACE FUNCTION promote_root_to_admin()
-       RETURNS TRIGGER AS $$
+       RETURNS TRIGGER AS \$\$
    BEGIN
        IF NEW.username = 'root' THEN
            UPDATE public.users
@@ -85,7 +85,7 @@ else
 
        RETURN NEW;
    END;
-   $$ LANGUAGE plpgsql VOLATILE;
+   \$\$ LANGUAGE plpgsql VOLATILE;
 
    CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
        AFTER INSERT ON public.users
