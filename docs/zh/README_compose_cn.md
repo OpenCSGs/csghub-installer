@@ -14,48 +14,8 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
 软件环境需求：
 
-- Docker Engine (>=5:20.10.24)
-
+- Docker Engine (>=20.10.0)
 - Docker Compose (>=2.20.0)
-
-## 版本说明
-
-CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据需要更新。
-
-| Chart 版本 | Csghub 版本 | 说明                          |
-| :--------: | :---------: | ----------------------------- |
-|   0.8.x    |    0.8.x    |                               |
-|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell |
-|   1.0.x    |    1.0.x    |                               |
-|   1.1.x    |    1.1.x    | 增加组件 Temporal             |
-|   1.2.x    |    1.2.x    |                               |
-|   1.3.x    |    1.3.x    | 移除组件 Gitea                |
-
-## 域名和IP
-
-CSGHub Docker Compose 部署方式在域名和 IP 的使用方式上面较为灵活，既可以使用`域名`也可以是`IPv4`。
-
-- **域名**
-
-域名可以使用公有域名或者自定义域名。CSGHub Docker Compose 使用单一域名部署，单一域名访问，相较于 CSGHub Helm Chart 方式，在域名使用上会简洁很多。
-
-***注意：** 如果是自定义域名，请自行配置 Hosts 解析。公有域名，请配置 DNS 云解析。*
-
-- **IPv4**
-
-IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
-
-## .kube/config
-
-`.kube/config`文件作为访问 Kubernetes 集群的重要配置文件，在 CSGHub Docker Compose 部署过程中直接以文件路径方式提供给安装程序。此 `.kube/config`至少需要包含对目标集群部署实例所在的命名空间的完全读写权限。
-
-***注意：** 后续版本中如果开启了 argo和 KnativeServing 的自动配置，还需要创建命名空间等更多权限。* 
-
-## 数据持久化
-
-为了方便使用和管理，此种部署方式直接使用 `Volume Mount/Directory Mapping`存储持久化数据，默认存放在安装目录下的`data`目录中，以`./data/<component>`的方式分开存储。
-
-此外所有配置文件均存储在`./configs`目录下。
 
 ## 部署示例
 
@@ -114,6 +74,45 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghu
     | Temporal | http://\<ip address>/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br>TEMPORAL_CONSOLE_PASSWORD |
     | Casdoor  |     http://\<ip address>:8000     |           admin/123            |                可在 Casdoor 中修改                 |
     | Registry |        \<ip address>:5000         | *请查看 .env 中定义的默认账户* |      REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+
+## 版本说明
+
+CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据需要更新。
+
+| Chart 版本 | Csghub 版本 | 说明                          |
+| :--------: | :---------: | ----------------------------- |
+|   0.8.x    |    0.8.x    |                               |
+|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell |
+|   1.0.x    |    1.0.x    |                               |
+|   1.1.x    |    1.1.x    | 增加组件 Temporal             |
+|   1.2.x    |    1.2.x    |                               |
+|   1.3.x    |    1.3.x    | 移除组件 Gitea                |
+
+## 域名和IP
+
+CSGHub Docker Compose 部署方式在域名和 IP 的使用方式上面较为灵活，既可以使用`域名`也可以是`IPv4`。
+
+- **域名**
+
+域名可以使用公有域名或者自定义域名。CSGHub Docker Compose 使用单一域名部署，单一域名访问，相较于 CSGHub Helm Chart 方式，在域名使用上会简洁很多。
+
+***注意：** 如果是自定义域名，请自行配置 Hosts 解析。公有域名，请配置 DNS 云解析。*
+
+- **IPv4**
+
+IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
+
+## .kube/config
+
+`.kube/config`文件作为访问 Kubernetes 集群的重要配置文件，在 CSGHub Docker Compose 部署过程中直接以文件路径方式提供给安装程序。此 `.kube/config`至少需要包含对目标集群部署实例所在的命名空间的完全读写权限。
+
+***注意：** 后续版本中如果开启了 argo和 KnativeServing 的自动配置，还需要创建命名空间等更多权限。* 
+
+## 数据持久化
+
+为了方便使用和管理，此种部署方式直接使用 `Volume Mount/Directory Mapping`存储持久化数据，默认存放在安装目录下的`data`目录中，以`./data/<component>`的方式分开存储。
+
+此外所有配置文件均存储在`./configs`目录下。
 
 ## 外部资源
 

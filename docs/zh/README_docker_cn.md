@@ -1,367 +1,180 @@
 # CSGHub Docker 快速部署文档
 
-> 提示：
+> **提示：**
 >
-> - 此种方式目前处于测试阶段，暂不适用于生产环境部署。
-> - 目前支持 AMD64/ARM64 架构。
+> - 此种方式适用于快速测试，不适用于生产环境。
+> - 支持 AMD64/ARM64 。
 
 ## 概述
 
-Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种方式，主要用于快速功能体验和测试。Docker 部署方式允许用户以较低成本在本地计算机部署 CSGHub。此种部署方法非常适合概念验证和测试，使用户能够立即访问 CSGHub 的核心功能（包括模型，数据集管理、Space 应用创建以及模型的推理和微调（需要 GPU））。
+Omnibus CSGHub 是 OpenCSG 推出的使用 Docker 快速部署 CSGHub 的一种方式，主要用于快速功能体验和测试。Docker 部署方式允许用户以较低成本在本地计算机部署 CSGHub。此种部署方法非常适合概念验证和测试，使用户能够立即访问 CSGHub 的核心功能（包括模型，数据集管理、Space 应用创建以及模型的推理和微调）。
 
 ## 优势
 
 - **快速配置：** 支持一键部署，快速启动。
-- **统一管理：** 支持集成模型、数据集、Space 应用管理，并内置多源同步功能。
+- **统一管理：** 支持集成模型、数据集、Space 应用管理、多源同步等功能。
 - **操作简单：** 支持模型推理、微调实例快速启动。
 
-## 部署方式
+## 快速部署
 
 ### 先决条件
 
-- 用于部署的主机已安装 [Docker Desktop](https://docs.docker.com/desktop/) 或 [Docker Engine](https://docs.docker.com/engine/)。
-- 操作系统 Linux、macOS、Windows，配置不低于 4c8g。
-- 微调实例需要 GPU（目前仅支持 NVIDIA）
+- 用于部署的主机已安装 [Docker Desktop](https://docs.docker.com/desktop/) 或 [Docker Engine](https://docs.docker.com/engine/)
+- 操作系统 Linux、macOS、Windows，配置不低于 4c8g
+- 推理、微调以及模型评测等功能需要 GPU 资源
 
-### 安装步骤
+### 快速安装
 
-> **提示：**
->
-> - HTTPS 访问配置暂时不支持，可自行调整容器内 Nginx 配置。
-> - 如果`SERVER_DOMAIN`和`SERVER_PORT`进行了修改，建议删除持久化数据目录后重新创建。
-> - 云服务器 `SERVER_DOMAIN = <external public ip>`
->
-> **注意：**
->
-> - 请确保你本地的IP地址段和docker默认的地址段（172.17.0.0）不重叠，如果重叠，请尝试更换本地网络连接（例如更换以太网网络）。
+目前此种部署方式仅支持`macOS`及`Linux`。
 
-#### 安装前说明
+```shell
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/quick_install.sh | bash -s -- -h csghub.example.com -p 80
+```
 
-- 如果有需要调整对外暴露的端口号，还需要修改相关变量。所有调整的端口号都要以变量的形式重新传入到容器中。
+如果需要对接 [K8S 集群](#快速配置 K3S 测试环境)（支持模型推理、微调、评测以及 Space 等功能）：
 
-    例如：调整 `SERVER_PORT`为`8080`。
+```shell
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/quick_install.sh | bash -s -- -h csghub.example.com -p 80 -k -c ~/.kube
+```
 
-    ```shell
-    export SERVER_PORT=8080
-    docker run -it -d \
-    		...
-        -p ${SERVER_PORT}:80 \
-    		...
-        -e SERVER_PORT=${SERVER_PORT} \
-        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-    ```
+**注意：**
 
-| 端口号 | 作用                                      | 调整方式                                   |
-| :----: | :---------------------------------------- | :----------------------------------------- |
-|   80   | Nginx 服务端口，提供 csghub 访问          | SERVER_PORT=`[port]`                       |
-|  2222  | Git SSH 服务端口，提供 git clone over SSH | GITLAB_SHELL_SSH_PORT=`[port]`             |
-|  5000  | Registry 服务端口，容器镜像仓库           | REGISTRY_ADDRESS=`${SERVER_DOMAIN}:[port]` |
-|  8000  | Casdoor 服务端口，用户鉴权服务            | CASDOOR_PORT=`[port]`                      |
-|  9000  | Minio 服务端口，对象存储服务              | S3_ENDPOINT=`${SERVER_DOMAIN}:[port]`      |
+- 以上方式仅支持`macOS、Linux、Windows(WSL)`其他配置请自行查看命令帮助`-H, --help`。
 
-#### 快速安装（无法使用 Space、模型推理微调功能）
+    其他方式请参考[Windows 其他部署方式](#Windows 其他部署方式)。
 
-- **Linux**
+- 暂不支持 HTTPS 访问配置，如有需求请自行调整端口映射以及 nginx 配置文件模板。
 
-    > ***提示：***
-    >
-    > - 请自行替换`<your ip address>`为主机 IPv4 地址。
-    >
-    > - IPv4 地址查看方式，终端命令行输入:
-    >
-    >     `ip -4 -o addr show $(ip route show default | awk '/default/ {print $5}')`
+- `-h host`或`SERVER_DOMAIN` 可使用`域名`或 `IPv4 地址`。
+    - **域名：**使用域名请自行配置域名解析
+    - **IPv4：**请勿使用`172.17.0.0/16`（此地址段为 Docker 默认地址段，会导致访问异常）
 
-    - 快速启动（不做数据持久化）
-
-        ```shell
-        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-    - 正常启动（持久化数据）
-
-        ```shell
-        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -v /srv/csghub/data:/var/opt \
-            -v /srv/csghub/log:/var/log \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-- **macOS**
-
-    > **提示：**
-    >
-    > - Docker Desktop 部署请开启 Rosetta，方式如下：
-    >
-    >     `Settings` > `General` > `Use Rosetta for x86_64/amd64 emulation on Apple Silicon`
-    >
-    > - 请自行替换`<your ip address>`为主机 IPv4 地址。
-    >
-    > - IPv4 地址查看方式，终端命令行输入:
-    >
-    >     `ipconfig getifaddr $(route get default | grep interface | awk '{print $2}')`
-    >
-    > ***注意：**Rosetta运行速度稍慢。v1.2.0 以前版本以 Rosetta 方式运行的容器会提示 `WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested `忽略即可。*
-
-    - 手动拉取镜像
-
-        ```shell
-        docker pull opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-    - 快速启动（不做数据持久化）
-
-        ```shell
-        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-    - 正常启动（持久化数据）
-
-        ```shell
-        export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -v ~/Documents/csghub/data:/var/opt \
-            -v ~/Documents/csghub/log:/var/log \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-- **Windows**
-
-    >***提示：***
-    >
-    >- 请自行替换`<your ip address>`为主机 IPv4 地址。
-    >
-    >- IPv4 地址查看方式：
-    >
-    >    组合键 `Win + R`, 输出 `cmd`, 待窗口打开后输入 `ipconfig`获取 IPv4 地址。
-
-    - **PowerShell**
-
-        ```shell
-        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
-        $env:SERVER_PORT = "80"
-        docker run -it -d `
-            --name omnibus-csghub `
-            --hostname omnibus-csghub `
-            -p ${env:SERVER_PORT}:80 `
-            -p 2222:2222 `
-            -p 8000:8000 `
-            -p 9000:9000 `
-            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
-            -e SERVER_PORT=$env:SERVER_PORT `
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-    
-    - **CMD**
-    
-        ```shell
-        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
-            set "tempIpv4=%i"
-            set SERVER_DOMAIN=%tempIpv4:~1%
-        )
-        set SERVER_PORT=80
-        docker run -it -d ^
-            --name omnibus-csghub ^
-            --hostname omnibus-csghub ^
-            -p %SERVER_PORT%:80 ^
-            -p 2222:2222 ^
-            -p 8000:8000 ^
-            -p 9000:9000 ^
-            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
-            -e SERVER_PORT=%SERVER_PORT% ^
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-    
-    - **WSL**
-    
-        请参考 Linux 部署方式。
-
-#### 通用安装（可以使用 Space、模型推理微调功能（需要 NVIDIA GPU））
-
-- **Linux**
-
-    >**前置条件：**
-    >
-    >- 需要一个部署好 Knative Serving 的 Kubernetes 集群。
-    >- 其他注意事项见快捷安装部分。
-
-    - 快速配置 k8s 环境
-
-        ```shell
-        curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | bash -s
-        
-        # 如果启用 NVIDIA GPU 配置
-        curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | ENABLE_NVIDIA_GPU=true bash -s
-        ```
-
-    - 配置 Docker
-
-        ```shell
-        # 添加 insecure registry
-        cat <<EOF > /etc/docker/daemon.json
-        {
-          "insecure-registries": ["<your ip address>:5000"]
-        }
-        EOF
-        
-        # 重启 docker
-        systemctl restart docker
-        ```
-
-    - 安装 CSGHub
-
-        ```shell
-        export SERVER_DOMAIN=$(ip addr show $(ip route show default | awk '/default/ {print $5}') | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
-        export SERVER_PORT=80
-        docker run -it -d \
-            --name omnibus-csghub \
-            --hostname omnibus-csghub \
-            -p ${SERVER_PORT}:80 \
-            -p 2222:2222 \
-            -p 5000:5000 \
-            -p 8000:8000 \
-            -p 9000:9000 \
-            -v /srv/csghub/data:/var/opt \
-            -v /srv/csghub/log:/var/log \
-            -v ~/.kube:/etc/.kube \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-            -e SERVER_PORT=${SERVER_PORT} \
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-
-- **macOS**
-
-    请自行配置 Kubernetes 集群，且保证 `~/.kube/config` 文件存在。然后使用类似如下命令进行安装：
-
-    ```shell
-    export SERVER_DOMAIN=$(ipconfig getifaddr $(route get default | grep interface | awk '{print $2}'))
-    export SERVER_PORT=80
-    docker run -it -d \
-        --name omnibus-csghub \
-        --hostname omnibus-csghub \
-        -p ${SERVER_PORT}:80 \
-        -p 2222:2222 \
-        -p 5000:5000 \
-        -p 8000:8000 \
-        -p 9000:9000 \
-        -v ~/Documents/csghub/data:/var/opt \
-        -v ~/Documents/csghub/log:/var/log \
-        -v ~/.kube:/etc/.kube \
-        -v /var/run/docker.sock:/var/run/docker.sock \
-        -e SERVER_DOMAIN=${SERVER_DOMAIN} \
-        -e SERVER_PORT=${SERVER_PORT} \
-        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-    ```
-    
-- **Windows**
-
-    以下命令仅供参考，请根据实际进行配置。
-    
-    - **PowerShell**
-    
-        ```shell
-        $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
-        $env:SERVER_PORT = "80"
-        docker run -it -d `
-            --name omnibus-csghub `
-            --hostname omnibus-csghub `
-            -p ${env:SERVER_PORT}:80 `
-            -p 2222:2222 `
-            -p 5000:5000 `
-            -p 8000:8000 `
-            -p 9000:9000 `
-            -v $env:USERPROFILE\Documents\csghub\data:/var/opt `
-            -v $env:USERPROFILE\Documents\csghub\log:/var/log `
-            -v $env:USERPROFILE\.kube:/etc/.kube `
-            -v DOCKER_HOST=<YOUR DOCKER SERVER> `
-            -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
-            -e SERVER_PORT=$env:SERVER_PORT `
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-    
-    - **CMD**
-    
-        ```shell
-        for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
-            set "tempIpv4=%i"
-            set SERVER_DOMAIN=%tempIpv4:~1%
-        )
-        set SERVER_PORT=80
-        docker run -it -d ^
-            --name omnibus-csghub ^
-            --hostname omnibus-csghub ^
-            -p %SERVER_PORT%:80 ^
-            -p 2222:2222 ^
-            -p 5000:5000 ^
-            -p 8000:8000 ^
-            -p 9000:9000 ^
-            -v %USERPROFILE%\Documents\csghub\data:/var/opt ^
-            -v %USERPROFILE%\Documents\csghub\log:/var/log ^
-            -v %USERPROFILE%\.kube:/etc/.kube ^
-            -e DOCKER_HOST=<YOUR DOCKER SERVER> ^
-            -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
-            -e SERVER_PORT=%SERVER_PORT% ^
-            opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
-        ```
-    
-    - **WSL**
-    
-        请参考 Linux 部署方式。
+- 以上方式不适用于使用外部数据库服务，如有需要请参考[变量说明](#变量说明)自行配置。
 
 ### 访问 CSGHub
 
 当以上部署成功后使用如下方式进行访问：
 
-访问地址：`http://<SERVER_DOMAIN>:<SERVER_PORT>`，例如 http://192.168.1.12
+访问地址：`http://<host>:<port>`，例如 http://192.168.1.12
 
-默认管理员：`root`
+访问凭据：`root/Root@1234`
 
-默认密码：`Root@1234`
+## 更多说明
+
+### 快速配置 K3S 测试环境
+
+- 快速配置 k3s 环境
+
+    ```shell
+    curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | bash -s
+    
+    # 如果启用 NVIDIA GPU 配置
+    curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/docker/scripts/k3s-install.sh | ENABLE_NVIDIA_GPU=true bash -s
+    ```
+
+- 配置 Docker
+
+    ```shell
+    # 添加 insecure registry
+    cat <<EOF > /etc/docker/daemon.json
+    {
+      "insecure-registries": ["<your ip address>:5000"]
+    }
+    EOF
+    
+    # 重启 docker
+    systemctl restart docker
+    ```
+
+    - `<your ip address>` 默认为`csghub.example.com`，可通过`-h`选项进行指定。
+    - `5000` 为默认 Registry 访问端口，可通过`-r`选项进行指定。
+
+### Windows 其他部署方式
+
+- **PowerShell**
+
+    ```shell
+    # Without K8S
+    $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
+    $env:SERVER_PORT = "80"
+    docker run -it -d `
+        --name omnibus-csghub `
+        --hostname omnibus-csghub `
+        -p ${env:SERVER_PORT}:80 `
+        -p 2222:2222 `
+        -p 8000:8000 `
+        -p 9000:9000 `
+        -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
+        -e SERVER_PORT=$env:SERVER_PORT `
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        
+    # With K8S
+    $env:SERVER_DOMAIN = ((Get-NetAdapter -Physical | Get-NetIPAddress -AddressFamily IPv4)[0].IPAddress) 
+    $env:SERVER_PORT = "80"
+    docker run -it -d `
+        --name omnibus-csghub `
+        --hostname omnibus-csghub `
+        -p ${env:SERVER_PORT}:80 `
+        -p 2222:2222 `
+        -p 5000:5000 `
+        -p 8000:8000 `
+        -p 9000:9000 `
+        -v $env:USERPROFILE\Documents\csghub\data:/var/opt `
+        -v $env:USERPROFILE\Documents\csghub\log:/var/log `
+        -v $env:USERPROFILE\.kube:/etc/.kube `
+        -v DOCKER_HOST=<YOUR DOCKER SERVER> `
+        -e SERVER_DOMAIN=$env:SERVER_DOMAIN `
+        -e SERVER_PORT=$env:SERVER_PORT `
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+
+- **CMD**
+
+    ```shell
+    for /F "tokens=2 delims=:" %i in ('ipconfig ^| findstr /C:"以太网适配器" /C:"IPv4 地址"') do (
+        set "tempIpv4=%i"
+        set SERVER_DOMAIN=%tempIpv4:~1%
+    )
+    
+    set SERVER_PORT=80
+    
+    # Without K8S
+    docker run -it -d ^
+        --name omnibus-csghub ^
+        --hostname omnibus-csghub ^
+        -p %SERVER_PORT%:80 ^
+        -p 2222:2222 ^
+        -p 8000:8000 ^
+        -p 9000:9000 ^
+        -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
+        -e SERVER_PORT=%SERVER_PORT% ^
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+        
+    # With K8S
+    docker run -it -d ^
+        --name omnibus-csghub ^
+        --hostname omnibus-csghub ^
+        -p %SERVER_PORT%:80 ^
+        -p 2222:2222 ^
+        -p 5000:5000 ^
+        -p 8000:8000 ^
+        -p 9000:9000 ^
+        -v %USERPROFILE%\Documents\csghub\data:/var/opt ^
+        -v %USERPROFILE%\Documents\csghub\log:/var/log ^
+        -v %USERPROFILE%\.kube:/etc/.kube ^
+        -e DOCKER_HOST=<YOUR DOCKER SERVER> ^
+        -e SERVER_DOMAIN=%SERVER_DOMAIN% ^
+        -e SERVER_PORT=%SERVER_PORT% ^
+        opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/omnibus-csghub:latest
+    ```
+
+- **WSL**
+
+    请参考[快速部署](#快速部署)。
 
 ### 命令行工具
 
-Omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服务日志。
+omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服务日志。
 
 - 服务管理
 
@@ -389,13 +202,27 @@ Omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服�
 
 - 其他参数
 
-    所有其他命令选项继承自`supervisorctl`。
+    所有其他命令选项均继承自`supervisorctl`。
+
+### 删除服务
+
+如果您不再使用或者需要重建容器，执行如下操作：
+
+```shell
+docker rm -f omnibus-csghub
+```
+
+如果需要卸载 K3S 环境，执行如下操作：
+
+```shell
+/usr/local/bin/k3s-uninstall.sh
+```
 
 ### 变量说明
 
-***提示：**仅列举可配置参数。127.0.0.1 为本地服务，通过指定如下变量使用第三方服务，但这并不会禁用内部服务。*
+***提示：**仅列举可配置参数。`127.0.0.1` 为本地服务，通过指定如下变量使用第三方服务，但这并不会禁用内部服务。*
 
-### Server
+#### Server
 
 | 变量名        | 默认值             | 说明                       |
 | :------------ | :----------------- | :------------------------- |
@@ -479,39 +306,6 @@ Omnibus-csghub 提供了简易的命令行工具用来管理服务和查看服�
 | KNATIVE_SERVING_ENABLE | false    | 指定是否自动安装 Knative Serving。                           |
 | KNATIVE_KOURIER_TYPE   | NodePort | 指定 knative Serving Kourier 网络组件服务暴露方式。          |
 | NVIDIA_DEVICE_PLUGIN   | false    | 指定是否自动安装 nvidia device plugin（GPU 节点 containerd 默认 runtime 需要自行配置）。 |
-| CSGHUB_WITH_K8S        | 1        | 是否对接 Kubernetes 集群。                                   |
+| CSGHUB_WITH_K8S        | 0        | 是否对接 Kubernetes 集群。                                   |
 
-### 功能探索
-
-CSGHub 提供了几个关键功能：
-
-**模型托管：**
-
-- 目前支持模型的托管，轻松上传和管理模型。
-- 支持创建推理和微调实例（需要 NVIDIA GPU）。
-- 默认以启用多源同步，启动后多源同步会自动开始同步（同步需要一段时间完成）。
-
-**数据集托管：**
-
-- 用于处理数据集的简化工具 ，非常适合快速测试和验证。
-
-**应用托管：**
-
-- 通过自定义程序和模型组合，快速创建大模型应用。
-
-### 销毁容器
-
-如果您不再使用或者需要重建容器，可以执行如下操作：
-
-```shell
-docker rm -f omnibus-csghub
-```
-
-如果还需要卸载 k3s 环境，可以执行如下操作：
-
-```shell
-/usr/local/bin/k3s-uninstall.sh
-```
-
-
-
+更多变量请参考[csghub_config_load.sh](https://github.com/OpenCSGs/csghub-installer/blob/main/docker/etc/profile.d/csghub_config_load.sh)。
