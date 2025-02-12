@@ -24,6 +24,182 @@ Software environment requirements:
 
 ***Note:** Kubernetes needs to support Dynamic Volume Provisioning.*
 
+## Deployment example
+
+### Quick deployment (for testing purposes)
+
+Currently, the deployment supports quick deployment, which is mainly used for testing. The deployment method is as follows:
+
+```shell
+# <domain>: like example.com
+# NodePort is the default ingress-nginx-controller service type
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
+
+## Tip: When using the LoadBalancer service type for installation, please change the server sshd service port to a non-port 22 in advance. This type will automatically occupy port 22 as the git ssh service port.
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | INGRESS_SERVICE_TYPE=LoadBalancer bash -s -- example.com
+
+# Enable Nvidia GPU
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | ENABLE_NVIDIA_GPU=true bash -s -- example.com
+```
+
+The above deployment will automatically install/configure the following resources:
+
+- K3S Single Node Cluster
+- Helm Tools
+- CSGHub Helm Chart
+- CoreDNS/Hosts
+- Insecure Private Container Registry
+
+***Note:** After the deployment is complete, access and log in to CSGHub according to the terminal `prompt information` or `login.txt`.*
+
+**Variable description:**
+
+|        Variable         | Default value | Function                                                     |
+| :---------------------: | :-----------: | :----------------------------------------------------------- |
+|       ENABLE_K3S        |     true      | Create a K3S cluster                                         |
+|    ENABLE_DYNAMIC_PV    |     false     | Simulate dynamic volume management                           |
+|    ENABLE_NVIDIA_GPU    |     false     | Install nvidia-device-plugin                                 |
+|       HOSTS_ALIAS       |     true      | Configure coredns and local hosts resolution                 |
+|      INSTALL_HELM       |     true      | Install helm tool                                            |
+|  INGRESS_SERVICE_TYPE   |   NodePort    | CSGHub service exposure method. If it is LoadBalancer mode, please make sure that the SSHD service uses a non-22 port |
+| KNATIVE_INTERNAL_DOMAIN | app.internal  | KnativeServing domain name                                   |
+|  KNATIVE_INTERNAL_HOST  |   127.0.0.1   | Kourier service address, which will be reassigned to the local IPv4 when the script is running |
+|  KNATIVE_INTERNAL_PORT  |      80       | Kourier service port, if INGRESS_SERVICE_TYPE is NodePort, the port will be reassigned to 30213 |
+
+### Standard deployment
+
+#### Prerequisites
+
+- Kubernetes 1.20+
+
+- Helm 3.12.0+
+
+- Dynamic Volume Provisioning
+
+    Or manually create the following persistent volumes:
+
+    - PV 500Gi * 1 (for Minio)
+
+    - PV 200Gi * 1 (for Gitaly)
+
+    - PV 50Gi * 2 (for PostgreSQL, Builder)
+
+    - PV 10Gi * 2 (for Redis, Nats)
+
+    - PV 1Gi * 1 (for Gitlab-Shell)
+
+#### Start installation
+
+- **Add helm repository**
+
+    ```shell
+    helm repo add csghub https://opencsgs.github.io/csghub-installer
+    helm repo update
+    ```
+
+- **Create kube-configs Secret**
+
+    ```shell
+    kubectl create ns csghub
+    kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
+    ```
+
+- **Install CSGHub Helm Chart**
+
+    ***Note:** The following is a simple installation, please refer to the following for more parameter definitions.*
+
+    **Sample installation information:**
+
+    |                      Parameters                      | Default value | Example value | Description                                                  |
+    | :--------------------------------------------------: | :-----------: | :-----------: | :----------------------------------------------------------- |
+    |                global.ingress.domain                 |  example.com  |  example.com  | [Service domain name](#domain name)                          |
+    |             global.ingress.service.type              | LoadBalancer  |   NodePort    | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
+    |        ingress-nginx.controller.service.type         | LoadBalancer  |   NodePort    | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor. |
+    | global.deployment.knative.serving.services[0].domain | app.internal  | app.internal  | This is pre-specified and will be automatically configured to KnativeServing. |
+    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3  | IPv4 address  | Please specify the actual IPv4 address of the target Kubernetes cluster during actual configuration. |
+    |  global.deployment.knative.serving.services[0].port  |      80       |     30213     | This is pre-specified and will be automatically configured to KnativeServing. <br>If global.ingress.service.type is configured as LoadBalancer, use the default value 80. <br>If global.ingress.service.type is configured as NodePort, any 5-digit legal port number can be specified here. |
+    |             global.deployment.kubeSecret             | kube-configs  | kube-configs  | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them. |
+
+    - **LoadBalancer** 
+
+        ```shell 
+        helm upgrade --install csghub csghub/csghub \ 
+          --namespace csghub \ 
+          --create-namespace \ 
+          --set global.ingress.domain="example.com" \ 
+          --set global.deployment.knative.serving.services[0].domain="app.internal" \ 
+          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \ 
+          --set global.deployment.knative.serving.services[0].port="80" 
+        ```
+
+    - **NodePort** 
+
+        ```shell 
+        helm upgrade --install csghub csghub/csghub \ 
+          --namespace csghub \ 
+          --create-namespace \ 
+          --set global.ingress.domain="example.com" \ 
+          --set global.ingress.service.type="NodePort" \
+          --set ingress-nginx.controller.service.type="NodePort" \
+          --set global.deployment.knative.serving.services[0].domain="app.internal" \
+          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
+          --set global.deployment.knative.serving.services[0].port="30213"
+        ```
+
+    ***Note:** Installation and configuration will take some time, please be patient. After the CSGHub Helm Chart configuration is completed, Argo Workflow and KnativeServing will be automatically configured in the target cluster.*
+
+- **ACCESS INFORMATION** 
+
+    Take the `NodePort` installation method as an example: 
+
+    ```shell 
+    You have successfully installed CSGHub!
+    
+    Visit CSGHub at the following address:
+    
+        Address: http://csghub.example.com:30080
+        Credentials: root/xxxxx
+    
+    Visit the Casdoor administrator console at the following address:
+    
+        Address: http://casdoor.example.com:30080
+        Credentials: admin/xxx
+    
+    Visit the Temporal console at the following address:
+    
+        Address: http://temporal.example.com:30080
+        Credentials:
+            Username: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
+            Password: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
+    
+    Visit the Minio console at the following address:
+    
+        Address: http://minio.example.com:30080/console/
+        Credentials:
+            Username: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
+            Password: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
+    
+    To access Registry using docker-cli:
+    
+        Endpoint: registry.example.com:30080
+        Credentials:
+            Username=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_USERNAME}' | base64 -d)
+            Password=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_PASSWORD}' | base64 -d)
+    
+        Login to the registry:
+            echo "$Password" | docker login registry.example.com:30080 --username $Username ---password-stdin
+    
+        Pull/Push images:
+            docker pull registry.example.com:30080/test:latest
+            docker push registry.example.com:30080/test:latest
+    
+    *Notes: This is not a container registry suitable for production environments.*
+    
+    For more details, visit:
+    
+        https://github.com/OpenCSGs/csghub-installer
+    ```
+
 ## Version description
 
 CSGHub `major.minor` version is consistent with CSGHub Server, `Patch` version is updated as needed.
@@ -103,180 +279,6 @@ In the actual deployment process, you need to adjust the size of PVC according t
 
 It should be noted that CSGHub Helm Chart does not actively create related Persistent Volumes, but automatically applies for PV resources by creating Persistent Volume Claims, so your Kubernetes cluster needs to support Dynamic Volume Provisioning. If it is a self-deployed cluster, dynamic management can be achieved through simulation. For details, please refer to: [kubernetes-sigs/sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner).
 
-## Deployment example
-
-### Quick deployment (for testing purposes)
-
-Currently, the deployment supports quick deployment, which is mainly used for testing. The deployment method is as follows:
-
-```shell
-# <domain>: like example.com
-# NodePort is the default ingress-nginx-controller service type
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
-
-## Tip: When using the LoadBalancer service type for installation, please change the server sshd service port to a non-port 22 in advance. This type will automatically occupy port 22 as the git ssh service port.
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | INGRESS_SERVICE_TYPE=LoadBalancer bash -s -- example.com
-
-# Enable Nvidia GPU
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | ENABLE_NVIDIA_GPU=true bash -s -- example.com
-```
-
-The above deployment will automatically install/configure the following resources:
-
-- K3S Single Node Cluster
-- Helm Tools
-- CSGHub Helm Chart
-- CoreDNS/Hosts
-- Insecure Private Container Registry
-
-***Note:** After the deployment is complete, access and log in to CSGHub according to the terminal `prompt information` or `login.txt`.*
-
-**Variable description:**
-
-| Variable | Default value | Function |
-| :---------------------: | :----------: | :------------------------------------------- |
-| ENABLE_K3S | true | Create a K3S cluster |
-| ENABLE_DYNAMIC_PV | false | Simulate dynamic volume management |
-| ENABLE_NVIDIA_GPU | false | Install nvidia-device-plugin |
-| HOSTS_ALIAS | true | Configure coredns and local hosts resolution |
-| INSTALL_HELM | true | Install helm tool |
-| INGRESS_SERVICE_TYPE | NodePort | CSGHub service exposure method. If it is LoadBalancer mode, please make sure that the SSHD service uses a non-22 port |
-| KNATIVE_INTERNAL_DOMAIN | app.internal | KnativeServing domain name |
-| KNATIVE_INTERNAL_HOST | 127.0.0.1 | Kourier service address, which will be reassigned to the local IPv4 when the script is running |
-| KNATIVE_INTERNAL_PORT | 80 | Kourier service port, if INGRESS_SERVICE_TYPE is NodePort, the port will be reassigned to 30213 |
-
-### Standard deployment
-
-#### Prerequisites
-
-- Kubernetes 1.20+
-
-- Helm 3.12.0+
-
-- Dynamic Volume Provisioning
-
-    Or manually create the following persistent volumes:
-
-    - PV 500Gi * 1 (for Minio)
-
-    - PV 200Gi * 1 (for Gitaly)
-
-    - PV 50Gi * 2 (for PostgreSQL, Builder)
-
-    - PV 10Gi * 2 (for Redis, Nats)
-
-    - PV 1Gi * 1 (for Gitlab-Shell)
-
-#### Start installation
-
-- **Add helm repository**
-
-    ```shell
-    helm repo add csghub https://opencsgs.github.io/csghub-installer
-    helm repo update
-    ```
-
-- **Create kube-configs Secret**
-
-    ```shell
-    kubectl create ns csghub
-    kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
-    ```
-
-- **Install CSGHub Helm Chart**
-
-    ***Note:** The following is a simple installation, please refer to the following for more parameter definitions.*
-
-    **Sample installation information:**
-
-    | Parameters | Default value | Example value | Description                                                                                                                                                                                                                                                                                  |
-    | :--------------------------------------------------: | :----------: | :----------: |:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-    | global.ingress.domain | example.com | example.com | [Service domain name](#domain name)                                                                                                                                                                                                                                                          |
-    | global.ingress.service.type | LoadBalancer | NodePort | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier.                                                                                                 |
-    | ingress-nginx.controller.service.type | LoadBalancer | NodePort | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor.                                                                                                                                                            |
-    | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | This is pre-specified and will be automatically configured to KnativeServing.                                                                                                                                                                                                                |
-    | global.deployment.knative.serving.services[0].host | 192.168.18.3 | IPv4 address | Please specify the actual IPv4 address of the target Kubernetes cluster during actual configuration.                                                                                                                                                                                         |
-    | global.deployment.knative.serving.services[0].port | 80 | 30213 | This is pre-specified and will be automatically configured to KnativeServing. <br>If global.ingress.service.type is configured as LoadBalancer, use the default value 80. <br>If global.ingress.service.type is configured as NodePort, any 5-digit legal port number can be specified here. |
-    | global.deployment.kubeSecret | kube-configs | kube-configs | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them.                                                                                                                                       | 
-
-    - **LoadBalancer** 
-      ```shell 
-      helm upgrade --install csghub csghub/csghub \ 
-        --namespace csghub \ 
-        --create-namespace \ 
-        --set global.ingress.domain="example.com" \ 
-        --set global.deployment.knative.serving.services[0].domain="app.internal" \ 
-        --set global.deployment.knative.serving.services[0].host="192.168.18.3" \ 
-        --set global.deployment.knative.serving.services[0].port="80" 
-      ```
-
-    - **NodePort** 
-
-      ```shell 
-      helm upgrade --install csghub csghub/csghub \ 
-        --namespace csghub \ 
-        --create-namespace \ 
-        --set global.ingress.domain="example.com" \ 
-        --set global.ingress.service.type="NodePort" \
-        --set ingress-nginx.controller.service.type="NodePort" \
-        --set global.deployment.knative.serving.services[0].domain="app.internal" \
-        --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
-        --set global.deployment.knative.serving.services[0].port="30213"
-      ```
-
-    ***Note:** Installation and configuration will take some time, please be patient. After the CSGHub Helm Chart configuration is completed, Argo Workflow and KnativeServing will be automatically configured in the target cluster.*
-
-- **ACCESS INFORMATION** 
-
-  Take the `NodePort` installation method as an example: 
-
-  ```shell 
-  You have successfully installed CSGHub!
-  
-  Visit CSGHub at the following address:
-  
-      Address: http://csghub.example.com:30080
-      Credentials: root/xxxxx
-  
-  Visit the Casdoor administrator console at the following address:
-  
-      Address: http://casdoor.example.com:30080
-      Credentials: admin/xxx
-  
-  Visit the Temporal console at the following address:
-  
-      Address: http://temporal.example.com:30080
-      Credentials:
-          Username: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
-          Password: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
-  
-  Visit the Minio console at the following address:
-  
-      Address: http://minio.example.com:30080/console/
-      Credentials:
-          Username: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
-          Password: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
-  
-  To access Registry using docker-cli:
-  
-      Endpoint: registry.example.com:30080
-      Credentials:
-          Username=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_USERNAME}' | base64 -d)
-          Password=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_PASSWORD}' | base64 -d)
-  
-      Login to the registry:
-          echo "$Password" | docker login registry.example.com:30080 --username $Username ---password-stdin
-  
-      Pull/Push images:
-          docker pull registry.example.com:30080/test:latest
-          docker push registry.example.com:30080/test:latest
-  
-  *Notes: This is not a container registry suitable for production environments.*
-  
-  For more details, visit:
-  
-      https://github.com/OpenCSGs/csghub-installer
-  ```
 ## External resources 
 
 > **Tip:** If the built-in service is not disabled while using an external service, the service will still start normally.

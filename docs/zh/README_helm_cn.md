@@ -24,6 +24,178 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 
 ***说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。*
 
+## 部署示例
+
+### 快速部署（用于测试目的）
+
+目前部署支持快速部署，此种方式主要用于测试，部署方式如下：
+
+```shell
+# <domain>: 例如 example.com
+# NodePort 是默认的 ingress-nginx-controller 服务类型
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
+
+## 提示：使用LoadBalancer服务类型安装时，请提前将服务器sshd服务端口改为非22端口，该类型会自动占用22端口作为 git ssh 服务端口。
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | INGRESS_SERVICE_TYPE=LoadBalancer bash -s -- example.com
+
+# 启用 Nvidia GPU 支持
+curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | ENABLE_NVIDIA_GPU=true bash -s -- example.com
+```
+
+以上部署会自动安装/配置如下资源：
+
+- K3S Single Node Cluster
+- Helm Tools
+- CSGHub Helm Chart
+- CoreDNS/Hosts
+- Insecure Private Container Registry
+
+***说明：** 部署完成后，根据终端`提示信息`或者`login.txt`访问和登录 CSGHub。*
+
+**变量说明：**
+
+|          变量           |    默认值    | 作用                                                         |
+| :---------------------: | :----------: | :----------------------------------------------------------- |
+|       ENABLE_K3S        |     true     | 创建 K3S 集群                                                |
+|    ENABLE_DYNAMIC_PV    |    false     | 模拟动态卷管理                                               |
+|    ENABLE_NVIDIA_GPU    |    false     | 安装 nvidia-device-plugin                                    |
+|       HOSTS_ALIAS       |     true     | 配置 coredns 以及本地 hosts 解析                             |
+|      INSTALL_HELM       |     true     | 安装 helm 工具                                               |
+|  INGRESS_SERVICE_TYPE   |   NodePort   | CSGHub 服务暴露方式，如果是 LoadBalancer 方式请确保 SSHD 服务使用非 22 端口 |
+| KNATIVE_INTERNAL_DOMAIN | app.internal | KnativeServing 域名                                          |
+|  KNATIVE_INTERNAL_HOST  |  127.0.0.1   | Kourier 服务地址，脚本运行时会重新赋值为本机 IPv4            |
+|  KNATIVE_INTERNAL_PORT  |      80      | Kourier 服务端口，如果INGRESS_SERVICE_TYPE 为 NodePort，端口会被重新赋值为 30213 |
+
+### 标准部署
+
+#### 前置条件
+
+- Kubernetes 1.20+
+
+- Helm 3.12.0+
+
+- Dynamic Volume Provisioning
+
+    或者手动创建如下持久卷:
+
+     - PV 500Gi * 1 (for Minio)
+     - PV 200Gi * 1 (for Gitaly)
+     - PV 50Gi * 2 (for PostgreSQL, Builder)
+     - PV 10Gi * 2 (for Redis, Nats)
+     - PV 1Gi * 1 (for Gitlab-Shell)
+
+#### 开始安装
+
+- **添加 helm 仓库**
+
+    ```shell
+    helm repo add csghub https://opencsgs.github.io/csghub-installer
+    helm repo update
+    ```
+
+- **创建 kube-configs Secret**
+
+    ```shell
+    kubectl create ns csghub 
+    kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
+    ```
+
+- **安装 CSGHub Helm Chart**
+
+    ***注意：** 以下是简单安装，更多参数定义请参考下文。*
+
+    **示例安装信息：**
+
+    |                         参数                         |    默认值    |    示例值    | 说明                                                         |
+    | :--------------------------------------------------: | :----------: | :----------: | :----------------------------------------------------------- |
+    |                global.ingress.domain                 | example.com  | example.com  | [服务域名](#域名)                                            |
+    |             global.ingress.service.type              | LoadBalancer |   NodePort   | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
+    |        ingress-nginx.controller.service.type         | LoadBalancer |   NodePort   | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
+    | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | 这里为预指定，会自动配置到 KnativeServing。                  |
+    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3 | IPv4 address | 实际配置时请指定实际的目标 Kubernetes 集群的 IPv4 地址。     |
+    |  global.deployment.knative.serving.services[0].port  |      80      |    30213     | 这里为预指定，会自动配置到 KnativeServing。<br>如果 global.ingress.service.type 配置为 LoadBalancer ，请使用默认值 80。<br>如果 global.ingress.service.type 配置为 NodePort ，这里可以指定为任意 5 位合法端口号。 |
+    |             global.deployment.kubeSecret             | kube-configs | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
+
+      - **LoadBalancer**
+
+        ```shell
+        helm upgrade --install csghub csghub/csghub \
+          --namespace csghub \
+          --create-namespace \
+          --set global.ingress.domain="example.com" \
+          --set global.deployment.knative.serving.services[0].domain="app.internal" \
+          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
+          --set global.deployment.knative.serving.services[0].port="80"
+        ```
+
+      - **NodePort**
+
+        ```shell
+        helm upgrade --install csghub csghub/csghub \
+          --namespace csghub \
+          --create-namespace \
+          --set global.ingress.domain="example.com" \
+          --set global.ingress.service.type="NodePort" \
+          --set ingress-nginx.controller.service.type="NodePort" \
+          --set global.deployment.knative.serving.services[0].domain="app.internal" \
+          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
+          --set global.deployment.knative.serving.services[0].port="30213"
+        ```
+
+    ***说明：** 安装配置需要一段时间请耐心等待。CSGHub Helm Chart 配置完成后会自动在目标集群配置 Argo Workflow 以及 KnativeServing。*
+
+- **访问信息**
+
+    以 `NodePort` 安装方式为例：
+
+      ```shell
+    You have successfully installed CSGHub!
+    
+    Visit CSGHub at the following address:
+    
+        Address: http://csghub.example.com:30080
+        Credentials: root/xxxxx
+    
+    Visit the Casdoor administrator console at the following address:
+    
+        Address: http://casdoor.example.com:30080
+        Credentials: admin/xxx
+    
+    Visit the Temporal console at the following address:
+    
+        Address: http://temporal.example.com:30080
+        Credentials:
+            Username: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
+            Password: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
+    
+    Visit the Minio console at the following address:
+    
+        Address: http://minio.example.com:30080/console/
+        Credentials:
+            Username: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
+            Password: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
+    
+    To access Registry using docker-cli:
+    
+        Endpoint: registry.example.com:30080
+        Credentials:
+            Username=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_USERNAME}' | base64 -d)
+            Password=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_PASSWORD}' | base64 -d)
+    
+        Login to the registry:
+            echo "$Password" | docker login registry.example.com:30080 --username $Username ---password-stdin
+    
+        Pull/Push images:
+            docker pull registry.example.com:30080/test:latest
+            docker push registry.example.com:30080/test:latest
+    
+    *Notes: This is not a container registry suitable for production environments.*
+    
+    For more details, visit:
+    
+        https://github.com/OpenCSGs/csghub-installer
+      ```
+
 ## 版本说明
 
 CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据需要更新。
@@ -98,178 +270,6 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 在实际部署过程中，需要根据使用情况调整 PVC 的大小，或者直接使用可扩展的 StorageClass。
 
 需要注意的是 CSGHub Helm Chart  并不会主动创建相关的 Persistent Volume，而是通过创建 Persistent Volume Claim 的方式自动申请 PV 资源，因此需要您的 Kubernetes 集群支持 Dynamic Volume Provisioning。如果是自部署集群可以通过模拟的方式实现动态管理，详细参考：[kubernetes-sigs/sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner)。
-
-## 部署示例
-
-### 快速部署（用于测试目的）
-
-目前部署支持快速部署，此种方式主要用于测试，部署方式如下：
-
-```shell
-# <domain>: 例如 example.com
-# NodePort 是默认的 ingress-nginx-controller 服务类型
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
-
-## 提示：使用LoadBalancer服务类型安装时，请提前将服务器sshd服务端口改为非22端口，该类型会自动占用22端口作为 git ssh 服务端口。
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | INGRESS_SERVICE_TYPE=LoadBalancer bash -s -- example.com
-
-# 启用 Nvidia GPU 支持
-curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | ENABLE_NVIDIA_GPU=true bash -s -- example.com
-```
-
-以上部署会自动安装/配置如下资源：
-
-- K3S Single Node Cluster
-- Helm Tools
-- CSGHub Helm Chart
-- CoreDNS/Hosts
-- Insecure Private Container Registry
-
-***说明：** 部署完成后，根据终端`提示信息`或者`login.txt`访问和登录 CSGHub。*
-
-**变量说明：**
-
-|          变量           |    默认值    | 作用                                                         |
-| :---------------------: | :----------: | :----------------------------------------------------------- |
-|       ENABLE_K3S        |     true     | 创建 K3S 集群                                                |
-|    ENABLE_DYNAMIC_PV    |    false     | 模拟动态卷管理                                               |
-|    ENABLE_NVIDIA_GPU    |    false     | 安装 nvidia-device-plugin                                    |
-|       HOSTS_ALIAS       |     true     | 配置 coredns 以及本地 hosts 解析                             |
-|      INSTALL_HELM       |     true     | 安装 helm 工具                                               |
-|  INGRESS_SERVICE_TYPE   |   NodePort   | CSGHub 服务暴露方式，如果是 LoadBalancer 方式请确保 SSHD 服务使用非 22 端口 |
-| KNATIVE_INTERNAL_DOMAIN | app.internal | KnativeServing 域名                                          |
-|  KNATIVE_INTERNAL_HOST  |  127.0.0.1   | Kourier 服务地址，脚本运行时会重新赋值为本机 IPv4            |
-|  KNATIVE_INTERNAL_PORT  |      80      | Kourier 服务端口，如果INGRESS_SERVICE_TYPE 为 NodePort，端口会被重新赋值为 30213 |
-
-### 标准部署
-
-#### 前置条件
-
-- Kubernetes 1.20+
-
-- Helm 3.12.0+
-
--  Dynamic Volume Provisioning
-
-   或者手动创建如下持久卷:
-
-    - PV 500Gi * 1 (for Minio)
-    - PV 200Gi * 1 (for Gitaly)
-    - PV 50Gi * 2 (for PostgreSQL, Builder)
-    - PV 10Gi * 2 (for Redis, Nats)
-    - PV 1Gi * 1 (for Gitlab-Shell)
-
-#### 开始安装
-
-- **添加 helm 仓库**
-
-    ```shell
-    helm repo add csghub https://opencsgs.github.io/csghub-installer
-    helm repo update
-    ```
-
-- **创建 kube-configs Secret**
-
-    ```shell
-    kubectl create ns csghub 
-    kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
-    ```
-
-- **安装 CSGHub Helm Chart**
-
-  ***注意：** 以下是简单安装，更多参数定义请参考下文。*
-
-  **示例安装信息：**
-
-  |                         参数                         |    默认值    |    示例值    | 说明                                                         |
-      | :--------------------------------------------------: | :----------: | :----------: | :----------------------------------------------------------- |
-  |                global.ingress.domain                 | example.com  | example.com  | [服务域名](#域名)                                            |
-  |             global.ingress.service.type              | LoadBalancer |   NodePort   | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
-  |        ingress-nginx.controller.service.type         | LoadBalancer |   NodePort   | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
-  | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | 这里为预指定，会自动配置到 KnativeServing。                  |
-  |  global.deployment.knative.serving.services[0].host  | 192.168.18.3 | IPv4 address | 实际配置时请指定实际的目标 Kubernetes 集群的 IPv4 地址。     |
-  |  global.deployment.knative.serving.services[0].port  |      80      |    30213     | 这里为预指定，会自动配置到 KnativeServing。<br>如果 global.ingress.service.type 配置为 LoadBalancer ，请使用默认值 80。<br>如果 global.ingress.service.type 配置为 NodePort ，这里可以指定为任意 5 位合法端口号。 |
-  |             global.deployment.kubeSecret             | kube-configs | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
-
-    - **LoadBalancer**
-
-        ```shell
-        helm upgrade --install csghub csghub/csghub \
-          --namespace csghub \
-          --create-namespace \
-          --set global.ingress.domain="example.com" \
-          --set global.deployment.knative.serving.services[0].domain="app.internal" \
-          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
-          --set global.deployment.knative.serving.services[0].port="80"
-        ```
-
-    - **NodePort**
-
-        ```shell
-        helm upgrade --install csghub csghub/csghub \
-          --namespace csghub \
-          --create-namespace \
-          --set global.ingress.domain="example.com" \
-          --set global.ingress.service.type="NodePort" \
-          --set ingress-nginx.controller.service.type="NodePort" \
-          --set global.deployment.knative.serving.services[0].domain="app.internal" \
-          --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
-          --set global.deployment.knative.serving.services[0].port="30213"
-        ```
-
-  ***说明：** 安装配置需要一段时间请耐心等待。CSGHub Helm Chart 配置完成后会自动在目标集群配置 Argo Workflow 以及 KnativeServing。*
-
-- **访问信息**
-
-  以 `NodePort` 安装方式为例：
-
-    ```shell
-    You have successfully installed CSGHub!
-    
-    Visit CSGHub at the following address:
-    
-        Address: http://csghub.example.com:30080
-        Credentials: root/xxxxx
-    
-    Visit the Casdoor administrator console at the following address:
-    
-        Address: http://casdoor.example.com:30080
-        Credentials: admin/xxx
-    
-    Visit the Temporal console at the following address:
-    
-        Address: http://temporal.example.com:30080
-        Credentials:
-            Username: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
-            Password: $(kubectl get secret --namespace csghub csghub-temporal -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
-    
-    Visit the Minio console at the following address:
-    
-        Address: http://minio.example.com:30080/console/
-        Credentials:
-            Username: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
-            Password: $(kubectl get secret --namespace csghub csghub-minio -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
-    
-    To access Registry using docker-cli:
-    
-        Endpoint: registry.example.com:30080
-        Credentials:
-            Username=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_USERNAME}' | base64 -d)
-            Password=$(kubectl get secret csghub-registry -ojsonpath='{.data.REGISTRY_PASSWORD}' | base64 -d)
-    
-        Login to the registry:
-            echo "$Password" | docker login registry.example.com:30080 --username $Username ---password-stdin
-    
-        Pull/Push images:
-            docker pull registry.example.com:30080/test:latest
-            docker push registry.example.com:30080/test:latest
-    
-    *Notes: This is not a container registry suitable for production environments.*
-    
-    For more details, visit:
-    
-        https://github.com/OpenCSGs/csghub-installer
-    ```
 
 ## 外部资源
 
