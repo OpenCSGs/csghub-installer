@@ -14,48 +14,10 @@ Hardware environment requirements:
 
 Software environment requirements:
 
-- Docker Engine (>=5:20.10.24)
+- Docker Engine (>=20.10.0)
 
 - Docker Compose (>=2.20.0)
 
-## Version Description
-
-CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` version is updated as needed.
-
-| Chart version | Csghub version | Description |
-| :--------: | :---------: | ----------------------------- |
-| 0.8.x | 0.8.x | |
-| 0.9.x | 0.9.x | Added components Gitaly, Gitlab-Shell |
-| 1.0.x | 1.0.x | |
-| 1.1.x | 1.1.x | Added component Temporal |
-| 1.2.x | 1.2.x | |
-| 1.3.x | 1.3.x | Removed component Gitea |
-
-## Domain name and IP
-
-CSGHub Docker Compose deployment method is more flexible in the use of domain name and IP, which can use either `domain name` or `IPv4`.
-
-- **Domain name**
-
-Domain name can use public domain name or custom domain name. CSGHub Docker Compose uses a single domain name for deployment and access. Compared with the CSGHub Helm Chart method, the domain name usage is much simpler.
-
-***Note:** If it is a custom domain name, please configure Hosts resolution yourself. For public domain names, please configure DNS cloud resolution.* 
-
-- **IPv4**
-
-IP address selection needs to use addresses other than `127.0.0.1` and `localhost`.
-
-## .kube/config
-
-The `.kube/config` file is an important configuration file for accessing the Kubernetes cluster. It is directly provided to the installer as a file path during the CSGHub Docker Compose deployment process. This `.kube/config` must at least contain full read and write permissions for the namespace where the target cluster deployment instance is located.
-
-***Note:** If the automatic configuration of argo and KnativeServing is enabled in subsequent versions, more permissions such as creating namespaces are required.* 
-
-## Data persistence
-
-For ease of use and management, this deployment method directly uses `Volume Mount/Directory Mapping` to store persistent data. By default, it is stored in the `data` directory under the installation directory and is stored separately in the `./data/<component>` format.
-
-In addition, all configuration files are stored in the `./configs` directory.
 
 ## Deployment example
 
@@ -107,13 +69,52 @@ Wait for the program to automatically configure and start.
 
 - Access address
 
-| Service | Address | Admin | Notes |
-| :------: | :-------------------------------: | :----------------------------: | :------------------------------------------------: |
-| CSGhub | http://\<ip address> | root/Root@1234 | Can be modified in Casdoor |
-| Minio | http://\<ip address>:9001 | *Please check the default account defined in .env* | MINIO_ROOT_USER<br>MINIO_ROOT_PASSWORD |
+| Service  |              Address              |                       Admin                        |                       Notes                        |
+| :------: | :-------------------------------: | :------------------------------------------------: | :------------------------------------------------: |
+|  CSGhub  |       http://\<ip address>        |                   root/Root@1234                   |             Can be modified in Casdoor             |
+|  Minio   |     http://\<ip address>:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br>MINIO_ROOT_PASSWORD       |
 | Temporal | http://\<ip address>/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br>TEMPORAL_CONSOLE_PASSWORD |
-| Casdoor | http://\<ip address>:8000 | admin/123 | Can be modified in Casdoor |
-| Registry | \<ip address>:5000 | *Please check the default account defined in .env* | REGISTRY_USERNAME<br/>REGISTRY_PASSWORD |
+| Casdoor  |     http://\<ip address>:8000     |                     admin/123                      |             Can be modified in Casdoor             |
+| Registry |        \<ip address>:5000         | *Please check the default account defined in .env* |      REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+
+## Version Description
+
+CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` version is updated as needed.
+
+| Chart version | Csghub version | Description |
+| :--------: | :---------: | ----------------------------- |
+| 0.8.x | 0.8.x | |
+| 0.9.x | 0.9.x | Added components Gitaly, Gitlab-Shell |
+| 1.0.x | 1.0.x | |
+| 1.1.x | 1.1.x | Added component Temporal |
+| 1.2.x | 1.2.x | |
+| 1.3.x | 1.3.x | Removed component Gitea |
+
+## Domain name and IP
+
+CSGHub Docker Compose deployment method is more flexible in the use of domain name and IP, which can use either `domain name` or `IPv4`.
+
+- **Domain name**
+
+Domain name can use public domain name or custom domain name. CSGHub Docker Compose uses a single domain name for deployment and access. Compared with the CSGHub Helm Chart method, the domain name usage is much simpler.
+
+***Note:** If it is a custom domain name, please configure Hosts resolution yourself. For public domain names, please configure DNS cloud resolution.* 
+
+- **IPv4**
+
+IP address selection needs to use addresses other than `127.0.0.1` and `localhost`.
+
+## .kube/config
+
+The `.kube/config` file is an important configuration file for accessing the Kubernetes cluster. It is directly provided to the installer as a file path during the CSGHub Docker Compose deployment process. This `.kube/config` must at least contain full read and write permissions for the namespace where the target cluster deployment instance is located.
+
+***Note:** If the automatic configuration of argo and KnativeServing is enabled in subsequent versions, more permissions such as creating namespaces are required.* 
+
+## Data persistence
+
+For ease of use and management, this deployment method directly uses `Volume Mount/Directory Mapping` to store persistent data. By default, it is stored in the `data` directory under the installation directory and is stored separately in the `./data/<component>` format.
+
+In addition, all configuration files are stored in the `./configs` directory.
 
 ## External resources
 
