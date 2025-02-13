@@ -1,5 +1,5 @@
-debug = true
-trace = true
+debug = false
+trace = false
 
 # Client port of 4222 on all interfaces
 port: 4222
