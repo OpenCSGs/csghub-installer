@@ -85,6 +85,10 @@ spec:
           {{- end }}
           resources:
             {{- .Values.resources | toYaml | nindent 12 }}
+          lifecycle:
+            postStart:
+              exec:
+                command: [ "/bin/sh", "-c", "sleep 8" ]
           livenessProbe:
             tcpSocket:
               port: 7233
