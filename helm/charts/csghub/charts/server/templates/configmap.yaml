@@ -100,6 +100,9 @@ data:
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
   # Workflow
   OPENCSG_WORKFLOW_SERVER_ENDPOINT: {{ include "temporal.internal.endpoint" . }}
+  # Dataviewer
+  OPENCSG_DATAVIEWER_SERVER_HOST: {{ printf "http://%s" (include "dataviewer.internal.domain" .) }}
+  OPENCSG_DATAVIEWER_SERVER_PORT: {{ include "dataviewer.internal.port" . | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap

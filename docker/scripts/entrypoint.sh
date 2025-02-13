@@ -10,7 +10,7 @@ echo "Creating directories."
 mkdir -p /var/{log,opt}/{postgresql,minio,redis,registry,gitaly,gitlab-shell,nats,casdoor,nginx,csghub-builder} 2>/dev/null
 mkdir -p /var/run/{postgresql,redis} 2>/dev/null
 mkdir -p /var/nginx/client_body_temp 2>/dev/null
-mkdir -p /var/log/{csghub-server,csghub-accounting,csghub-runner,csghub-user,csghub-proxy,csghub-portal,csghub-moderation,mirror-lfs,mirror-repo,dnsmasq,temporal} 2>/dev/null
+mkdir -p /var/log/{csghub-server,csghub-accounting,csghub-runner,csghub-user,csghub-proxy,csghub-portal,csghub-moderation,mirror-lfs,mirror-repo,dnsmasq,temporal,csghub-dataviewer} 2>/dev/null
 chown -R postgres:postgres /var/{opt,log,run}/postgresql
 chown -R redis:redis /var/{opt,log,run}/redis
 chown -R registry:registry /var/{opt,log}/registry /etc/registry
