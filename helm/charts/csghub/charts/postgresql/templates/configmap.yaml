@@ -45,14 +45,7 @@ data:
     END $$;
 
     -- Create database {{ $database | quote }} if it doesn't exist
-    DO $$
-    BEGIN
-      IF NOT EXISTS (
-        SELECT 1 FROM pg_database WHERE datname = {{ $database | squote }}
-      ) THEN
-        CREATE DATABASE {{ $database }} ENCODING 'UTF-8' OWNER {{ $username | quote }};
-      END IF;
-    END $$;
+    CREATE DATABASE {{ $database }} ENCODING 'UTF-8' OWNER {{ $username | quote }};
 
     -- Grant privileges on database {{ $database | quote }} to user {{ $username | quote }}
     GRANT ALL PRIVILEGES ON DATABASE {{ $database }} TO {{ $username | quote }};
