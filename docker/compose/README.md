@@ -26,7 +26,7 @@ Software environment requirements:
 Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghub-docker-compose-v1.3.0.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.4.0/csghub-docker-compose-v1.4.0.tgz
 ```
 
 ### Installation Configuration
@@ -34,7 +34,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.3.0/csghu
 - Unzip Program
 
 ```shell
-tar -zxf csghub-docker-compose-v1.3.0.tgz && cd ./csghub
+tar -zxf csghub-docker-compose-v1.4.0.tgz && cd ./csghub
 ```
 
 - Configuration Update
