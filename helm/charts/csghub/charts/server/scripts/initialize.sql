@@ -26,18 +26,6 @@ SELECT pg_catalog.set_config('search_path', 'public', false);
 --
 -- Seed Data for Name: users; Type: TABLE DATA; Schema: public; Owner: csghub_server
 --
-
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-CREATE OR REPLACE FUNCTION generate_uuid(input_string TEXT)
-    RETURNS UUID AS $$
-DECLARE
-    base_uuid TEXT;
-BEGIN
-    base_uuid := md5(input_string);
-    RETURN uuid_generate_v5(uuid_nil(), base_uuid);
-END;
-$$ LANGUAGE plpgsql;
-
 -- Create Trigger Function
 CREATE OR REPLACE FUNCTION promote_root_to_admin ()
     RETURNS TRIGGER
@@ -48,7 +36,7 @@ BEGIN
             public.users
         SET
             role_mask = 'admin',
-            uuid = generate_uuid({{ .Release.Name | squote }})
+            uuid = '2490944c-104c-513c-8665-34f0f320da2b'
         WHERE
             username = 'root';
 
