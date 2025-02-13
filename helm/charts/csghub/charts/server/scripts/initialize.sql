@@ -26,7 +26,6 @@ SELECT pg_catalog.set_config('search_path', 'public', false);
 --
 -- Seed Data for Name: users; Type: TABLE DATA; Schema: public; Owner: csghub_server
 --
-
 -- Create Trigger Function
 CREATE OR REPLACE FUNCTION promote_root_to_admin ()
     RETURNS TRIGGER
@@ -36,7 +35,8 @@ BEGIN
         UPDATE
             public.users
         SET
-            role_mask = 'admin'
+            role_mask = 'admin',
+            uuid = '2490944c-104c-513c-8665-34f0f320da2b'
         WHERE
             username = 'root';
 
