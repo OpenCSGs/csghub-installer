@@ -18,7 +18,7 @@ image:
   ## Specifies the location of the Registry Docker image in the registry.
   repository: csghub_portal
   ## Defines the specific version of the Registry image to use.
-  tag: "v1.3.0"
+  tag: "v1.4.0"
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
