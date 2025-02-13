@@ -581,21 +581,10 @@ data:
         AND password = '123';
 
     -- Keep user.id for root keep
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-    CREATE OR REPLACE FUNCTION generate_uuid(input_string TEXT)
-    RETURNS UUID AS $$
-    DECLARE
-      base_uuid TEXT;
-    BEGIN
-      base_uuid := md5(input_string);
-      RETURN uuid_generate_v5(uuid_nil(), base_uuid);
-    END;
-    $$ LANGUAGE plpgsql;
-
     UPDATE
       "user"
     SET
-      id = generate_uuid({{ .Release.Name | squote }})
+      id = '2490944c-104c-513c-8665-34f0f320da2b'
     WHERE
       owner = 'OpenCSG'
       AND name = 'root';
