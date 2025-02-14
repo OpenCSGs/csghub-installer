@@ -14816,15 +14816,17 @@ data:
           port: 80
           protocol: TCP
           targetPort: 8080
-          nodePort: 30213
+          {{- $firstSvc := index .Values.global.deployment.knative.serving.services 0 }}
+          {{- if eq $firstSvc.type "NodePort" }}
+          nodePort: {{ $firstSvc.port | default 30218 }}
+          {{- end }}
         - name: https
           port: 443
           protocol: TCP
           targetPort: 8443
-          nodePort: 30910
       selector:
         app: 3scale-kourier-gateway
-      type: NodePort
+      type: {{ $firstSvc.type }}
     ---
     apiVersion: v1
     kind: Service
