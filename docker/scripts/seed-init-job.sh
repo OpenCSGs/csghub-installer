@@ -66,7 +66,7 @@ get_token() {
     -H 'accept: application/json' | jq -r .data[0].token
 }
 
-if [ -f "/root/.kube/config" ]; then
+if [ -f "/root/.kube/config" ] && [ "$CSGHUB_WITH_K8S" == 1 ]; then
   echo "Seed table space_resources..."
   execute_sql "$POSTGRES_SERVER_USER" /etc/server/initialize.sql
 else
