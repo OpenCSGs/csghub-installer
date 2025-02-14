@@ -30,6 +30,7 @@ global:
     service:
       ## `&type` is an internal anchor, do not delete it
       ##  `ingress-nginx-controller` and `kourier` will also the same
+      ## Enums `LoadBalancer`、`NodePort`
       type: &type LoadBalancer
 
   ## This section configures whether to use an external container image repository.
@@ -70,6 +71,7 @@ global:
       ##   - csghub_casdoor
       ##   - csghub_temporal
       ##   - csghub_temporal_visibility
+      ##   - csghub_dataflow
       ## Please make sure that the above databases have been created
       # database: ""
       ## Username for authenticating with the PostgreSQL database.
@@ -148,21 +150,18 @@ global:
       serving:
         autoConfigure: true
         ## Configuration for Knative serving services.
-        ## If `autoConfigure` set to `true`, +
-        ## it will be configured using following dict except `host`
+        ## If `autoConfigure` set to true, following will also be configured to knative serving, unless already configured.
         services:
-          ## Definition of a specific Knative service.
-          ## The name of the service.
-          - name: example-service-1
+          ## Configure Knative Serving kourier.svc type
+          ## If type is 'LoadBalancer', ensure your k8s can provide multiple loadBalancer addresses, or set to 'NodePort'
+          - type: NodePort
             ## The hostname through which the service can be accessed.
             domain: "app.internal"
-            ## The IP address assigned to the service.
-            ## Usually remote k8s api-server node address.
+            ## The IP address assigned to the service, Usually remote k8s api-server node address.
             host: "192.168.18.3"
-            ## The port on which the service is exposed.
-            ## If `ingress.service.type` set to `LoadBalancer`, +
-            ## port should be set to `80` or `443`
-            port: "80"
+            ## If type is 'LoadBalancer', port should be set to '80'
+            ## If type is 'NodePort', it will be configured as the NodePort port of kourier.svc port 80
+            port: "30213"
 
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
@@ -204,6 +203,31 @@ postgresql:
   #   - csghub_casdoor
   #   - csghub_temporal
   #   - csghub_temporal_visibility
+  #   - csghub_dataflow
+
+## For Moderation
+moderation:
+  ## Configuration for content moderation settings
+  moderation: { }
+    ## The access key ID for authentication with the moderation service
+    # accessKeyId: ""
+    ## The access key secret for authentication with the moderation service
+    # accessKeySecret: ""
+    ## The region where the moderation service is hosted
+    # region: ""
+
+## For Dataflow
+dataflow:
+  ## Configure AI Service
+  openAI: { }
+    ## The API endpoint address, e.g., "https://api.openai.com/v1/"
+    # endpoint: ""
+    ##  Your OpenAI API key used for authentication
+    # apiKey: ""
+    ## The version of the API being used, e.g., "v1"
+    # apiVersion: ""
+    ## The name of the model you want to use, e.g., "text-davinci-003"
+    # model: ""
 
 ## For Casdoor
 casdoor:
