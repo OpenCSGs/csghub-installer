@@ -150,6 +150,7 @@ COPY --from=casdoor /web /etc/casdoor/web
 # ============================================================
 ENV GIN_MODE=release
 COPY --from=server /starhub-bin/starhub /usr/bin/csghub-server
+COPY --from=server /root/.duckdb /root/.duckdb
 COPY --from=server /starhub-bin/builder/store/database/seeds /builder/store/database/seeds
 RUN curl -L https://opencsg-public-resource.oss-cn-beijing.aliyuncs.com/csghub/omnibus-demo/tiny-random-Llama-3.tar.gz -o /etc/server/tiny-random-Llama-3.tar.gz && \
     curl -L https://opencsg-public-resource.oss-cn-beijing.aliyuncs.com/csghub/omnibus-demo/alpaca-gpt4-data-zh.tar.gz -o /etc/server/alpaca-gpt4-data-zh.tar.gz
