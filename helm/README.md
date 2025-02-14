@@ -110,15 +110,16 @@ The above deployment will automatically install/configure the following resource
 
     **Sample installation information:**
 
-    |                      Parameters                      | Default value | Example value | Description                                                  |
-    | :--------------------------------------------------: | :-----------: | :-----------: | :----------------------------------------------------------- |
-    |                global.ingress.domain                 |  example.com  |  example.com  | [Service domain name](#domain name)                          |
-    |             global.ingress.service.type              | LoadBalancer  |   NodePort    | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
-    |        ingress-nginx.controller.service.type         | LoadBalancer  |   NodePort    | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor. |
-    | global.deployment.knative.serving.services[0].domain | app.internal  | app.internal  | This is pre-specified and will be automatically configured to KnativeServing. |
-    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3  | IPv4 address  | Please specify the actual IPv4 address of the target Kubernetes cluster during actual configuration. |
-    |  global.deployment.knative.serving.services[0].port  |      80       |     30213     | This is pre-specified and will be automatically configured to KnativeServing. <br>If global.ingress.service.type is configured as LoadBalancer, use the default value 80. <br>If global.ingress.service.type is configured as NodePort, any 5-digit legal port number can be specified here. |
-    |             global.deployment.kubeSecret             | kube-configs  | kube-configs  | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them. |
+    |                      Parameters                      | Default value | Description                                                  |
+    | :--------------------------------------------------: | :-----------: | :----------------------------------------------------------- |
+    |                global.ingress.domain                 |  example.com  | [Service domain name](#domain name)                          |
+    |             global.ingress.service.type              | LoadBalancer  | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
+    |        ingress-nginx.controller.service.type         | LoadBalancer  | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor. |
+    |  global.deployment.knative.serving.services[0].type  |   NodePort    | Specifies the service type for the KnativeServing Kourier when using [deployment.knative.serving.autoConfigure](#deployment). If the cluster does not support multiple LoadBalancer addresses, use NodePort. |
+    | global.deployment.knative.serving.services[0].domain | app.internal  | Specify the internal domain name used by KnativeServing.     |
+    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3  | Specify the IPv4 address of the KnativeServing Kourier service. |
+    |  global.deployment.knative.serving.services[0].port  |     30213     | Specify the port of the KnativeServing Kourier service. If the type is LoadBalancer, it needs to be configured to 80. If the type is NodePort, it needs to be configured to any 5 valid NodePort port numbers. |
+    |             global.deployment.kubeSecret             | kube-configs  | Contains the Secret of all target Kubernetes clusters .kube/config. Multiple configs can be renamed to files starting with config to distinguish them. |
 
     - **LoadBalancer** 
 
@@ -129,7 +130,7 @@ The above deployment will automatically install/configure the following resource
           --set global.ingress.domain="example.com" \ 
           --set global.deployment.knative.serving.services[0].domain="app.internal" \ 
           --set global.deployment.knative.serving.services[0].host="192.168.18.3" \ 
-          --set global.deployment.knative.serving.services[0].port="80" 
+          --set global.deployment.knative.serving.services[0].port="30213" 
         ```
 
     - **NodePort** 
@@ -360,10 +361,10 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | deployment.kubeSecret | string | kube-configs | Specifies the Secret containing all target clusters `.kube/config`, which needs to be created by yourself. The creation method has been provided in the deployment section. |
 | deployment.namespace | string | spaces | The namespace where the deployment instance is located. |
 | deployment.knative.serving.autoConfigure | bool | true | Specifies whether to enable automatic deployment of KnativeServing and argo. |
-| deployment.knative.serving.services[n].name | string | example-service-1 | No actual meaning, pre-configured parameters. |
-| deployment.knative.serving.services[n].domain | string | app.internal | Domain name for executing default configuration to KnativeServing. |
-| deployment.knative.serving.services[n].host | string | 192.168.8.3 | Specifies the IP address connected to the target K8S cluster. |
-| deployment.knative.serving.services[n].port | string | 80 | Specifies the port connected to the KnativeServing kourier service. |
+| deployment.knative.serving.services[n].type | string | NodePort | Specifies the service type of the KnativeServing Kourier when [deployment.knative.serving.autoConfigure](#deployment). If the cluster does not support providing multiple LoadBalancer addresses, use NodePort. |
+| deployment.knative.serving.services[n].domain | string | app.internal | Specify the internal domain name used by KnativeServing. |
+| deployment.knative.serving.services[n].host | string | 192.168.8.3 | Specify the IPv4 address of the KnativeServing Kourier service. |
+| deployment.knative.serving.services[n].port | string | 30213 | Specify the port of the KnativeServing Kourier service. If the type is LoadBalancer, it needs to be configured to 80. If the type is NodePort, it needs to be configured to any 5 valid NodePort port numbers. |
 
 ### Local
 
@@ -517,10 +518,10 @@ mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.t
     - Containerd 2.x
 
         ```toml
-         version = 3
+        version = 3
         
-         [plugins."io.containerd.cri.v1.images".registry]
-              config_path = "/etc/containerd/certs.d"
+        [plugins."io.containerd.cri.v1.images".registry]
+             config_path = "/etc/containerd/certs.d"
         ```
 
 3. Configure `hosts.toml`

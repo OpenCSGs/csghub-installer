@@ -157,7 +157,7 @@ global:
             ## The hostname through which the service can be accessed.
             domain: "app.internal"
             ## The IP address assigned to the service, Usually remote k8s api-server node address.
-            host: "192.168.18.3"
+            host: "192.168.18.10"
             ## If type is 'LoadBalancer', port should be set to '80'
             ## If type is 'NodePort', it will be configured as the NodePort port of kourier.svc port 80
             port: "30213"
