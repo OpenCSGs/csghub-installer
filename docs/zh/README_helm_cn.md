@@ -106,15 +106,16 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
 
     **示例安装信息：**
 
-    |                         参数                         |    默认值    |    示例值    | 说明                                                         |
-    | :--------------------------------------------------: | :----------: | :----------: | :----------------------------------------------------------- |
-    |                global.ingress.domain                 | example.com  | example.com  | [服务域名](#域名)                                            |
-    |             global.ingress.service.type              | LoadBalancer |   NodePort   | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
-    |        ingress-nginx.controller.service.type         | LoadBalancer |   NodePort   | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
-    | global.deployment.knative.serving.services[0].domain | app.internal | app.internal | 这里为预指定，会自动配置到 KnativeServing。                  |
-    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3 | IPv4 address | 实际配置时请指定实际的目标 Kubernetes 集群的 IPv4 地址。     |
-    |  global.deployment.knative.serving.services[0].port  |      80      |    30213     | 这里为预指定，会自动配置到 KnativeServing。<br>如果 global.ingress.service.type 配置为 LoadBalancer ，请使用默认值 80。<br>如果 global.ingress.service.type 配置为 NodePort ，这里可以指定为任意 5 位合法端口号。 |
-    |             global.deployment.kubeSecret             | kube-configs | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
+    |                         参数                         |    默认值    | 说明                                                         |
+    | :--------------------------------------------------: | :----------: | :----------------------------------------------------------- |
+    |                global.ingress.domain                 | example.com  | [服务域名](#域名)                                            |
+    |             global.ingress.service.type              | LoadBalancer | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
+    |        ingress-nginx.controller.service.type         | LoadBalancer | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
+    |  global.deployment.knative.serving.services[0].type  |   NodePort   | 指定[deployment.knative.serving.autoConfigure](#deployment) 时 KnativeServing Kourier 的服务类型。如果集群不支持提供多 LoadBalancer 地址，请使用 NodePort。 |
+    | global.deployment.knative.serving.services[0].domain | app.internal | 指定 KnativeServing 使用的内部域名。                         |
+    |  global.deployment.knative.serving.services[0].host  | 192.168.18.3 | 指定 KnativeServing Kourier 服务的 IPv4 地址。               |
+    |  global.deployment.knative.serving.services[0].port  |    30213     | 指定 KnativeServing Kourier 服务的端口。如果 type 为 LoadBalancer，需配置为 80，如果 type 为 NodePort , 需配置为任意 5 为合法 NodePort 端口号。 |
+    |             global.deployment.kubeSecret             | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
 
       - **LoadBalancer**
 
@@ -126,7 +127,7 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
           --set global.deployment.knative.serving.services[0].type="NodePort" \ 
           --set global.deployment.knative.serving.services[0].domain="app.internal" \
           --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
-          --set global.deployment.knative.serving.services[0].port="80"
+          --set global.deployment.knative.serving.services[0].port="30213"
         ```
 
       - **NodePort**
@@ -348,16 +349,16 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 
 #### deployment
 
-| 参数配置                                      | 字段类型 | 默认值            | 说明                                                         |
-| :-------------------------------------------- | :------- | :---------------- | :----------------------------------------------------------- |
-| deployment.enabled                            | bool     | true              | 指定是否启用实例部署。<br/>如果禁用则无法创建 space、推理等实例（即不关联 K8S 集群）。 |
-| deployment.kubeSecret                         | string   | kube-configs      | 指定包含所有目标集群 `.kube/config`的 Secret，需要自行创建。创建方式在部署部分已经提供。 |
-| deployment.namespace                          | string   | spaces            | 部署实例所在的命名空间。                                     |
-| deployment.knative.serving.autoConfigure      | bool     | true              | 指定是否开启自动部署 KnativeServing 和 argo。                |
-| deployment.knative.serving.services[n].name   | string   | example-service-1 | 无实际意义，预配置参数。                                     |
-| deployment.knative.serving.services[n].domain | string   | app.internal      | 执行默认配置到 KnativeServing 的域名。                       |
-| deployment.knative.serving.services[n].host   | string   | 192.168.8.3       | 指定连接到目标 K8S 集群的 IP 地址。                          |
-| deployment.knative.serving.services[n].port   | string   | 80                | 指定连接到 KnativeServing kourier 服务的端口。               |
+| 参数配置                                      | 字段类型 | 默认值       | 说明                                                         |
+| :-------------------------------------------- | :------- | :----------- | :----------------------------------------------------------- |
+| deployment.enabled                            | bool     | true         | 指定是否启用实例部署。<br/>如果禁用则无法创建 space、推理等实例（即不关联 K8S 集群）。 |
+| deployment.kubeSecret                         | string   | kube-configs | 指定包含所有目标集群 `.kube/config`的 Secret，需要自行创建。创建方式在部署部分已经提供。 |
+| deployment.namespace                          | string   | spaces       | 部署实例所在的命名空间。                                     |
+| deployment.knative.serving.autoConfigure      | bool     | true         | 指定是否开启自动部署 KnativeServing 和 argo。                |
+| deployment.knative.serving.services[n].type   | string   | NodePort     | 指定[deployment.knative.serving.autoConfigure](#deployment) 时 KnativeServing Kourier 的服务类型。如果集群不支持提供多 LoadBalancer 地址，请使用 NodePort。 |
+| deployment.knative.serving.services[n].domain | string   | app.internal | 指定 KnativeServing 使用的内部域名。                         |
+| deployment.knative.serving.services[n].host   | string   | 192.168.18.3 | 指定 KnativeServing Kourier 服务的 IPv4 地址。               |
+| deployment.knative.serving.services[n].port   | string   | 30213        | 指定 KnativeServing Kourier 服务的端口。如果 type 为 LoadBalancer，需配置为 80，如果 type 为 NodePort , 需配置为任意 5 为合法 NodePort 端口号。 |
 
 ### Local
 
@@ -511,10 +512,10 @@ mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.t
     - Containerd 2.x
 
         ```toml
-         version = 3
+        version = 3
         
-         [plugins."io.containerd.cri.v1.images".registry]
-              config_path = "/etc/containerd/certs.d"
+        [plugins."io.containerd.cri.v1.images".registry]
+             config_path = "/etc/containerd/certs.d"
         ```
 
 3. 配置 `hosts.toml`
