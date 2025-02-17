@@ -22,6 +22,7 @@ fi
 : "${KNATIVE_INTERNAL_HOST:=127.0.0.1}"
 : "${KNATIVE_INTERNAL_PORT:=80}"
 : "${INGRESS_SERVICE_TYPE:=NodePort}"
+: "${KOURIER_SERVICE_TYPE:=NodePort}"
 
 # Get the domain from the command line argument
 : "${DOMAIN:=$1}"
@@ -410,7 +411,7 @@ retry helm repo add csghub https://opencsgs.github.io/csghub-installer --force-u
 
 log "INFO" "- Retrieve knative service info."
 KNATIVE_INTERNAL_HOST="$IP_ADDRESS"
-if [[ "$INGRESS_SERVICE_TYPE" == "NodePort" ]]; then
+if [[ "$KOURIER_SERVICE_TYPE" == "NodePort" ]]; then
   KNATIVE_INTERNAL_PORT="30213"
 fi
 
@@ -442,6 +443,7 @@ retry helm upgrade --install csghub ./csghub-"$CHART_VERSION".tgz \
   --set global.ingress.domain="$DOMAIN" \
   --set global.ingress.service.type="$INGRESS_SERVICE_TYPE" \
   --set ingress-nginx.controller.service.type="$INGRESS_SERVICE_TYPE" \
+  --set global.deployment.knative.serving.services[0].type="$KOURIER_SERVICE_TYPE" \
   --set global.deployment.knative.serving.services[0].domain="$KNATIVE_INTERNAL_DOMAIN" \
   --set global.deployment.knative.serving.services[0].host="$KNATIVE_INTERNAL_HOST" \
   --set global.deployment.knative.serving.services[0].port="$KNATIVE_INTERNAL_PORT" | tee ./login.txt

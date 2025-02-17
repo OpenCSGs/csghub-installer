@@ -14826,7 +14826,7 @@ data:
           targetPort: 8443
       selector:
         app: 3scale-kourier-gateway
-      type: {{ $firstSvc.type }}
+      type: {{ $firstSvc.type | default "LoadBalancer" }}
     ---
     apiVersion: v1
     kind: Service
