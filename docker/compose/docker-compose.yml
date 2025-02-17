@@ -723,7 +723,7 @@ services:
         ipv4_address: 192.171.100.124
 
   csghub-dataviewer:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "dataviewer", "launch" ]
     depends_on:
       - postgres
