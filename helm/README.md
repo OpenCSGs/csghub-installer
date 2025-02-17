@@ -127,6 +127,7 @@ The above deployment will automatically install/configure the following resource
           --namespace csghub \ 
           --create-namespace \ 
           --set global.ingress.domain="example.com" \ 
+          --set global.deployment.knative.serving.services[0].type="NodePort" \ 
           --set global.deployment.knative.serving.services[0].domain="app.internal" \ 
           --set global.deployment.knative.serving.services[0].host="192.168.18.3" \ 
           --set global.deployment.knative.serving.services[0].port="80" 
@@ -141,6 +142,7 @@ The above deployment will automatically install/configure the following resource
           --set global.ingress.domain="example.com" \ 
           --set global.ingress.service.type="NodePort" \
           --set ingress-nginx.controller.service.type="NodePort" \
+          --set global.deployment.knative.serving.services[0].type="NodePort" \ 
           --set global.deployment.knative.serving.services[0].domain="app.internal" \
           --set global.deployment.knative.serving.services[0].host="192.168.18.3" \
           --set global.deployment.knative.serving.services[0].port="30213"
