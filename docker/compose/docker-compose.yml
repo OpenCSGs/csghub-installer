@@ -409,7 +409,7 @@ services:
       - 192.171.100.102
 
   csghub-user:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "user", "launch" ]
     depends_on:
       - csghub-server
