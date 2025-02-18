@@ -570,6 +570,8 @@ services:
       STARHUB_SERVER_S3_REGION: "$MINIO_REGION"
       STARHUB_SERVER_S3_ENABLE_SSL: "$MINIO_ENABLE_SSL"
       STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
+      # Workflow
+      OPENCSG_WORKFLOW_SERVER_ENDPOINT: "temporal:7233"
     restart: always
     deploy:
       resources:
