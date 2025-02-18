@@ -67,30 +67,13 @@ get_token() {
 }
 
 if [ -f "/root/.kube/config" ] && [ "$CSGHUB_WITH_K8S" == 1 ]; then
-  echo "Seed table space_resources..."
-  execute_sql "$POSTGRES_SERVER_USER" /etc/server/initialize.sql
+  echo "Seed tables..."
+  for file in $(ls /etc/server/scripts/*.sql); do
+    execute_sql "$POSTGRES_SERVER_USER" "$file"
+  done
 else
-  execute_sql "$POSTGRES_SERVER_USER" "CREATE OR REPLACE FUNCTION promote_root_to_admin()
-       RETURNS TRIGGER AS \$\$
-   BEGIN
-       IF NEW.username = 'root' THEN
-           UPDATE public.users
-           SET role_mask = 'admin'
-           WHERE username = 'root';
-
-           -- After update Drop all
-           EXECUTE 'DROP TRIGGER IF EXISTS trigger_promote_root_to_admin ON public.users';
-           EXECUTE 'DROP FUNCTION IF EXISTS promote_root_to_admin()';
-       END IF;
-
-       RETURN NEW;
-   END;
-   \$\$ LANGUAGE plpgsql VOLATILE;
-
-   CREATE OR REPLACE TRIGGER trigger_promote_root_to_admin
-       AFTER INSERT ON public.users
-       FOR EACH ROW
-   EXECUTE FUNCTION promote_root_to_admin();"
+  execute_sql "$POSTGRES_SERVER_USER" /etc/server/scripts/seed_tag_categories.sql
+  execute_sql "$POSTGRES_SERVER_USER" /etc/server/scripts/promote_root.sql
 fi
 
 echo "Update login redirectURLs..."
