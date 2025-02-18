@@ -320,6 +320,8 @@ services:
       # Dataviewer
       OPENCSG_DATAVIEWER_SERVER_HOST: http://csghub-dataviewer
       OPENCSG_DATAVIEWER_SERVER_PORT: 8093
+      # Multiple-sync
+      STARHUB_SERVER_CRON_JOB_SYNC_AS_CLIENT_CRON_EXPRESSION: '*/5 * * * *'
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]
