@@ -67,13 +67,13 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.4.0/csghu
 
 - 访问地址
 
-    |   服务   |               地址                |             管理员             |                        备注                        |
-    | :------: | :-------------------------------: | :----------------------------: | :------------------------------------------------: |
-    |  CSGhub  |       http://\<ip address>        |         root/Root@1234         |                可在 Casdoor 中修改                 |
-    |  Minio   |     http://\<ip address>:9001     | *请查看 .env 中定义的默认账户* |       MINIO_ROOT_USER<br>MINIO_ROOT_PASSWORD       |
-    | Temporal | http://\<ip address>/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br>TEMPORAL_CONSOLE_PASSWORD |
-    | Casdoor  |     http://\<ip address>:8000     |           admin/123            |                可在 Casdoor 中修改                 |
-    | Registry |        \<ip address>:5000         | *请查看 .env 中定义的默认账户* |      REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+    |   服务   |                 地址                  |             管理员             |                        备注                         |
+    | :------: | :-----------------------------------: | :----------------------------: | :-------------------------------------------------: |
+    |  CSGhub  |       http://\{{ ip address }}        |         root/Root@1234         |                 可在 Casdoor 中修改                 |
+    |  Minio   |     http://\{{ ip address }}:9001     | *请查看 .env 中定义的默认账户* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
+    | Temporal | http://\{{ ip address }}/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
+    | Casdoor  |     http://\{{ ip address }}:8000     |           admin/123            |                 可在 Casdoor 中修改                 |
+    | Registry |        \{{ ip address }}:5000         | *请查看 .env 中定义的默认账户* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## 版本说明
 
@@ -87,6 +87,7 @@ CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据
 |   1.1.x    |    1.1.x    | 增加组件 Temporal             |
 |   1.2.x    |    1.2.x    |                               |
 |   1.3.x    |    1.3.x    | 移除组件 Gitea                |
+|   1.4.x    |    1.4.x    | 增加组件 Dataviewer           |
 
 ## 域名和IP
 
@@ -122,33 +123,33 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ### Registry
 
-| 变量               | 类型   | 默认值                            | 说明                                         |
-| :----------------- | :----- | :-------------------------------- | :------------------------------------------- |
-| REGISTRY_ENABLED   | number | 1                                 | 1: 使用内置 Registry<br>0: 禁用内置 Registry |
-| REGISTRY_PORT      | number | 5000                              | Registry 服务端口号，80 请置空。             |
-| REGISTRY_ADDRESS   | string | ${SERVER_DOMAIN}:${REGISTRY_PORT} | 指定 Registry 端点。                         |
-| REGISTRY_NAMESPACE | string | csghub                            | 指定 Registry 使用的命名空间。               |
-| REGISTRY_USERNAME  | string | registry                          | 指定访问 Registry 的用户名                   |
-| REGISTRY_PASSWORD  | string | Registry@2025!                    | 指定访问 Registry 的密码                     |
+| 变量               | 类型   | 默认值                            | 说明                                          |
+| :----------------- | :----- | :-------------------------------- | :-------------------------------------------- |
+| REGISTRY_ENABLED   | number | 1                                 | 1: 使用内置 Registry<br/>0: 禁用内置 Registry |
+| REGISTRY_PORT      | number | 5000                              | Registry 服务端口号，80 请置空。              |
+| REGISTRY_ADDRESS   | string | ${SERVER_DOMAIN}:${REGISTRY_PORT} | 指定 Registry 端点。                          |
+| REGISTRY_NAMESPACE | string | csghub                            | 指定 Registry 使用的命名空间。                |
+| REGISTRY_USERNAME  | string | registry                          | 指定访问 Registry 的用户名                    |
+| REGISTRY_PASSWORD  | string | Registry@2025!                    | 指定访问 Registry 的密码                      |
 
 ### PostgreSQL
 
 ***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal 。*
 
-| 变量              | 类型   | 默认值        | 说明                                             |
-| :---------------- | :----- | :------------ | :----------------------------------------------- |
-| POSTGRES_ENABLED  | number | 1             | 1: 使用内置 PostgreSQL<br>0: 禁用内置 PostgreSQL |
-| POSTGRES_HOST     | string | postgres      | PostgreSQL 服务地址。                            |
-| POSTGRES_PORT     | number | 5432          | 指定 PostgreSQL 服务端口号。                     |
-| POSTGRES_TIMEZONE | string | Asia/Shanghai | 默认即可。无实际意义，无须配置。                 |
-| POSTGRES_USER     | string | csghub        | 指定连接 PostgreSQL 的用户名                     |
-| POSTGRES_PASSWORD | string | Csghub@2025!  | 指定连接 PostgreSQL 的密码                       |
+| 变量              | 类型   | 默认值        | 说明                                              |
+| :---------------- | :----- | :------------ | :------------------------------------------------ |
+| POSTGRES_ENABLED  | number | 1             | 1: 使用内置 PostgreSQL<br/>0: 禁用内置 PostgreSQL |
+| POSTGRES_HOST     | string | postgres      | PostgreSQL 服务地址。                             |
+| POSTGRES_PORT     | number | 5432          | 指定 PostgreSQL 服务端口号。                      |
+| POSTGRES_TIMEZONE | string | Asia/Shanghai | 默认即可。无实际意义，无须配置。                  |
+| POSTGRES_USER     | string | csghub        | 指定连接 PostgreSQL 的用户名                      |
+| POSTGRES_PASSWORD | string | Csghub@2025!  | 指定连接 PostgreSQL 的密码                        |
 
 ### ObjectStore
 
 | 变量                    | 类型   | 默认值                             | 说明                                           |
 | :---------------------- | :----- | :--------------------------------- | :--------------------------------------------- |
-| MINIO_ENABLED           | number | 1                                  | 1: 使用内置对象存储<br>0: 禁用内置对象存储     |
+| MINIO_ENABLED           | number | 1                                  | 1: 使用内置对象存储<br/>0: 禁用内置对象存储    |
 | MINIO_API_PORT          | number | 9000                               | Minio API服务端口号。                          |
 | MINIO_CONSOLE_PORT      | number | 9001                               | Minio Console 服务端口号。                     |
 | MINIO_ENDPOINT          | string | ${SERVER_DOMAIN}:${MINIO_API_PORT} | 指定对象存储使用的命名空间。                   |
@@ -208,12 +209,12 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ### Gitaly 配置
 
-| 变量                 | 类型   | 默认值            | 说明                                       |
-| :------------------- | :----- | :---------------- | :----------------------------------------- |
-| GITALY_ENABLED       | number | 1                 | 1: 使用内置 Gitaly<br>0: 禁用内置 Gitaly。 |
-| GITALY_SERVER_SOCKET | string | tcp://gitaly:8075 | Gitaly 服务地址。                          |
-| GITALY_STORAGE       | string | default           | 保持默认即可。                             |
-| GITALY_AUTH_TOKEN    | string | Gitaly@2025!      | 指定连接到 Gitaly 服务的验证 Token。       |
+| 变量                 | 类型   | 默认值            | 说明                                        |
+| :------------------- | :----- | :---------------- | :------------------------------------------ |
+| GITALY_ENABLED       | number | 1                 | 1: 使用内置 Gitaly<br/>0: 禁用内置 Gitaly。 |
+| GITALY_SERVER_SOCKET | string | tcp://gitaly:8075 | Gitaly 服务地址。                           |
+| GITALY_STORAGE       | string | default           | 保持默认即可。                              |
+| GITALY_AUTH_TOKEN    | string | Gitaly@2025!      | 指定连接到 Gitaly 服务的验证 Token。        |
 
 ### Temporal 配置
 
@@ -269,12 +270,12 @@ mkdir -p /etc/containerd/ && containerd config default >/etc/containerd/config.t
 
     - Containerd 2.x
 
-    ```toml
-     version = 3
-    
-     [plugins."io.containerd.cri.v1.images".registry]
-          config_path = "/etc/containerd/certs.d"
-    ```
+        ```toml
+         version = 3
+        
+         [plugins."io.containerd.cri.v1.images".registry]
+              config_path = "/etc/containerd/certs.d"
+        ```
 
 3. 配置 `hosts.toml`
 

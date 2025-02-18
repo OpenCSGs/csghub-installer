@@ -31,7 +31,7 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 目前部署支持快速部署，此种方式主要用于测试，部署方式如下：
 
 ```shell
-# <domain>: 例如 example.com
+# {{ domain }}: 例如 example.com
 # NodePort 是默认的 ingress-nginx-controller 服务类型
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
 
@@ -109,7 +109,7 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
     |                         参数                         |    默认值    | 说明                                                         |
     | :--------------------------------------------------: | :----------: | :----------------------------------------------------------- |
     |                global.ingress.domain                 | example.com  | [服务域名](#域名)                                            |
-    |             global.ingress.service.type              | LoadBalancer | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
+    |             global.ingress.service.type              | LoadBalancer | 请确保集群服务商具备提供 LoadBalancer 服务的能力。<br/>这里用到LoadBalancer 的服务有Ingress-nginx-controller Service以及Kourier。 |
     |        ingress-nginx.controller.service.type         | LoadBalancer | 如果您是解压安装程序在本地安装，此参数可以省略，由内部锚点自动复制。 |
     |  global.deployment.knative.serving.services[0].type  |   NodePort   | 指定[deployment.knative.serving.autoConfigure](#deployment) 时 KnativeServing Kourier 的服务类型。如果集群不支持提供多 LoadBalancer 地址，请使用 NodePort。 |
     | global.deployment.knative.serving.services[0].domain | app.internal | 指定 KnativeServing 使用的内部域名。                         |
@@ -211,6 +211,7 @@ CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据
 |   1.1.x    |    1.1.x    | 增加组件 Temporal             |
 |   1.2.x    |    1.2.x    |                               |
 |   1.3.x    |    1.3.x    | 移除组件 Gitea                |
+|   1.4.x    |    1.4.x    | 增加组件 Dataviewer           |
 
 ## 域名
 
@@ -280,14 +281,14 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 
 ### Registry
 
-| 参数配置                              | 字段类型 | 默认值 | 说明                                                  |
-| :------------------------------------ | :------- | :----- | :---------------------------------------------------- |
-| global.registry.external              | bool     | false  | false：使用内置 Registry<br>true: 使用外部 Registry。 |
-| global.registry.connection            | dict     | { }    | 默认为空，外部存储未配置。                            |
-| global.registry.connection.repository | string   | Null   | 连接外部 Registry 仓库端点。                          |
-| global.registry.connection.namespace  | string   | Null   | 连接外部 Registry 命名空间。                          |
-| global.registry.connection.username   | string   | Null   | 连接外部 Registry 用户名。                            |
-| global.registry.connection.password   | string   | Null   | 连接外部 Registry 密码。                              |
+| 参数配置                              | 字段类型 | 默认值 | 说明                                                   |
+| :------------------------------------ | :------- | :----- | :----------------------------------------------------- |
+| global.registry.external              | bool     | false  | false：使用内置 Registry<br/>true: 使用外部 Registry。 |
+| global.registry.connection            | dict     | { }    | 默认为空，外部存储未配置。                             |
+| global.registry.connection.repository | string   | Null   | 连接外部 Registry 仓库端点。                           |
+| global.registry.connection.namespace  | string   | Null   | 连接外部 Registry 命名空间。                           |
+| global.registry.connection.username   | string   | Null   | 连接外部 Registry 用户名。                             |
+| global.registry.connection.password   | string   | Null   | 连接外部 Registry 密码。                               |
 
 ### PostgreSQL
 
@@ -297,7 +298,7 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 | global.postgresql.connection          | dict     | { }     | 默认为空，外部数据库未配置。                                 |
 | global.postgresql.connection.host     | string   | Null    | 连接外部数据库IP地址。                                       |
 | global.postgresql.connection.port     | string   | Null    | 连接外部数据库端口号。                                       |
-| global.postgresql.connection.database | string   | Null    | 连接外部数据库数据库名。<br>如果值为空，则默认使用 csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility 数据库名字。如果指定了数据库名字，则以上所有数据库的内容都将存储到同一个数据库中（此种方式不建议，可能导致数据表冲突）。<br/>无论是哪种方式数据库都需要自行创建。 |
+| global.postgresql.connection.database | string   | Null    | 连接外部数据库数据库名。<br/>如果值为空，则默认使用 csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility 数据库名字。如果指定了数据库名字，则以上所有数据库的内容都将存储到同一个数据库中（此种方式不建议，可能导致数据表冲突）。<br/>无论是哪种方式数据库都需要自行创建。 |
 | global.postgresql.connection.user     | string   | Null    | 连接外部数据库的用户。                                       |
 | global.postgresql.connection.password | string   | Null    | 连接外部数据库的密码。                                       |
 | global.postgresql.connection.timezone | string   | Etc/UTC | 请使用`Etc/UTC`。当前仅为预配置使用，暂无实际意义。          |
@@ -314,17 +315,17 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 
 ### ObjectStore
 
-| 参数配置                                   | 字段类型 | 默认值                 | 说明                                                         |
-| :----------------------------------------- | :------- | :--------------------- | :----------------------------------------------------------- |
-| global.objectStore.external                | bool     | false                  | false：使用内置 Minio<br/>true: 使用外部对象存储。           |
-| global.objectStore.connection              | dict     | { }                    | 默认为空，外部对象存储未配置。                               |
-| global.objectStore.connection.endpoint     | string   | http://minio.\<domain> | 连接外部对象存储的端点。                                     |
-| global.objectStore.connection.accessKey    | string   | minio                  | 连接外部对象存储的 AccessKey。                               |
-| global.objectStore.connection.accessSecret | string   | Null                   | 连接外部对象存储的 AccessSecret。                            |
-| global.objectStore.connection.region       | string   | cn-north-1             | 外部对象存储的所在的区域。                                   |
-| global.objectStore.connection.encrypt      | string   | false                  | 外部对象存储的端点是否加密。                                 |
-| global.objectStore.connection.pathStyle    | string   | true                   | 外部对象存储存储桶的访问方式。                               |
-| global.objectStore.connection.bucket       | string   | Null                   | 指定外部对象存储的存储桶。<br>如果值为空，则默认使用 csghub-portal, csghub-server, csghub-registry, csghub-workflow 存储桶。如果指定了存储桶，则所有对象都将存储到同一个存储桶中。<br>无论是哪种方式存储桶都需要自行创建。 |
+| 参数配置                                   | 字段类型 | 默认值                     | 说明                                                         |
+| :----------------------------------------- | :------- | :------------------------- | :----------------------------------------------------------- |
+| global.objectStore.external                | bool     | false                      | false：使用内置 Minio<br/>true: 使用外部对象存储。           |
+| global.objectStore.connection              | dict     | { }                        | 默认为空，外部对象存储未配置。                               |
+| global.objectStore.connection.endpoint     | string   | http://minio.\{{ domain }} | 连接外部对象存储的端点。                                     |
+| global.objectStore.connection.accessKey    | string   | minio                      | 连接外部对象存储的 AccessKey。                               |
+| global.objectStore.connection.accessSecret | string   | Null                       | 连接外部对象存储的 AccessSecret。                            |
+| global.objectStore.connection.region       | string   | cn-north-1                 | 外部对象存储的所在的区域。                                   |
+| global.objectStore.connection.encrypt      | string   | false                      | 外部对象存储的端点是否加密。                                 |
+| global.objectStore.connection.pathStyle    | string   | true                       | 外部对象存储存储桶的访问方式。                               |
+| global.objectStore.connection.bucket       | string   | Null                       | 指定外部对象存储的存储桶。<br/>如果值为空，则默认使用 csghub-portal, csghub-server, csghub-registry, csghub-workflow 存储桶。如果指定了存储桶，则所有对象都将存储到同一个存储桶中。<br/>无论是哪种方式存储桶都需要自行创建。 |
 
 ## 其他配置
 
@@ -345,7 +346,7 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 | ingress.domain         | string   | example.com  | 指定服务外部域名。                                           |
 | ingress.tls.enabled    | bool     | false        | 指定是否启用 ingress 加密访问。                              |
 | ingress.tls.secretName | string   | Null         | 指定加密访问所使用的受信证书。                               |
-| ingress.service.type   | string   | LoadBalancer | 指定 ingress-nginx 服务暴露方式。<br>这里使用了内部锚点`&type`，请勿删除。 |
+| ingress.service.type   | string   | LoadBalancer | 指定 ingress-nginx 服务暴露方式。<br/>这里使用了内部锚点`&type`，请勿删除。 |
 
 #### deployment
 
@@ -375,14 +376,14 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 | 参数配置                 | 字段类型 | 默认值                                                       | 说明                   |
 | :----------------------- | :------- | :----------------------------------------------------------- | :--------------------- |
 | minio.buckets.versioning | bool     | true                                                         | 指定是否启用版本控制。 |
-| minio.buckets.defaults   | list     | csghub-portal<br>csghub-server<br>csghub-registry<br>csghub-workflow | 默认创建的存储桶       |
+| minio.buckets.defaults   | list     | csghub-portal<br/>csghub-server<br/>csghub-registry<br/>csghub-workflow | 默认创建的存储桶       |
 
 #### postgresql
 
 | 参数配置              | 字段类型 | 默认值                                                       | 说明                                                  |
 | :-------------------- | :------- | :----------------------------------------------------------- | :---------------------------------------------------- |
 | postgresql.parameters | map      | Null                                                         | 指定需要设置的数据库参数，sighup 和 postmaster 均可。 |
-| postgresql.databases  | list     | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility | 默认创建的数据库。                                    |
+| postgresql.databases  | list     | csghub_portal<br/>csghub_server<br/>csghub_casdoor<br/>csghub_temporal<br/>csghub_temporal_visibility | 默认创建的数据库。                                    |
 
 #### temporal
 
@@ -412,16 +413,16 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 
 #### ingress-nginx
 
-| 参数配置                                               | 字段类型 | 默认值                                       | 作用范围 | 说明                                                         |
-| :----------------------------------------------------- | :------- | :------------------------------------------- | :------- | :----------------------------------------------------------- |
-| ingress-nginx.enabled                                  | bool     | true                                         | /        | 指定是否启用内置 ingress-nginx-controller。                  |
-| ingress-nginx.tcp                                      | map      | 22:csghub/csghub-gitlab-shell:22             | /        | 指定额外暴露的 TCP 端口，修改此配置需要同时修改 `gitlab-shell.internal.port。`此配置为关联配置。 |
-| ingress-nginx.controller.image.*                       | map      | digest: ""                                   | /        | 保持默认即可。仅用作适配 `global.image.registry。`           |
-| ingress-nginx.controller.admissionWebhooks.patch.image | map      | digest: ""                                   | /        | 保持默认即可。用作适配 `global.image.registry。`             |
-| ingress-nginx.controller.config.annotations-risk-level | strings  | Critical                                     | /        | 保持默认即可。ingress-nginx 4.12 版本开始将 annotations 使用 snippets 定义为风险配置。 |
-| ingress-nginx.controller.allowSnippetAnnotations       | bool     | true                                         | /        | 允许使用配置片段。                                           |
-| ingress-nginx.controller.service.type                  | string   | 同 global.ingress.service.type               | /        | 指定 Ingress-nginx-controller 服务类型。                     |
-| ingress-nginx.controller.service.nodePorts             | map      | http: 30080<br>https: 30442<br>tcp.22: 30022 | /        | 保持默认即可。指定对象端口默认对应暴露的 nodePort 端口号。此配置为关联配置。 |
+| 参数配置                                               | 字段类型 | 默认值                                         | 作用范围 | 说明                                                         |
+| :----------------------------------------------------- | :------- | :--------------------------------------------- | :------- | :----------------------------------------------------------- |
+| ingress-nginx.enabled                                  | bool     | true                                           | /        | 指定是否启用内置 ingress-nginx-controller。                  |
+| ingress-nginx.tcp                                      | map      | 22:csghub/csghub-gitlab-shell:22               | /        | 指定额外暴露的 TCP 端口，修改此配置需要同时修改 `gitlab-shell.internal.port。`此配置为关联配置。 |
+| ingress-nginx.controller.image.*                       | map      | digest: ""                                     | /        | 保持默认即可。仅用作适配 `global.image.registry。`           |
+| ingress-nginx.controller.admissionWebhooks.patch.image | map      | digest: ""                                     | /        | 保持默认即可。用作适配 `global.image.registry。`             |
+| ingress-nginx.controller.config.annotations-risk-level | strings  | Critical                                       | /        | 保持默认即可。ingress-nginx 4.12 版本开始将 annotations 使用 snippets 定义为风险配置。 |
+| ingress-nginx.controller.allowSnippetAnnotations       | bool     | true                                           | /        | 允许使用配置片段。                                           |
+| ingress-nginx.controller.service.type                  | string   | 同 global.ingress.service.type                 | /        | 指定 Ingress-nginx-controller 服务类型。                     |
+| ingress-nginx.controller.service.nodePorts             | map      | http: 30080<br/>https: 30442<br/>tcp.22: 30022 | /        | 保持默认即可。指定对象端口默认对应暴露的 nodePort 端口号。此配置为关联配置。 |
 
 #### fluentd
 
