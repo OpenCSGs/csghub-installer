@@ -31,7 +31,7 @@ Software environment requirements:
 Currently, the deployment supports quick deployment, which is mainly used for testing. The deployment method is as follows:
 
 ```shell
-# <domain>: like example.com
+# {{ domain }}: like example.com
 # NodePort is the default ingress-nginx-controller service type
 curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm/quick_install.sh | bash -s -- example.com
 
@@ -113,7 +113,7 @@ The above deployment will automatically install/configure the following resource
     |                      Parameters                      | Default value | Description                                                  |
     | :--------------------------------------------------: | :-----------: | :----------------------------------------------------------- |
     |                global.ingress.domain                 |  example.com  | [Service domain name](#domain name)                          |
-    |             global.ingress.service.type              | LoadBalancer  | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
+    |             global.ingress.service.type              | LoadBalancer  | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br/>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
     |        ingress-nginx.controller.service.type         | LoadBalancer  | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor. |
     |  global.deployment.knative.serving.services[0].type  |   NodePort    | Specifies the service type for the KnativeServing Kourier when using [deployment.knative.serving.autoConfigure](#deployment). If the cluster does not support multiple LoadBalancer addresses, use NodePort. |
     | global.deployment.knative.serving.services[0].domain | app.internal  | Specify the internal domain name used by KnativeServing.     |
@@ -215,6 +215,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, `Patch` version i
 | 1.1.x | 1.1.x | Add component Temporal |
 | 1.2.x | 1.2.x | |
 | 1.3.x | 1.3.x | Remove component Gitea |
+| 1.4.x | 1.4.x | Add component Dataviewer |
 
 ## Domain name
 
@@ -290,7 +291,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 
 | Parameter Configuration | Field Type | Default Value | Description |
 | :------------------------------------ | :------- | :----- | :---------------------------------------------------- |
-| global.registry.external | bool | false | false: Use the built-in Registry<br>true: Use the external Registry. |
+| global.registry.external | bool | false | false: Use the built-in Registry<br/>true: Use the external Registry. |
 | global.registry.connection | dict | { } | Default is empty, external storage is not configured. |
 | global.registry.connection.repository | string | Null | Connect to external Registry repository endpoint. |
 | global.registry.connection.namespace | string | Null | Connect to external Registry namespace. |
@@ -305,7 +306,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | global.postgresql.connection | dict | { } | Default is empty, external database is not configured. |
 | global.postgresql.connection.host | string | Null | The IP address of the external database. |
 | global.postgresql.connection.port | string | Null | The port number of the external database. |
-| global.postgresql.connection.database | string | Null | The database name of the external database. <br>If the value is empty, the database name of csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility is used by default. If the database name is specified, the contents of all the above databases will be stored in the same database (this method is not recommended and may cause data table conflicts). <br/>In either case, the database needs to be created by yourself. |
+| global.postgresql.connection.database | string | Null | The database name of the external database. <br/>If the value is empty, the database name of csghub_portal, csghub_server, csghub_casdoor, csghub_temporal, csghub_temporal_visibility is used by default. If the database name is specified, the contents of all the above databases will be stored in the same database (this method is not recommended and may cause data table conflicts). <br/>In either case, the database needs to be created by yourself. |
 | global.postgresql.connection.user | string | Null | The user to connect to the external database. |
 | global.postgresql.connection.password | string | Null | The password to connect to the external database. |
 | global.postgresql.connection.timezone | string | Etc/UTC | Please use `Etc/UTC`. Currently only used for pre-configuration, no practical significance. |
@@ -326,13 +327,13 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | :----------------------------------------- | :------- | :--------------------- | :----------------------------------------------------------- |
 | global.objectStore.external | bool | false | false: Use built-in Minio<br/>true: Use external object storage. |
 | global.objectStore.connection | dict | { } | Default is empty, external object storage is not configured. |
-| global.objectStore.connection.endpoint | string | http://minio.\<domain> | Endpoint for connecting to external object storage. |
+| global.objectStore.connection.endpoint | string | http://minio.\{{ domain }} | Endpoint for connecting to external object storage. |
 | global.objectStore.connection.accessKey | string | minio | AccessKey for connecting to external object storage. |
 | global.objectStore.connection.accessSecret | string | Null | AccessSecret for connecting to external object storage. |
 | global.objectStore.connection.region | string | cn-north-1 | The region where the external object store is located. |
 | global.objectStore.connection.encrypt | string | false | Whether the endpoint of the external object store is encrypted. |
 | global.objectStore.connection.pathStyle | string | true | The access method of the external object store bucket. |
-| global.objectStore.connection.bucket | string | Null | Specify the bucket of the external object store. <br>If the value is empty, the csghub-portal, csghub-server, csghub-registry, csghub-workflow bucket is used by default. If a bucket is specified, all objects will be stored in the same bucket. <br>No matter which method is used, the bucket needs to be created by yourself. |
+| global.objectStore.connection.bucket | string | Null | Specify the bucket of the external object store. <br/>If the value is empty, the csghub-portal, csghub-server, csghub-registry, csghub-workflow bucket is used by default. If a bucket is specified, all objects will be stored in the same bucket. <br/>No matter which method is used, the bucket needs to be created by yourself. |
 
 ## Other configurations
 
@@ -353,7 +354,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | ingress.domain | string | example.com | Specifies the external domain name of the service. |
 | ingress.tls.enabled | bool | false | Specifies whether to enable ingress encrypted access.|
 | ingress.tls.secretName | string | Null | Specifies the trusted certificate used for encrypted access. |
-| ingress.service.type | string | LoadBalancer | Specifies the ingress-nginx service exposure method. <br>The internal anchor `&type` is used here, please do not delete it. |
+| ingress.service.type | string | LoadBalancer | Specifies the ingress-nginx service exposure method. <br/>The internal anchor `&type` is used here, please do not delete it. |
 
 #### deployment
 
@@ -383,14 +384,14 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | Parameter configuration | Field type | Default value | Description |
 | :----------------------- | :------- | :----------------------------------------------------------- | :--------------------- |
 | minio.buckets.versioning | bool | true | Specifies whether to enable version control. |
-| minio.buckets.defaults | list | csghub-portal<br>csghub-server<br>csghub-registry<br>csghub-workflow | Buckets created by default |
+| minio.buckets.defaults | list | csghub-portal<br/>csghub-server<br/>csghub-registry<br/>csghub-workflow | Buckets created by default |
 
 #### postgresql
 
 | Parameter configuration | Field type | Default value | Description |
 | :-------------------- | :------- | :----------------------------------------------------------- | :---------------------------------------------------- |
 | postgresql.parameters | map | Null | Specify the database parameters to be set, sighup and postmaster are both acceptable. |
-| postgresql.databases | list | csghub_portal<br>csghub_server<br>csghub_casdoor<br>csghub_temporal<br>csghub_temporal_visibility | Databases created by default. |
+| postgresql.databases | list | csghub_portal<br/>csghub_server<br/>csghub_casdoor<br/>csghub_temporal<br/>csghub_temporal_visibility | Databases created by default. |
 
 #### temporal
 
@@ -429,7 +430,7 @@ For other parameters, please refer to the component `values.yaml` file.
 | ingress-nginx.controller.config.annotations-risk-level | strings | Critical | / | Keep the default value. Ingress-nginx 4.12, annotations are defined as risk configuration using snippets. |
 | ingress-nginx.controller.allowSnippetAnnotations | bool | true | / | Allow the use of configuration snippets. |
 | ingress-nginx.controller.service.type | string | Same as global.ingress.service.type | / | Specify the Ingress-nginx-controller service type. |
-| ingress-nginx.controller.service.nodePorts | map | http: 30080<br>https: 30442<br>tcp.22: 30022 | / | Keep the default. The specified object port corresponds to the exposed nodePort port number by default. This configuration is an associated configuration. |
+| ingress-nginx.controller.service.nodePorts | map | http: 30080<br/>https: 30442<br/>tcp.22: 30022 | / | Keep the default. The specified object port corresponds to the exposed nodePort port number by default. This configuration is an associated configuration. |
 
 #### fluentd
 
