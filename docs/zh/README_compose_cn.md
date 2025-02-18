@@ -24,7 +24,7 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 下载请到[Release](https://github.com/OpenCSGs/csghub-installer/releases)页面。
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.4.0/csghub-docker-compose-v1.4.0.tgz
+wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-1.4.0-ee.tgz
 ```
 
 ### 安装配置
@@ -32,7 +32,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.4.0/csghu
 - 解压程序
 
     ```shell
-    tar -zxf csghub-docker-compose-v1.4.0.tgz && cd ./csghub
+    tar -zxf csghub-1.4.0-ee.tgz && cd ./csghub
     ```
 
 - 配置更新
