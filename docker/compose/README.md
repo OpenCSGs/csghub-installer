@@ -69,13 +69,13 @@ Wait for the program to automatically configure and start.
 
 - Access address
 
-| Service  |              Address              |                       Admin                        |                       Notes                        |
-| :------: | :-------------------------------: | :------------------------------------------------: | :------------------------------------------------: |
-|  CSGhub  |       http://\<ip address>        |                   root/Root@1234                   |             Can be modified in Casdoor             |
-|  Minio   |     http://\<ip address>:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br>MINIO_ROOT_PASSWORD       |
-| Temporal | http://\<ip address>/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br>TEMPORAL_CONSOLE_PASSWORD |
-| Casdoor  |     http://\<ip address>:8000     |                     admin/123                      |             Can be modified in Casdoor             |
-| Registry |        \<ip address>:5000         | *Please check the default account defined in .env* |      REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+| Service  |                Address                |                       Admin                        |                        Notes                        |
+| :------: | :-----------------------------------: | :------------------------------------------------: | :-------------------------------------------------: |
+|  CSGhub  |       http://\{{ ip address }}        |                   root/Root@1234                   |             Can be modified in Casdoor              |
+|  Minio   |     http://\{{ ip address }}:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
+| Temporal | http://\{{ ip address }}/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
+| Casdoor  |     http://\{{ ip address }}:8000     |                     admin/123                      |             Can be modified in Casdoor              |
+| Registry |        \{{ ip address }}:5000         | *Please check the default account defined in .env* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## Version Description
 
@@ -89,6 +89,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` versi
 | 1.1.x | 1.1.x | Added component Temporal |
 | 1.2.x | 1.2.x | |
 | 1.3.x | 1.3.x | Removed component Gitea |
+| 1.4.x | 1.4.x |  |
 
 ## Domain name and IP
 
@@ -126,7 +127,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 | Variable | Type | Default value | Description |
 | :----------------- | :----- | :-------------------------------- | :------------------------------------------- |
-| REGISTRY_ENABLED | number | 1 | 1: Use built-in Registry<br>0: Disable built-in Registry |
+| REGISTRY_ENABLED | number | 1 | 1: Use built-in Registry<br/>0: Disable built-in Registry |
 | REGISTRY_PORT | number | 5000 | Registry service port number, 80, please leave it blank. |
 | REGISTRY_ADDRESS | string | ${SERVER_DOMAIN}:${REGISTRY_PORT} | Specify the registry endpoint. |
 | REGISTRY_NAMESPACE | string | csghub | Specify the namespace used by the registry. |
@@ -139,7 +140,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 | Variable | Type | Default | Description |
 | :---------------- | :----- | :------------ | :----------------------------------------------- |
-| POSTGRES_ENABLED | number | 1 | 1: Use built-in PostgreSQL<br>0: Disable built-in PostgreSQL |
+| POSTGRES_ENABLED | number | 1 | 1: Use built-in PostgreSQL<br/>0: Disable built-in PostgreSQL |
 | POSTGRES_HOST | string | postgres | PostgreSQL service address. |
 | POSTGRES_PORT | number | 5432 | Specify the PostgreSQL service port number. |
 | POSTGRES_TIMEZONE | string | Asia/Shanghai | Default. No actual meaning, no configuration required. |
@@ -150,7 +151,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 | Variable | Type | Default | Description |
 | :---------------------- | :----- | :--------------------------------- | :--------------------------------------------- |
-| MINIO_ENABLED | number | 1 | 1: Use built-in object storage<br>0: Disable built-in object storage |
+| MINIO_ENABLED | number | 1 | 1: Use built-in object storage<br/>0: Disable built-in object storage |
 | MINIO_API_PORT | number | 9000 | Minio API service port number. |
 | MINIO_CONSOLE_PORT | number | 9001 | Minio Console service port number. |
 | MINIO_ENDPOINT | string | ${SERVER_DOMAIN}:${MINIO_API_PORT} | Specifies the namespace used by the object store. |
@@ -212,7 +213,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 | Variable | Type | Default | Description |
 | :------------------- | :----- | :---------------- | :------------------------- |
-| GITALY_ENABLED | number | 1 | 1: Use built-in Gitaly<br>0: Disable built-in Gitaly. |
+| GITALY_ENABLED | number | 1 | 1: Use built-in Gitaly<br/>0: Disable built-in Gitaly. |
 | GITALY_SERVER_SOCKET | string | tcp://gitaly:8075 | Gitaly service address. |
 | GITALY_STORAGE | string | default | Keep the default. |
 | GITALY_AUTH_TOKEN | string | Gitaly@2025! | Specify the authentication token for connecting to the Gitaly service. |
