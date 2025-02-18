@@ -1,4 +1,4 @@
-# CSGHub Docker Quick Deployment
+# CSGHub Docker Quick Deployment (Not applicable to ee edition)
 
 > **Tips:**
 >
