@@ -482,6 +482,7 @@ EOF
     "${IP_ADDRESS} casdoor.${DOMAIN} casdoor"
     "${IP_ADDRESS} registry.${DOMAIN} registry"
     "${IP_ADDRESS} minio.${DOMAIN} minio"
+    "${IP_ADDRESS} temporal.${DOMAIN} temporal"
   )
 
   for ENTRY in "${HOST_ENTRIES[@]}"; do
