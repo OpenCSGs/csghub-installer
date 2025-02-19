@@ -50,7 +50,7 @@ WHERE
 UPDATE
   "user"
 SET
-  id = 'ba301b25-3906-4a0a-bdc8-12bc23e2be34'
+  id = '2490944c-104c-513c-8665-34f0f320da2b'
 WHERE
   owner = 'OpenCSG'
   AND name = 'root';
