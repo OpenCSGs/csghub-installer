@@ -52,9 +52,9 @@ spec:
             - name: space
               mountPath: /space
         - name: gpu-gather
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/gpu_gather:latest
+          image: {{ or .Values.global.image.registry .Values.autoLabel.image.registry }}/{{ .Values.autoLabel.image.repository }}:{{ .Values.autoLabel.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "-d", "/.kube", "-n", "default" ]
+          args: [ "-d", "/.kube", "-n", "default", "-i", "{{ or .Values.global.image.registry .Values.autoLabel.image.registry }}/{{ .Values.autoLabel.cli.image }}", "-c", "{{ .Values.autoLabel.cli.cmd }}" ]
           volumeMounts:
             - name: kube-configs
               mountPath: /.kube
