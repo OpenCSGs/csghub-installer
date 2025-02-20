@@ -28,6 +28,18 @@ service:
   ## This is the network port where the Runner service will listen for connections.
   port: 8082
 
+autoLabel:
+  image:
+    ## Specify path prefix relative to docker.io
+    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+    ## Specifies the location of the Registry Docker image in the registry.
+    repository: gpu_gather
+    ## Defines the specific version of the Registry image to use.
+    tag: "latest"
+  cli:
+    image: "nvidia/cuda:12.0.0-base-ubi8"
+    cmd: "nvidia-smi --query-gpu=name --format=csv,noheader"
+
 ## The name of the Kubernetes secret containing the kubeconfig file
 ## This secret provides the necessary credentials for accessing the Kubernetes cluster
 deployment:
