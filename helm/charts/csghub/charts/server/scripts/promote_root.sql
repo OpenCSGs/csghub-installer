@@ -35,8 +35,7 @@ BEGIN
         UPDATE
             public.users
         SET
-            role_mask = 'admin',
-            uuid = '2490944c-104c-513c-8665-34f0f320da2b'
+            role_mask = 'admin'
         WHERE
             username = 'root';
 

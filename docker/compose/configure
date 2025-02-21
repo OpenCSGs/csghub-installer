@@ -324,24 +324,10 @@ CASDOOR_CONF_DIR="${CURRENT_DIR}/configs/casdoor/conf"
 mkdirs "$CASDOOR_CONF_DIR"
 
 log "INFO" "- render casdoor init_data file."
-if [ "$CASDOOR_SMTP_ENABLED" -eq 0 ]; then
-  sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
-      -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
-      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
-      "$CASDOOR_CONF_DIR"/init_data.json.sample > "$CASDOOR_CONF_DIR"/init_data.json
-else
-  sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
-      -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
-      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
-      -e "s/_CASDOOR_SMTP_HOST/${CASDOOR_SMTP_HOST}/g" \
-      -e "s/_CASDOOR_SMTP_PORT/${CASDOOR_SMTP_PORT}/g" \
-      -e "s/_CASDOOR_SMTP_USERNAME/${CASDOOR_SMTP_USERNAME}/g" \
-      -e "s/_CASDOOR_SMTP_PASSWORD/${CASDOOR_SMTP_PASSWORD}/g" \
-      -e "s/_CASDOOR_SMTP_EMAIL_FROM/${CASDOOR_SMTP_EMAIL_FROM}/g" \
-      -e "s/_CASDOOR_SMTP_EMAIL_NAME/${CASDOOR_SMTP_EMAIL_NAME}/g" \
-      -e "s/_CASDOOR_SMTP_USE_SSL/${CASDOOR_SMTP_USE_SSL}/g" \
-      "$CASDOOR_CONF_DIR"/init_data.json.smtp.sample > "$CASDOOR_CONF_DIR"/init_data.json
-fi
+sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
+    -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+    -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+    "$CASDOOR_CONF_DIR"/init_data.json.sample > "$CASDOOR_CONF_DIR"/init_data.json
 
 log "INFO" "- render update RedirectURLs."
 sed -e "s/_SERVER_PROTOCOL/${SERVER_PROTOCOL}/g" \
