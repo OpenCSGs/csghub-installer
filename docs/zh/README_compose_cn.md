@@ -224,26 +224,9 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 | TEMPORAL_CONSOLE_USER     | string | temporal       | 指定访问 Temporal 服务的用户名。 |
 | TEMPORAL_CONSOLE_PASSWORD | string | Temporal@2025! | 指定访问 Temporal 服务的密码。   |
 
-### Casdoor 配置
+### 其他配置
 
-| 变量                    | 类型   | 默认值       | 说明                                 |
-| :---------------------- | :----- | :----------- | :----------------------------------- |
-| CASDOOR_SMTP_ENABLED    | bool   | false        | 指定是否启用 SMTP。                  |
-| CASDOOR_SMTP_HOST       | string | smtp.163.com | 指定 SMTP 服务地址。                 |
-| CASDOOR_SMTP_PORT       | number | 463          | 指定 SMTP 服务端口。                 |
-| CASDOOR_SMTP_USERNAME   | string | Null         | 指定验证 SMTP 服务的用户名。         |
-| CASDOOR_SMTP_PASSWORD   | string | Null         | 指定验证 SMTP 服务的密码。           |
-| CASDOOR_SMTP_EMAIL_FROM | string | Null         | 指定发件人（通常和 username 一致）。 |
-| CASDOOR_SMTP_EMAIL_NAME | string | Null         | 指定发送后的邮件名称。               |
-| CASDOOR_SMTP_USE_SSL    | bool   | true         | 指定是否启用 SSL/TLS 加密。          |
-
-### Nats 配置
-
-请保持默认。
-
-### Fixed 配置
-
-请保持默认。
+按需修改。
 
 ## 故障排查
 

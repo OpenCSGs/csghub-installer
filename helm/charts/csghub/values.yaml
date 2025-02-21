@@ -203,27 +203,6 @@ postgresql:
   #   - csghub_temporal
   #   - csghub_temporal_visibility
 
-## For Casdoor
-casdoor:
-  ## SMTP configuration
-  smtp:
-    ## Enable or disable the SMTP configuration
-    enabled: false
-    ## The hostname of the SMTP server
-    # host: "smtp.163.com"
-    ## The port number for the SMTP server (common ports: 25, 587, 465)
-    # port: "465"
-    ## Username for SMTP authentication
-    # username: ""
-    ## Password for SMTP authentication
-    # password: ""
-    ## The email address that will be used as the sender
-    # emailFrom: ""
-    ## The name that will appear as the sender in emails
-    # emailName: "OpenCSG"
-    ## Whether to use a secure connection (true for SSL/TLS)
-    # secure: true
-
 ## For Minio
 minio:
   ## Specify the bucket to be created and whether to enable version control.
