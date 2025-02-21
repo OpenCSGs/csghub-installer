@@ -45,11 +45,11 @@ spec:
     - metadata:
         name: {{ include "fluentd.fullname" . }}-buffer
       spec:
-        accessModes: [{{ .Values.persistence.accessMode }}]
+        accessModes: {{ or .Values.global.persistence.accessMode .Values.persistence.accessMode }}
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
-        storageClassName: {{ .Values.persistence.storageClass }}
+        storageClassName: {{ or .Values.global.persistence.storageClass .Values.persistence.storageClass }}
     {{- end }}
   {{- end }}
 {{- end }}

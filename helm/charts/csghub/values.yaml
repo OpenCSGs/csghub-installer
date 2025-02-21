@@ -176,6 +176,14 @@ global:
             ## If type is 'NodePort', it will be configured as the NodePort port of kourier.svc port 80
             port: "30213"
 
+  ## Configuration for Persistence
+  persistence: { }
+    ## Specifies the storage class to use for persistent storage
+    # storageClass: ""
+    ## Specifies the access mode for the persistent volume
+    ## Options: ReadWriteOnce, ReadOnlyMany, ReadWriteMany
+    # accessMode: ["ReadWriteOnce"]
+
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
 ## If necessary, you can check which parameters the subChart can configure and modify them.
