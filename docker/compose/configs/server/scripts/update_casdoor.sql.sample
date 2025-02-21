@@ -45,12 +45,3 @@ SET
 WHERE
     name = 'admin'
     AND password = '123';
-
--- Keep user.id for root keep
-UPDATE
-  "user"
-SET
-  id = '2490944c-104c-513c-8665-34f0f320da2b'
-WHERE
-  owner = 'OpenCSG'
-  AND name = 'root';

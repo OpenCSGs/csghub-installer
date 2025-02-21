@@ -51,7 +51,7 @@ data:
     quota = {"organization": -1, "user": -1, "application": -1, "provider": -1}
     logConfig = {"filename": "logs/casdoor.log", "maxdays":99999, "perm":"0770"}
     initDataFile = "/conf/init_data.json"
-    initDataNewOnly = false
+    initDataNewOnly = true
     frontendBaseDir = "../casdoor"
   init_data.json: |
     {
@@ -202,7 +202,7 @@ data:
         {
           "owner": "admin",
           "name": "CSGHub",
-          "displayName": "OpenCSG",
+          "displayName": "CSGHub",
           "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
           "homepageUrl": {{ include "csghub.external.endpoint" . | quote }},
           "organization": "OpenCSG",
@@ -221,7 +221,6 @@ data:
           "samlReplyUrl": "",
           "clientId": "7a97bc5168cb75ffc514",
           "clientSecret": "33bd85106818efd90c57fb35ffc787aabbff6f7a",
-          {{- if .Values.smtp.enabled }}
           "providers": [
             {
               "owner": "",
@@ -242,21 +241,12 @@ data:
               "rule": "None"
             }
           ],
-          {{- end }}
           "signinMethods": [
             {
               "name": "Password",
               "displayName": "Password",
               "rule": "All"
             }
-            {{- if .Values.smtp.enabled }}
-            ,
-            {
-              "name": "Verification code",
-              "displayName": "Verification code",
-              "rule": "Email only"
-            }
-            {{- end }}
           ],
           "signupItems": [
             {
@@ -474,9 +464,7 @@ data:
           "isAdmin": true,
           "signupApplication": "CSGHub"
         }
-      ]
-      {{- if .Values.smtp.enabled }}
-      ,
+      ],
       "providers": [
         {
           "owner": "admin",
@@ -492,10 +480,10 @@ data:
           "category": "Email",
           "type": "Default",
           "method": "POST",
-          "clientId": {{ .Values.smtp.username | quote }},
-          "clientSecret": {{ .Values.smtp.password | quote }},
-          "clientId2": {{ .Values.smtp.emailFrom | quote }},
-          "clientSecret2": {{ .Values.smtp.emailName | quote }},
+          "clientId": "",
+          "clientSecret": "",
+          "clientId2": "",
+          "clientSecret2": "",
           "userMapping":
             {
               "avatarUrl": "avatarUrl",
@@ -504,15 +492,14 @@ data:
               "id": "id",
               "username": "username"
             },
-          "host": {{ .Values.smtp.host | quote }},
-          "port": {{ .Values.smtp.port }},
-          "disableSsl": {{ not .Values.smtp.secure }},
+          "host": "",
+          "port": 465,
+          "disableSsl": false,
           "title": "OpenCSG Verification Code",
           "content": "\u003c!DOCTYPE html\u003e\n\u003chtml lang=\u0022en\u0022\u003e\n\u003chead\u003e\n\u003cmeta charset=\u0022UTF-8\u0022\u003e\n\u003cmeta name=\u0022viewport\u0022 content=\u0022width=device-width, initial-scale=1.0\u0022\u003e\n\u003ctitle\u003eVerification Code Email\u003c/title\u003e\n\u003cstyle\u003ebody { font-family: Arial, sans-serif; } .email-container { width: 600px; margin: 0 auto; } .header { text-align: center; } .code { font-size: 24px; margin: 20px 0; text-align: center; } .footer { font-size: 12px; text-align: center; margin-top: 50px; } .footer a { color: #000; text-decoration: none; } .center { text-align: center; } .center a { text-decoration: none; color: #1C8B7F; }\u003c/style\u003e\n\u003c/head\u003e\n\u003cbody\u003e\n\u003cdiv class=\u0022email-container\u0022\u003e\n  \u003cdiv class=\u0022header\u0022\u003e\n    \u003cimg src=\u0022https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png\u0022 alt=\u0022OpenCSG Logo\u0022 width=\u0022300\u0022\u003e\n  \u003c/div\u003e\n    \u003cp\u003e\u003cstrong\u003e%{user.friendlyName}\u003c/strong\u003e, here is your verification code\u003c/p\u003e\n    \u003cp\u003eUse this code for your transaction. It's valid for 5 minutes\u003c/p\u003e\n    \u003cdiv class=\u0022code\u0022\u003e\n        %s\n    \u003c/div\u003e\n  \u003chr\u003e\n  \u003cp class=\u0022center\u0022\u003e\n    \u003ca href=\u0022https://opencsg.com\u0022 target=\u0022_blank\u0022\u003eOpenCSG Team\u003c/a\u003e\n  \u003c/p\u003e\n\u003c/div\u003e\n\u003c/body\u003e\n\u003c/html\u003e",
           "enableSignAuthnRequest": false
         }
       ]
-    {{- end }}
     }
 ---
 apiVersion: v1
@@ -579,13 +566,4 @@ data:
     WHERE
         name = 'admin'
         AND password = '123';
-
-    -- Keep user.id for root keep
-    UPDATE
-      "user"
-    SET
-      id = '2490944c-104c-513c-8665-34f0f320da2b'
-    WHERE
-      owner = 'OpenCSG'
-      AND name = 'root';
 {{- end }}

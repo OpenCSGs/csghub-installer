@@ -400,19 +400,6 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | temporal.authentication.username | string | Null | Specifies the username for authenticating login to Temporal. |
 | temporal.authentication.password | string | Null | Specifies the password for authenticating login to Temporal. |
 
-#### casdoor
-
-| Parameter configuration | Field type | Default value | Description                                                  |
-| :---------------------- | :--------- | :------------ | :----------------------------------------------------------- |
-| casdoor.smtp.enabled    | bool       | false         | Specifies whether SMTP is enabled.                           |
-| casdoor.smtp.host       | string     | smtp.163.com  | Specify the SMTP service address.                            |
-| casdoor.smtp.port       | number     | 463           | Specify the SMTP service port.                               |
-| casdoor.smtp.username   | string     | Null          | Specify the user name for authenticating to the SMTP service. |
-| casdoor.smtp.password   | string     | Null          | Specify the password for authenticating to the SMTP service. |
-| casdoor.smtp.emailFrom  | string     | Null          | Specifies the sender (usually the same as username).         |
-| casdoor.smtp.emailName  | string     | OpenCSG       | Specify the name of the email after sending.                 |
-| casdoor.smtp.secure     | bool       | true          | Specifies whether SSL/TLS encryption is enabled.             |
-
 #### Others
 
 For other parameters, please refer to the component `values.yaml` file.
