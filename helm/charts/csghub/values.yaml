@@ -122,6 +122,20 @@ global:
       ##   - csghub-workflow
       # bucket: ""
 
+  ## Configuration for gitaly settings
+  gitaly:
+    ## If you use external gitaly, set this to true, otherwise set this to false to use built-in.
+    external: false
+    ## Configuring external object storage
+    ## If `external` set to `true`, `connection` is needed.
+    connection: { }
+      ## The host where Gitaly is running
+      # host: "csghub-gitaly"
+      ## The port used to communicate with Gitaly
+      # port: 8075
+      ## The token for authenticating with Gitaly
+      # token: ""
+
   ## Configuration for content moderation settings
   moderation:
     enabled: false
