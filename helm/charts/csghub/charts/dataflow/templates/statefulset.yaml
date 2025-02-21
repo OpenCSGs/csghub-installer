@@ -122,9 +122,9 @@ spec:
             {{- toYaml . | nindent 10 }}
           {{- end }}
       spec:
-        accessModes: {{ .Values.persistence.accessMode }}
+        accessModes: {{ or .Values.global.persistence.accessMode .Values.persistence.accessMode }}
         {{- if .Values.persistence.storageClass }}
-        storageClassName: {{ .Values.persistence.storageClass }}
+        storageClassName: {{ or .Values.global.persistence.storageClass .Values.persistence.storageClass }}
         {{- end }}
         resources:
           requests:
