@@ -75,14 +75,14 @@ data:
   {{- end }}
   # Gitaly Connection Info
   STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
-  STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ printf "tcp://%s:%s" (include "gitaly.internal.domain" .) (include "gitaly.internal.port" .) }}
+  STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ include "csghub.gitaly.endpoint" . }}
+  STARHUB_SERVER_GITALY_TOKEN: {{ include "csghub.gitaly.token" . }}
   STARHUB_SERVER_GITALY_STORAGE: default
   {{- if eq (include "gitlab-shell.external.port" .) "22" }}
   STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s" (include "csghub.external.domain" .)}}
   {{- else }}
   STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s:%s" (include "csghub.external.domain" .) (include "gitlab-shell.external.port" .) }}
   {{- end }}
-  STARHUB_SERVER_GITALY_TOKEN: {{ include "gitaly.internal.token" . }}
   # Accounting
   OPENCSG_ACCOUNTING_SERVER_HOST: {{ printf "http://%s" (include "accounting.internal.domain" .) }}
   OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "accounting.internal.port" . | quote }}

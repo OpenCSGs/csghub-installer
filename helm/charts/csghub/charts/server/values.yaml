@@ -61,6 +61,15 @@ redis:
   ## Password for accessing Redis
   password: ""
 
+# Configuration for Gitaly
+gitaly:
+  # The host where Gitaly is running
+  host: "csghub-gitaly"
+  # The port used to communicate with Gitaly
+  port: 8075
+  # The token for authenticating with Gitaly
+  token: ""
+
 ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
 objectStore:
   ## The endpoint URL of the object storage service.
