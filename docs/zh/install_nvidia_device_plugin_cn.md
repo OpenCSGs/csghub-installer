@@ -8,7 +8,8 @@
 
 ## 前置条件
 
-- NVIDIA drivers ~= 384.81
+- NVIDIA Cuda >= 12.1
+- NVIDIA drivers >= 384.81
 - nvidia-docker >= 2.0 || nvidia-container-toolkit >= 1.7.0 (>= 1.11.0 to use integrated GPUs on Tegra-based systems)
 - nvidia-container-runtime configured as the default low-level runtime
 - Kubernetes version >= 1.10
