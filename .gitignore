@@ -5,3 +5,4 @@ tls.*
 *.key
 **/.kube/*
 .DS_Store
+*.tgz
