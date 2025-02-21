@@ -29,17 +29,6 @@ spec:
       labels:
         {{- include "common.labels" . | nindent 8 }}
     spec:
-      dnsPolicy: None
-      dnsConfig:
-        nameservers:
-          - {{ include "coredns.csghub" . }}
-        searches:
-          - {{ .Release.Namespace }}.svc.cluster.local
-          - svc.cluster.local
-          - cluster.local
-        options:
-          - name: ndots
-            value: "5"
       {{- with (or .Values.global.image.pullSecrets .Values.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
