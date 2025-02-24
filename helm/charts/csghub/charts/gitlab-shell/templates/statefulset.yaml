@@ -45,7 +45,7 @@ spec:
       {{- end }}
       initContainers:
         - name: init-host-keys
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/alpine:latest
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "/scripts/init_host_keys.sh" ]
           volumeMounts:
