@@ -18,7 +18,7 @@ Hardware environment requirements:
 
 Software environment requirements:
 
-- Kubernetes 1.20+
+- Kubernetes 1.20+ (knative serving 1.28+)
 
 - Helm 3.12.0+
 
