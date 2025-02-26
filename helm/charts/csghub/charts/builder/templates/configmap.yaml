@@ -41,7 +41,7 @@ data:
         {{- if not .Values.global.registry.external }}
         "{{ include "registry.external.endpoint" . | trimPrefix  "http://" | trimPrefix  "https://" }}"
         {{- else }}
-        "{{ .Values.registry.repository }}"
+        "{{ or .Values.global.registry.connection.repository .Values.registry.repository }}"
         {{- end }}
       ]
     }
