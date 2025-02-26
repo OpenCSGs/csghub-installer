@@ -41,8 +41,9 @@ data:
   {{- $password = $secretPassword | b64dec }}
   {{- end }}
   {{- end }}
+  {{- $password = or (include "csghub.postgresql.password" .) $password }}
   CSGHUB_PORTAL_DATABASE_USERNAME: {{ $user }}
-  CSGHUB_PORTAL_DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
+  CSGHUB_PORTAL_DATABASE_PASSWORD: {{ $password }}
   CSGHUB_PORTAL_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user $password (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
   # ObjectStorage
   CSGHUB_PORTAL_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix  "https://" }}
