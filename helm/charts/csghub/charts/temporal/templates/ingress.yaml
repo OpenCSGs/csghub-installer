@@ -19,7 +19,7 @@ metadata:
     {{- toYaml . | nindent 4  }}
     {{- end  }}
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.global.ingress.className | default "nginx" }}
   {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
   tls:
     - hosts:

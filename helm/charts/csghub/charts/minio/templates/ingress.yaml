@@ -15,7 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.global.ingress.className | default "nginx" }}
   {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
   tls:
     - hosts:
@@ -61,7 +61,7 @@ metadata:
     {{- toYaml . | nindent 4  }}
     {{- end  }}
 spec:
-  ingressClassName: nginx
+  ingressClassName: {{ .Values.global.ingress.className | default "nginx" }}
   {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
   tls:
     - hosts:
