@@ -18,7 +18,7 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 
 软件环境需求：
 
-- Kubernetes 1.20+
+- Kubernetes 1.20+ (knative serving 1.28+)
 
 - Helm 3.12.0+
 
