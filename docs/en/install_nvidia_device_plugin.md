@@ -1,4 +1,4 @@
-# NVIDIA DEVICE PLUGIN Installation Guide
+# NVIDIA Device Plugin Installation Guide
 
 > **Official Documentation:**
 >

@@ -22,6 +22,10 @@ Software environment requirements:
 
 - Helm 3.12.0+
 
+- Knative Serving 
+
+- Argo Workflow
+
 ***Note:** Kubernetes needs to support Dynamic Volume Provisioning.*
 
 ## Deployment example
