@@ -22,7 +22,9 @@ Software environment requirements:
 
 - Helm 3.12.0+
 
-- Cuda 12.1+ (If Exists)
+- Knative Serving 
+
+- Argo Workflow
 
 ***Note:** Kubernetes needs to support Dynamic Volume Provisioning.*
 
