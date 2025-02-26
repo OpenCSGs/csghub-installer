@@ -22,7 +22,9 @@ Software environment requirements:
 
 - Helm 3.12.0+
 
-- Cuda 12.1+ (If Exists)
+- Knative Serving 
+
+- Argo Workflow
 
 ***Note:** Kubernetes needs to support Dynamic Volume Provisioning.*
 
@@ -217,7 +219,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, `Patch` version i
 | 1.1.x | 1.1.x | Add component Temporal |
 | 1.2.x | 1.2.x | |
 | 1.3.x | 1.3.x | Remove component Gitea |
-| 1.4.x | 1.4.x |  |
+| 1.4.x | 1.4.x | Add component Dataviewer |
 
 ## Domain name
 

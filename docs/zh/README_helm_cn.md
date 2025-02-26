@@ -22,7 +22,9 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 
 - Helm 3.12.0+
 
-- Cuda 12.1+ (如存在)
+- Knative Serving
+
+- Argo Workflow
 
 ***说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。*
 
@@ -213,7 +215,7 @@ CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据
 |   1.1.x    |    1.1.x    | 增加组件 Temporal             |
 |   1.2.x    |    1.2.x    |                               |
 |   1.3.x    |    1.3.x    | 移除组件 Gitea                |
-|   1.4.x    |    1.4.x    |                               |
+|   1.4.x    |    1.4.x    | 增加组件 Dataviewer           |
 
 ## 域名
 
