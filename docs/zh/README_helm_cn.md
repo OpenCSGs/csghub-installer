@@ -22,6 +22,10 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 
 - Helm 3.12.0+
 
+- Knative Serving
+
+- Argo Workflow
+
 ***说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。*
 
 ## 部署示例
