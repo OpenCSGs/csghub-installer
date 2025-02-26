@@ -67,7 +67,10 @@ podSecurityContext: {}
 
 ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
 ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
-securityContext: {}
+securityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 0
   # capabilities:
   #   drop:
   #   - ALL
