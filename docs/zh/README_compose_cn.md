@@ -72,7 +72,7 @@ wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-1.4.0-ee.
     |  CSGhub  |       http://\{{ ip address }}        |         root/Root@1234         |                 可在 Casdoor 中修改                 |
     |  Minio   |     http://\{{ ip address }}:9001     | *请查看 .env 中定义的默认账户* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
     | Temporal | http://\{{ ip address }}/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
-    | Casdoor  |     http://\{{ ip address }}:8000     |           admin/123            |                 可在 Casdoor 中修改                 |
+    | Casdoor  |     http://\{{ ip address }}:8000     |        admin/Root@1234         |                 可在 Casdoor 中修改                 |
     | Registry |        \{{ ip address }}:5000         | *请查看 .env 中定义的默认账户* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## 版本说明
@@ -111,7 +111,7 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ## 数据持久化
 
-为了方便使用和管理，此种部署方式直接使用 `Volume Mount/Directory Mapping`存储持久化数据，默认存放在安装目录下的`data`目录中，以`./data/<component>`的方式分开存储。
+为了方便使用和管理，此种部署方式直接使用 `Volume Mount/Directory Mapping`存储持久化数据，默认存放在安装目录下的`data`目录中，以`./data/<component>`的方式分开存储，可以通过变量`CSGHUB_DATA_DIR`指定新的位置。
 
 此外所有配置文件均存储在`./configs`目录下。
 
@@ -136,14 +136,14 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal, dataflow 。*
 
-| 变量              | 类型   | 默认值        | 说明                                              |
-| :---------------- | :----- | :------------ | :------------------------------------------------ |
-| POSTGRES_ENABLED  | number | 1             | 1: 使用内置 PostgreSQL<br/>0: 禁用内置 PostgreSQL |
-| POSTGRES_HOST     | string | postgres      | PostgreSQL 服务地址。                             |
-| POSTGRES_PORT     | number | 5432          | 指定 PostgreSQL 服务端口号。                      |
-| POSTGRES_TIMEZONE | string | Asia/Shanghai | 默认即可。无实际意义，无须配置。                  |
-| POSTGRES_USER     | string | csghub        | 指定连接 PostgreSQL 的用户名                      |
-| POSTGRES_PASSWORD | string | Csghub@2025!  | 指定连接 PostgreSQL 的密码                        |
+| 变量              | 类型   | 默认值         | 说明                                              |
+| :---------------- | :----- | :------------- | :------------------------------------------------ |
+| POSTGRES_ENABLED  | number | 1              | 1: 使用内置 PostgreSQL<br/>0: 禁用内置 PostgreSQL |
+| POSTGRES_HOST     | string | postgres       | PostgreSQL 服务地址。                             |
+| POSTGRES_PORT     | number | 5432           | 指定 PostgreSQL 服务端口号。                      |
+| POSTGRES_TIMEZONE | string | Asia/Shanghai  | 默认即可。无实际意义，无须配置。                  |
+| POSTGRES_USER     | string | postgres       | 指定连接 PostgreSQL 的用户名                      |
+| POSTGRES_PASSWORD | string | Postgres@2025! | 指定连接 PostgreSQL 的密码                        |
 
 ### ObjectStore
 
@@ -179,11 +179,13 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 | SERVER_SSL_CERT | string | /                  | 指开启加密访问的证书。                      |
 | SERVER_SSL_KEY  | string | /                  | 指开启加密访问的私钥。                      |
 
-### CSGHub Portal 配置
+### CSGHub 其他配置
 
 | 变量                       | 类型 | 默认值 | 说明                                           |
 | :------------------------- | :--- | :----- | :--------------------------------------------- |
 | CSGHUB_PORTAL_ENABLE_HTTPS | bool | false  | 如果 NGINX 配置为加密访问，此处需配置为 true。 |
+| CSGHUB_MULTI_SYNC_ENABLED  | bool | true   | 指定是否启用多源同步。                         |
+| CSGHUB_DATA_DIR            | bool | ./data | 指定持久化存储路径。                           |
 
 ### Git 配置
 
