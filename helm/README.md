@@ -292,6 +292,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | Parameter Configuration | Field Type | Default Value | Description |
 | :------------------------------------ | :------- | :----- | :---------------------------------------------------- |
 | global.registry.external | bool | false | false: Use the built-in Registry<br/>true: Use the external Registry. |
+| global.registry.insecure | bool | false | Specify whether to use an insecure container image repository. |
 | global.registry.connection | dict | { } | Default is empty, external storage is not configured. |
 | global.registry.connection.repository | string | Null | Connect to external Registry repository endpoint. |
 | global.registry.connection.namespace | string | Null | Connect to external Registry namespace. |

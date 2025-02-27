@@ -284,6 +284,7 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 | 参数配置                              | 字段类型 | 默认值 | 说明                                                   |
 | :------------------------------------ | :------- | :----- | :----------------------------------------------------- |
 | global.registry.external              | bool     | false  | false：使用内置 Registry<br/>true: 使用外部 Registry。 |
+| global.registry.insecure              | bool     | false  | 指定是否使用不安全的容器镜像仓库。                     |
 | global.registry.connection            | dict     | { }    | 默认为空，外部存储未配置。                             |
 | global.registry.connection.repository | string   | Null   | 连接外部 Registry 仓库端点。                           |
 | global.registry.connection.namespace  | string   | Null   | 连接外部 Registry 命名空间。                           |

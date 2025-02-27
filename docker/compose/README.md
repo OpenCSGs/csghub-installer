@@ -70,11 +70,11 @@ Wait for the program to automatically configure and start.
 - Access address
 
 | Service  |                Address                |                       Admin                        |                        Notes                        |
-| :------: | :-----------------------------------: | :------------------------------------------------: | :-------------------------------------------------: |
+| :------: | :-----------------------------------: |:--------------------------------------------------:| :-------------------------------------------------: |
 |  CSGhub  |       http://\{{ ip address }}        |                   root/Root@1234                   |             Can be modified in Casdoor              |
 |  Minio   |     http://\{{ ip address }}:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
 | Temporal | http://\{{ ip address }}/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
-| Casdoor  |     http://\{{ ip address }}:8000     |                     admin/123                      |             Can be modified in Casdoor              |
+| Casdoor  |     http://\{{ ip address }}:8000     |                  admin/Root@1234                   |             Can be modified in Casdoor              |
 | Registry |        \{{ ip address }}:5000         | *Please check the default account defined in .env* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## Version Description
@@ -113,7 +113,7 @@ The `.kube/config` file is an important configuration file for accessing the Kub
 
 ## Data persistence
 
-For ease of use and management, this deployment method directly uses `Volume Mount/Directory Mapping` to store persistent data. By default, it is stored in the `data` directory under the installation directory and is stored separately in the `./data/<component>` format.
+For ease of use and management, this deployment method directly uses `Volume Mount/Directory Mapping` to store persistent data. By default, it is stored in the `data` directory under the installation directory and is stored separately in the `./data/<component>` format, you can change it by env `CSGHUB_DATA_DIR`.
 
 In addition, all configuration files are stored in the `./configs` directory.
 
@@ -138,14 +138,14 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 ***Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal by yourself.* 
 
-| Variable | Type | Default | Description |
-| :---------------- | :----- | :------------ | :----------------------------------------------- |
-| POSTGRES_ENABLED | number | 1 | 1: Use built-in PostgreSQL<br/>0: Disable built-in PostgreSQL |
-| POSTGRES_HOST | string | postgres | PostgreSQL service address. |
-| POSTGRES_PORT | number | 5432 | Specify the PostgreSQL service port number. |
-| POSTGRES_TIMEZONE | string | Asia/Shanghai | Default. No actual meaning, no configuration required. |
-| POSTGRES_USER| string | csghub | Specifies the username for connecting to PostgreSQL |
-| POSTGRES_PASSWORD | string | Csghub@2025! | Specifies the password for connecting to PostgreSQL |
+| Variable | Type | Default        | Description |
+| :---------------- | :----- |:---------------| :----------------------------------------------- |
+| POSTGRES_ENABLED | number | 1              | 1: Use built-in PostgreSQL<br/>0: Disable built-in PostgreSQL |
+| POSTGRES_HOST | string | postgres       | PostgreSQL service address. |
+| POSTGRES_PORT | number | 5432           | Specify the PostgreSQL service port number. |
+| POSTGRES_TIMEZONE | string | Asia/Shanghai  | Default. No actual meaning, no configuration required. |
+| POSTGRES_USER| string | postgres       | Specifies the username for connecting to PostgreSQL |
+| POSTGRES_PASSWORD | string | Postgres@2025! | Specifies the password for connecting to PostgreSQL |
 
 ### ObjectStore
 
@@ -181,11 +181,13 @@ In addition, all configuration files are stored in the `./configs` directory.
 | SERVER_SSL_CERT | string | / | Refers to the certificate for enabling encrypted access. |
 | SERVER_SSL_KEY | string | / | Refers to the private key for enabling encrypted access. |
 
-### CSGHub Portal Configuration
+### CSGHub Other Configuration
 
 | Variable | Type | Default Value | Description |
 | :------------------------- | :--- | :----- | :--------------------------------------------- |
 | CSGHUB_PORTAL_ENABLE_HTTPS | bool | false | If NGINX is configured for encrypted access, this needs to be configured to true. |
+| CSGHUB_MULTI_SYNC_ENABLED | bool | true | Whether to enable multi-source synchronization. |
+| CSGHUB_DATA_DIR | string | ./data | Execute the persistent data storage path. |
 
 ### Git Configuration
 
