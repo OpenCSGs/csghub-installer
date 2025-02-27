@@ -40,7 +40,7 @@ services:
       fluentd:
         condition: service_healthy
     volumes:
-      - ./data/redis:/data
+      - ${CSGHUB_DATA_DIR:-"./data"}/redis:/data
     restart: always
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
@@ -121,7 +121,7 @@ services:
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
       POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal"
     volumes:
-      - ./data/postgresql/data:/var/lib/postgresql/data
+      - ${CSGHUB_DATA_DIR:-"./data"}/postgresql/data:/var/lib/postgresql/data
     restart: always
     privileged: true
     healthcheck:
@@ -149,7 +149,7 @@ services:
       MINIO_DEFAULT_BUCKETS: "opencsg-server-lfs:public,opencsg-portal-storage:public,opencsg-registry-storage:public"
       MINIO_SCHEME: "http"
     volumes:
-      - ./data/minio:/bitnami/minio/data
+      - ${CSGHUB_DATA_DIR:-"./data"}/minio:/bitnami/minio/data
     restart: always
     deploy:
       replicas: ${MINIO_ENABLED:-1}
@@ -171,7 +171,7 @@ services:
     environment:
       GITALY_CONFIG_FILE: "/etc/gitaly/config.toml"
     volumes:
-      - ./data/gitaly/repositories:/home/git/repositories
+      - ${CSGHUB_DATA_DIR:-"./data"}/gitaly/repositories:/home/git/repositories
       - ./configs/gitaly:/etc/gitaly
       - ./logs/gitaly:/var/log/gitaly
     user: "root"
@@ -198,7 +198,7 @@ services:
     volumes:
       - ./configs/gitlab-shell/config.yml:/srv/gitlab-shell/config.yml
       - ./configs/gitlab-shell/.gitlab_shell_secret:/srv/gitlab-shell/.gitlab_shell_secret
-      - ./data/gitlab-shell/keys:/srv/gitlab-shell/keys
+      - ${CSGHUB_DATA_DIR:-"./data"}/gitlab-shell/keys:/srv/gitlab-shell/keys
       - ./logs/gitlab-shell:/srv/gitlab-shell/logs
     user: "root"
     restart: always
@@ -601,7 +601,7 @@ services:
       REGISTRY_PASSWORD: "$REGISTRY_PASSWORD"
       REGISTRY_NAMESPACE: "$REGISTRY_NAMESPACE"
     volumes:
-      - ./data/csghub_builder:/opt/data
+      - ${CSGHUB_DATA_DIR:-"./data"}/csghub_builder:/opt/data
       - ./logs/csghub_builder:/opt/data/logs
     restart: always
     deploy:
@@ -622,7 +622,7 @@ services:
         condition: service_healthy
     volumes:
       - ./configs/nats/nats-server.conf:/nats-server.conf
-      - ./data/nats:/data/jetstream
+      - ${CSGHUB_DATA_DIR:-"./data"}/nats:/data/jetstream
     restart: always
     logging:
       driver: fluentd

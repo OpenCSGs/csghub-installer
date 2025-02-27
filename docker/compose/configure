@@ -219,7 +219,7 @@ EOF
 # Configure Minio
 ####################################################################################
 log "NORM" "Minio:"
-MINIO_DATA_DIR="${CURRENT_DIR}/data/minio"
+MINIO_DATA_DIR="${CSGHUB_DATA_DIR:-'./data'}/data/minio"
 
 ## The following is a fix for bitnami/minio.
 ## This container does not have root permissions by default,
@@ -261,7 +261,7 @@ log "INFO" "- generate gitaly auth file."
 echo "$GITALY_AUTH_TOKEN" > "$GITLAB_SHELL_CONF_DIR"/.gitlab_shell_secret
 
 log "INFO" "- generate host key pairs for gitlab-shell."
-GITLAB_SHELL_DATA_DIR="${CURRENT_DIR}/data/gitlab-shell/keys"
+GITLAB_SHELL_DATA_DIR="${CSGHUB_DATA_DIR:-'./data'}/gitlab-shell/keys"
 mkdirs "$GITLAB_SHELL_DATA_DIR"
 
 generate_ssh_key() {
