@@ -71,11 +71,11 @@ Wait for the program to automatically configure and start.
 
 | Service  |                Address                |                       Admin                        |                        Notes                        |
 | :------: | :-----------------------------------: |:--------------------------------------------------:| :-------------------------------------------------: |
-|  CSGhub  |       http://\{{ ip address }}        |                   root/Root@1234                   |             Can be modified in Casdoor              |
-|  Minio   |     http://\{{ ip address }}:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
-| Temporal | http://\{{ ip address }}/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
-| Casdoor  |     http://\{{ ip address }}:8000     |                  admin/Root@1234                   |             Can be modified in Casdoor              |
-| Registry |        \{{ ip address }}:5000         | *Please check the default account defined in .env* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+|  CSGhub  |       http://{{ ip address }}        |                   root/Root@1234                   |             Can be modified in Casdoor              |
+|  Minio   |     http://{{ ip address }}:9001     | *Please check the default account defined in .env* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
+| Temporal | http://{{ ip address }}/temporal-ui/ | *Please check the default account defined in .env* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
+| Casdoor  |     http://{{ ip address }}:8000     |                  admin/Root@1234                   |             Can be modified in Casdoor              |
+| Registry |        {{ ip address }}:5000         | *Please check the default account defined in .env* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## Version Description
 

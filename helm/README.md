@@ -332,7 +332,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 | :----------------------------------------- | :------- | :--------------------- | :----------------------------------------------------------- |
 | global.objectStore.external | bool | false | false: Use built-in Minio<br/>true: Use external object storage. |
 | global.objectStore.connection | dict | { } | Default is empty, external object storage is not configured. |
-| global.objectStore.connection.endpoint | string | http://minio.\{{ domain }} | Endpoint for connecting to external object storage. |
+| global.objectStore.connection.endpoint | string | http://minio.{{ domain }} | Endpoint for connecting to external object storage. |
 | global.objectStore.connection.accessKey | string | minio | AccessKey for connecting to external object storage. |
 | global.objectStore.connection.accessSecret | string | Null | AccessSecret for connecting to external object storage. |
 | global.objectStore.connection.region | string | cn-north-1 | The region where the external object store is located. |

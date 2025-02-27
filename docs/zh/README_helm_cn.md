@@ -324,7 +324,7 @@ CSGHub Helm Chart 存在多个组件需要持久化数据，组件如下：
 | :----------------------------------------- | :------- | :------------------------- | :----------------------------------------------------------- |
 | global.objectStore.external                | bool     | false                      | false：使用内置 Minio<br/>true: 使用外部对象存储。           |
 | global.objectStore.connection              | dict     | { }                        | 默认为空，外部对象存储未配置。                               |
-| global.objectStore.connection.endpoint     | string   | http://minio.\{{ domain }} | 连接外部对象存储的端点。                                     |
+| global.objectStore.connection.endpoint     | string   | http://minio.{{ domain }} | 连接外部对象存储的端点。                                     |
 | global.objectStore.connection.accessKey    | string   | minio                      | 连接外部对象存储的 AccessKey。                               |
 | global.objectStore.connection.accessSecret | string   | Null                       | 连接外部对象存储的 AccessSecret。                            |
 | global.objectStore.connection.region       | string   | cn-north-1                 | 外部对象存储的所在的区域。                                   |
