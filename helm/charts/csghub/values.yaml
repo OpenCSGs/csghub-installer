@@ -16,6 +16,8 @@ global:
 
   ## Define the access domain name of csghub and whether to enable encrypted access.
   ingress:
+    ## Specify ingressClassName
+    # className: "nginx"
     ## Ideally, it is best to have a registered domain name, +
     ## because local domain names may require some additional configuration
     domain: example.com

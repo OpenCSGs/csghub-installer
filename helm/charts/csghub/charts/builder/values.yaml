@@ -44,7 +44,7 @@ redis:
 ## This subsection allows you to specify the repository, namespace, username, and password for the Docker registry.
 registry:
   ## The URL of the Docker registry service; default is Docker Hub
-  repository: "registry.<domain>"
+  repository: ""
   ## The namespace (or organization) under which the images are stored in the registry
   namespace: "csghub"
   ## The username for authenticating to the registry
