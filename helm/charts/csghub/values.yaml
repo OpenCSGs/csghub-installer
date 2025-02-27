@@ -38,6 +38,7 @@ global:
     ## Indicates whether the registry is external (true) or internal (false)
     external: false
     ## Configuring external registry
+    insecure: false
     ## If `external` set to `true`, `connection` is needed.
     connection: { }
       ## The URL of the Docker registry service; default is Docker Hub

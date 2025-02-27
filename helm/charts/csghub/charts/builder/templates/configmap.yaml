@@ -28,6 +28,7 @@ data:
   REGISTRY_USERNAME: {{ include "csghub.registry.username" . }}
   REGISTRY_PASSWORD: {{ include "csghub.registry.password" . }}
 ---
+{{- if and .Values.global.registry.external .Values.global.registry.insecure }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -38,11 +39,22 @@ data:
   daemon.json: |
     {
       "insecure-registries": [
-        {{- if not .Values.global.registry.external }}
-        "{{ include "registry.external.endpoint" . | trimPrefix  "http://" | trimPrefix  "https://" }}"
-        {{- else }}
-        "{{ .Values.registry.repository }}"
-        {{- end }}
+        "{{ or .Values.global.registry.connection.repository .Values.registry.repository }}"
       ]
     }
+{{- else if not .Values.global.registry.external }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" (list . "builder-docker-daemon") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+data:
+  daemon.json: |
+    {
+      "insecure-registries": [
+        "{{ include "registry.external.endpoint" . | trimPrefix  "http://" | trimPrefix  "https://" }}"
+      ]
+    }
+{{- end }}
 {{- end }}
