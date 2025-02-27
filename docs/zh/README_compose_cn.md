@@ -69,11 +69,11 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.4.0/csghu
 
     |   服务   |                 地址                  |             管理员             |                        备注                         |
     | :------: | :-----------------------------------: | :----------------------------: | :-------------------------------------------------: |
-    |  CSGhub  |       http://\{{ ip address }}        |         root/Root@1234         |                 可在 Casdoor 中修改                 |
-    |  Minio   |     http://\{{ ip address }}:9001     | *请查看 .env 中定义的默认账户* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
-    | Temporal | http://\{{ ip address }}/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
-    | Casdoor  |     http://\{{ ip address }}:8000     |        admin/Root@1234         |                 可在 Casdoor 中修改                 |
-    | Registry |        \{{ ip address }}:5000         | *请查看 .env 中定义的默认账户* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
+    |  CSGhub  |       http://{{ ip address }}        |         root/Root@1234         |                 可在 Casdoor 中修改                 |
+    |  Minio   |     http://{{ ip address }}:9001     | *请查看 .env 中定义的默认账户* |       MINIO_ROOT_USER<br/>MINIO_ROOT_PASSWORD       |
+    | Temporal | http://{{ ip address }}/temporal-ui/ | *请查看 .env 中定义的默认账户* | TEMPORAL_CONSOLE_USER<br/>TEMPORAL_CONSOLE_PASSWORD |
+    | Casdoor  |     http://{{ ip address }}:8000     |        admin/Root@1234         |                 可在 Casdoor 中修改                 |
+    | Registry |        {{ ip address }}:5000         | *请查看 .env 中定义的默认账户* |       REGISTRY_USERNAME<br/>REGISTRY_PASSWORD       |
 
 ## 版本说明
 
