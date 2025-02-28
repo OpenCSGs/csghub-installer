@@ -77,7 +77,7 @@ data:
   STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
   STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ include "csghub.gitaly.endpoint" . }}
   STARHUB_SERVER_GITALY_TOKEN: {{ include "csghub.gitaly.token" . }}
-  STARHUB_SERVER_GITALY_STORAGE: default
+  STARHUB_SERVER_GITALY_STORAGE: {{ include "csghub.gitaly.storage" . }}
   {{- if eq (include "gitlab-shell.external.port" .) "22" }}
   STARHUB_SERVER_SSH_DOMAIN: {{ printf "ssh://git@%s" (include "csghub.external.domain" .)}}
   {{- else }}
