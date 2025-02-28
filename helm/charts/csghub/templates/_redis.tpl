@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the host for csghub redis
 */}}
 {{- define "csghub.redis.host" -}}
-{{- $host := .Values.redis.host }}
+{{- $host := or .Values.redis.host (include "common.names.custom" (list . "redis")) }}
 {{- if hasKey .Values.global "redis" }}
 {{- if hasKey .Values.global.redis "external" }}
 {{- if .Values.global.redis.external }}
@@ -42,18 +42,10 @@ Define the port for csghub redis
 {{- end }}
 
 {{/*
-Define the endpoint for csghub redis
-*/}}
-{{- define "csghub.redis.endpoint" -}}
-{{- $endpoint := .Values.redis.endpoint }}
-{{- printf "%s:%s" (include "csghub.redis.host" .) (include "csghub.redis.port" .) -}}
-{{- end }}
-
-{{/*
 Define the password for csghub redis
 */}}
 {{- define "csghub.redis.password" -}}
-{{- $password := .Values.redis.password }}
+{{- $password := or .Values.redis.password (randAlphaNum 15) }}
 {{- if hasKey .Values.global "redis" }}
 {{- if hasKey .Values.global.redis "external" }}
 {{- if .Values.global.redis.external }}
@@ -66,4 +58,12 @@ Define the password for csghub redis
 {{- end }}
 {{- end }}
 {{- $password -}}
+{{- end }}
+
+{{/*
+Define the endpoint for csghub redis
+*/}}
+{{- define "csghub.redis.endpoint" -}}
+{{- $endpoint := .Values.redis.endpoint }}
+{{- printf "%s:%s" (include "csghub.redis.host" .) (include "csghub.redis.port" .) -}}
 {{- end }}

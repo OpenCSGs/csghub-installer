@@ -21,7 +21,9 @@ data:
   REDIS_ENDPOINT: {{ include "csghub.redis.endpoint" . }}
   REDIS_HOST: {{ include "csghub.redis.host" . }}
   REDIS_PORT: {{ include "csghub.redis.port" . | quote }}
+  {{- if .Values.global.redis.external }}
   REDIS_PASSWD: {{ include "csghub.redis.password" . }}
+  {{- end }}
   # Registry
   REGISTRY_ADDRESS: {{ include "csghub.registry.repository" . }}
   REGISTRY_NAMESPACE: {{ include "csghub.registry.namespace" . }}

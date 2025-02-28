@@ -47,18 +47,19 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
+            {{- if .Values.global.redis.external }}
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "server") }}
-            {{- if not .Values.global.redis.external }}
+            {{- else }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
             - name: REDISCLI_AUTH
-              {{- if not .Values.global.redis.external }}
-              value: "$(REDIS_PASSWD)"
-              {{- else }}
+              {{- if .Values.global.redis.external }}
               value: "$(STARHUB_SERVER_REDIS_PASSWORD)"
+              {{- else }}
+              value: "$(REDIS_PASSWD)"
               {{- end }}
         - name: wait-for-postgresql
           image:  {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest

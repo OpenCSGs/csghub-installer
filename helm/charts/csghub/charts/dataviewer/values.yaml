@@ -40,7 +40,7 @@ serviceAccount:
 ## Specifies the location and credentials for accessing the external Redis cache.
 redis:
   ## host for accessing Redis
-  host: "csghub-redis"
+  host: ""
   ## Port for accessing Redis
   port: 6379
   ## Password for accessing Redis

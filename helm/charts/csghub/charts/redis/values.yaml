@@ -41,6 +41,11 @@ persistence:
   ## This should be adjusted based on expected usage and data growth over time.
   size: 10Gi
 
+## Specifies the location and credentials for accessing the external Redis cache.
+redis:
+  ## Password for accessing Redis
+  password: ""
+
 serviceAccount:
   ## Determines whether a service account should be created.
   create: false
