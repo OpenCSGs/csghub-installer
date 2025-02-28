@@ -93,10 +93,11 @@ function check_arch() {
 }
 
 function mkdirs() {
-  DIR="$1"
-  if [[ ! -d "$DIR" ]]; then
-    mkdir -p "$DIR" 2>/dev/null || true
-  fi
+  for DIR in "$@"; do
+    if [[ ! -d "$DIR" ]]; then
+      mkdir -p "$DIR" 2>/dev/null || true
+    fi
+  done
 }
 
 ## check for root, OS etc..
@@ -114,7 +115,7 @@ log "NORM" "Current configured domain name is ${SERVER_DOMAIN}."
 ####################################################################################
 log "NORM" "Fluentd:"
 FLUENTD_LOG_DIR="${CURRENT_DIR}/logs/fluentd"
-mkdirs "$FLUENTD_LOG_DIR"
+mkdirs "$FLUENTD_LOG_DIR"/{archived,buffer}
 
 log "INFO" "- create log directory."
 if [[ "$(uname)" == "Linux" ]]; then
