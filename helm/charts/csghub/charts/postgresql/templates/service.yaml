@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if not .Values.global.postgresql.external }}
+apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "common.names.custom" . }}
