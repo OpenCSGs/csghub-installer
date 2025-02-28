@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the endpoint for csghub objectStore
 */}}
 {{- define "csghub.objectStore.endpoint" -}}
-{{- $endpoint := include "minio.external.endpoint" . }}
+{{- $endpoint := or .Values.objectStore.endpoint (include "minio.external.endpoint" .) }}
 {{- if hasKey .Values.global "objectStore" }}
 {{- if hasKey .Values.global.objectStore "external" }}
 {{- if .Values.global.objectStore.external }}
@@ -45,7 +45,7 @@ Define the accessKey for csghub objectStore
 Define the accessSecret for csghub objectStore
 */}}
 {{- define "csghub.objectStore.accessSecret" -}}
-{{- $accessSecret := .Values.objectStore.accessSecret }}
+{{- $accessSecret := or .Values.objectStore.accessSecret (randAlphaNum 15) }}
 {{- if hasKey .Values.global "objectStore" }}
 {{- if hasKey .Values.global.objectStore "external" }}
 {{- if .Values.global.objectStore.external }}

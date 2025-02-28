@@ -18,8 +18,10 @@ data:
   REGISTRY_AUTH_HTPASSWD_PATH: "/auth/htpasswd"
   REGISTRY_STORAGE: s3
   REGISTRY_STORAGE_S3_REGIONENDPOINT: {{ include "csghub.objectStore.endpoint" . }}
+  {{- if .Values.global.objectStore.external }}
   REGISTRY_STORAGE_S3_ACCESSKEY: {{ include "csghub.objectStore.accessKey" . }}
   REGISTRY_STORAGE_S3_SECRETKEY: {{ include "csghub.objectStore.accessSecret" . }}
+  {{- end }}
   REGISTRY_STORAGE_S3_REGION: {{ include "csghub.objectStore.region" . }}
   REGISTRY_STORAGE_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   REGISTRY_STORAGE_S3_ENCRYPT: {{ include "csghub.objectStore.encrypt" . | quote }}
