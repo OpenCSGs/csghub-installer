@@ -62,12 +62,14 @@ data:
   STARHUB_DATABASE_TIMEZONE: {{ include "csghub.postgresql.timezone" . }}
   STARHUB_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user (or (include "csghub.postgresql.password" .) $password) (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
   # Object Storage Connection Info
-  STARHUB_SERVER_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
   STARHUB_SERVER_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
+  {{- if .Values.global.objectStore.external }}
   STARHUB_SERVER_S3_ACCESS_KEY_ID: {{ include "csghub.objectStore.accessKey" . }}
   STARHUB_SERVER_S3_ACCESS_KEY_SECRET: {{ include "csghub.objectStore.accessSecret" . }}
+  {{- end }}
   STARHUB_SERVER_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   STARHUB_SERVER_S3_REGION: {{ include "csghub.objectStore.region" . }}
+  STARHUB_SERVER_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
   {{- if eq (include "csghub.objectStore.pathStyle" .) "true" }}
   STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
   {{- else }}
