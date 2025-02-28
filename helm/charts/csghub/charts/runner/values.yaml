@@ -22,6 +22,21 @@ image:
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
+## External Registry configuration.
+## Docker Registry configuration for the builder
+## This subsection allows you to specify the repository, namespace, username, and password for the Docker registry.
+registry:
+  ## The URL of the Docker registry service; default is Docker Hub
+  repository: ""
+  ## The namespace (or organization) under which the images are stored in the registry
+  namespace: "csghub"
+  ## The username for authenticating to the registry
+  username: "registry"
+  ## The password for authenticating to the registry
+  password: ""
+  ## If encrypt with TLS/SSL
+  insecure: true
+
 service:
   ## This determines how the Runner service is accessed within the cluster or from external sources.
   type: ClusterIP
