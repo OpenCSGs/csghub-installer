@@ -60,7 +60,7 @@ data:
   STARHUB_DATABASE_PASSWORD: {{ $password }}
   STARHUB_DATABASE_NAME: {{ include "csghub.postgresql.database" . }}
   STARHUB_DATABASE_TIMEZONE: {{ include "csghub.postgresql.timezone" . }}
-  STARHUB_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user (or (include "csghub.postgresql.password" .) $password) (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
+  STARHUB_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user $password (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
   # Object Storage Connection Info
   STARHUB_SERVER_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }}
   {{- if .Values.global.objectStore.external }}
