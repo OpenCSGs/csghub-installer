@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the host for csghub postgresql
 */}}
 {{- define "csghub.postgresql.host" -}}
-{{- $host := .Values.postgresql.host }}
+{{- $host := or .Values.postgresql.host (include "common.names.custom" (list . "postgresql")) }}
 {{- if hasKey .Values.global "postgresql" }}
 {{- if hasKey .Values.global.postgresql "external" }}
 {{- if .Values.global.postgresql.external }}

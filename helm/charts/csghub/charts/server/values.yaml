@@ -39,7 +39,7 @@ serviceAccount:
 ## Specifies the location and credentials for accessing the external PostgreSQL database.
 postgresql:
   ## Specifies the host address of the PostgreSQL database server.
-  host: "csghub-postgresql"
+  host: ""
   ## Defines the port on which the PostgreSQL server is listening.
   port: 5432
   ## The username used for authentication with the PostgreSQL database.
