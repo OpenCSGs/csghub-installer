@@ -39,7 +39,7 @@ global:
   registry:
     ## Indicates whether the registry is external (true) or internal (false)
     external: false
-    ## Configuring external registry
+    ## If encrypt with TLS/SSL
     insecure: false
     ## If `external` set to `true`, `connection` is needed.
     connection: { }

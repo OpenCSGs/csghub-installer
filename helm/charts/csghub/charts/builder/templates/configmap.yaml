@@ -27,8 +27,10 @@ data:
   # Registry
   REGISTRY_ADDRESS: {{ include "csghub.registry.repository" . }}
   REGISTRY_NAMESPACE: {{ include "csghub.registry.namespace" . }}
+  {{- if .Values.global.registry.external }}
   REGISTRY_USERNAME: {{ include "csghub.registry.username" . }}
   REGISTRY_PASSWORD: {{ include "csghub.registry.password" . }}
+  {{- end }}
 ---
 {{- if and .Values.global.registry.external .Values.global.registry.insecure }}
 apiVersion: v1
@@ -41,7 +43,7 @@ data:
   daemon.json: |
     {
       "insecure-registries": [
-        "{{ or .Values.global.registry.connection.repository .Values.registry.repository }}"
+        "{{ or (include "csghub.registry.repository" .) .Values.registry.repository }}"
       ]
     }
 {{- else if not .Values.global.registry.external }}

@@ -45,6 +45,16 @@ service:
   ## This is the network port where the Registry service will listen for connections.
   port: 5000
 
+## Docker Registry configuration for the builder
+## This subsection allows you to specify the namespace, username, and password for the Docker registry.
+registry:
+  ## The namespace (or organization) under which the images are stored in the registry
+  namespace: "csghub"
+  ## The username for authenticating to the registry
+  username: "registry"
+  ## The password for authenticating to the registry
+  password: ""
+
 serviceAccount:
   ## Determines whether a service account should be created.
   create: false
