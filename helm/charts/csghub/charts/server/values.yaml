@@ -64,9 +64,11 @@ redis:
 # Configuration for Gitaly
 gitaly:
   # The host where Gitaly is running
-  host: "csghub-gitaly"
+  host: ""
   # The port used to communicate with Gitaly
   port: 8075
+  # The storage using by gitaly
+  storage: "default"
   # The token for authenticating with Gitaly
   token: ""
 
