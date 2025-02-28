@@ -42,8 +42,10 @@ data:
   CSGHUB_PORTAL_DATABASE_DSN: {{ printf "postgresql://%s:%s@%s:%s/%s?sslmode=disable" $user $password (include "csghub.postgresql.host" .) (include "csghub.postgresql.port" .) (include "csghub.postgresql.database" .) }}
   # ObjectStorage
   CSGHUB_PORTAL_S3_ENDPOINT: {{ include "csghub.objectStore.endpoint" . | trimPrefix "http://" | trimPrefix  "https://" }}
+  {{- if .Values.global.objectStore.external }}
   CSGHUB_PORTAL_S3_ACCESS_KEY_ID: {{ include "csghub.objectStore.accessKey" . }}
   CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET: {{ include "csghub.objectStore.accessSecret" . }}
+  {{- end }}
   CSGHUB_PORTAL_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   CSGHUB_PORTAL_S3_REGION: {{ include "csghub.objectStore.region" . }}
   CSGHUB_PORTAL_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
