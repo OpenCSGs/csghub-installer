@@ -42,7 +42,7 @@ data:
       {{- if $secretUser }}
       {{- $username = $secretUser | b64dec }}
       {{- end }}
-      {{- $secretPass := index $secretData "REGISTRY_PASSWORD" | b64dec -}}
+      {{- $secretPass := index $secretData "REGISTRY_PASSWORD" -}}
       {{- if $secretPass }}
       {{- $password = $secretPass | b64dec }}
       {{- end }}
