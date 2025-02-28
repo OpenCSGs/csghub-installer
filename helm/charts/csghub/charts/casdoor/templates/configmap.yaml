@@ -562,7 +562,7 @@ data:
     UPDATE
         "user"
     SET
-        password = {{ printf "%s@%s" (now | date "15/04") "admin" | sha256sum | trunc 16 | b64enc | squote }}
+        password = {{ printf "%s@%s" (now | date "15/04") "admin" | b64enc | sha256sum | trunc 16 | squote }}
     WHERE
         name = 'admin'
         AND password = '123';

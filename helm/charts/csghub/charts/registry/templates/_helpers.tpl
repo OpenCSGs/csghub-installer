@@ -30,5 +30,5 @@ Define the external endpoint for registry
 Random Password for which password not set
 */}}
 {{- define "registry.initPass" -}}
-{{- printf "%s@%s" (now | date "15/04") . | sha256sum | trunc 16 | b64enc | b64enc -}}
+{{- printf "%s@%s" (now | date "15/04") . | b64enc | sha256sum | trunc 16 -}}
 {{- end }}
