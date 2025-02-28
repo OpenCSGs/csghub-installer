@@ -232,17 +232,6 @@ postgresql:
   #   - csghub_temporal_visibility
   #   - csghub_dataflow
 
-## For Moderation
-moderation:
-  ## Configuration for content moderation settings
-  moderation: { }
-    ## The access key ID for authentication with the moderation service
-    # accessKeyId: ""
-    ## The access key secret for authentication with the moderation service
-    # accessKeySecret: ""
-    ## The region where the moderation service is hosted
-    # region: ""
-
 ## For Dataflow
 dataflow:
   ## Disable dataflow default
