@@ -220,7 +220,7 @@ EOF
 # Configure Minio
 ####################################################################################
 log "NORM" "Minio:"
-MINIO_DATA_DIR="${CSGHUB_DATA_DIR:-'./data'}/data/minio"
+MINIO_DATA_DIR="${CSGHUB_DATA_DIR:-'./data'}/minio"
 
 ## The following is a fix for bitnami/minio.
 ## This container does not have root permissions by default,
