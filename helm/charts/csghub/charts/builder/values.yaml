@@ -51,6 +51,8 @@ registry:
   username: "registry"
   ## The password for authenticating to the registry
   password: ""
+  ## If encrypt with TLS/SSL
+  insecure: true
 
 ## Persistence settings for the Minio data.
 persistence:

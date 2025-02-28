@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the repository for csghub registry
 */}}
 {{- define "csghub.registry.repository" -}}
-{{- $repository := include "registry.external.endpoint" . }}
+{{- $repository := or .Values.registry.repository (include "registry.external.endpoint" .) }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
@@ -26,12 +26,7 @@ Define the repository for csghub registry
 Define the namespace for csghub registry
 */}}
 {{- define "csghub.registry.namespace" -}}
-{{- $namespace := "csghub" }}
-{{- if hasKey .Values "connection" }}
-{{- if hasKey .Values.connection "namespace" }}
-{{- $namespace = .Values.connection.namespace }}
-{{- end }}
-{{- end }}
+{{- $namespace := or .Values.registry.namespace .Release.Name }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
@@ -50,12 +45,7 @@ Define the namespace for csghub registry
 Define the username for csghub registry
 */}}
 {{- define "csghub.registry.username" -}}
-{{- $username := "registry" }}
-{{- if hasKey .Values "connection" }}
-{{- if hasKey .Values.connection "username" }}
-{{- $username = .Values.connection.username }}
-{{- end }}
-{{- end }}
+{{- $username := .Values.registry.username }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
@@ -74,12 +64,7 @@ Define the username for csghub registry
 Define the password for csghub registry
 */}}
 {{- define "csghub.registry.password" -}}
-{{- $password := include "registry.initPass" (include "csghub.registry.username" .) }}
-{{- if hasKey .Values "connection" }}
-{{- if hasKey .Values.connection "password" }}
-{{- $password = .Values.connection.password }}
-{{- end }}
-{{- end }}
+{{- $password := or .Values.registry.password (include "registry.initPass" (include "csghub.registry.username" .)) }}
 {{- if hasKey .Values.global "registry" }}
 {{- if hasKey .Values.global.registry "external" }}
 {{- if .Values.global.registry.external }}
