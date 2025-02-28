@@ -44,6 +44,15 @@ service:
     api: 9000
     console: 9001
 
+## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+objectStore:
+  ## The access key ID for authentication with the object storage service.
+  ## This is empty by default and should be provided securely.
+  accessKey: "minio"
+  ## The secret access key for authentication with the object storage service.
+  ## This is also empty by default and should be provided securely.
+  accessSecret: ""
+
 ## The region where Minio will operate, useful for configuring location-specific data replication and redundancy.
 region: "cn-north-1"
 

@@ -66,7 +66,7 @@ serviceAccount:
 ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
 objectStore:
   ## The endpoint URL of the object storage service.
-  endpoint: "http://minio.<domain>"
+  endpoint: ""
   ## The access key ID for authentication with the object storage service.
   ## This is empty by default and should be provided securely.
   accessKey: "minio"
