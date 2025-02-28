@@ -74,7 +74,10 @@ Define postgresql dsn for casdoor
 {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
 {{- if $secretData }}
-{{- $password = index $secretData $user | b64dec }}
+{{- $secretPass := index $secretData $user }}
+{{- if $secretPass }}
+{{- $password = $secretPass | b64dec }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database -}}

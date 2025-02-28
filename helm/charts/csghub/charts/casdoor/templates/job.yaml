@@ -44,13 +44,13 @@ spec:
             - name: PGUSER
               value: {{ include "csghub.postgresql.user" . }}
             - name: PGPASSWORD
-              {{- if not .Values.global.postgresql.external }}
+              {{- if .Values.global.postgresql.external }}
+              value: {{ include "csghub.postgresql.password" . }}
+              {{- else }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "common.names.custom" (list . "postgresql") }}
                   key: {{ include "csghub.postgresql.user" . }}
-              {{- else }}
-              value: {{ include "csghub.postgresql.password" . }}
               {{- end }}
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
@@ -71,13 +71,13 @@ spec:
             - name: PGUSER
               value: {{ include "csghub.postgresql.user" . }}
             - name: PGPASSWORD
-              {{- if not .Values.global.postgresql.external }}
+              {{- if .Values.global.postgresql.external }}
+              value: {{ include "csghub.postgresql.password" . }}
+              {{- else }}
               valueFrom:
                 secretKeyRef:
                   name: {{ include "common.names.custom" (list . "postgresql") }}
                   key: {{ include "csghub.postgresql.user" . }}
-              {{- else }}
-              value: {{ include "csghub.postgresql.password" . }}
               {{- end }}
           volumeMounts:
             - name: init
