@@ -26,6 +26,11 @@ service:
   ## This is the network port where the Gitlab-Shell service will listen for connections.
   port: 22
 
+# Configuration for Gitaly
+gitaly:
+  # The token for authenticating with Gitaly
+  token: ""
+
 ## Persistence settings for the Minio data.
 persistence:
   ## Specifies the StorageClass used for provisioning the volume.
