@@ -14,7 +14,7 @@ metadata:
     resource.dependencies/statefulsets: |
       {{ include "common.names.custom" . }}
 data:
-  .gitlab_shell_secret: {{ include "gitaly.internal.token" . }}
+  .gitlab_shell_secret: {{ include "csghub.gitaly.token" . }}
   init_host_keys.sh: |
     #!/bin/sh
     # Check if there are any files starting with ssh_host_ in the /srv/gitlab-shell/keys directory

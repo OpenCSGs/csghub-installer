@@ -83,7 +83,7 @@ spec:
         - name: wait-for-gitaly
           image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "gitaly.internal.domain" . }} {{ include "gitaly.internal.port" . }}; do echo 'Wait for gitaly to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "csghub.gitaly.host" . }} {{ include "csghub.gitaly.port" . }}; do echo 'Wait for gitaly to be ready'; sleep 2; done" ]
         - name: wait-for-nats
           image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
