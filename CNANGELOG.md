@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.5.0 (planning)
+
+- [compose] Rename minio buckets:
+    - opencsg-server-lfs ==> csghub-server
+    - opencsg-portal-storage ==> csghub-portal
+    - opencsg-registry-storage ==> csghub-registry
+
 ## v1.4.2 (To be released)
 
 ---
@@ -7,6 +14,7 @@
 - [helm] Optimize password length
 - [helm] Fixed the adaptation error when using external resources
     - Now support (postgres, redis, registry, object storage, gitaly)
+- [compose] Fixed large lfs files cannot be uploads. 
 
 ## v1.4.1
 
