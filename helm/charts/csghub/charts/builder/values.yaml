@@ -66,7 +66,9 @@ persistence:
   accessMode: ["ReadWriteOnce"]
   ## Specifies the size of the persistent volume.
   ## This should be adjusted based on expected usage and data growth over time.
-  size: 50Gi
+  sizes:
+    builder: 50Gi
+    docker: 200Gi
 
 ## Determines whether a service account should be created.
 serviceAccount:

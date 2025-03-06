@@ -133,6 +133,9 @@ spec:
             - name: docker-config
               mountPath: /root/.docker
               readOnly: true
+            - name: overlay2
+              mountPath: /var/lib/docker/overlay2
+              readOnly: false
       volumes:
         {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
         - name: docker-daemon
@@ -177,5 +180,25 @@ spec:
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistence.size }}
+            storage: {{ .Values.persistence.sizes.builder }}
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: overlay2
+        namespace: {{ .Release.Namespace }}
+        labels:
+          {{- include "common.labels" . | nindent 10 }}
+        annotations:
+          helm.sh/resource-policy: keep
+          {{- with .Values.annotations }}
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
+      spec:
+        accessModes: {{ or .Values.global.persistence.accessMode .Values.persistence.accessMode }}
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ or .Values.global.persistence.storageClass .Values.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.sizes.docker }}
   {{- end }}
