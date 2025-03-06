@@ -44,5 +44,6 @@ spec:
               kubectl patch configmap {{ printf "%s-ingress-nginx-tcp" .Release.Name }} \
                 --namespace {{ .Release.Namespace }} \
                 --type merge \
-                --patch '{"data":{"22":"{{ printf "%s/%s:22" .Release.Namespace (include "gitlab-shell.internal.domain" .) }}"}}'
+                --patch '{"data":{"22":"{{ printf "%s/%s:22" .Release.Namespace (include "gitlab-shell.internal.domain" .) }}"}}' \
+              || echo $?
 {{- end }}
