@@ -72,7 +72,7 @@ data:
 
     # Log file.
     # Default is gitlab-shell.log in the root directory.
-    log_file: "/srv/gitlab-shell/prd.log"
+    log_file: "/dev/stdout"
 
     # Log level. INFO by default
     log_level: INFO
@@ -83,7 +83,7 @@ data:
     # Audit usernames.
     # Set to true to see real usernames in the logs instead of key ids, which is easier to follow, but
     # incurs an extra API call on every gitlab-shell command.
-    audit_usernames: false
+    audit_usernames: true
 
     # Distributed Tracing. GitLab-Shell has distributed tracing instrumentation.
     # For more details, visit https://docs.gitlab.com/ee/development/distributed_tracing.html
