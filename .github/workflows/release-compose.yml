@@ -22,10 +22,8 @@ jobs:
         id: package_artifact
         run: |
           docker_artifact="csghub-docker-compose-${{ github.ref_name }}.tgz"
-          chart_artifact="csghub-helm-chart-${{ github.ref_name }}.tgz"
           mv docker/compose csghub && tar -zcf $docker_artifact csghub
-          tar -zcf $chart_artifact helm/charts/csghub
-          echo "artifacts=$docker_artifact,$chart_artifact" >> $GITHUB_OUTPUT
+          echo "artifacts=$docker_artifact" >> $GITHUB_OUTPUT
 
       - name: Check if Release Exists
         id: check_if_exists
