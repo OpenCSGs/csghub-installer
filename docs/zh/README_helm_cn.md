@@ -121,7 +121,7 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
     |  global.deployment.knative.serving.services[0].port  |    30213     | 指定 KnativeServing Kourier 服务的端口。如果 type 为 LoadBalancer，需配置为 80，如果 type 为 NodePort , 需配置为任意 5 为合法 NodePort 端口号。 |
     |             global.deployment.kubeSecret             | kube-configs | 包含所有目标 Kubernetes 集群.kube/config 的 Secret，多个 config 可以重命名为 config 开头的文件进行区分。 |
 
-      - **LoadBalancer**
+    - **LoadBalancer**
 
         ```shell
         helm upgrade --install csghub csghub/csghub \
@@ -134,7 +134,7 @@ curl -sfL https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads
           --set global.deployment.knative.serving.services[0].port="30213"
         ```
 
-      - **NodePort**
+    - **NodePort**
 
         ```shell
         helm upgrade --install csghub csghub/csghub \
