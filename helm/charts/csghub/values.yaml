@@ -10,9 +10,14 @@ global:
     ## You can add namespace follow registry.
     ## eg: docker.io/minio/minio:latest ==> {{ registry }}/minio/minio:latest
     registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
-    ## Globally specify the image version to be used by csghub_server.
+    ## Only for csghub_server
+    ## Specifies the csghub_server repository name.
+    # name: "csghub_server_ee"
+    ## Specifies the csghub_server image version.
     ## Example: latest, v1.0.0, etc.
-    # tag: ""
+    # tag: "v1.4.0-ee"
+    ## Specifies the csghub_server image pull policy.
+    # pullPolicy: "IfNotPresent"
 
   ## Define the access domain name of csghub and whether to enable encrypted access.
   ingress:
