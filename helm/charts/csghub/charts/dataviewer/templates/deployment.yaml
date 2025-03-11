@@ -86,7 +86,7 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "temporal.internal.domain" . }} {{ include "temporal.internal.port" . }}; do echo 'Wait for temporal to be ready'; sleep 2; done" ]
       containers:
         - name: dataviewer
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ or .Values.global.image.repository .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "dataviewer", "launch" ]
           ports:
