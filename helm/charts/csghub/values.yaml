@@ -10,9 +10,14 @@ global:
     ## You can add namespace follow registry.
     ## eg: docker.io/minio/minio:latest ==> {{ registry }}/minio/minio:latest
     registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
-    ## Globally specify the image version to be used by csghub_server.
+    ## Only for csghub_server
+    ## Specifies the csghub_server repository name.
+    # name: "csghub_server"
+    ## Specifies the csghub_server image version.
     ## Example: latest, v1.0.0, etc.
-    # tag: ""
+    # tag: "v1.4.0"
+    ## Specifies the csghub_server image pull policy.
+    # pullPolicy: "IfNotPresent"
 
   ## Define the access domain name of csghub and whether to enable encrypted access.
   ingress:
@@ -74,7 +79,6 @@ global:
       ##   - csghub_casdoor
       ##   - csghub_temporal
       ##   - csghub_temporal_visibility
-      ##   - csghub_dataflow
       ## Please make sure that the above databases have been created
       # database: ""
       ## Username for authenticating with the PostgreSQL database.
@@ -142,18 +146,6 @@ global:
       ## The token for authenticating with Gitaly
       # token: ""
 
-  ## Configuration for content moderation settings
-  moderation:
-    enabled: false
-    ## Configuring external content moderation server connection info
-    connection: { }
-      ## The access key ID for authentication with the moderation service
-      # accessKeyId: ""
-      ## The access key secret for authentication with the moderation service
-      # accessKeySecret: ""
-      ## The region where the moderation service is hosted
-      # region: ""
-
   ## This section of configuration is used to integrate k8s to run various instances, +
   ## such as Space applications, fine-tuning, and inference instances.
   deployment:
@@ -177,10 +169,18 @@ global:
             ## The hostname through which the service can be accessed.
             domain: "app.internal"
             ## The IP address assigned to the service, Usually remote k8s api-server node address.
-            host: "192.168.18.3"
+            host: "192.168.18.10"
             ## If type is 'LoadBalancer', port should be set to '80'
             ## If type is 'NodePort', it will be configured as the NodePort port of kourier.svc port 80
             port: "30213"
+
+  ## Configuration for Persistence
+  persistence: { }
+    ## Specifies the storage class to use for persistent storage
+    # storageClass: ""
+    ## Specifies the access mode for the persistent volume
+    ## Options: ReadWriteOnce, ReadOnlyMany, ReadWriteMany
+    # accessMode: ["ReadWriteOnce"]
 
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
@@ -222,31 +222,6 @@ postgresql:
   #   - csghub_casdoor
   #   - csghub_temporal
   #   - csghub_temporal_visibility
-  #   - csghub_dataflow
-
-## For Moderation
-moderation:
-  ## Configuration for content moderation settings
-  moderation: { }
-    ## The access key ID for authentication with the moderation service
-    # accessKeyId: ""
-    ## The access key secret for authentication with the moderation service
-    # accessKeySecret: ""
-    ## The region where the moderation service is hosted
-    # region: ""
-
-## For Dataflow
-dataflow:
-  ## Configure AI Service
-  openAI: { }
-    ## The API endpoint address, e.g., "https://api.openai.com/v1/"
-    # endpoint: ""
-    ##  Your OpenAI API key used for authentication
-    # apiKey: ""
-    ## The version of the API being used, e.g., "v1"
-    # apiVersion: ""
-    ## The name of the model you want to use, e.g., "text-davinci-003"
-    # model: ""
 
 ## For Minio
 minio:
