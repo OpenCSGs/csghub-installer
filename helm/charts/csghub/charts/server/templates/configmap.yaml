@@ -19,6 +19,8 @@ metadata:
       {{ include "common.names.custom" (list . "portal") }}
       {{ include "common.names.custom" (list . "proxy") }}
       {{ include "common.names.custom" (list . "runner") }}
+      {{ include "common.names.custom" (list . "dataviewer") }}
+      {{ include "common.names.custom" (list . "moderation") }}
 data:
   GIN_MODE: release
   STARHUB_SERVER_SAAS: "false"
