@@ -42,7 +42,6 @@ databases:
   - csghub_casdoor
   - csghub_temporal
   - csghub_temporal_visibility
-  - csghub_dataflow
 
 ## Persistence settings for the PostgreSQL data.
 persistence:
