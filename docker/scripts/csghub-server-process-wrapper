@@ -136,10 +136,5 @@ fi
 echo "Reset temporary environments"
 unset PGPASSWORD PGHOST PGPORT PGUSER PGDATABASE
 
-if [ "$STARHUB_SERVER_SENSITIVE_CHECK_ENABLE" == "true" ]; then
-  echo "Starting moderation..."
-  supervisorctl start csghub-moderation
-fi
-
 echo "Starting server..."
 exec /usr/bin/csghub-server start server
