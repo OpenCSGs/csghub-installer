@@ -94,8 +94,8 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "temporal.internal.domain" . }} {{ include "temporal.internal.port" . }}; do echo 'Wait for temporal to be ready'; sleep 2; done" ]
       containers:
         - name: server
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ or .Values.global.image.name .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/scripts/init.sh" ]
           ports:
             - containerPort: 8080
