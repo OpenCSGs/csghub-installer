@@ -67,6 +67,10 @@ get_token() {
 }
 
 if [ -f "/root/.kube/config" ] && [ "$CSGHUB_WITH_K8S" == 1 ]; then
+  sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
+      -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
+     /etc/server/scripts/update_casdoor.sql.sample > /etc/server/scripts/update_casdoor.sql
+
   echo "Seed tables..."
   for file in $(ls /etc/server/scripts/*.sql); do
     execute_sql "$POSTGRES_SERVER_USER" "$file"
