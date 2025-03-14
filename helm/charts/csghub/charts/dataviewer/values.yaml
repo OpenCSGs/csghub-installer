@@ -24,9 +24,9 @@ image:
   pullPolicy: "IfNotPresent"
 
 service:
-  ## This determines how the Dataflow service is accessed within the cluster or from external sources.
+  ## This determines how the Dataviewer service is accessed within the cluster or from external sources.
   type: ClusterIP
-  ## This is the network port where the Dataflow service will listen for connections.
+  ## This is the network port where the Dataviewer service will listen for connections.
   port: 8093
 
 serviceAccount:
