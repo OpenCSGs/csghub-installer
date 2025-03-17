@@ -1,17 +1,21 @@
 # Changelog
 
-## v1.5.0 (planning)
+## v1.5.1(Planning)
 
 - [compose] Rename minio buckets:
-    - `opencsg-server-lfs` ==> `csghub-server`
-    - `opencsg-portal-storage` ==> `csghub-portal`
-    - `opencsg-registry-storage` ==> `csghub-registry`
+
+  - `opencsg-server-lfs` ==> `csghub-server`
+
+  - `opencsg-portal-storage` ==> `csghub-portal`
+
+  - `opencsg-registry-storage` ==> `csghub-registry`
+
+## v1.5.0
+
 - [All] Added support for new inference engines `TEI`, `lama.cpp`
 
-## v1.4.3 (To be released)
-
 - [helm] Allow user define csghub_server image `name(repository)`, `pullPolicy` globally
-- [helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain 
+- [helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain
 
 ## v1.4.2
 
@@ -19,8 +23,8 @@
 
 - [helm] Optimize password length
 - [helm] Fixed the adaptation error when using external resources
-    - Now support (postgres, redis, registry, object storage, gitaly)
-- [compose] Fixed large lfs files cannot be uploads. 
+  - Now support (postgres, redis, registry, object storage, gitaly)
+- [compose] Fixed large lfs files cannot be uploads.
 
 ## v1.4.1
 
@@ -44,4 +48,3 @@
 - [all] Add dataset preview component dataviewer
 - [docker] Add docker quick configuration script quick_install.sh
 - [docker] k8s integration is disabled by default 
-
