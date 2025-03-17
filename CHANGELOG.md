@@ -1,14 +1,18 @@
 # Changelog
 
-## v1.5.0 (planning)
+## v1.5.1(Planning)
 
 - [compose] Rename minio buckets:
-    - `opencsg-server-lfs` ==> `csghub-server`
-    - `opencsg-portal-storage` ==> `csghub-portal`
-    - `opencsg-registry-storage` ==> `csghub-registry`
-- [All] Added support for new inference engines `TEI`, `lama.cpp`
 
-## v1.4.3 (To be released)
+    - `opencsg-server-lfs` ==> `csghub-server`
+
+    - `opencsg-portal-storage` ==> `csghub-portal`
+
+    - `opencsg-registry-storage` ==> `csghub-registry`
+
+## v1.5.0
+
+- [All] Added support for new inference engines `TEI`, `lama.cpp`
 
 - [helm] Allow user define csghub_server image `name(repository)`, `pullPolicy` globally
 - [helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain 
