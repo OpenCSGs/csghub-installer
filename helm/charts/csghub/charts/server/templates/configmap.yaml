@@ -42,7 +42,7 @@ data:
   STARHUB_SERVER_MULTI_SYNC_ENABLED: "true"
   # Redis Connection Info
   STARHUB_SERVER_REDIS_ENDPOINT: {{ include "csghub.redis.endpoint" . }}
-  {{- if .Values.global.registry.external }}
+  {{- if .Values.global.redis.external }}
   STARHUB_SERVER_REDIS_PASSWORD: {{ include "csghub.redis.password" . }}
   {{- end }}
   # PostgreSQL Connection Info
