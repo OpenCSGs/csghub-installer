@@ -146,6 +146,8 @@ global:
       # storage: "default"
       ## The token for authenticating with Gitaly
       # token: ""
+      ## If gitaly is a cluster
+      # isCluster: false
 
   ## Configuration for content moderation settings
   moderation:

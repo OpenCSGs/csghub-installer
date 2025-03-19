@@ -80,6 +80,25 @@ Define the token for csghub gitaly
 {{- end }}
 
 {{/*
+Define if cluster for csghub gitaly
+*/}}
+{{- define "csghub.gitaly.cluster" -}}
+{{- $cluster := false }}
+{{- if hasKey .Values.global "gitaly" }}
+{{- if hasKey .Values.global.gitaly "external" }}
+{{- if .Values.global.gitaly.external }}
+{{- if hasKey .Values.global.gitaly "connection" }}
+{{- if hasKey .Values.global.gitaly.connection "isCluster" }}
+{{- $cluster = .Values.global.gitaly.connection.isCluster }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $cluster -}}
+{{- end }}
+
+{{/*
 Define the endpoint for csghub gitaly
 */}}
 {{- define "csghub.gitaly.endpoint" -}}

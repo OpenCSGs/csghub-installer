@@ -61,15 +61,15 @@ redis:
   ## Password for accessing Redis
   password: ""
 
-# Configuration for Gitaly
+## Configuration for Gitaly
 gitaly:
-  # The host where Gitaly is running
+  ## The host where Gitaly is running
   host: ""
-  # The port used to communicate with Gitaly
+  ## The port used to communicate with Gitaly
   port: 8075
-  # The storage using by gitaly
+  ## The storage using by gitaly
   storage: "default"
-  # The token for authenticating with Gitaly
+  ## The token for authenticating with Gitaly
   token: ""
 
 ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
