@@ -5,15 +5,13 @@
 - [compose] Rename minio buckets:
 
   - `opencsg-server-lfs` ==> `csghub-server`
-
   - `opencsg-portal-storage` ==> `csghub-portal`
-
   - `opencsg-registry-storage` ==> `csghub-registry`
 
 ## v1.5.0
 
 - [All] Added support for new inference engines `TEI`, `lama.cpp`
-
+- [All] Support gitaly cluster
 - [helm] Allow user define csghub_server image `name(repository)`, `pullPolicy` globally
 - [helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain
 
