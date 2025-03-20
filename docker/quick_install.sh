@@ -101,6 +101,8 @@ if $k8s; then
     -v ${config:-"~/.kube"}:/etc/.kube \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -p ${registry_port}:5000 \
+    -e KNATIVE_SERVING_ENABLE=true \
+    -e ENABLE_ARGO_WORKFLOW=true \
     -e REGISTRY_ADDRESS=${host}:${registry_port}   "
 else
     docker_cmd+="  -e CSGHUB_WITH_K8S=0   "
