@@ -181,11 +181,12 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ### CSGHub 其他配置
 
-| 变量                       | 类型 | 默认值 | 说明                                           |
-| :------------------------- | :--- | :----- | :--------------------------------------------- |
-| CSGHUB_PORTAL_ENABLE_HTTPS | bool | false  | 如果 NGINX 配置为加密访问，此处需配置为 true。 |
-| CSGHUB_MULTI_SYNC_ENABLED  | bool | true   | 指定是否启用多源同步。                         |
-| CSGHUB_DATA_DIR            | bool | ./data | 指定持久化存储路径。                           |
+| 变量                       | 类型 | 默认值 | 说明                                                  |
+| :------------------------- | :--- | :----- | :---------------------------------------------------- |
+| CSGHUB_PORTAL_ENABLE_HTTPS | bool | false  | 如果 NGINX 配置为加密访问，此处需配置为 true。        |
+| CSGHUB_MULTI_SYNC_ENABLED  | bool | true   | 指定是否启用多源同步。                                |
+| CSGHUB_DATA_DIR            | bool | ./data | 指定持久化存储路径。                                  |
+| CSGHUB_LFS_DIRECT_UPLOAD   | bool | false  | 是否开启 LFS 文件直接上传。*如果机器性能不好请开启。* |
 
 ### Git 配置
 
