@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# export KNATIVE_SERVING_ENABLE=true
-# export NVIDIA_DEVICE_PLUGIN=true
+export KNATIVE_SERVING_ENABLE=${KNATIVE_SERVING_ENABLE:-true}
+export ENABLE_ARGO_WORKFLOW=${ENABLE_ARGO_WORKFLOW:-true}
+export NVIDIA_DEVICE_PLUGIN=${NVIDIA_DEVICE_PLUGIN:-true}
 
 # Function to retry a command up to a specified number of times if it fails
 retry() {
@@ -9,7 +10,7 @@ retry() {
   local max=5
   local delay=10
   while true; do
-    "$@" && break || {
+    KUBECONFIG=$KUBECONFIG "$@" && break || {
       if [[ $n -lt $max ]]; then
         ((n++))
         echo "Command failed. Attempt $n/$max:"
@@ -54,19 +55,19 @@ create_namespace() {
 install_argo_workflow() {
   # Install argo workflow
   log "INFO" "Install the ARGO Workflow component."
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
+  retry kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
+  retry kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
 }
 
 install_knative_serving() {
   echo "Install the Knative Serving component"
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-crds.yaml
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-core.yaml
+  retry kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-crds.yaml
+  retry kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/serving-core.yaml
   retry kubectl patch cm config-autoscaler -n knative-serving -p='{"data":{"enable-scale-to-zero":"false"}}'
   retry kubectl patch cm config-features -n knative-serving -p='{"data":{"kubernetes.podspec-nodeselector":"enabled"}}'
 
   echo "Install a networking layer"
-  retry kubectl apply -f https://ghp.ci/https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/kourier.yaml
+  retry kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/knative/kourier.yaml
 
   echo "Configure Knative Serving to use Kourier"
   retry kubectl patch configmap/config-network \
@@ -147,6 +148,10 @@ cluster_infos=()
 for CONFIG in $(ls -A /etc/.kube/config*); do
   export KUBECONFIG=$CONFIG
 
+  if ! kubectl cluster-info; then
+    echo "Warning: Invalid KUBECONFIG file '$CONFIG'. Skipping..."
+    continue
+  fi
   create_namespace
 
   if [ "$STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET" == "csghub-docker-config" ]; then

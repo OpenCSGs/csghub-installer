@@ -58,7 +58,7 @@ export GITLAB_SHELL_SSH_PORT=${GITLAB_SHELL_SSH_PORT:-2222}
 
 # Knative Serving and Space Application
 export SPACE_APP_NS=${SPACE_APP_NS:-spaces}
-export SPACE_APP_DOMAIN=${SPACE_APP_DOMAIN:-app.internal}
+export SPACE_APP_DOMAIN=${SPACE_APP_DOMAIN:-app1.internal}
 export SPACE_APP_HOST=${SPACE_APP_HOST:-127.0.0.1}
 export SPACE_APP_PORT=${SPACE_APP_PORT:-80}
 export SPACE_DATA_PATH=${SPACE_DATA_PATH:-/var/opt/csghub-builder}
@@ -185,6 +185,7 @@ export CSGHUB_PORTAL_S3_ENDPOINT=${S3_ENDPOINT:-"$SERVER_DOMAIN:9000"}
 
 # Knative Serving Environments
 export KNATIVE_SERVING_ENABLE=${KNATIVE_SERVING_ENABLE:-false}
+export ENABLE_ARGO_WORKFLOW=${ENABLE_ARGO_WORKFLOW:-false}
 export KNATIVE_KOURIER_TYPE=${KNATIVE_KOURIER_TYPE:-NodePort}
 
 # NVIDIA device plugin Environments
