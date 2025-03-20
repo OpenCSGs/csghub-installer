@@ -79,6 +79,7 @@ data:
   {{- else }}
   STARHUB_SERVER_S3_BUCKET_LOOKUP: "auto"
   {{- end }}
+  STARHUB_SERVER_SKIP_LFS_FILE_VALIDATION: {{ .Values.objectStore.directUpload | quote }}
   # Gitaly Connection Info
   STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
   STARHUB_SERVER_GITALY_SERVER_SOCKET: {{ include "csghub.gitaly.endpoint" . }}
