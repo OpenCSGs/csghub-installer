@@ -128,7 +128,7 @@ echo "Migration init"
 echo "Migration migrate"
 /usr/bin/csghub-server migration migrate
 
-if [ $(ls -A /etc/.kube/config* 2>dev/null) ]; then
+if [[ $(ls -A /etc/.kube/config* 2>dev/null) ]]; then
     echo "Copy kube configs."
     cp -a /etc/.kube /root
 fi
