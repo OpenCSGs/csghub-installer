@@ -27,7 +27,7 @@ SELECT pg_catalog.set_config('search_path', 'public', false);
 -- Name: application; Type: TABLE; Schema: public; Owner: csghub
 --
 -- Connect to casdoor management database
-\connect casdoor
+\connect csghub_casdoor
 
 -- Update RedirectURLs
 UPDATE
