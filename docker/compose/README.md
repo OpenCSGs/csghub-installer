@@ -188,6 +188,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 | CSGHUB_PORTAL_ENABLE_HTTPS | bool | false | If NGINX is configured for encrypted access, this needs to be configured to true. |
 | CSGHUB_MULTI_SYNC_ENABLED | bool | true | Whether to enable multi-source synchronization. |
 | CSGHUB_DATA_DIR | string | ./data | Execute the persistent data storage path. |
+| CSGHUB_LFS_DIRECT_UPLOAD | bool | false | Whether to enable lfs for direct upload. If the machine performance is not good, please enable it. |
 
 ### Git Configuration
 
