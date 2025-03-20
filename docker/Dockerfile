@@ -14,9 +14,9 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/gitlab-shell:v17
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_nats:2.10.16 AS nats-server
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1.5.0 AS server
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1.5.1 AS server
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.5.0 AS portal
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.5.1 AS portal
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/space_builder:latest AS csghub-builder
 
