@@ -43,7 +43,7 @@ CSGHub 项目由多个组件组成，每个组件都承担着特定的职责，�
 - **csghub_accounting**: 计费系统，负责资源使用过程中产生的费用统计。
 - **csghub_mirror**: 提供仓库数据的同步服务，负责同步 opencsg.com 模型和数据集到本地。
 - **csghub_runner**: 负责在 Kubernetes 集群中部署和管理应用实例，确保应用的快速构建和持续交付。
-- **csghub_builder**: 负责构建应用镜像并上传到容器镜像仓库，简化应用的打包和发布流程。
+- **space_builder**: 负责构建应用镜像并上传到容器镜像仓库，简化应用的打包和发布流程。
 - **csghub_watcher**: 监控 CSGHub  所有 Secret 和 ConfigMap 变动，并更新相关依赖资源。
 - **gitaly**: 用于 Git 存储后端，提供高性能的 Git 操作，实现快速、高效的代码版本控制和管理。
 - **gitlab-shell**: 提供 Git over SSH 的交互接口，用于安全的 Git 操作，确保数据传输的安全性。
