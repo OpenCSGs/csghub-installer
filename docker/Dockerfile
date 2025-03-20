@@ -18,7 +18,7 @@ FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_server:v1
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_portal:v1.5.0 AS portal
 
-FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/csghub_builder:latest AS csghub-builder
+FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/space_builder:latest AS csghub-builder
 
 FROM opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/casbin/casdoor:v1.733.0 AS casdoor
 

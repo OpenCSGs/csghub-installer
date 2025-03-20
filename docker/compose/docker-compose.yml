@@ -580,7 +580,7 @@ services:
         ipv4_address: 192.171.100.118
 
   csghub-builder:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_builder:latest
+    image: ${CSGHUB_IMAGE_PREFIX}/space_builder:latest
     depends_on:
       docker-server:
         condition: service_healthy
@@ -597,8 +597,8 @@ services:
       REGISTRY_PASSWORD: "$REGISTRY_PASSWORD"
       REGISTRY_NAMESPACE: "$REGISTRY_NAMESPACE"
     volumes:
-      - ${CSGHUB_DATA_DIR:-./data}/csghub_builder:/opt/data
-      - ./logs/csghub_builder:/opt/data/logs
+      - ${CSGHUB_DATA_DIR:-./data}/space_builder:/opt/data
+      - ./logs/space_builder:/opt/data/logs
     restart: always
     deploy:
       replicas: ${CSGHUB_WITH_K8S:-0}
