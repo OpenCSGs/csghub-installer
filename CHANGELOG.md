@@ -1,12 +1,11 @@
 # Changelog
 
-## v1.5.1(Planning)
+## v1.5.2(Planning)
 
-- [compose] Rename minio buckets:
+## v1.5.1
 
-  - `opencsg-server-lfs` ==> `csghub-server`
-  - `opencsg-portal-storage` ==> `csghub-portal`
-  - `opencsg-registry-storage` ==> `csghub-registry`
+- [All] Rename csghub_builder to space_builder
+- [All] Optimize lfs upload on machines with poor performance
 
 ## v1.5.0
 
