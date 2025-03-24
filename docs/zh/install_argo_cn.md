@@ -14,10 +14,10 @@ argo workflow组件在csghub中用于支持模型评测服务。请使用如下�
 
 ```shell
 # 安装核心组件
-kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
 
 # 安装rbac组件
-kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
 ```
 
 ### 验证服务
