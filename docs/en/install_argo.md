@@ -14,10 +14,10 @@ The argo workflow component is used in csghub to support model evaluation servic
 
 ```shell
 # Installing core components
-kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/argo.yaml
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
 
 # Installing rbac
-kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/helm-chart/argo/rbac.yaml
+kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
 ```
 
 ### Verify Services
