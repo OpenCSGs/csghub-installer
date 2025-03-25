@@ -589,6 +589,10 @@ services:
       SPACE_DATA_PATH: "/opt/data"
       # Redis
       REDIS_ENDPOINT: "redis:6379"
+      # HF_ENDPOINT configure
+      CSGHUB_HF_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
+      # PIP Source 
+      PIP_INDEX_URL: "$CSGHUB_PIP_INDEX_URL"
       # Docker
       DOCKER_HOST: "tcp://docker-server:2375"
       # Registry
