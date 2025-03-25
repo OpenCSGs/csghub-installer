@@ -55,6 +55,7 @@ export GITALY_TOKEN="YWJjMTIzc2VjcmV0"
 export GITLAB_SHELL_SSH_PORT=${GITLAB_SHELL_SSH_PORT:-2222}
 
 # Space Builder Environments
+export CSGHUB_HF_ENDPOINT=${SERVER_ENDPOINT}/hf
 
 # Knative Serving and Space Application
 export SPACE_APP_NS=${SPACE_APP_NS:-spaces}
