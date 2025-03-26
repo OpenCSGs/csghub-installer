@@ -31,6 +31,8 @@ data:
   REGISTRY_USERNAME: {{ include "csghub.registry.username" . }}
   REGISTRY_PASSWORD: {{ include "csghub.registry.password" . }}
   {{- end }}
+  CSGHUB_HF_ENDPOINT: {{ printf "%s/hf" (include "csghub.external.endpoint" .) }}
+  PIP_INDEX_URL: {{ .Values.pipIndexUrl }}
 ---
 {{- if and .Values.global.registry.external .Values.global.registry.insecure }}
 apiVersion: v1
