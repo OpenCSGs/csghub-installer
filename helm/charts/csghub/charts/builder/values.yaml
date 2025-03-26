@@ -54,6 +54,9 @@ registry:
   ## If encrypt with TLS/SSL
   insecure: true
 
+## Allow user defined pip source
+pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
+
 ## Persistence settings for the Minio data.
 persistence:
   ## Specifies the StorageClass used for provisioning the volume.
