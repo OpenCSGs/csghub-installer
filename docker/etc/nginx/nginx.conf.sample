@@ -111,7 +111,7 @@ http {
             proxy_set_header X-Forwarded-Proto ${DOLLAR}scheme;
         }
 
-        location /hf/ {
+        location /(hf|csg|ms)/ {
             proxy_pass http://127.0.0.1:8080/hf/;
             proxy_set_header Host ${DOLLAR}host;
             proxy_set_header X-Real-IP ${DOLLAR}remote_addr;

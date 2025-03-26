@@ -121,7 +121,7 @@ http {
         }
 
         # HF route
-        location /hf/ {
+        location /(hf|csg|ms)/ {
             proxy_pass http://csghub-server:8080/hf/;
             proxy_set_header Host $host;
             proxy_set_header X-Real-IP $remote_addr;
