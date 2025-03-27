@@ -68,7 +68,7 @@ INSERT INTO public.runtime_frameworks (frame_name, frame_version, frame_image, f
     ('SGLang', 'v0.4.1.post3-cu124-srt', 'sglang:v0.4.1.post3-cu124-srt', '', 1, 8000, 1, ''),
     ('HF-Inference-Toolkit', '0.5.3', 'hf-inference-toolkit:0.5.3','', 1, 8000, 1, ''),
     ('TEI', '1.6', 'tei:1.6', 'tei:cpu-1.6', 1, 8000, 1, ''),
-    ('Llama.cpp', 'b4689', 'llama.cpp:b4689', 'llama.cpp:b4689', 1, 8000, 1, 'gguf')
+    ('Llama.cpp', 'b4689', 'llama.cpp:b4689', 'llama.cpp:b4689-cpu', 1, 8000, 1, 'gguf')
 ON CONFLICT (frame_name)
     DO UPDATE SET
         frame_version = EXCLUDED.frame_version,
