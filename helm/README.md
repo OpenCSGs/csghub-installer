@@ -119,7 +119,7 @@ The above deployment will automatically install/configure the following resource
     |                global.ingress.domain                 |  example.com  | [Service domain name](#domain name)                          |
     |             global.ingress.service.type              | LoadBalancer  | Please ensure that the cluster service provider has the ability to provide LoadBalancer services. <br/>The services using LoadBalancer here are Ingress-nginx-controller Service and Kourier. |
     |        ingress-nginx.controller.service.type         | LoadBalancer  | If you untar the installer and install it locally, this parameter can be omitted and automatically copied by the internal anchor. |
-    |  global.deployment.knative.serving.services[0].type  |   NodePort    | Specifies the service type for the KnativeServing Kourier when using [deployment.knative.serving.autoConfigure](#deployment). If the cluster does not support multiple LoadBalancer addresses, use NodePort. |
+    |  global.deployment.knative.serving.services[0].type  |   NodePort    | Specifies the service type for the KnativeServing Kourier when using [deployment.autoConfigure](#deployment). If the cluster does not support multiple LoadBalancer addresses, use NodePort. |
     | global.deployment.knative.serving.services[0].domain | app.internal  | Specify the internal domain name used by KnativeServing.     |
     |  global.deployment.knative.serving.services[0].host  | 192.168.18.3  | Specify the IPv4 address of the KnativeServing Kourier service. |
     |  global.deployment.knative.serving.services[0].port  |     30213     | Specify the port of the KnativeServing Kourier service. If the type is LoadBalancer, it needs to be configured to 80. If the type is NodePort, it needs to be configured to any 5 valid NodePort port numbers. |
@@ -363,16 +363,17 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 
 #### deployment
 
-| Parameter configuration | Field type | Default value | Description |
-| :-------------------------------------------- | :------- | :---------------- | :----------------------------------------------------------- |
-| deployment.enabled | bool | true | Specifies whether to enable instance deployment. <br/>If disabled, instances such as space and inference cannot be created (that is, they are not associated with K8S clusters). |
-| deployment.kubeSecret | string | kube-configs | Specifies the Secret containing all target clusters `.kube/config`, which needs to be created by yourself. The creation method has been provided in the deployment section. |
-| deployment.namespace | string | spaces | The namespace where the deployment instance is located. |
-| deployment.knative.serving.autoConfigure | bool | true | Specifies whether to enable automatic deployment of KnativeServing and argo. |
-| deployment.knative.serving.services[n].type | string | NodePort | Specifies the service type of the KnativeServing Kourier when [deployment.knative.serving.autoConfigure](#deployment). If the cluster does not support providing multiple LoadBalancer addresses, use NodePort. |
+| Parameter configuration                       | Field type | Default value | Description |
+|:----------------------------------------------| :------- | :---------------- | :----------------------------------------------------------- |
+| deployment.enabled                            | bool | true | Specifies whether to enable instance deployment. <br/>If disabled, instances such as space and inference cannot be created (that is, they are not associated with K8S clusters). |
+| deployment.kubeSecret                         | string | kube-configs | Specifies the Secret containing all target clusters `.kube/config`, which needs to be created by yourself. The creation method has been provided in the deployment section. |
+| deployment.namespace                          | string | spaces | The namespace where the deployment instance is located. |
+| deployment.autoConfigure                      | bool | true | Specifies whether to enable automatic deployment of KnativeServing and argo. |
+| deployment.mergingNamespace                   | bool | true | If set to true, namespace creation will be reduced from 7 to 4. |
+| deployment.knative.serving.services[n].type   | string | NodePort | Specifies the service type of the KnativeServing Kourier when [deployment.autoConfigure](#deployment). If the cluster does not support providing multiple LoadBalancer addresses, use NodePort. |
 | deployment.knative.serving.services[n].domain | string | app.internal | Specify the internal domain name used by KnativeServing. |
-| deployment.knative.serving.services[n].host | string | 192.168.8.3 | Specify the IPv4 address of the KnativeServing Kourier service. |
-| deployment.knative.serving.services[n].port | string | 30213 | Specify the port of the KnativeServing Kourier service. If the type is LoadBalancer, it needs to be configured to 80. If the type is NodePort, it needs to be configured to any 5 valid NodePort port numbers. |
+| deployment.knative.serving.services[n].host   | string | 192.168.8.3 | Specify the IPv4 address of the KnativeServing Kourier service. |
+| deployment.knative.serving.services[n].port   | string | 30213 | Specify the port of the KnativeServing Kourier service. If the type is LoadBalancer, it needs to be configured to 80. If the type is NodePort, it needs to be configured to any 5 valid NodePort port numbers. |
 
 ### Local
 
