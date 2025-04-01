@@ -2,46 +2,55 @@
 
 ## v1.5.2(Planning)
 
+---
+
+- [Helm] Add new global.deployment.mergingNamespace to reduce namespace created.
+- [Helm] Refactor global.deployment.knative.serving.autoConfigure to global.deployment.autoConfigure.
+
 ## v1.5.1
+
+---
 
 - [All] Rename csghub_builder to space_builder
 - [All] Optimize lfs upload on machines with poor performance
 
 ## v1.5.0
 
+---
+
 - [All] Added support for new inference engines `TEI`, `lama.cpp`
 - [All] Support gitaly cluster
-- [helm] Allow user define csghub_server image `name(repository)`, `pullPolicy` globally
-- [helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain
+- [Helm] Allow user define csghub_server image `name(repository)`, `pullPolicy` globally
+- [Helm] Add new param `global.ingress.useTop` allow users to use the specified `domain` as the portal domain
 
 ## v1.4.2
 
 ---
 
-- [helm] Optimize password length
-- [helm] Fixed the adaptation error when using external resources
+- [Helm] Optimize password length
+- [Helm] Fixed the adaptation error when using external resources
   - Now support (postgres, redis, registry, object storage, gitaly)
-- [compose] Fixed large lfs files cannot be uploads.
+- [Compose] Fixed large lfs files cannot be uploads.
 
 ## v1.4.1
 
 ---
 
-- [all] Rollback configuration user email login through unified configuration
-- [helm] Disabled tag resolving for knative serving for insecure registry by default
-- [compose] Fixed permission issues when mapping volumes
-- [compose] Allow users to turn off multi-source synchronization through simple configuration
-- [compose] Allow users define data location
-- [helm] Allow using external ingress-nginx
-- [helm] Optimize the gitlab shell host key pair generation method
-- [helm] Optimize automatic labeling behavior under automatic configuration for GPU resources
+- [All] Rollback configuration user email login through unified configuration
+- [Helm] Disabled tag resolving for knative serving for insecure registry by default
+- [Compose] Fixed permission issues when mapping volumes
+- [Compose] Allow users to turn off multi-source synchronization through simple configuration
+- [Compose] Allow users define data location
+- [Helm] Allow using external ingress-nginx
+- [Helm] Optimize the gitlab shell host key pair generation method
+- [Helm] Optimize automatic labeling behavior under automatic configuration for GPU resources
 
 ## v1.4.0
 
 ---
 
-- [helm] Add knative serving and argo automatic configuration
-- [helm] Optimize the number of ingresses
-- [all] Add dataset preview component dataviewer
-- [docker] Add docker quick configuration script quick_install.sh
-- [docker] k8s integration is disabled by default 
+- [Helm] Add knative serving and argo automatic configuration
+- [Helm] Optimize the number of ingresses
+- [All] Add dataset preview component dataviewer
+- [Docker] Add docker quick configuration script quick_install.sh
+- [Docker] k8s integration is disabled by default 
