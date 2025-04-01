@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.knative.serving.autoConfigure }}
+{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
