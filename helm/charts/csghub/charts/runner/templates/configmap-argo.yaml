@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.knative.serving.autoConfigure }}
+{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
 {{- $registry := or .Values.global.image.registry "quay.io" }}
 apiVersion: v1
 kind: ConfigMap
@@ -20,7 +20,7 @@ data:
       labels:
         kubernetes.io/metadata.name: argo
     ---
-    {{- if not .Values.global.deployment.knative.serving.mergingNamespace }}
+    {{- if not .Values.global.deployment.mergingNamespace }}
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -40,7 +40,7 @@ data:
     kind: ResourceQuota
     metadata:
       name: gpu-quota
-      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      {{- if .Values.global.deployment.mergingNamespace }}
       namespace: argo
       {{- else }}
       namespace: workflows-quota
@@ -1418,7 +1418,7 @@ data:
     kind: Role
     metadata:
       name: executor
-      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      {{- if .Values.global.deployment.mergingNamespace }}
       namespace: argo
       {{- else }}
       namespace: workflows
@@ -1436,7 +1436,7 @@ data:
     kind: ServiceAccount
     metadata:
       name: executor
-      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      {{- if .Values.global.deployment.mergingNamespace }}
       namespace: argo
       {{- else }}
       namespace: workflows
@@ -1446,7 +1446,7 @@ data:
     kind: RoleBinding
     metadata:
       name: executor
-      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      {{- if .Values.global.deployment.mergingNamespace }}
       namespace: argo
       {{- else }}
       namespace: workflows
@@ -1458,13 +1458,13 @@ data:
     subjects:
       - kind: ServiceAccount
         name: executor
-        {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+        {{- if .Values.global.deployment.mergingNamespace }}
         namespace: argo
         {{- else }}
         namespace: workflows
         {{- end }}
     ---
-    {{- if not .Values.global.deployment.knative.serving.mergingNamespace }}
+    {{- if not .Values.global.deployment.mergingNamespace }}
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
