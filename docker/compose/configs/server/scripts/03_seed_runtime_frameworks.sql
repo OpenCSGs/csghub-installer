@@ -40,6 +40,15 @@ BEGIN
         ALTER TABLE IF EXISTS runtime_frameworks
             ALTER COLUMN frame_npu_image DROP NOT NULL;
     END IF;
+    IF EXISTS (
+        SELECT FROM information_schema.columns
+        WHERE table_name = 'runtime_frameworks'
+            AND column_name = 'engine_args'
+    )
+    THEN
+        ALTER TABLE IF EXISTS runtime_frameworks
+            ALTER COLUMN engine_args DROP NOT NULL;
+    END IF;
 END
 $$;
 
