@@ -20,6 +20,7 @@ data:
       labels:
         kubernetes.io/metadata.name: argo
     ---
+    {{- if not .Values.global.deployment.knative.serving.mergingNamespace }}
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -33,12 +34,17 @@ data:
       name: workflows-quota
       labels:
         kubernetes.io/metadata.name: workflows-quota
+    {{- end }}
     ---
     apiVersion: v1
     kind: ResourceQuota
     metadata:
       name: gpu-quota
+      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      namespace: argo
+      {{- else }}
       namespace: workflows-quota
+      {{- end }}
     spec:
       hard:
         requests.nvidia.com/gpu: "2"
@@ -1412,7 +1418,11 @@ data:
     kind: Role
     metadata:
       name: executor
+      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      namespace: argo
+      {{- else }}
       namespace: workflows
+      {{- end }}
     rules:
       - apiGroups:
           - argoproj.io
@@ -1426,13 +1436,21 @@ data:
     kind: ServiceAccount
     metadata:
       name: executor
+      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      namespace: argo
+      {{- else }}
       namespace: workflows
+      {{- end }}
     ---
     apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
       name: executor
+      {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+      namespace: argo
+      {{- else }}
       namespace: workflows
+      {{- end }}
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: Role
@@ -1440,8 +1458,13 @@ data:
     subjects:
       - kind: ServiceAccount
         name: executor
+        {{- if .Values.global.deployment.knative.serving.mergingNamespace }}
+        namespace: argo
+        {{- else }}
         namespace: workflows
+        {{- end }}
     ---
+    {{- if not .Values.global.deployment.knative.serving.mergingNamespace }}
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
@@ -1475,5 +1498,6 @@ data:
       - kind: ServiceAccount
         name: executor
         namespace: workflows-quota
+    {{- end }}
     ---
 {{- end }}

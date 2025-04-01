@@ -174,7 +174,11 @@ global:
     ## so if this function is required, you need to configure the following information
     knative:
       serving:
+        ## If it's set to enable, it will install knative and argo automatically.
         autoConfigure: true
+        ## Specifying this option can reduce the number of new namespaces.
+        ## By default, 7 namespaces are created, which will be reduced to 4 after merging.
+        mergingNamespace: true
         ## Configuration for Knative serving services.
         ## If `autoConfigure` set to true, following will also be configured to knative serving, unless already configured.
         services:
