@@ -283,7 +283,7 @@ _**Tips: **Only configurable parameters are listed. `127.0.0.1` is a local servi
 
 #### Space
 
-***Tip:** The following configurations will be automatically obtained if `KNATIVE_SERVING_ENABLE = true` is configured. *
+_**Tip:** The following configurations will be automatically obtained if `KNATIVE_SERVING_ENABLE = true` is configured._
 
 | Variable Name    | Default Value           | Description                                                  |
 | :--------------- | :---------------------- | :----------------------------------------------------------- |

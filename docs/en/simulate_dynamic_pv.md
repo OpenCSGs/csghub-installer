@@ -5,7 +5,7 @@
 > - [kubernetes-sigs/sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner)
 > - [Install local-volume-provisioner with helm](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/README.md)
 >
-> ***Note:** This document is for reference only.* 
+> _**Note:** This document is for reference only._
 
 ## Summary
 
@@ -62,7 +62,7 @@ for flag in {a..z}; do
 done
 ```
 
-*Note: This mounting method cannot strictly control the PV size, but it does not affect the test use.* 
+_**Note:** This mounting method cannot strictly control the PV size, but it does not affect the test use._
 
 ### Functional Verification
 

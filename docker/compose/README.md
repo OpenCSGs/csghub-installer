@@ -6,18 +6,21 @@ Docker Compose is one of the common installation methods of CSGHub, which has ma
 
 ## Software/Hardware Support
 
-Hardware environment requirements:
+Hardware requirements:
 
-- \>= 4c 8g 100gb
+- \>= 4c8g
 
 - amd64/arm64
 
-Software environment requirements:
+Software requirements:
 
 - Docker Engine (>=20.10.0)
 
 - Docker Compose (>=2.20.0)
 
+- Kubernetes (1.20+)
+
+    _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
 ## Deployment example
 

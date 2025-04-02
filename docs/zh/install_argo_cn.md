@@ -4,7 +4,7 @@
 >
 > - [argo workflow](https://argo-workflows.readthedocs.io/en/latest/)
 >
-> ***注意：**本文档仅供参考。*
+> _**注意：**本文档仅供参考。_
 
 ## 安装步骤
 

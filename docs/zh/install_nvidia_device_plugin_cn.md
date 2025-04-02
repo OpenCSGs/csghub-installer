@@ -4,7 +4,7 @@
 >
 > - [Install Nvidia Device Plugin](https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file)
 >
-> ***注意：**本文档仅供参考。*
+> _**注意：**本文档仅供参考。_
 
 ## 前置条件
 

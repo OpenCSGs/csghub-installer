@@ -4,7 +4,7 @@
 >
 > - [Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
 >
-> ***注意：**本文档仅供参考。*
+> _**注意：**本文档仅供参考。_
 
 ## 说明
 
@@ -78,7 +78,7 @@ kubectl patch configmap/config-autoscaler \
 
 ### 禁用标签解析
 
-*提示：如果安装时指定的域名为`example.com`，则这里应该配置`registry.example.com`，如果指定的是 IP 地址，则直接写 IP 地址。*
+_**提示：**如果安装时指定的域名为`example.com`，则这里应该配置`registry.example.com`，如果指定的是 IP 地址，则直接写 IP 地址。_
 
 ```shell
 kubectl patch configmap/config-deployment \
