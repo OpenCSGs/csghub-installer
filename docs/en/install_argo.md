@@ -4,7 +4,7 @@
 >
 > - [argo workflow](https://argo-workflows.readthedocs.io/en/latest/)
 >
-> ***Note:** This document is for reference only.* 
+> _**Note:** This document is for reference only._
 
 ## Steps
 

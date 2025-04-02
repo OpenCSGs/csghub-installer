@@ -6,16 +6,19 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
 ## 软/硬件支持
 
-硬件环境需求：
+硬件需求：
 
-- \>= 4c 8g 100gb
+- \>= 4c8g
 
 - amd64/arm64
 
-软件环境需求：
+软件需求：
 
 - Docker Engine (>=20.10.0)
 - Docker Compose (>=2.20.0)
+- Kubernetes (1.20+)
+
+    _**说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。_
 
 ## 部署示例
 
@@ -97,7 +100,7 @@ CSGHub Docker Compose 部署方式在域名和 IP 的使用方式上面较为灵
 
 域名可以使用公有域名或者自定义域名。CSGHub Docker Compose 使用单一域名部署，单一域名访问，相较于 CSGHub Helm Chart 方式，在域名使用上会简洁很多。
 
-***注意：** 如果是自定义域名，请自行配置 Hosts 解析。公有域名，请配置 DNS 云解析。*
+_**注意：** 如果是自定义域名，请自行配置 Hosts 解析。公有域名，请配置 DNS 云解析。_
 
 - **IPv4**
 
