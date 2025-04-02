@@ -1,4 +1,4 @@
-# CSGHub Helm Chart deployment document
+# Helm Chart Installation Instructions
 
 ## Introduction
 
@@ -10,23 +10,16 @@ In this way, CSGHUB achieves flexible deployment management and can respond to u
 
 ## Software/Hardware Support
 
-Hardware environment requirements:
+| Hardware/Software | Minimum | Recommend         | Remark                                                       |
+| ----------------- | ------- | ----------------- | ------------------------------------------------------------ |
+| CPU/MEM           | 4c8g    | 8c16g             | 2c4g can also run, but it depends on whether the k8s cluster can run smoothly. |
+| Platform          |         | amd64 **/** arm64 |                                                              |
+| Kubernetes        | 1.20    | 1.28+             | If enable knative serving auto-configure, need kubernetes 1.28+. |
+| Helm              | 3.12.0  | 3.12.0+           |                                                              |
+| Knative Serving   | 1.15.1  | 1.15.1+           | If you enable knative-serving auto-configuration, configuration version 1.16.1 is automatically installed. |
+| Argo Workflow     |         | v3.5.12+          |                                                              |
 
-- \>= 8c16g
-
-- amd64/arm64
-
-Software environment requirements:
-
-- Kubernetes 1.20+ (knative serving 1.28+)
-
-- Helm 3.12.0+
-
-- Knative Serving 
-
-- Argo Workflow
-
-***Note:** Kubernetes needs to support Dynamic Volume Provisioning.*
+_**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
 ## Deployment example
 
@@ -54,7 +47,7 @@ The above deployment will automatically install/configure the following resource
 - CoreDNS/Hosts
 - Insecure Private Container Registry
 
-***Note:** After the deployment is complete, access and log in to CSGHub according to the terminal `prompt information` or `login.txt`.*
+_**Note:** After the deployment is complete, access and log in to CSGHub according to the terminal `prompt information` or `login.txt`._
 
 **Variable description:**
 
@@ -110,7 +103,7 @@ The above deployment will automatically install/configure the following resource
 
 - **Install CSGHub Helm Chart**
 
-    ***Note:** The following is a simple installation, please refer to the following for more parameter definitions.*
+    _**Note:** The following is a simple installation, please refer to the following for more parameter definitions._
 
     **Sample installation information:**
 
@@ -153,7 +146,7 @@ The above deployment will automatically install/configure the following resource
           --set global.deployment.knative.serving.services[0].port="30213"
         ```
 
-    ***Note:** Installation and configuration will take some time, please be patient. After the CSGHub Helm Chart configuration is completed, Argo Workflow and KnativeServing will be automatically configured in the target cluster.*
+    _**Note:** Installation and configuration will take some time, please be patient. After the CSGHub Helm Chart configuration is completed, Argo Workflow and KnativeServing will be automatically configured in the target cluster._
 
 - **ACCESS INFORMATION** 
 
@@ -245,7 +238,7 @@ If you specify the domain name `example.com` during installation, the CSGHub Hel
 
 - **temporal.example.com**: Used to access the scheduled task system.
 
-***Note:** No matter which domain name you use, make sure that the domain name resolution is configured correctly.*
+_**Note:** No matter which domain name you use, make sure that the domain name resolution is configured correctly._
 
 ## .kube/config
 
@@ -377,7 +370,7 @@ It should be noted that CSGHub Helm Chart does not actively create related Persi
 
 ### Local
 
-***Note:** There are many components, and only some component parameters are explained. Among them, `autoscaling` is not adapted yet.*
+_**Note:** There are many components, and only some component parameters are explained. Among them, `autoscaling` is not adapted yet._
 
 #### gitaly
 

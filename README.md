@@ -1,4 +1,4 @@
-# CSGHub Installation Guide
+# CSGHub Summary
 
 > **Version History:**
 >

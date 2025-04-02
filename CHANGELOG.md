@@ -1,4 +1,4 @@
-# Changelog
+# CHANGELOG
 
 ## v1.5.2(Planning)
 

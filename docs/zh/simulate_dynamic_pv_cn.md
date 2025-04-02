@@ -1,11 +1,11 @@
-# 模拟动态 Persistent Volume
+# 模拟动态Persistent Volume安装指引
 
 > **官方文档：**
 >
 > - [kubernetes-sigs/sig-storage-local-static-provisioner](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner)
 > - [Install local-volume-provisioner with helm](https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/helm/README.md)
 >
-> ***注意：**本文档仅供参考。*
+> _**注意：**本文档仅供参考。_
 
 ## 说明
 
@@ -62,7 +62,7 @@ for flag in {a..z}; do
 done
 ```
 
-*注意：此种挂载方式无法严格控制 PV 大小，但是不影响测试使用。*
+_**注意：**此种挂载方式无法严格控制 PV 大小，但是不影响测试使用。_
 
 ### 功能验证
 

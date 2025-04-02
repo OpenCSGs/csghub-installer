@@ -4,7 +4,7 @@
 >
 > - [Install Nvidia Device Plugin](https://github.com/NVIDIA/k8s-device-plugin?tab=readme-ov-file)
 >
-> ***Note:** This document is for reference only.* 
+> _**Note:** This document is for reference only._
 
 ## Prerequisites
 

@@ -4,7 +4,7 @@
 >
 > - [Install Knative Serving using YAML files](https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/#install-a-networking-layer)
 >
-> ***Note:** This document is for reference only.* 
+> _**Note:** This document is for reference only._
 
 ## Summary
 
@@ -78,7 +78,7 @@ kubectl patch configmap/config-autoscaler \
 
 ### Disable tag resolving
 
-*Tips: If the domain name specified during installation is `example.com`, then `registry.example.com` should be configured here. If the IP address is specified, then write the IP address directly.* 
+_**Tips:** If the domain name specified during installation is `example.com`, then `registry.example.com` should be configured here. If the IP address is specified, then write the IP address directly._
 
 ```shell
 kubectl patch configmap/config-deployment \

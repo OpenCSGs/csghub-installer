@@ -1,4 +1,4 @@
-# CSGHub Docker Compose deployment document
+# Docker Compose Installation Instructions
 
 ## Introduction
 
@@ -6,18 +6,21 @@ Docker Compose is one of the common installation methods of CSGHub, which has ma
 
 ## Software/Hardware Support
 
-Hardware environment requirements:
+Hardware requirements:
 
-- \>= 4c 8g 100gb
+- \>= 4c8g
 
 - amd64/arm64
 
-Software environment requirements:
+Software requirements:
 
 - Docker Engine (>=20.10.0)
 
 - Docker Compose (>=2.20.0)
 
+- Kubernetes (1.20+)
+
+    _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
 ## Deployment example
 
@@ -26,7 +29,7 @@ Software environment requirements:
 Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
 ```shell
-wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-1.4.0-ee.tgz
+wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tgz
 ```
 
 ### Installation Configuration
@@ -34,7 +37,7 @@ wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-1.4.0-ee.
 - Unzip Program
 
 ```shell
-tar -zxf csghub-1.4.0-ee.tgz && cd ./csghub
+tar -zxf csghub-latest.tgz && cd ./csghub
 ```
 
 - Configuration Update
@@ -90,6 +93,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` versi
 | 1.2.x | 1.2.x | |
 | 1.3.x | 1.3.x | Removed component Gitea |
 | 1.4.x | 1.4.x |  |
+| 1.5.x | 1.5.x | |
 
 ## Domain name and IP
 
