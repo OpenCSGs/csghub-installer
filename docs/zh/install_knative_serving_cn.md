@@ -1,4 +1,4 @@
-# Knative Serving 安装指引
+# Knative Serving安装指引
 
 > **官方文档：**
 >
