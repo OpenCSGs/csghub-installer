@@ -1,4 +1,4 @@
-# CSGHub Helm Chart 部署文档
+# Helm Chart安装指引
 
 ## 介绍
 

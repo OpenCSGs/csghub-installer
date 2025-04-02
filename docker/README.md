@@ -1,10 +1,9 @@
-# CSGHub Docker Quick Deployment
+# CSGHub Docker Quick Deployment (Not applicable to ee edition)
 
 > **Tips:**
 >
 > - This method is suitable for quick testing, Not suitable for production use.
 > - Supports AMD64/ARM64.
-> - [Chinese Docs](../docs/zh/README_docker_cn.md)
 
 ## Overview
 
