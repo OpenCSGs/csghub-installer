@@ -1,4 +1,4 @@
-# CSGHub Docker 快速部署文档
+# Docker安装指引
 
 > **提示：**
 >
@@ -276,7 +276,7 @@ docker rm -f omnibus-csghub
 
 #### Space
 
-***提示：**以下配置如果配置 `KNATIVE_SERVING_ENABLE = true` 会自动获取。*
+_**提示：**以下配置如果配置 `KNATIVE_SERVING_ENABLE = true` 会自动获取。_
 
 | 变量名           | 默认值                  | 说明                                        |
 | :--------------- | :---------------------- | :------------------------------------------ |

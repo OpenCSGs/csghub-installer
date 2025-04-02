@@ -6,18 +6,21 @@ Docker Compose is one of the common installation methods of CSGHub, which has ma
 
 ## Software/Hardware Support
 
-Hardware environment requirements:
+Hardware requirements:
 
-- \>= 4c 8g 100gb
+- \>= 4c8g
 
 - amd64/arm64
 
-Software environment requirements:
+Software requirements:
 
 - Docker Engine (>=20.10.0)
 
 - Docker Compose (>=2.20.0)
 
+- Kubernetes (1.20+)
+
+    _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
 ## Deployment example
 
@@ -26,7 +29,7 @@ Software environment requirements:
 Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.0/csghub-docker-compose-v1.5.0.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghub-docker-compose-v1.5.0.tgz
 ```
 
 ### Installation Configuration
@@ -34,7 +37,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.0/csghu
 - Unzip Program
 
 ```shell
-tar -zxf csghub-docker-compose-v1.5.0.tgz && cd ./csghub
+tar -zxf csghub-docker-compose-v1.5.2.tgz && cd ./csghub
 ```
 
 - Configuration Update
@@ -90,6 +93,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` versi
 | 1.2.x | 1.2.x | |
 | 1.3.x | 1.3.x | Removed component Gitea |
 | 1.4.x | 1.4.x | Add component Dataviewer |
+| 1.5.x | 1.5.x | |
 
 ## Domain name and IP
 
@@ -136,7 +140,7 @@ In addition, all configuration files are stored in the `./configs` directory.
 
 ### PostgreSQL
 
-***Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal by yourself.* 
+_**Note:** Please create the databases csghub_server, csghub_portal, casdoor, temporal by yourself._
 
 | Variable | Type | Default        | Description |
 | :---------------- | :----- |:---------------| :----------------------------------------------- |

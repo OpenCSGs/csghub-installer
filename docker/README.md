@@ -1,10 +1,9 @@
-# CSGHub Docker Quick Deployment
+# CSGHub Docker Quick Deployment (Not applicable to ee edition)
 
 > **Tips:**
 >
 > - This method is suitable for quick testing, Not suitable for production use.
 > - Supports AMD64/ARM64.
-> - [Chinese Docs](../docs/zh/README_docker_cn.md)
 
 ## Overview
 
@@ -283,7 +282,7 @@ _**Tips: **Only configurable parameters are listed. `127.0.0.1` is a local servi
 
 #### Space
 
-***Tip:** The following configurations will be automatically obtained if `KNATIVE_SERVING_ENABLE = true` is configured. *
+_**Tip:** The following configurations will be automatically obtained if `KNATIVE_SERVING_ENABLE = true` is configured._
 
 | Variable Name    | Default Value           | Description                                                  |
 | :--------------- | :---------------------- | :----------------------------------------------------------- |
