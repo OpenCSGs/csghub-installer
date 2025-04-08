@@ -19,6 +19,12 @@ global:
     ## Specifies the csghub_server image pull policy.
     # pullPolicy: "IfNotPresent"
 
+  ## Enable pdb to ensure application access continuity
+  pdb:
+    create: false
+    minAvailable: 1
+    # maxUnavailable: 1
+
   ## Define the access domain name of csghub and whether to enable encrypted access.
   ingress:
     ## Specify ingressClassName
