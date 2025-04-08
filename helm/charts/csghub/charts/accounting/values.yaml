@@ -23,9 +23,9 @@ image:
   pullPolicy: "IfNotPresent"
 
 service:
-  ## This determines how the Nats service is accessed within the cluster or from external sources.
+  ## This determines how the Accounting service is accessed within the cluster or from external sources.
   type: ClusterIP
-  ## This is the network port where the Nats service will listen for connections.
+  ## This is the network port where the Accounting service will listen for connections.
   port: 8086
 
 serviceAccount:
@@ -58,26 +58,26 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
-## environments: This section is reserved for defining environment variables for the Nats container.
-## Environment variables can be used to customize the behavior of the Nats instance.
-## For example, you might use environment variables to configure logging levels or to enable certain Nats features.
+## environments: This section is reserved for defining environment variables for the Accounting container.
+## Environment variables can be used to customize the behavior of the Accounting instance.
+## For example, you might use environment variables to configure logging levels or to enable certain Accounting features.
 ## This section is currently empty, indicating that no environment variables have been explicitly set.
 environments: {}
 
-## annotations: This section allows you to add annotations to the Nats deployment.
+## annotations: This section allows you to add annotations to the Accounting deployment.
 ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
 ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
-## information about your Nats instance.
+## information about your Accounting instance.
 ## Like the environments section, this is also currently empty.
 annotations: {}
 #  helm.sh/resource-policy: keep
 
-## The 'resources' section is used to define the compute resource requirements for the Nats container.
+## The 'resources' section is used to define the compute resource requirements for the Accounting container.
 ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
-## Leaving this section empty means that no specific resource limits or requests are set for the Nats container.
+## Leaving this section empty means that no specific resource limits or requests are set for the Accounting container.
 ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
 ## where you might not want to enforce strict resource constraints.
-## However, for production environments, it's recommended to uncomment and set these values to ensure that the Nats container
+## However, for production environments, it's recommended to uncomment and set these values to ensure that the Accounting container
 ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
 ## 'limits' specify the maximum amount of CPU and memory the container can use.
 ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
@@ -105,7 +105,7 @@ tolerations: []
 ## spread pods across nodes or zones for high availability.
 affinity: {}
 
-## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Nats deployment.
+## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Accounting deployment.
 ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
 ## set based on observed CPU utilization.
 autoscaling:
