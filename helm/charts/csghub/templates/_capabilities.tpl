@@ -140,7 +140,7 @@ Return the appropriate apiVersion for APIService.
 Return the appropriate apiVersion for Horizontal Pod Autoscaler.
 */}}
 {{- define "common.capabilities.hpa.apiVersion" -}}
-{{- $kubeVersion := include "common.capabilities.kubeVersion" .context -}}
+{{- $kubeVersion := include "common.capabilities.kubeVersion" . -}}
 {{- if and (not (empty $kubeVersion)) (semverCompare "<1.23-0" $kubeVersion) -}}
 {{- if .beta2 -}}
 {{- print "autoscaling/v2beta2" -}}
@@ -156,7 +156,7 @@ Return the appropriate apiVersion for Horizontal Pod Autoscaler.
 Return the appropriate apiVersion for Vertical Pod Autoscaler.
 */}}
 {{- define "common.capabilities.vpa.apiVersion" -}}
-{{- $kubeVersion := include "common.capabilities.kubeVersion" .context -}}
+{{- $kubeVersion := include "common.capabilities.kubeVersion" . -}}
 {{- if and (not (empty $kubeVersion)) (semverCompare "<1.23-0" $kubeVersion) -}}
 {{- if .beta2 -}}
 {{- print "autoscaling/v2beta2" -}}
