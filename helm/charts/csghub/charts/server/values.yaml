@@ -140,13 +140,13 @@ annotations: {}
 ## 'limits' specify the maximum amount of CPU and memory the container can use.
 ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
 ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
-resources: {}
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8192Mi
+  requests:
+    cpu: 500m
+    memory: 512Mi
 
 ## nodeSelector: This section allows you to specify node labels for pod assignment.
 ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
@@ -172,9 +172,9 @@ autoscaling:
   ## The minimum number of replicas. The autoscaler will not scale below this number.
   minReplicas: 1
   ## The maximum number of replicas. The autoscaler will not scale above this number.
-  maxReplicas: 100
+  maxReplicas: 10
   ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
   ## exceeds this threshold, the HPA will scale up.
   targetCPUUtilizationPercentage: 80
   ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
-  # targetMemoryUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
