@@ -165,7 +165,7 @@ global:
     autoConfigure: true
     ## Specifying this option can reduce the number of new namespaces.
     ## By default, 7 namespaces are created, which will be reduced to 4 after merging.
-    mergingNamespace: true
+    mergingNamespace: false
     ## csghub uses knative serving to assist in instance construction, |
     ## so if this function is required, you need to configure the following information
     knative:
