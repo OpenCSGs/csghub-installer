@@ -112,6 +112,7 @@ data:
   OPENCSG_DATAVIEWER_SERVER_PORT: {{ include "dataviewer.internal.port" . | quote }}
   # Multiple sync
   STARHUB_SERVER_CRON_JOB_SYNC_AS_CLIENT_CRON_EXPRESSION: '*/5 * * * *'
+  OPENCSG_TRACING_OTLP_LOGGING: "false"
 ---
 apiVersion: v1
 kind: ConfigMap
