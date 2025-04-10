@@ -44,6 +44,7 @@ CSGHub 项目由多个组件组成，每个组件都承担着特定的职责，�
 - **csghub_mirror**: 提供仓库数据的同步服务，负责同步 opencsg.com 模型和数据集到本地。
 - **csghub_runner**: 负责在 Kubernetes 集群中部署和管理应用实例，确保应用的快速构建和持续交付。
 - **space_builder**: 负责构建应用镜像并上传到容器镜像仓库，简化应用的打包和发布流程。
+- **csghub_aigateway**: AI Gateway是管理和优化AI服务访问的智能中间层，统一接口、路由请求、保障安全并控制成本。
 - **csghub_dataflow**: 负责数据集的处理，为模型训练提供数据。
 - **csghub_dataviewer**: 协助用户在页面更快捷的预览数据集。
 - **csghub_moderation**: 敏感内容检测。

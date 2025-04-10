@@ -44,6 +44,7 @@ The CSGHub project consists of multiple components, each of which has specific r
 - **csghub_mirror**: Provides warehouse data synchronization services, responsible for synchronizing opencsg.com models and datasets to local.
 - **csghub_runner**: Responsible for deploying and managing application instances in the Kubernetes cluster to ensure fast building and continuous delivery of applications.
 - **space_builder**: Responsible for building application images and uploading them to the container image repository to simplify the packaging and release process of applications.
+- **csghub_aigateway**: AI Gateway is an intelligent middle layer that manages and optimizes access to AI services, unifying interfaces, routing requests, ensuring security, and controlling costs.
 - **csghub_dataflow**: Responsible for data set processing and providing data for model training.
 - **csghub_dataviewer**: Helps users to preview datasets more quickly on the page.
 - **csghub_moderation**: Sensitive content detection.

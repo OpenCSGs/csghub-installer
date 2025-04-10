@@ -863,6 +863,45 @@ services:
       opencsg:
         ipv4_address: 192.171.100.127
 
+  csghub-aigateway:
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
+    entrypoint: [ "/starhub-bin/starhub", "aigateway", "launch" ]
+    depends_on:
+      - nats
+      - postgres
+    environment:
+      # Server
+      OPENCSG_AIGATEWAY_PORT: 8084
+      STARHUB_DATABASE_DSN: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/csghub_server?sslmode=disable"
+      # Redis
+      STARHUB_SERVER_REDIS_ENDPOINT: "redis:6379"
+      # Gitaly
+      STARHUB_SERVER_GITSERVER_TYPE: "gitaly"
+      STARHUB_SERVER_GITALY_SERVER_SOCKET: "$GITALY_SERVER_SOCKET"
+      STARHUB_SERVER_GITALY_STORAGE: "$GITALY_STORAGE"
+      STARHUB_SERVER_GITALY_TOKEN: "$GITALY_AUTH_TOKEN"
+      STARHUB_SERVER_CHECK_FILE_SIZE_ENABLED: "$GITALY_IS_NOT_CLUSTER"
+      # Nats
+      OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+      # Moderation
+      OPENCSG_MODERATION_SERVER_HOST: "http://csghub-moderation"
+      OPENCSG_MODERATION_SERVER_PORT: 8089
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: csghub-aigateway
+    networks:
+      opencsg:
+        ipv4_address: 192.171.100.128
+
+
 networks:
   opencsg:
     ipam:
