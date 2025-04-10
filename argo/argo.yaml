@@ -20,6 +20,13 @@ metadata:
     kubernetes.io/metadata.name: workflows-quota
 ---
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: image-factory
+  labels:
+    kubernetes.io/metadata.name: image-factory
+---
+apiVersion: v1
 kind: ResourceQuota
 metadata:
   name: gpu-quota
