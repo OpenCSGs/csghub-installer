@@ -21,6 +21,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -136,11 +137,6 @@ spec:
             {{- else }}
               {{ fail "You must specify a kube config secret already created" }}
             {{- end }}
-        {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
-        - name: kaniko-config
-          configMap:
-            name: {{ include "common.names.custom" (list . "runner-docker-daemon") }}
-        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
