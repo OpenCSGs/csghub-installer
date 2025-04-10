@@ -1424,7 +1424,7 @@ data:
     metadata:
       name: executor
       {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: argo
+      namespace: spaces
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1436,13 +1436,56 @@ data:
         verbs:
           - create
           - patch
+      {{- if .Values.global.deployment.mergingNamespace }}
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+          - pods/log
+          - pods/exec
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+      - apiGroups:
+          - argoproj.io
+        resources:
+          - workflows
+          - workflowtaskresults
+          - workflowtemplates
+          - cronworkflows
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - services
+          - configmaps
+          - secrets
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+      {{- end }}
     ---
     apiVersion: v1
     kind: ServiceAccount
     metadata:
       name: executor
       {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: argo
+      namespace: spaces
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1452,7 +1495,7 @@ data:
     metadata:
       name: executor
       {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: argo
+      namespace: spaces
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1464,7 +1507,7 @@ data:
       - kind: ServiceAccount
         name: executor
         {{- if .Values.global.deployment.mergingNamespace }}
-        namespace: argo
+        namespace: spaces
         {{- else }}
         namespace: workflows
         {{- end }}
@@ -1541,15 +1584,12 @@ data:
         name: argo
         namespace: argo
     ---
+    {{- if not .Values.global.deployment.mergingNamespace }}
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: spaces
-      {{- else }}
       namespace: image-factory
-      {{- end }}
     rules:
       - apiGroups:
           - ""
@@ -1597,21 +1637,13 @@ data:
     kind: ServiceAccount
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: spaces
-      {{- else }}
       namespace: image-factory
-      {{- end }}
     ---
     apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: spaces
-      {{- else }}
       namespace: image-factory
-      {{- end }}
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: Role
@@ -1619,9 +1651,6 @@ data:
     subjects:
       - kind: ServiceAccount
         name: executor
-        {{- if .Values.global.deployment.mergingNamespace }}
-        namespace: spaces
-        {{- else }}
         namespace: image-factory
       {{- end }}
 {{- end }}

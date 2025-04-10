@@ -1,0 +1,15 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.global.deployment.enabled }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.deployment.namespace }}
+  labels:
+    kubernetes.io/metadata.name: {{ .Values.deployment.namespace }}
+    helm.sh/resource-policy: keep
+    {{ include "common.labels" . | nindent 4 }}
+{{- end }}
