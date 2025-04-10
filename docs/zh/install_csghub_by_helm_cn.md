@@ -209,6 +209,8 @@ CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据
 |   1.2.x    |    1.2.x    |                               |
 |   1.3.x    |    1.3.x    | 移除组件 Gitea                |
 |   1.4.x    |    1.4.x    | 增加组件 Dataviewer           |
+|   1.5.x    |    1.5.x    |                               |
+|   1.6.x    |    1.6.x    | 增加组件 AiGateway            |
 
 ## 域名
 
