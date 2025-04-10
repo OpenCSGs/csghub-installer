@@ -293,7 +293,7 @@ services:
       STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
       STARHUB_SERVER_SKIP_LFS_FILE_VALIDATION: "${CSGHUB_LFS_DIRECT_UPLOAD:-false}"
       # Csghub Space Builder
-      STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-builder:8080"
+      STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-runner:8082"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
       # Csghub Proxy
       STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
@@ -362,6 +362,13 @@ services:
       STARHUB_SERVER_S3_ENDPOINT: "${MINIO_EXTERNAL_ENDPOINT:-minio:9000}"
       # Csghub Accounting
       OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+      # The image used by the pod needs to be accessible in the pod
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: "${CSGHUB_IMAGE_PREFIX}/alpine/git:2.36.2"
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_IMAGE: "${CSGHUB_IMAGE_PREFIX}/kaniko-project-executor:v1.23.2"
+      # The cleanup time after the image builder task is completed, the default is 2 minutes
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "120"
+      # Task status correction time, default is 5 minutes
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
     volumes:
       - ${KUBE_CONFIG_DIR}:/root/.kube:r
     restart: always
@@ -614,72 +621,6 @@ services:
     networks:
       opencsg:
         ipv4_address: 192.171.100.118
-
-  docker-server:
-    image: ${CSGHUB_IMAGE_PREFIX}/docker:27.3-dind
-    depends_on:
-      registry:
-        condition: service_started
-    environment:
-      DOCKER_HOST: "tcp://localhost:2375"
-      DOCKER_TLS_CERTDIR: ""
-      DOCKER_REGISTRY: "$REGISTRY_ADDRESS"
-    volumes:
-      - ./configs/docker/daemon.json:/etc/docker/daemon.json
-      - ./configs/docker/config.json:/root/.docker/config.json:r
-    restart: always
-    privileged: true
-    deploy:
-      replicas: ${CSGHUB_WITH_K8S:-0}
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "2375" ]
-      interval: 1s
-      timeout: 3s
-      retries: 30
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: docker-server
-    networks:
-      opencsg:
-        ipv4_address: 192.171.100.119
-
-  csghub-builder:
-    image: ${CSGHUB_IMAGE_PREFIX}/space_builder:latest
-    depends_on:
-      docker-server:
-        condition: service_healthy
-    environment:
-      # Server
-      SPACE_DATA_PATH: "/opt/data"
-      # Redis
-      REDIS_ENDPOINT: "redis:6379"
-      # HF_ENDPOINT configure
-      CSGHUB_HF_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
-      # PIP Source
-      PIP_INDEX_URL: "$CSGHUB_PIP_INDEX_URL"
-      # Docker
-      DOCKER_HOST: "tcp://docker-server:2375"
-      # Registry
-      REGISTRY_ADDRESS: "$REGISTRY_ADDRESS"
-      REGISTRY_USERNAME: "$REGISTRY_USERNAME"
-      REGISTRY_PASSWORD: "$REGISTRY_PASSWORD"
-      REGISTRY_NAMESPACE: "$REGISTRY_NAMESPACE"
-    volumes:
-      - ${CSGHUB_DATA_DIR:-./data}/space_builder:/opt/data
-      - ./logs/space_builder:/opt/data/logs
-    restart: always
-    deploy:
-      replicas: ${CSGHUB_WITH_K8S:-0}
-    logging:
-      driver: fluentd
-      options:
-        fluentd-address: localhost:24224
-        tag: csghub-builder
-    networks:
-      opencsg:
-        ipv4_address: 192.171.100.120
 
   nats:
     image: ${CSGHUB_IMAGE_PREFIX}/csghub_nats:2.10.16

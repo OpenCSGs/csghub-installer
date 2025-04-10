@@ -356,6 +356,20 @@ if [ -f "$KUBE_CONFIG_DIR/config" ] && [ "$CSGHUB_WITH_K8S" -eq 1 ]; then
       --docker-username="$REGISTRY_USERNAME" \
       --docker-password="$REGISTRY_PASSWORD" \
       --namespace="$SPACE_APP_NAMESPACE"
+
+  EXISTS_SECRET=$(docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest get secret -n "image-factory" | grep -c csghub-docker-config)
+  if [ "$EXISTS_SECRET" -eq 1 ]; then
+    docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
+        delete secret csghub-docker-config \
+        --namespace="image-factory"
+  fi
+
+  docker run --rm -v "$KUBE_CONFIG_DIR"/config:/.kube/config "$CSGHUB_IMAGE_PREFIX"/bitnami/kubectl:latest \
+      create secret docker-registry csghub-docker-config \
+      --docker-server="$REGISTRY_ADDRESS" \
+      --docker-username="$REGISTRY_USERNAME" \
+      --docker-password="$REGISTRY_PASSWORD" \
+      --namespace="image-factory"
 fi
 
 log "NORM" "Starting services..."
