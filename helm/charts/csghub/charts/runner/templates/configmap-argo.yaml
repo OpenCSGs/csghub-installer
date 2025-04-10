@@ -34,6 +34,13 @@ data:
       name: workflows-quota
       labels:
         kubernetes.io/metadata.name: workflows-quota
+    ---
+    apiVersion: v1
+    kind: Namespace
+    metadata:
+      name: image-factory
+      labels:
+        kubernetes.io/metadata.name: workflows-quota
     {{- end }}
     ---
     {{- if not .Values.global.deployment.mergingNamespace }}
@@ -1429,6 +1436,49 @@ data:
         verbs:
           - create
           - patch
+      {{- if .Values.global.deployment.mergingNamespace }}
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+          - pods/log
+          - pods/exec
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+      - apiGroups:
+          - argoproj.io
+        resources:
+          - workflows
+          - workflowtaskresults
+          - workflowtemplates
+          - cronworkflows
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - services
+          - configmaps
+          - secrets
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+      {{- end }}
     ---
     apiVersion: v1
     kind: ServiceAccount
@@ -1498,4 +1548,110 @@ data:
         namespace: workflows-quota
     {{- end }}
     ---
-{{- end }}
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: argo-image-factory-secret-access
+      {{- if .Values.global.deployment.mergingNamespace }}
+      namespace: argo
+      {{- else }}
+      namespace: image-factory
+      {{- end }}
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - secrets
+        verbs:
+          - get
+          - list
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: argo-image-factory-secret-access
+      {{- if .Values.global.deployment.mergingNamespace }}
+      namespace: argo
+      {{- else }}
+      namespace: image-factory
+      {{- end }}
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: argo-image-factory-secret-access
+    subjects:
+      - kind: ServiceAccount
+        name: argo
+        namespace: argo
+    ---
+    {{- if not .Values.global.deployment.mergingNamespace }}
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: Role
+    metadata:
+      name: executor
+      namespace: image-factory
+    rules:
+      - apiGroups:
+          - ""
+        resources:
+          - pods
+          - pods/log
+          - pods/exec
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+      - apiGroups:
+          - argoproj.io
+        resources:
+          - workflows
+          - workflowtaskresults
+          - workflowtemplates
+          - cronworkflows
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+      - apiGroups:
+          - ""
+        resources:
+          - services
+          - configmaps
+          - secrets
+        verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - watch
+    ---
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: executor
+      namespace: image-factory
+    ---
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: RoleBinding
+    metadata:
+      name: executor
+      namespace: image-factory
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: Role
+      name: executor
+    subjects:
+      - kind: ServiceAccount
+        name: executor
+        namespace: image-factory
+    ---
+    {{- end }}
+    {{- end }}
