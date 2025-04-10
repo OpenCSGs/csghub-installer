@@ -96,7 +96,7 @@ data:
   OPENCSG_USER_SERVER_HOST: {{ printf "http://%s" (include "user.internal.domain" .) }}
   OPENCSG_USER_SERVER_PORT: {{ include "user.internal.port" . | quote }}
   # Space Application
-  STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "builder.internal.endpoint" . }}
+  STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: {{ include "runner.internal.endpoint" . }}
   STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: {{ include "runner.internal.endpoint" . }}
   STARHUB_SERVER_PUBLIC_DOMAIN: {{ include "csghub.external.endpoint" . }}
   # Deprecated
