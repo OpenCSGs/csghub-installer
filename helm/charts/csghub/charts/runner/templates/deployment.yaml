@@ -87,6 +87,8 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            - configMapRef:
                 name: {{ include "common.names.custom" (list . "server") }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
@@ -124,14 +126,6 @@ spec:
             - name: kube-configs
               mountPath: /root/.kube
               readOnly: true
-            - name: docker-config
-              mountPath: /root/.docker
-              readOnly: true
-            {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
-            - name: docker-daemon
-              mountPath: /etc/docker
-              readOnly: true
-            {{- end }}
       volumes:
         - name: kube-configs
           secret:
@@ -142,16 +136,10 @@ spec:
             {{- else }}
               {{ fail "You must specify a kube config secret already created" }}
             {{- end }}
-        - name: docker-config
-          secret:
-            secretName: {{ include "common.names.custom" (list . "registry-docker-config") }}
-            items:
-              - key: .dockerconfigjson
-                path: config.json
         {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
-        - name: docker-daemon
+        - name: kaniko-config
           configMap:
-            name: {{ include "common.names.custom" (list . "builder-docker-daemon") }}
+            name: {{ include "common.names.custom" (list . "runner-docker-daemon") }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
