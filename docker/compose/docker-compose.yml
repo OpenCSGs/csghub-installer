@@ -369,6 +369,7 @@ services:
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "120"
       # Task status correction time, default is 5 minutes
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "$KANIKO_ARGS"
     volumes:
       - ${KUBE_CONFIG_DIR}:/root/.kube:r
     restart: always
