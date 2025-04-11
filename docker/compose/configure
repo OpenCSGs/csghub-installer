@@ -275,26 +275,6 @@ generate_ssh_key "rsa"
 generate_ssh_key "ecdsa"
 generate_ssh_key "ed25519"
 ####################################################################################
-# Configure Csghub_Space_Builder
-####################################################################################
-log "NORM" "Csghub_Space_Builder:"
-CSGHUB_SPACE_BUILDER_CONF_DIR="${CURRENT_DIR}/configs/docker"
-mkdirs "$CSGHUB_SPACE_BUILDER_CONF_DIR"
-
-log "INFO" "- render docker daemon file."
-sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
-    -e "s/_REGISTRY_PORT/${REGISTRY_PORT}/g" \
-    "$CSGHUB_SPACE_BUILDER_CONF_DIR"/daemon.json.sample > "$CSGHUB_SPACE_BUILDER_CONF_DIR"/daemon.json
-
-log "INFO" "- render docker config file."
-REGISTRY_USER_PASSWORD_BASE64=$(echo -n "${REGISTRY_USERNAME}:${REGISTRY_PASSWORD}" | base64)
-sed -e "s/_REGISTRY_USERNAME/${REGISTRY_USERNAME}/g" \
-    -e "s/_REGISTRY_PASSWORD/${REGISTRY_PASSWORD}/g" \
-    -e "s/_REGISTRY_ADDRESS/${REGISTRY_ADDRESS}/g" \
-    -e "s/_REGISTRY_USER_PASSWORD_BASE64/${REGISTRY_USER_PASSWORD_BASE64}/g" \
-    "$CSGHUB_SPACE_BUILDER_CONF_DIR"/config.json.sample > "$CSGHUB_SPACE_BUILDER_CONF_DIR"/config.json
-
-####################################################################################
 # Configure Nats
 ####################################################################################
 log "NORM" "Nats:"
