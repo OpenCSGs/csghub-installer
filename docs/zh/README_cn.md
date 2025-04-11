@@ -24,7 +24,7 @@ CSGHub 致力于为用户带来针对大模型原生设计的、可私有化部�
 
 目前 CSGHub 安装主要包括三种安装方式：
 
-- [Docker Engine](./install_csghub_by_docker_cn.md)（用于测试目的）
+- [Docker Engine](./install_csghub_by_docker_cn.md)（暂停更新，正在重构）
 - [Docker Compose](./install_csghub_by_docker_compose_cn.md)
 - [Helm Chart](./install_csghub_by_helm_cn.md)
 

@@ -24,7 +24,7 @@ This project mainly introduces various installation methods of CSGHub.
 
 Currently, there are three main installation methods for CSGHub:
 
-- [Docker Engine](docker/README.md) (for testing purposes)
+- [Docker Engine](docker/README.md) (Update paused, reconstruction in progress)
 - [Docker Compose](docker/compose/README.md)
 - [Helm Chart](helm/README.md)
 
@@ -43,7 +43,6 @@ The CSGHub project consists of multiple components, each of which has specific r
 - **csghub_accounting**: Billing system, responsible for the cost statistics generated during resource usage.
 - **csghub_mirror**: Provides warehouse data synchronization services, responsible for synchronizing opencsg.com models and datasets to local.
 - **csghub_runner**: Responsible for deploying and managing application instances in the Kubernetes cluster to ensure fast building and continuous delivery of applications.
-- **space_builder**: Responsible for building application images and uploading them to the container image repository to simplify the packaging and release process of applications.
 - **csghub_aigateway**: AI Gateway is an intelligent middle layer that manages and optimizes access to AI services, unifying interfaces, routing requests, ensuring security, and controlling costs.
 - **csghub_dataviewer**: Helps users to preview datasets more quickly on the page.
 - **csghub_watcher**: Monitor all Secret and ConfigMap changes of CSGHub and update related dependent resources.

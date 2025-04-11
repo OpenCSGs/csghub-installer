@@ -1,4 +1,4 @@
-# CSGHub Docker Compose 部署文档
+# Docker Compose安装指引
 
 ## 介绍
 
@@ -27,7 +27,7 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 下载请到[Release](https://github.com/OpenCSGs/csghub-installer/releases)页面。
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghub-docker-compose-v1.5.2.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.6.0/csghub-docker-compose-v1.6.0.tgz
 ```
 
 ### 安装配置
@@ -35,7 +35,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghu
 - 解压程序
 
     ```shell
-    tar -zxf csghub-docker-compose-v1.5.2.tgz && cd ./csghub
+    tar -zxf csghub-docker-compose-v1.6.0.tgz && cd ./csghub
     ```
 
 - 配置更新
@@ -82,17 +82,17 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghu
 
 CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据需要更新。
 
-| Chart 版本 | Csghub 版本 | 说明                          |
-| :--------: | :---------: | ----------------------------- |
-|   0.8.x    |    0.8.x    |                               |
-|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell |
-|   1.0.x    |    1.0.x    |                               |
-|   1.1.x    |    1.1.x    | 增加组件 Temporal             |
-|   1.2.x    |    1.2.x    |                               |
-|   1.3.x    |    1.3.x    | 移除组件 Gitea                |
-|   1.4.x    |    1.4.x    | 增加组件 Dataviewer                              |
-|   1.5.x    |    1.5.x    |                               |
-|   1.6.x    |    1.6.x    | 增加组件 AiGateway            |
+| Chart 版本 | Csghub 版本 | 说明                                       |
+| :--------: | :---------: | ------------------------------------------ |
+|   0.8.x    |    0.8.x    |                                            |
+|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell              |
+|   1.0.x    |    1.0.x    |                                            |
+|   1.1.x    |    1.1.x    | 增加组件 Temporal                          |
+|   1.2.x    |    1.2.x    |                                            |
+|   1.3.x    |    1.3.x    | 移除组件 Gitea                             |
+|   1.4.x    |    1.4.x    | 增加组件 Dataviewer                        |
+|   1.5.x    |    1.5.x    |                                            |
+|   1.6.x    |    1.6.x    | 增加组件 AiGateway 并移除组件 SpaceBuilder |
 
 ## 域名和IP
 

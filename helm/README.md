@@ -214,7 +214,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, `Patch` version i
 | 1.3.x | 1.3.x | Remove component Gitea |
 | 1.4.x | 1.4.x | Add component Dataviewer |
 | 1.5.x | 1.5.x |  |
-| 1.6.x | 1.6.x | Add component aigateway |
+| 1.6.x | 1.6.x | Add component aigateway and remove space_builder |
 
 ## Domain name
 
