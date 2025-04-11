@@ -1,9 +1,9 @@
 apiVersion: v2
-name: builder
-description: Mainly responsible for building application images and uploading them to the container image repository.
+name: aigateway
+description: AI Gateway is an intelligent middle layer that manages and optimizes access to AI services, unifying interfaces, routing requests, ensuring security, and controlling costs.
 home: https://opencsg.com
 sources:
-  - https://github.com/OpenCSGs
+  - https://github.com/openCSGs/csghub-server
 maintainers:
   - name: OpenCSG Inc.
     email: support@opencsg.com
@@ -21,10 +21,10 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.0.0
+version: 1.6.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v1.0.0"
+appVersion: "v1.6.0-ee"

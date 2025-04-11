@@ -22,8 +22,7 @@ Visit the Temporal console at the following address:
     Credentials:
         Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "temporal") }} -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
         Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "temporal") }} -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
-
-{{- if not .Values.global.objectStore.external }}
+{{ if not .Values.global.objectStore.external }}
 Visit the Minio console at the following address:
 
     Address: {{ include "minio.external.endpoint" . }}/console/
@@ -31,8 +30,7 @@ Visit the Minio console at the following address:
         Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
         Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
 {{- end }}
-
-{{- if not .Values.global.registry.external }}
+{{ if not .Values.global.registry.external }}
 To access Registry using docker-cli:
     {{ $registry := (include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://") }}
     Endpoint: {{ $registry }}
@@ -48,7 +46,6 @@ To access Registry using docker-cli:
         docker push {{ $registry }}/test:latest
 
 *Notes: This is not a container registry suitable for production environments.*
-{{- end }}
-
+{{ end }}
 For more details, visit:
     https://github.com/OpenCSGs/csghub-installer
