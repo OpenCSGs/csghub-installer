@@ -1,4 +1,4 @@
-# Docker Compose安装指引
+# CSGHub Docker Compose 部署文档
 
 ## 介绍
 
@@ -27,7 +27,7 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 下载请到[Release](https://github.com/OpenCSGs/csghub-installer/releases)页面。
 
 ```shell
-wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghub-docker-compose-v1.5.2.tgz
 ```
 
 ### 安装配置
@@ -35,7 +35,7 @@ wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tg
 - 解压程序
 
     ```shell
-    tar -zxf csghub-latest.tgz && cd ./csghub
+    tar -zxf csghub-docker-compose-v1.5.2.tgz && cd ./csghub
     ```
 
 - 配置更新
@@ -82,17 +82,17 @@ wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tg
 
 CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据需要更新。
 
-| Chart 版本 | Csghub 版本 | 说明                          |
-| :--------: | :---------: | ----------------------------- |
-|   0.8.x    |    0.8.x    |                               |
-|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell |
-|   1.0.x    |    1.0.x    |                               |
-|   1.1.x    |    1.1.x    | 增加组件 Temporal             |
-|   1.2.x    |    1.2.x    |                               |
-|   1.3.x    |    1.3.x    | 移除组件 Gitea                |
-|   1.4.x    |    1.4.x    |                               |
-|   1.5.x    |    1.5.x    |                               |
-|   1.6.x    |    1.6.x    | 增加组件 AiGateway            |
+| Chart 版本 | Csghub 版本 | 说明                                       |
+| :--------: | :---------: | ------------------------------------------ |
+|   0.8.x    |    0.8.x    |                                            |
+|   0.9.x    |    0.9.x    | 增加组件 Gitaly, Gitlab-Shell              |
+|   1.0.x    |    1.0.x    |                                            |
+|   1.1.x    |    1.1.x    | 增加组件 Temporal                          |
+|   1.2.x    |    1.2.x    |                                            |
+|   1.3.x    |    1.3.x    | 移除组件 Gitea                             |
+|   1.4.x    |    1.4.x    | 增加组件 Dataviewer                        |
+|   1.5.x    |    1.5.x    |                                            |
+|   1.6.x    |    1.6.x    | 增加组件 AiGateway 并移除组件 SpaceBuilder |
 
 ## 域名和IP
 
@@ -139,7 +139,7 @@ IP 地址选择需要使用非 `127.0.0.1` 和 `localhost` 的地址。
 
 ### PostgreSQL
 
-***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal, dataflow 。*
+***注意：** 请自行创建数据库 csghub_server, csghub_portal, casdoor, temporal 。*
 
 | 变量              | 类型   | 默认值         | 说明                                              |
 | :---------------- | :----- | :------------- | :------------------------------------------------ |
