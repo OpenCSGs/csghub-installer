@@ -27,6 +27,8 @@ data:
   {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure"
   {{- end }}
+  CSGHUB_HF_ENDPOINT: {{ printf "%s/hf" (include "csghub.external.endpoint" .) }}
+  PIP_INDEX_URL: {{ .Values.pipIndexUrl }}
   {{- if .Values.global.deployment.autoConfigure }}
   configure.sh: |
     #!/bin/bash
