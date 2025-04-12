@@ -370,6 +370,10 @@ services:
       # Task status correction time, default is 5 minutes
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "$KANIKO_ARGS"
+      # HF_ENDPOINT configure
+      CSGHUB_HF_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
+      # PIP Source
+      PIP_INDEX_URL: "$CSGHUB_PIP_INDEX_URL"
     volumes:
       - ${KUBE_CONFIG_DIR}:/root/.kube:r
     restart: always

@@ -43,6 +43,9 @@ service:
   ## This is the network port where the Runner service will listen for connections.
   port: 8082
 
+## Allow user defined pip source
+pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
+
 autoLabel:
   image:
     ## Specify path prefix relative to docker.io
