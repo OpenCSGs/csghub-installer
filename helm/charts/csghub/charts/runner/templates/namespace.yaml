@@ -12,4 +12,14 @@ metadata:
     kubernetes.io/metadata.name: {{ .Values.deployment.namespace }}
     helm.sh/resource-policy: keep
     {{ include "common.labels" . | nindent 4 }}
+{{- if not .Values.global.deployment.mergingNamespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: image-factory
+  labels:
+    kubernetes.io/metadata.name: image-factory
+    helm.sh/resource-policy: keep
+    {{ include "common.labels" . | nindent 4 }}
+{{- end }}
 {{- end }}
