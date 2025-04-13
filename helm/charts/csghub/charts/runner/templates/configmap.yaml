@@ -21,14 +21,14 @@ data:
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: {{ or .Values.global.image.registry .Values.image.registry }}/alpine/git:2.36.2
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_IMAGE: {{ or .Values.global.image.registry .Values.image.registry }}/kaniko-project-executor:v1.23.2
   # The cleanup time after the image builder task is completed, the default is 2 minutes
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "120"
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "300"
   # Task status correction time, default is 5 minutes
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
   {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure"
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure,--build-arg=PyPI={{ .Values.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
+  {{- else }}
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--build-arg=PyPI={{ .Values.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- end }}
-  CSGHUB_HF_ENDPOINT: {{ printf "%s/hf" (include "csghub.external.endpoint" .) }}
-  PIP_INDEX_URL: {{ .Values.pipIndexUrl }}
   {{- if .Values.global.deployment.autoConfigure }}
   configure.sh: |
     #!/bin/bash
