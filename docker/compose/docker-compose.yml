@@ -117,7 +117,7 @@ services:
     environment:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,casdoor,temporal,temporal_visibility,dataflow"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,csghub_casdoor,temporal,temporal_visibility,dataflow"
     volumes:
       - ${CSGHUB_DATA_DIR:-./data}/postgresql/data:/var/lib/postgresql/data
     restart: always
