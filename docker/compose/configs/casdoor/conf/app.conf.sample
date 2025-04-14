@@ -3,7 +3,7 @@ httpport = 8000
 runmode = prod
 copyrequestbody = true
 driverName = postgres
-dataSourceName = "user=_POSTGRES_USER password=_POSTGRES_PASSWORD host=_POSTGRES_HOST port=_POSTGRES_PORT sslmode=disable dbname=casdoor"
+dataSourceName = "user=_POSTGRES_USER password=_POSTGRES_PASSWORD host=_POSTGRES_HOST port=_POSTGRES_PORT sslmode=disable dbname=csghub_casdoor"
 dbName =
 tableNamePrefix =
 showSql = false
