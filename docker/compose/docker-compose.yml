@@ -363,7 +363,7 @@ services:
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "120"
       # Task status correction time, default is 5 minutes
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
-      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "${KANIKO_ARGS},--build-arg=PyPI=${CSGHUB_PIP_INDEX_URL},--build-arg=HF_ENDPOINT=${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "${KANIKO_ARGS},--compressed-caching=false,--single-snapshot,--build-arg=PyPI=${CSGHUB_PIP_INDEX_URL},--build-arg=HF_ENDPOINT=${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
       # PIP Source
       PIP_INDEX_URL: "$CSGHUB_PIP_INDEX_URL"
     volumes:
