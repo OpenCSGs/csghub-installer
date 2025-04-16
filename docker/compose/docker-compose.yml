@@ -117,7 +117,7 @@ services:
     environment:
       POSTGRES_USER: "$POSTGRES_USER"
       POSTGRES_PASSWORD: "$POSTGRES_PASSWORD"
-      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,csghub_casdoor,temporal,temporal_visibility,dataflow"
+      POSTGRES_MULTIPLE_DATABASES: "csghub_server,csghub_portal,csghub_casdoor,temporal,temporal_visibility"
     volumes:
       - ${CSGHUB_DATA_DIR:-./data}/postgresql/data:/var/lib/postgresql/data
     restart: always
@@ -725,7 +725,7 @@ services:
         ipv4_address: 192.171.100.127
 
   csghub-aigateway:
-    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server_ee:${CSGHUB_VERSION}
+    image: ${CSGHUB_IMAGE_PREFIX}/csghub_server:${CSGHUB_VERSION}
     entrypoint: [ "/starhub-bin/starhub", "aigateway", "launch" ]
     depends_on:
       - nats
