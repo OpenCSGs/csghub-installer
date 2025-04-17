@@ -15,9 +15,9 @@ image:
   ## No need to add the final slash `/`
   registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
   ## Specifies the location of the Registry Docker image in the registry.
-  repository: "csghub_server_ee"
+  repository: "csghub_server"
   ## Defines the specific version of the Registry image to use.
-  tag: "v1.6.0-ee"
+  tag: "v1.6.0"
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
