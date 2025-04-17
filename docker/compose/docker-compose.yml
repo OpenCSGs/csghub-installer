@@ -702,7 +702,7 @@ services:
         tag: temporal-ui
     networks:
       opencsg:
-        ipv4_address: 192.171.100.123
+        ipv4_address: 192.171.100.124
 
   fluentd:
     image: ${CSGHUB_IMAGE_PREFIX}/fluentd:v1.16-1
