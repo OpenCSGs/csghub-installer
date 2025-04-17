@@ -1,6 +1,13 @@
 # CHANGELOG
 
-## v1.5.2(Planning)
+## v1.6.0
+
+---
+
+- [All] Add new component aigateway
+- [All] Using argo workflow instead of space builder
+
+## v1.5.2
 
 ---
 
