@@ -356,6 +356,7 @@ services:
       CSGHUB_HF_ENDPOINT: "${SERVER_PROTOCOL}://${SERVER_DOMAIN}:${SERVER_PORT}/hf"
       # Csghub Accounting
       OPENCSG_ACCOUNTING_NATS_URL: "nats://${NATS_ROOT_USER}:${NATS_ROOT_PASSWORD}@nats:4222"
+      STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: image-factory
       # The image used by the pod needs to be accessible in the pod
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: "${CSGHUB_IMAGE_PREFIX}/alpine/git:2.36.2"
       STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_IMAGE: "${CSGHUB_IMAGE_PREFIX}/kaniko-project-executor:v1.23.2"
