@@ -26,7 +26,7 @@ Define the host for csghub postgresql
 Define the port for csghub postgresql
 */}}
 {{- define "csghub.postgresql.port" -}}
-{{- $port := .Values.postgresql.port }}
+{{- $port := or .Values.postgresql.port "5432" }}
 {{- if hasKey .Values.global "postgresql" }}
 {{- if hasKey .Values.global.postgresql "external" }}
 {{- if .Values.global.postgresql.external }}
