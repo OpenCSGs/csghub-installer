@@ -24,7 +24,7 @@ This project mainly introduces various installation methods of CSGHub.
 
 Currently, there are three main installation methods for CSGHub:
 
-- [Docker Engine](docker/README.md) (Update paused, reconstruction in progress)
+- [Docker Engine](docker/README.md) (Update paused, reconstruction in progress (current latest=v1.5.3))
 - [Docker Compose](docker/compose/README.md)
 - [Helm Chart](helm/README.md)
 
