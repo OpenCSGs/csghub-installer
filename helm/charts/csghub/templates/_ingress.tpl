@@ -7,13 +7,21 @@ SPDX-License-Identifier: APACHE-2.0
 Define if Ingress TLS enabled
 */}}
 {{- define "global.ingress.tls.enabled" -}}
-{{- $enabled := "false" }}
+{{- $enabled := false }}
 {{- if hasKey .Values.global.ingress "tls" }}
   {{- if hasKey .Values.global.ingress.tls "enabled" }}
     {{- $enabled = .Values.global.ingress.tls.enabled }}
   {{- end }}
 {{- end }}
-{{- or $enabled .Values.ingress.tls.enabled }}
+{{- $localEnabled := false }}
+{{- if hasKey .Values "ingress" }}
+{{- if hasKey .Values.ingress "tls" }}
+{{- if hasKey .Values.ingress.tls "enabled" }}
+{{- $localEnabled = .Values.ingress.tls.enabled }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- or $enabled $localEnabled }}
 {{- end }}
 
 {{/*
