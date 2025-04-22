@@ -86,6 +86,7 @@ global:
       ##   - csghub_temporal
       ##   - csghub_temporal_visibility
       ##   - csghub_dataflow
+      ##   - starship_codegpt
       ## Please make sure that the above databases have been created
       # database: ""
       ## Username for authenticating with the PostgreSQL database.
@@ -248,6 +249,7 @@ postgresql:
   #   - csghub_temporal
   #   - csghub_temporal_visibility
   #   - csghub_dataflow
+  #   - starship_codegpt
 
 ## For Dataflow
 dataflow:

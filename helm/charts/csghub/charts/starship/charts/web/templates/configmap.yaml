@@ -1,0 +1,71 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" . }}
+      {{ include "common.names.custom" (list . "celery-worker") }}
+      {{ include "common.names.custom" (list . "billing") }}
+      {{ include "common.names.custom" (list . "agentic") }}
+data:
+  # This is a debug env
+  DJANGO_DEBUG: "True"
+  DJANGO_SETTINGS_MODULE: config.settings
+  C_FORCE_ROOT: "true"
+  # PostgreSQL database
+  DATABASE_TYPE: "postgresql"
+  DATABASE_HOST: {{ include "csghub.postgresql.host" . }}
+  DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
+  {{- $user := include "csghub.postgresql.user" . }}
+  {{- $password := include "postgresql.initPass" $user }}
+  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
+  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
+  {{- if $secretData }}
+  {{- $secretPassword := index $secretData $user }}
+  {{- if $secretPassword }}
+  {{- $password = $secretPassword | b64dec }}
+  {{- end }}
+  {{- end }}
+  {{- $password = or (include "csghub.postgresql.password" .) $password }}
+  DATABASE_USERNAME: {{ $user }}
+  DATABASE_PASSWORD: {{ $password }}
+  DATABASE_NAME: {{ include "csghub.postgresql.database" . }}
+  # Redis cache connection info
+  REDIS_URL: {{ printf ":%s@%s" (include "csghub.redis.password" .) (include "csghub.redis.host" .) | quote }}
+  REDIS_PORT: {{ include "csghub.redis.port" . | quote }}
+  # Starship urls
+  STARSHIP_WEB_URL: {{ include "starship.external.endpoint" . }}
+  STARSHIP_API_URL: {{ include "starship.external.api.endpoint" . }}
+  # OpenAI assistants API
+  USE_OPENAI_ASSISTANTS_API: "false"
+  # Accounting from CSGHUB (Not configured for now)
+  ACCOUNTING_OP_MODE: "has_balance|consume"
+  ACCOUNTING_API_BASE: {{ include "csghub.external.endpoint" . }}
+  {{- $token := include "server.hub.api.token" . }}
+  {{- $tokenConfigMap := include "common.names.custom" . -}}
+  {{- $tokenConfigMapData := (lookup "v1" "ConfigMap" .Release.Namespace $tokenConfigMap).data }}
+  {{- if $tokenConfigMapData }}
+  {{- $tokenFromConfigMap := index $tokenConfigMapData "ACCOUNTING_API_KEY" }}
+  {{- if eq (len $tokenFromConfigMap) 128 }}
+  {{- $token = $tokenFromConfigMap }}
+  {{- end }}
+  {{- end }}
+  ACCOUNTING_API_KEY: {{ $token | quote }}
+  # CSGHub
+  OPENCSG_HUB_BASE_URL: {{ include "csghub.external.endpoint" . }}
+  OPENCSG_HUB_ACCESS_TOKEN: {{ $token | quote }}
+  # OpenAI
+  AZURE_MODEL: {{ .Values.openai.model }}
+  AZURE_API_BASE: {{ .Values.openai.api.base }}
+  AZURE_API_VERSION: {{ .Values.openai.api.version }}
+  AZURE_API_KEY: {{ .Values.openai.api.key }}
+  LANCEDB_URI: "/code/data/lancedb"
+

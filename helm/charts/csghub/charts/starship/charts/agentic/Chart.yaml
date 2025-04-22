@@ -1,9 +1,12 @@
 apiVersion: v2
-name: csghub
-description: CSGHub is an open-source platform designed for managing Large Language Models (LLM) assets, offering an efficient way to handle the entire LLM and their assets such as datasets, spaces and codes etc. It allows users to upload, download, store, verify, and distribute LLM assets via a web interface, git command line, a natural language Chatbot, or CSGHub SDK.
+name: agentic
+description: Responsible for financial and starship-agentic processing, monitoring transactions and generating related reports.
 home: https://opencsg.com
 sources:
-  - https://github.com/OpenCSGs/csghub-installer
+  - https://git-devops.opencsg.com/product/starship/crmaestro/-/tree/main/agentic
+maintainers:
+  - name: OpenCSG Inc.
+    email: support@opencsg.com
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -18,25 +21,10 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 1.6.0
+version: 0.1.9
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "v1.6.0-ee"
-
-# Defined dependencies for subChart
-dependencies:
-  - name: ingress-nginx
-    version: "4.12.0"
-    repository: file://charts/ingress-nginx
-    condition: ingress-nginx.enabled
-  - name: fluentd
-    version: "0.5.2"
-    repository: file://charts/fluentd
-    condition: fluentd.enabled
-  - name: starship
-    version: "0.1.9"
-    repository: file://charts/starship
-    condition: starship.enabled
+appVersion: "v0.1.9"

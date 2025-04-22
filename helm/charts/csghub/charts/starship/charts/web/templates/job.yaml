@@ -1,0 +1,80 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 10
+  activeDeadlineSeconds: 1200
+  template:
+    metadata:
+      name: {{ include "common.names.custom" . }}
+      labels: {{ include "common.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or .Values.global.image.pullSecrets .Values.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+          env:
+            - name: PGHOST
+              value: "$(DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(DATABASE_PASSWORD)"
+        - name: wait-for-web
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "web.internal.domain" . }} {{ include "web.internal.port" . }}; do echo 'Wait for starship-web to be ready'; sleep 2; done" ]
+      containers:
+        - name: psql
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "web") }}
+          env:
+            - name: PGHOST
+              value: "$(DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(DATABASE_PASSWORD)"
+          volumeMounts:
+            - name: init
+              mountPath: /scripts
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" (list . "web-init") }}
