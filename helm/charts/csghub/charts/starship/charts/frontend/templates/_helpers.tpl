@@ -4,33 +4,23 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the internal domain for portal
+Define the internal domain for frontend
 */}}
-{{- define "portal.internal.domain" -}}
-{{- include "common.names.custom" (list . "starship-portal") }}
+{{- define "frontend.internal.domain" -}}
+{{- include "common.names.custom" (list . "frontend") }}
 {{- end }}
 
 {{/*
-Define the internal port for portal
+Define the internal port for frontend
 */}}
-{{- define "portal.internal.port" -}}
+{{- define "frontend.internal.port" -}}
 {{- $port := "80" }}
-{{- if hasKey .Values.global "portal" }}
-  {{- if hasKey .Values.global.portal "service" }}
-    {{- if hasKey .Values.global.portal.service "port" }}
-      {{- $port = .Values.global.portal.service.port }}
+{{- if hasKey .Values.global "frontend" }}
+  {{- if hasKey .Values.global.frontend "service" }}
+    {{- if hasKey .Values.global.frontend.service "port" }}
+      {{- $port = .Values.global.frontend.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
 {{- $port | toString -}}
-{{- end }}
-
-
-#'${CASDOOR_ENDPOINT}/login/oauth/authorize?client_id=${CASDOOR_CLIENT_ID}&response_type=code&redirect_uri=${STARSHIP_API_URL}${CASDOOR_REDIRECT_URI_PATH}&scope=profile&state=casdoor',
-
-{{/*
-Define the internal domain for portal
-*/}}
-{{- define "portal.callback.url" -}}
-{{- printf ""  -}}
 {{- end }}

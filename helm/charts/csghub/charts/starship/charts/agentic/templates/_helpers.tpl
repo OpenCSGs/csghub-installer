@@ -7,7 +7,7 @@ SPDX-License-Identifier: APACHE-2.0
 Define the internal domain for agentic
 */}}
 {{- define "agentic.internal.domain" -}}
-{{- include "common.names.custom" (list . "starship-agentic") }}
+{{- include "common.names.custom" (list . "agentic") }}
 {{- end }}
 
 {{/*
