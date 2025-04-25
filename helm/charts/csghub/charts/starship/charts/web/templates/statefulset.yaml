@@ -47,7 +47,7 @@ spec:
         - name: web
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "sh", "/code/start.sh" ]
+          command: [ "sh", "-c", "cp -a /code/project/static /usr/share/ && /code/start.sh" ]
           ports:
             - containerPort: 8000
               name: web
@@ -91,7 +91,7 @@ spec:
               mountPath: /code/data
               subPath: codedata
             - name: static-data
-              mountPath: /code/project/static
+              mountPath: /usr/share/static
         - name: nginx
           image: {{ or .Values.global.image.registry .Values.image.registry }}/nginx:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -119,7 +119,8 @@ spec:
             - name: static-data
               mountPath: /usr/share/nginx/html/static
             - name: config
-              mountPath: /etc/nginx
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
       volumes:
         - name: static-data
           emptyDir: { }
