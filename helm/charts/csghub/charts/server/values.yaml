@@ -121,7 +121,8 @@ securityContext: {}
 ## Environment variables can be used to customize the behavior of the Server instance.
 ## For example, you might use environment variables to configure logging levels or to enable certain Server features.
 ## This section is currently empty, indicating that no environment variables have been explicitly set.
-environments: {}
+environments:
+  STARHUB_SERVER_MODEL_DOCKER_REG_BASE: "opencsg-registry.cn-beijing.cr.aliyuncs.com/public"
 
 ## annotations: This section allows you to add annotations to the Server deployment.
 ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
