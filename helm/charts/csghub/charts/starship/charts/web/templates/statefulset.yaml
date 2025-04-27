@@ -90,8 +90,6 @@ spec:
             - name: data
               mountPath: /code/data
               subPath: codedata
-            - name: static-data
-              mountPath: /usr/share/static
         - name: nginx
           image: {{ or .Values.global.image.registry .Values.image.registry }}/nginx:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -116,14 +114,10 @@ spec:
           securityContext:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
           volumeMounts:
-            - name: static-data
-              mountPath: /usr/share/nginx/html/static
             - name: config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
       volumes:
-        - name: static-data
-          emptyDir: { }
         - name: config
           configMap:
             name: {{ include "common.names.custom" (list . "web-nginx") }}
