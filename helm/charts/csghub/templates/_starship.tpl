@@ -63,3 +63,18 @@ Define the external endpoint for starship
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define if starship enabled
+*/}}
+{{- define "starship.enabled" -}}
+{{- $enabled := true -}}
+{{- if hasKey .Values "starship" }}
+{{- if hasKey .Values.starship "enabled" }}
+{{- if not .Values.starship.enabled }}
+{{- $enabled = false }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $enabled -}}
+{{- end }}

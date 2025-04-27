@@ -15,6 +15,11 @@ Visit the Casdoor administrator console at the following address:
     Credentials: admin/{{ printf "%s@%s" (now | date "15/04") "admin" | b64enc | sha256sum | trunc 16 }}
 
 *Notes: The admin password is valid only for initial installation.*
+{{ if eq (include "starship.enabled" .) "true"  }}
+Visit the Starship admin console at the following address:
+    Address: {{ include "starship.external.api.endpoint" . }}/admin
+    Credential: admin/Admin@1234
+{{- end }}
 
 Visit the Temporal console at the following address:
 
