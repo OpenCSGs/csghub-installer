@@ -12,6 +12,7 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: {{ include "csghub.external.endpoint" . | quote }}
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
     nginx.ingress.kubernetes.io/use-regex: "true"
