@@ -323,7 +323,7 @@ ingress-nginx:
 ## This section is used to configure how to collect pod logs in the current namespace.
 ## By default, they are directly output to the fluentd standard output in json format.
 fluentd:
-  enabled: true
+  enabled: false
   # Configuration for Fluentd file sources
   fileConfigs:
     # Configuration for sources
