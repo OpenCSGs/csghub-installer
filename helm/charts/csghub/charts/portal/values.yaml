@@ -84,7 +84,7 @@ objectStore:
 smtp:
   host: ""
   ## SMTP server port number (e.g., 465 for SSL, 587 for TLS)
-  port: ""
+  port: 465
   ## Username for SMTP authentication
   username: ""
   ## Password for SMTP authentication
