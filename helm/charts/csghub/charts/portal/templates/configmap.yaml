@@ -54,3 +54,8 @@ data:
   CSGHUB_PORTAL_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   CSGHUB_PORTAL_S3_REGION: {{ include "csghub.objectStore.region" . }}
   CSGHUB_PORTAL_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
+  # SMTP
+  CSGHUB_PORTAL_MAILER_HOST: {{ .Values.smtp.host }}
+  CSGHUB_PORTAL_MAILER_PORT: {{ .Values.smtp.port | quote }}
+  CSGHUB_PORTAL_MAILER_USERNAME: {{ .Values.smtp.username }}
+  CSGHUB_PORTAL_MAILER_PASSWORD: {{ .Values.smtp.password }}

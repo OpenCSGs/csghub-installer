@@ -80,6 +80,16 @@ objectStore:
   ## http://<minio-server>/<bucket-name>/<object-key>
   pathStyle: "true"
 
+## SMTP server host address (e.g., smtp.example.com)
+smtp:
+  host: ""
+  ## SMTP server port number (e.g., 465 for SSL, 587 for TLS)
+  port: ""
+  ## Username for SMTP authentication
+  username: ""
+  ## Password for SMTP authentication
+  password: ""
+
 serviceAccount:
   ## Determines whether a service account should be created.
   create: false
