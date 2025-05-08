@@ -325,6 +325,8 @@ services:
       OPENCSG_DATAVIEWER_SERVER_PORT: 8093
       # Multiple-sync
       STARHUB_SERVER_CRON_JOB_SYNC_AS_CLIENT_CRON_EXPRESSION: '*/5 * * * *'
+      # Space pypi source
+      STARHUB_SERVER_SPACE_PYPI_INDEX_URL: "${CSGHUB_PIP_INDEX_URL}"
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080/api/v1/models" ]

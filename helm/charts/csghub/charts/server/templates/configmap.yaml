@@ -129,6 +129,7 @@ data:
   {{- end }}
   STARHUB_SERVER_CRON_JOB_SYNC_AS_CLIENT_CRON_EXPRESSION: '*/5 * * * *'
   OPENCSG_TRACING_OTLP_LOGGING: "false"
+  STARHUB_SERVER_SPACE_PYPI_INDEX_URL: {{ .Values.global.deployment.pipIndexUrl | quote}}
 ---
 apiVersion: v1
 kind: ConfigMap
