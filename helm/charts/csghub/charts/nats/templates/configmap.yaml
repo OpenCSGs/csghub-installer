@@ -76,6 +76,6 @@ data:
     }
 
     users = [
-        { user: {{ $username | quote }}, password: {{ $htpasswd | trimPrefix (printf "%s:" $username) }}, permissions: $ADMIN }
+        { user: {{ $username | quote }}, password: {{ $htpasswd | trimPrefix (printf "%s:" $username) | quote }}, permissions: $ADMIN }
       ]
     }
