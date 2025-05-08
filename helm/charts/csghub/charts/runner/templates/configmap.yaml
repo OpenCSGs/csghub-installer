@@ -27,7 +27,7 @@ data:
   {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure,--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- else }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.global.deployment.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- end }}
   {{- if .Values.global.deployment.autoConfigure }}
   configure.sh: |

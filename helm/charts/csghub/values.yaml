@@ -183,6 +183,8 @@ global:
             ## If type is 'LoadBalancer', port should be set to '80'
             ## If type is 'NodePort', it will be configured as the NodePort port of kourier.svc port 80
             port: "30213"
+    ## Allow user defined pip source
+    pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
 
   ## Configuration for Persistence
   persistence: { }
