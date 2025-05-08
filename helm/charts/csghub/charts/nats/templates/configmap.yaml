@@ -6,6 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" .)).data -}}
 {{- $username := "natsadmin" -}}
 {{- $password := randAlphaNum 15 -}}
+{{- $htpasswd := htpasswd $username $password -}}
 {{- if $secretData }}
 {{- $secretUsername := index $secretData "NATS_USERNAME" }}
 {{- if $secretUsername }}
@@ -14,6 +15,10 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $secretPassword := index $secretData "NATS_PASSWORD" }}
 {{- if $secretPassword }}
 {{- $password = $secretPassword | b64dec }}
+{{- end }}
+{{- $secretHtpasswd := index $secretData "HTPASSWD" }}
+{{- if $secretHtpasswd }}
+{{- $htpasswd = $secretHtpasswd | b64dec }}
 {{- end }}
 {{- end -}}
 apiVersion: v1
@@ -37,6 +42,7 @@ type: Opaque
 data:
   NATS_USERNAME: {{ $username | b64enc }}
   NATS_PASSWORD: {{ $password | b64enc }}
+  HTPASSWD: {{ $htpasswd | b64enc }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -70,6 +76,6 @@ data:
     }
 
     users = [
-        { user: {{ $username | quote }}, password: {{ htpasswd $username $password | trimPrefix (printf "%s:" $username) }}, permissions: $ADMIN }
+        { user: {{ $username | quote }}, password: {{ $htpasswd | trimPrefix (printf "%s:" $username) }}, permissions: $ADMIN }
       ]
     }
