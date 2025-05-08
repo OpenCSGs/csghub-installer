@@ -53,6 +53,14 @@ data:
       touch /tmp/skip_knative_install
     }
 
+    # Argo Workflows installation function
+    lws_install() {
+      echo "Starting LeaderWorkSet installation..."
+      kubectl apply -f /lws/manifests.yaml
+      echo "LeaderWorkSet installation completed."
+      touch /tmp/skip_lws_install
+    }
+
     # Space Application secret create
     space_install() {
       echo "Starting Space Application pre-install..."
@@ -155,6 +163,11 @@ data:
       verify_and_install "kourier-system" "3scale-kourier-gateway" "kourier" "knative_install"
       verify_and_install "kourier-system" "3scale-kourier-gateway" "kourier-internal" "knative_install"
 
+      # Verify and install LeaderWorkSet
+      lws_install
+      # Verify lws controller
+      verify_and_install "lws-system" "lws-controller-manager" "lws-webhook-service" "lws_install"
+      verify_and_install "lws-system" "lws-controller-manager" "lws-controller-manager-metrics-service" "lws_install"
     done
     {{- end }}
 ---

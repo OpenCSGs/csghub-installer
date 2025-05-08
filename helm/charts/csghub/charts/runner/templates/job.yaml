@@ -49,6 +49,8 @@ spec:
               mountPath: /argo
             - name: knative
               mountPath: /knative
+            - name: lws
+              mountPath: /lws
             - name: space
               mountPath: /space
         - name: gpu-gather
@@ -91,6 +93,9 @@ spec:
         - name: knative
           configMap:
             name: {{ include "common.names.custom" (list . "runner-knative") }}
+        - name: lws
+          configMap:
+            name: {{ include "common.names.custom" (list . "runner-lws") }}
         - name: space
           configMap:
             name: {{ include "common.names.custom" (list . "runner-space") }}
