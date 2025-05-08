@@ -134,8 +134,6 @@ spec:
             {{- $exists := lookup "v1" "Secret" .Release.Namespace $secret }}
             {{- if $exists }}
             secretName: {{ $secret }}
-            {{- else }}
-              {{ fail "You must specify a kube config secret already created" }}
             {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
