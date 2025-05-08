@@ -253,6 +253,10 @@ postgresql:
   #   - csghub_dataflow
   #   - starship_codegpt
 
+## For Starship
+starship:
+  enabled: false
+
 ## For Dataflow
 dataflow:
   ## Disable dataflow default
