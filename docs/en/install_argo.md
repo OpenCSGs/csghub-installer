@@ -6,6 +6,10 @@
 >
 > _**Note:** This document is for reference only._
 
+## Installation Instructions
+
+CSGHub implements the functions of model evaluation and space image construction through argo workflow.
+
 ## Steps
 
 ### Installing core components

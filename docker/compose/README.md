@@ -22,6 +22,13 @@ Software requirements:
 
     _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
+## Prerequisites
+
+- [Install Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
+- [Install Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
+- [Install lws](https://opencsg.com/docs/csghub/101/install/install_lws)
+- [Install Nvidia-device-plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) （As needed）
+
 ## Deployment example
 
 ### Installation package download
@@ -29,7 +36,7 @@ Software requirements:
 Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghub-docker-compose-v1.5.0.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.7.0/csghub-docker-compose-v1.7.0.tgz
 ```
 
 ### Installation Configuration
@@ -37,7 +44,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghu
 - Unzip Program
 
 ```shell
-tar -zxf csghub-docker-compose-v1.5.2.tgz && cd ./csghub
+tar -zxf csghub-docker-compose-v1.7.0.tgz && cd ./csghub
 ```
 
 - Configuration Update
@@ -95,6 +102,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` versi
 | 1.4.x | 1.4.x | Add component Dataviewer |
 | 1.5.x | 1.5.x | |
 | 1.6.x | 1.6.x | Add component aigateway and remove space_builder |
+| 1.7.x | 1.7.x | Support multi-machine and multi-card deployment services |
 
 ## Domain name and IP
 

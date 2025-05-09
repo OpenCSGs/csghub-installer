@@ -6,9 +6,11 @@
 >
 > _**注意：**本文档仅供参考。_
 
-## 说明
+## 安装说明
 
 Knative Serving 是 CSGHub 部署实例必续组件，在部署 CSGHub 前需要提前配置并部署好。Helm 部署通过指定`global.deployment.knative.serving.autoConfig=true`自动部署 Knative Serving。
+
+CSGHub 通过 Knative Serving 实现推理和微调已经应用空间等实例的部署功能。
 
 ## 配置步骤
 
