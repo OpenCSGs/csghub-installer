@@ -1,30 +1,30 @@
-# Argo Workflow安装指引
+# LeaderWorkSet Installation Guide
 
-> **官方文档：**
+> **Official Documentation:**
 >
-> - [argo workflow](https://argo-workflows.readthedocs.io/en/latest/)
+> - [[lws](https://github.com/kubernetes-sigs/lws)](https://argo-workflows.readthedocs.io/en/latest/)
 >
-> _**注意：**本文档仅供参考。_
+> _**Note:** This document is for reference only._
 
-## 安装说明
+## Installation Instructions
 
-CSGHub 通过 argo workflow 实现模型评测和 space 镜像构建的功能。
+CSGHub uses lws to deploy inference services on multiple machines and multiple cards.
 
-## 安装步骤
+## Steps
 
-### 安装核心组件
+### Installing core components
 
-argo workflow组件在csghub中用于支持模型评测服务。请使用如下命令进行安装：
+The argo workflow component is used in csghub to support model evaluation services. Please use the following command to install it:
 
 ```shell
-# 安装核心组件
+# Installing core components
 kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/argo.yaml
 
-# 安装rbac组件
+# Installing rbac
 kubectl apply -f https://raw.githubusercontent.com/OpenCSGs/csghub-installer/refs/heads/main/argo/rbac.yaml
 ```
 
-### 验证服务
+### Verify Services
 
 ```shell
 $ kubectl -n argo get all 
@@ -44,4 +44,4 @@ replicaset.apps/argo-server-6d885749b            1         1         1       5d7
 replicaset.apps/workflow-controller-85ff8b9949   1         1         1       5d7h
 ```
 
-确认所有服务正常运行。
+Confirm that all services are running normally.

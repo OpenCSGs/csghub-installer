@@ -20,6 +20,13 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
     _**说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。_
 
+## 前置条件
+
+- [安装Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
+- [安装Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
+- [安装 lws](https://opencsg.com/docs/csghub/101/install/install_lws)
+- [安装 Nvidia-device-plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) （如所需）
+
 ## 部署示例
 
 ### 安装包下载
@@ -27,7 +34,7 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 下载请到[Release](https://github.com/OpenCSGs/csghub-installer/releases)页面。
 
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.6.0/csghub-docker-compose-v1.6.0.tgz
+wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.7.0/csghub-docker-compose-v1.7.0.tgz
 ```
 
 ### 安装配置
@@ -35,7 +42,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.6.0/csghu
 - 解压程序
 
     ```shell
-    tar -zxf csghub-docker-compose-v1.6.0.tgz && cd ./csghub
+    tar -zxf csghub-docker-compose-v1.7.0.tgz && cd ./csghub
     ```
 
 - 配置更新
@@ -93,6 +100,7 @@ CSGHub `major.minor` 版本和 CSGHub Server 保持一致，`Patch` 版本根据
 |   1.4.x    |    1.4.x    | 增加组件 Dataviewer                        |
 |   1.5.x    |    1.5.x    |                                            |
 |   1.6.x    |    1.6.x    | 增加组件 AiGateway 并移除组件 SpaceBuilder |
+|   1.7.x    |    1.7.x    | 支持多机多卡部署服务                       |
 
 ## 域名和IP
 
