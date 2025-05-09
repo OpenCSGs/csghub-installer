@@ -22,6 +22,13 @@ Software requirements:
 
     _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
+## Prerequisites
+
+- [Install Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
+- [Install Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
+- [Install lws](https://opencsg.com/docs/csghub/101/install/install_lws)
+- [Install Nvidia-device-plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) （As needed）
+
 ## Deployment example
 
 ### Installation package download
@@ -95,6 +102,7 @@ CSGHub `major.minor` version is consistent with CSGHub Server, and `Patch` versi
 | 1.4.x | 1.4.x |  |
 | 1.5.x | 1.5.x | |
 | 1.6.x | 1.6.x | Add component aigateway and remove space_builder |
+| 1.7.x | 1.7.x | Support multi-machine and multi-card deployment services |
 
 ## Domain name and IP
 

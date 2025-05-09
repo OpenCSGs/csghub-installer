@@ -6,9 +6,11 @@
 >
 > _**Note:** This document is for reference only._
 
-## Summary
+## Installation Instructions
 
 Knative Serving is a required component for CSGHub deployment instances. You need to configure and deploy it before deploying CSGHub. Helm deployment automatically deploys Knative Serving by specifying `global.deployment.knative.serving.autoConfig=true`.
+
+CSGHub uses Knative Serving to implement reasoning and fine-tuning of deployment functions such as application spaces.
 
 ## Steps
 
