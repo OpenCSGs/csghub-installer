@@ -13,7 +13,9 @@ Define the host for csghub gitaly
 {{- if .Values.global.gitaly.external }}
 {{- if hasKey .Values.global.gitaly "connection" }}
 {{- if hasKey .Values.global.gitaly.connection "host" }}
+{{- if .Values.global.gitaly.connection.host }}
 {{- $host = .Values.global.gitaly.connection.host }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -32,7 +34,9 @@ Define the port for csghub gitaly
 {{- if .Values.global.gitaly.external }}
 {{- if hasKey .Values.global.gitaly "connection" }}
 {{- if hasKey .Values.global.gitaly.connection "port" }}
+{{- if .Values.global.gitaly.connection.port }}
 {{- $port = .Values.global.gitaly.connection.port }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -51,7 +55,9 @@ Define the storage for csghub gitaly
 {{- if .Values.global.gitaly.external }}
 {{- if hasKey .Values.global.gitaly "connection" }}
 {{- if hasKey .Values.global.gitaly.connection "storage" }}
+{{- if .Values.global.gitaly.connection.storage }}
 {{- $storage = .Values.global.gitaly.connection.storage }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -70,7 +76,9 @@ Define the token for csghub gitaly
 {{- if .Values.global.gitaly.external }}
 {{- if hasKey .Values.global.gitaly "connection" }}
 {{- if hasKey .Values.global.gitaly.connection "token" }}
+{{- if .Values.global.gitaly.connection.token }}
 {{- $token = .Values.global.gitaly.connection.token }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

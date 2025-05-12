@@ -31,7 +31,9 @@ Define if Ingress TLS secret
 {{- $secret := "" }}
 {{- if hasKey .Values.global.ingress "tls" }}
   {{- if hasKey .Values.global.ingress.tls "secretName" }}
-    {{- $secret = .Values.global.ingress.tls.secretName }}
+    {{- if .Values.global.ingress.tls.secretName }}
+        {{- $secret = .Values.global.ingress.tls.secretName }}
+    {{- end }}
   {{- end }}
 {{- end }}
 {{- $secret }}
