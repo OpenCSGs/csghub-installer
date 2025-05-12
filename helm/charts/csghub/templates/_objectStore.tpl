@@ -13,7 +13,9 @@ Define the endpoint for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "endpoint" }}
+{{- if .Values.global.objectStore.connection.endpoint }}
 {{- $endpoint = .Values.global.objectStore.connection.endpoint }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -32,7 +34,9 @@ Define the accessKey for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "accessKey" }}
+{{- if .Values.global.objectStore.connection.accessKey }}
 {{- $accessKey = .Values.global.objectStore.connection.accessKey }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -51,7 +55,9 @@ Define the accessSecret for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "accessSecret" }}
+{{- if .Values.global.objectStore.connection.accessSecret }}
 {{- $accessSecret = .Values.global.objectStore.connection.accessSecret }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -70,7 +76,9 @@ Define the bucket for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "bucket" }}
+{{- if .Values.global.objectStore.connection.bucket }}
 {{- $bucket = .Values.global.objectStore.connection.bucket }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -89,7 +97,9 @@ Define the region for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "region" }}
+{{- if .Values.global.objectStore.connection.region }}
 {{- $region = .Values.global.objectStore.connection.region }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -111,7 +121,9 @@ Define the encrypt for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "encrypt" }}
+{{- if .Values.global.objectStore.connection.encrypt }}
 {{- $encrypt = .Values.global.objectStore.connection.encrypt }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -130,7 +142,9 @@ Define the pathStyle for csghub objectStore
 {{- if .Values.global.objectStore.external }}
 {{- if hasKey .Values.global.objectStore "connection" }}
 {{- if hasKey .Values.global.objectStore.connection "pathStyle" }}
+{{- if .Values.global.objectStore.connection.pathStyle }}
 {{- $pathStyle = .Values.global.objectStore.connection.pathStyle }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -138,4 +152,3 @@ Define the pathStyle for csghub objectStore
 {{- end }}
 {{- $pathStyle -}}
 {{- end }}
-
