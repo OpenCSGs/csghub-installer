@@ -13,7 +13,9 @@ Define the host for csghub redis
 {{- if .Values.global.redis.external }}
 {{- if hasKey .Values.global.redis "connection" }}
 {{- if hasKey .Values.global.redis.connection "host" }}
+{{- if .Values.global.redis.connection.host }}
 {{- $host = .Values.global.redis.connection.host }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -32,7 +34,9 @@ Define the port for csghub redis
 {{- if .Values.global.redis.external }}
 {{- if hasKey .Values.global.redis "connection" }}
 {{- if hasKey .Values.global.redis.connection "port" }}
+{{- if .Values.global.redis.connection.port }}
 {{- $port = .Values.global.redis.connection.port }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -51,7 +55,9 @@ Define the password for csghub redis
 {{- if .Values.global.redis.external }}
 {{- if hasKey .Values.global.redis "connection" }}
 {{- if hasKey .Values.global.redis.connection "password" }}
+{{- if .Values.global.redis.connection.password }}
 {{- $password = .Values.global.redis.connection.password }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}

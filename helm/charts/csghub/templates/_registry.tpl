@@ -13,7 +13,9 @@ Define the repository for csghub registry
 {{- if .Values.global.registry.external }}
 {{- if hasKey .Values.global.registry "connection" }}
 {{- if hasKey .Values.global.registry.connection "repository" }}
+{{- if .Values.global.registry.connection.repository }}
 {{- $repository = .Values.global.registry.connection.repository }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -32,7 +34,9 @@ Define the namespace for csghub registry
 {{- if .Values.global.registry.external }}
 {{- if hasKey .Values.global.registry "connection" }}
 {{- if hasKey .Values.global.registry.connection "namespace" }}
+{{- if .Values.global.registry.connection.namespace }}
 {{- $namespace = .Values.global.registry.connection.namespace }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -51,7 +55,9 @@ Define the username for csghub registry
 {{- if .Values.global.registry.external }}
 {{- if hasKey .Values.global.registry "connection" }}
 {{- if hasKey .Values.global.registry.connection "username" }}
+{{- if .Values.global.registry.connection.username }}
 {{- $username = .Values.global.registry.connection.username }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -70,7 +76,9 @@ Define the password for csghub registry
 {{- if .Values.global.registry.external }}
 {{- if hasKey .Values.global.registry "connection" }}
 {{- if hasKey .Values.global.registry.connection "password" }}
+{{- if .Values.global.registry.connection.password }}
 {{- $password = .Values.global.registry.connection.password }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
