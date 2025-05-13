@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" .)).data -}}
 {{- $username := "natsadmin" -}}
 {{- $password := randAlphaNum 15 -}}
-{{- $htpasswd := "" -}}
+{{- $htpasswd := htpasswd $username $password -}}
 {{- if $secretData }}
 {{- $secretUsername := index $secretData "NATS_USERNAME" }}
 {{- if $secretUsername }}
