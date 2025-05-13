@@ -469,6 +469,8 @@ if [ "$HOSTS_ALIAS" == true ]; then
           ${IP_ADDRESS} registry.${DOMAIN} registry
           ${IP_ADDRESS} minio.${DOMAIN} minio
           ${IP_ADDRESS} temporal.${DOMAIN} temporal
+          ${IP_ADDRESS} starship.${DOMAIN} starship
+          ${IP_ADDRESS} starship-api.${DOMAIN} starship-api
         }
       }
 EOF
@@ -483,6 +485,8 @@ EOF
     "${IP_ADDRESS} registry.${DOMAIN} registry"
     "${IP_ADDRESS} minio.${DOMAIN} minio"
     "${IP_ADDRESS} temporal.${DOMAIN} temporal"
+    "${IP_ADDRESS} starship.${DOMAIN} starship"
+    "${IP_ADDRESS} starship-api.${DOMAIN} starship-api"
   )
 
   for ENTRY in "${HOST_ENTRIES[@]}"; do
@@ -498,7 +502,7 @@ fi
 if [ "$ENABLE_K3S" == "true" ]; then
   log "INFO" "Configure insecure private container registry."
 
-  SECRET_JSON=$(kubectl -n csghub get secret csghub-registry-docker-config -ojsonpath='{.data.\.dockerconfigjson}' | base64 -d)
+  SECRET_JSON=$(kubectl -n spaces get secret csghub-registry-docker-config -ojsonpath='{.data.\.dockerconfigjson}' | base64 -d)
   REGISTRY=$(echo "$SECRET_JSON" | jq -r '.auths | keys[]')
   REGISTRY_USERNAME=$(echo "$SECRET_JSON" | jq -r '.auths | to_entries[] | .value | .username')
   REGISTRY_PASSWORD=$(echo "$SECRET_JSON" | jq -r '.auths | to_entries[] | .value | .password')
