@@ -470,6 +470,8 @@ if [ "$HOSTS_ALIAS" == true ]; then
           ${IP_ADDRESS} registry.${DOMAIN} registry
           ${IP_ADDRESS} minio.${DOMAIN} minio
           ${IP_ADDRESS} temporal.${DOMAIN} temporal
+          ${IP_ADDRESS} starship.${DOMAIN} starship
+          ${IP_ADDRESS} starship-api.${DOMAIN} starship-api
         }
       }
 EOF
@@ -484,6 +486,8 @@ EOF
     "${IP_ADDRESS} registry.${DOMAIN} registry"
     "${IP_ADDRESS} minio.${DOMAIN} minio"
     "${IP_ADDRESS} temporal.${DOMAIN} temporal"
+    "${IP_ADDRESS} starship.${DOMAIN} starship"
+    "${IP_ADDRESS} starship-api.${DOMAIN} starship-api"
   )
 
   for ENTRY in "${HOST_ENTRIES[@]}"; do
