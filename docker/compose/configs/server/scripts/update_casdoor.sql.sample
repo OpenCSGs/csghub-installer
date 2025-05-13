@@ -33,7 +33,7 @@ SELECT pg_catalog.set_config('search_path', 'public', false);
 UPDATE
     application
 SET
-    redirect_uris = '["http://_SERVER_DOMAIN:_SERVER_PORT/api/v1/callback/casdoor","http://_SERVER_DOMAIN/api/v1/callback/casdoor"]'
+    redirect_uris = '["_SERVER_PROTOCOL://_SERVER_DOMAIN:_SERVER_PORT/api/v1/callback/casdoor","_SERVER_PROTOCOL://_SERVER_DOMAIN/api/v1/callback/casdoor"]'
 WHERE
     name = 'CSGHub';
 
