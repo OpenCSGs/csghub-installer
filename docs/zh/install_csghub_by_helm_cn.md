@@ -16,10 +16,10 @@ CSGHub 的 Helm Chart 设计尽量遵循向后兼容的原则，通常情况下�
 | 平台                                                         |          | amd64 **/** arm64                    |                                                              |
 | Kubernetes                                                   | 1.20     | 1.28+                                | 如果启用 knative-serving 自动配置，则需要 kubernetes 版本1.28+。 |
 | Helm                                                         | 3.12.0   | 3.12.0+                              |                                                              |
-| [Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving) | 1.15.1   | 1.15.1+                              | 如果启用 knative-serving 自动配置，会自动安装配置 1.16.1 版本。 |
-| [Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo) |          | v3.5.12+                             | 用于模型评测和镜像构建                                       |
-| [lws](https://opencsg.com/docs/csghub/101/install/install_lws) |          | v0.6.1                               | 用于支持多机多卡部署                                         |
-| [Nvidia Device Plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) |          | cuda >= 12.1 </br> drivers >= 384.81 | [Optional]                                                   |
+| [Knative Serving](./install_knative_serving_cn.md)           | 1.15.1   | 1.15.1+                              | 如果启用 knative-serving 自动配置，会自动安装配置 1.16.1 版本。 |
+| [Argo Workflow](./install_argo_cn.md)                        |          | v3.5.12+                             | 用于模型评测和镜像构建                                       |
+| [lws](./install_lws_cn.md)                                   |          | v0.6.1                               | 用于支持多机多卡部署                                         |
+| [Nvidia Device Plugin](./install_nvidia_device_plugin_cn.md) |          | cuda >= 12.1 </br> drivers >= 384.81 | [Optional]                                                   |
 
 _**说明：** Kubernetes 需要支持 Dynamic Volume Provisioning。_
 

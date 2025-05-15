@@ -3,12 +3,10 @@
 > **Version History:**
 >
 > - Starting from v0.9.0, CSGHub will no longer provide support for Gitea as a git backend.
-> - Starting from v1.1.0, add Temporal component as an asynchronous/scheduled task executor.
+> - Starting from v1.1.0, Add Temporal component as an asynchronous/scheduled task executor.
 > - Starting from v1.3.0, CSGHub removes gitea from the docker-compose/helm-chart installer.
->
-> **Description:**
->
-> - [Multi-language documentation](docs/)
+>- Starting from v1.6.0, Space Builder is removed, its function is inherited by runner.
+> 
 
 ### Introduction
 
@@ -55,5 +53,5 @@ The CSGHub project consists of multiple components, each of which has specific r
 - **redis**: Provides high-performance cache and data storage services.
 - **casdoor**: Responsible for user identity authentication and authorization, and cooperates with **csghub_user** to complete user management.
 - **coredns**: Used to resolve CSGHub's internal DNS requests, such as the internal domain name resolution used in Knative Serving.
-- **Temporal**: Asynchronous task management service, used to execute time-consuming tasks, such as resource synchronization tasks.
+- **temporal**: Asynchronous task management service, used to execute time-consuming tasks, such as resource synchronization tasks.
 - **fluentd**: A flexible log collection and processing framework that aggregates and forwards application logs for real-time monitoring, analysis, and troubleshooting.
