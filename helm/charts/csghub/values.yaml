@@ -273,12 +273,12 @@ ingress-nginx:
     config:
       ## Set the risk level for annotations; critical indicates high risk
       annotations-risk-level: Critical
-      http-snippet: |
-        limit_req_zone $binary_remote_addr zone=global:10m rate=20r/s;
-        limit_conn_zone $binary_remote_addr zone=addr:10m;
-      server-snippet: |
-        limit_req zone=global burst=40;
-        limit_conn addr 50;
+#      http-snippet: |
+#        limit_req_zone $binary_remote_addr zone=global:10m rate=20r/s;
+#        limit_conn_zone $binary_remote_addr zone=addr:10m;
+#      server-snippet: |
+#        limit_req zone=global burst=40;
+#        limit_conn addr 50;
     ## Allow the use of server snippets in annotations
     allowSnippetAnnotations: true
     ## Configuration for the service exposed by the Ingress Controller
