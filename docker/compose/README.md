@@ -24,10 +24,12 @@ Software requirements:
 
 ## Prerequisites
 
-- [Install Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
-- [Install Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
-- [Install lws](https://opencsg.com/docs/csghub/101/install/install_lws)
-- [Install Nvidia-device-plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) （As needed）
+The following components need to be installed in advance (if connected to Kubernetes):
+
+- [Install Argo Workflow](../../docs/en/install_argo.md)
+- [Install Knative Serving](../../docs/en/install_knative_serving.md)
+- [Install lws](../../docs/en/install_lws.md)
+- [Install Nvidia-device-plugin](../../docs/en/install_nvidia_device_plugin.md) （As needed）
 
 ## Deployment example
 
@@ -58,7 +60,7 @@ SERVER_PROTOCOL="http"
 
 # Specify whether to connect to K8S. 0 for access, 1 for non-access
 CSGHUB_WITH_K8S=1
-KUBE_CONFIG_DIR=".kube/config"
+KUBE_CONFIG_DIR="/root/.kube/config"
 
 # SPACE_APP Some configurations need to be configured in advance
 SPACE_APP_NAMESPACE="spaces"

@@ -2,13 +2,11 @@
 
 > **版本历史：**
 >
-> - 从 v0.9.0 版本开始，CSGHub 将不再继续提供 Gitea 作为 git 后端的支持。
-> - 从 v1.1.0 版本开始，添加 Temporal 组件，作为异步 / 计划任务执行器。
-> - 从 v1.3.0 版本开始，CSGHub 将 gitea 从 docker-compose/helm-chart 安装程序中移除。
+> - 从 v0.9.0 开始，CSGHub 将不再支持 Gitea 作为 git 后端。
+> - 从 v1.1.0 开始，添加 Temporal 组件作为异步/计划任务执行器。
+> - 从 v1.3.0 开始，CSGHub 从 docker-compose/helm-chart 安装程序中移除 gitea。
+> - 从 v1.6.0 开始，Space Builder 被移除，其功能由 runner 继承。
 >
-> **说明：**
->
-> - [多语言文档](../../docs/)
 
 ### 介绍
 
@@ -43,7 +41,6 @@ CSGHub 项目由多个组件组成，每个组件都承担着特定的职责，�
 - **csghub_accounting**: 计费系统，负责资源使用过程中产生的费用统计。
 - **csghub_mirror**: 提供仓库数据的同步服务，负责同步 opencsg.com 模型和数据集到本地。
 - **csghub_runner**: 负责在 Kubernetes 集群中部署和管理应用实例，确保应用的快速构建和持续交付。
-- **space_builder**: 负责构建应用镜像并上传到容器镜像仓库，简化应用的打包和发布流程。
 - **csghub_aigateway**: AI Gateway是管理和优化AI服务访问的智能中间层，统一接口、路由请求、保障安全并控制成本。
 - **csghub_dataviewer**: 协助用户在页面更快捷的预览数据集。
 - **csghub_watcher**: 监控 CSGHub  所有 Secret 和 ConfigMap 变动，并更新相关依赖资源。
@@ -56,5 +53,5 @@ CSGHub 项目由多个组件组成，每个组件都承担着特定的职责，�
 - **redis**: 提供高性能的缓存和数据存储服务。
 - **casdoor**: 负责用户身份的验证和授权，配合 **csghub_user** 完成用户管理。
 - **coredns**: 用于解析 CSGHub 的内部 DNS 请求，例如 Knative Serving 中使用的内部域名解析。
-- **Temporal**: 异步任务管理服务，用于执行耗时较长任务，比如资源同步任务。
+- **temporal**: 异步任务管理服务，用于执行耗时较长任务，比如资源同步任务。
 - **fluentd**: 灵活的日志收集和处理框架，聚合和转发各应用程序日志，便于实时监控、分析和故障排除。

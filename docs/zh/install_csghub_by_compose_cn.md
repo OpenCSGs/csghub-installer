@@ -22,10 +22,12 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
 ## 前置条件
 
-- [安装Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
-- [安装Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
-- [安装 lws](https://opencsg.com/docs/csghub/101/install/install_lws)
-- [安装 Nvidia-device-plugin](https://opencsg.com/docs/csghub/101/install/install_nvidia_device_plugin) （如所需）
+以下组件需要提前安装（如果对接到 Kubernetes）：
+
+- [安装Argo Workflow](./install_argo_cn.md)
+- [安装Knative Serving](./install_knative_serving_cn.md)
+- [安装 lws](./install_lws_cn.md)
+- [安装 Nvidia-device-plugin](./install_nvidia_device_plugin_cn.md) （如所需）
 
 ## 部署示例
 
@@ -56,7 +58,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.7.0/csghu
     
     # 指定是否对接 K8S。 0 接入，1 不接入
     CSGHUB_WITH_K8S=1
-    KUBE_CONFIG_DIR=".kube/config"
+    KUBE_CONFIG_DIR="/root/.kube/config"
     
     # SPACE_APP 部分配置需要提前配置好
     SPACE_APP_NAMESPACE="spaces"

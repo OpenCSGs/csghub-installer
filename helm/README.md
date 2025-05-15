@@ -16,10 +16,10 @@ In this way, CSGHUB achieves flexible deployment management and can respond to u
 | Platform                                                     |         | amd64 **/** arm64                    |                                                              |
 | Kubernetes                                                   | 1.20    | 1.28+                                | If enable knative serving auto-configure, need kubernetes 1.28+. |
 | Helm                                                         | 3.12.0  | 3.12.0+                              |                                                              |
-| [Knative Serving](https://opencsg.com/docs/en/csghub/101/install/install_knative_serving) | 1.15.1  | 1.15.1+                              | If you enable knative-serving auto-configuration, configuration version 1.16.1 is automatically installed. |
-| [Argo Workflow](https://opencsg.com/docs/en/csghub/101/install/install_argo) |         | v3.5.12+                             | Used for model evaluation and image building                 |
-| [lws](https://opencsg.com/docs/en/csghub/101/install/install_lws) |         | v0.6.1                               | Used to support multi-machine and multi-card deployment      |
-| [Nvidia Device Plugin](https://opencsg.com/docs/en/csghub/101/install/install_nvidia_device_plugin) |         | cuda >= 12.1 </br> drivers >= 384.81 | [Optional]                                                   |
+| [Knative Serving](../docs/en/install_knative_serving.md)     | 1.15.1  | 1.15.1+                              | If you enable knative-serving auto-configuration, configuration version 1.16.1 is automatically installed. |
+| [Argo Workflow](../docs/en/install_argo.md)                  |         | v3.5.12+                             | Used for model evaluation and image building                 |
+| [lws](../docs/en/install_lws.md)                             |         | v0.6.1                               | Used to support multi-machine and multi-card deployment      |
+| [Nvidia Device Plugin](../docs/en/install_nvidia_device_plugin.md) |         | cuda >= 12.1 </br> drivers >= 384.81 | [Optional]                                                   |
 
 _**Note:** Kubernetes needs to support Dynamic Volume Provisioning._
 
