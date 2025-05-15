@@ -24,6 +24,8 @@ Software requirements:
 
 ## Prerequisites
 
+The following components need to be installed in advance (if connected to Kubernetes):
+
 - [Install Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
 - [Install Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
 - [Install lws](https://opencsg.com/docs/csghub/101/install/install_lws)
@@ -32,8 +34,6 @@ Software requirements:
 ## Deployment example
 
 ### Installation package download
-
-Please download from the [Release](https://github.com/OpenCSGs/csghub-installer/releases) page.
 
 ```shell
 wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tgz
@@ -58,7 +58,7 @@ SERVER_PROTOCOL="http"
 
 # Specify whether to connect to K8S. 0 for access, 1 for non-access
 CSGHUB_WITH_K8S=1
-KUBE_CONFIG_DIR=".kube/config"
+KUBE_CONFIG_DIR="/root/.kube/config"
 
 # SPACE_APP Some configurations need to be configured in advance
 SPACE_APP_NAMESPACE="spaces"

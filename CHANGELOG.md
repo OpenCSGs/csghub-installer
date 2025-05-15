@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v1.7.0
+
+---
+
+- [Helm] 内部集成 Starship (仅 ee)
+
 ## v1.6.0
 
 ---

@@ -22,6 +22,8 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
 ## 前置条件
 
+以下组件需要提前安装（如果对接到 Kubernetes）：
+
 - [安装Argo Workflow](https://opencsg.com/docs/csghub/101/install/install_argo)
 - [安装Knative Serving](https://opencsg.com/docs/csghub/101/install/install_knative_serving)
 - [安装 lws](https://opencsg.com/docs/csghub/101/install/install_lws)
@@ -31,10 +33,8 @@ Docker Compose 作为 CSGHub 常用安装方式之一，具有诸多优势。例
 
 ### 安装包下载
 
-下载请到[Release](https://github.com/OpenCSGs/csghub-installer/releases)页面。
-
 ```shell
-wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghub-docker-compose-v1.5.2.tgz
+wget https://opencsg-csghub-compose.oss-cn-beijing.aliyuncs.com/csghub-latest.tgz
 ```
 
 ### 安装配置
@@ -42,7 +42,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghu
 - 解压程序
 
     ```shell
-    tar -zxf csghub-docker-compose-v1.5.2.tgz && cd ./csghub
+    tar -zxf csghub-latest.tgz && cd ./csghub
     ```
 
 - 配置更新
@@ -56,7 +56,7 @@ wget https://github.com/OpenCSGs/csghub-installer/releases/download/v1.5.2/csghu
     
     # 指定是否对接 K8S。 0 接入，1 不接入
     CSGHUB_WITH_K8S=1
-    KUBE_CONFIG_DIR=".kube/config"
+    KUBE_CONFIG_DIR="/root/.kube/config"
     
     # SPACE_APP 部分配置需要提前配置好
     SPACE_APP_NAMESPACE="spaces"
