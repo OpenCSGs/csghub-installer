@@ -1296,6 +1296,9 @@ data:
     metadata:
       name: workflow-controller-configmap
       namespace: argo
+    data:
+      executor: |
+        imagePullPolicy: IfNotPresent
     ---
     apiVersion: v1
     kind: Service
