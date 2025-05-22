@@ -179,6 +179,8 @@ check_k3s_cluster() {
   log "INFO" "Checking if K3S cluster is up and running..."
 
   for attempt in $(seq 1 $max_attempts); do
+    sleep $delay
+
     local READY=$(kubectl get nodes | grep -c 'Ready')
     local NOT_RUNNING=$(kubectl get pods -n kube-system | grep -vcE 'Running|Completed|STATUS')
 
@@ -188,7 +190,6 @@ check_k3s_cluster() {
     fi
 
     log "WARN" "K3S cluster is not ready yet. Attempt ${attempt}/${max_attempts}."
-    sleep $delay
   done
 
   log "ERRO" "K3S cluster is not up after ${max_attempts} attempts."
