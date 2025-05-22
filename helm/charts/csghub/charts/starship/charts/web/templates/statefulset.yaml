@@ -16,7 +16,7 @@ spec:
       {{- include "common.labels.selector" . | nindent 6 }}
   serviceName: {{ include "common.names.custom" . }}
   replicas: 1
-  minReadySeconds: 30
+  minReadySeconds: 120
   template:
     metadata:
       annotations:
@@ -79,8 +79,8 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8000
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            initialDelaySeconds: 120
+            periodSeconds: 10
           securityContext:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
           volumeMounts:
