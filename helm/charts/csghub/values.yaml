@@ -170,7 +170,7 @@ global:
 
   ## This section of configuration is used to integrate k8s to run various instances, +
   ## such as Space applications, fine-tuning, and inference instances.
-  deployment:
+  deploy:
     ## Enable or disable the deployment of this application.
     enabled: true
     ## Name of the Kubernetes Secret to be used for configuration or credentials.

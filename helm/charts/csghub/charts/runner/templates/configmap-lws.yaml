@@ -10,7 +10,7 @@ so all description fields are truncated using the following command:
 `yq eval 'del(.. | select(has("description")).description)' manifests.yaml > simple_lws.yaml`
 */}}
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
+{{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
 {{- $registry := or .Values.global.image.registry "quay.io" }}
 apiVersion: v1
 kind: ConfigMap

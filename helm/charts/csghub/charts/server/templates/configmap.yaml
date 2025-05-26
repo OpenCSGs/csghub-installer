@@ -108,7 +108,7 @@ data:
   # Deprecated
   STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
   # Deprecated
-  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.deployment.namespace (include "proxy.internal.port" .) }}
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.deploy.namespace (include "proxy.internal.port" .) }}
   # Casdoor
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
   # Workflow
@@ -129,7 +129,7 @@ data:
   {{- end }}
   STARHUB_SERVER_CRON_JOB_SYNC_AS_CLIENT_CRON_EXPRESSION: '*/5 * * * *'
   OPENCSG_TRACING_OTLP_LOGGING: "false"
-  STARHUB_SERVER_SPACE_PYPI_INDEX_URL: {{ .Values.global.deployment.pipIndexUrl | quote}}
+  STARHUB_SERVER_SPACE_PYPI_INDEX_URL: {{ .Values.global.deploy.pipIndexUrl | quote}}
   # Multiple-Sync fetch timeout
   STARHUB_SERVER_GIT_OPERATION_TIMEOUT: "120"
 ---
