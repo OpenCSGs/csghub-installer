@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
+{{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
 {{- $registry := or .Values.global.image.registry "quay.io" }}
 apiVersion: v1
 kind: ConfigMap
@@ -20,7 +20,7 @@ data:
       labels:
         kubernetes.io/metadata.name: argo
     ---
-    {{- if not .Values.global.deployment.mergingNamespace }}
+    {{- if not .Values.global.deploy.mergingNamespace }}
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -38,12 +38,12 @@ data:
     apiVersion: v1
     kind: Namespace
     metadata:
-      name: {{ .Values.global.deployment.imageBuilder.namespace }}
+      name: {{ .Values.global.deploy.imageBuilder.namespace }}
       labels:
-        kubernetes.io/metadata.name: {{ .Values.global.deployment.imageBuilder.namespace }}
+        kubernetes.io/metadata.name: {{ .Values.global.deploy.imageBuilder.namespace }}
     {{- end }}
     ---
-    {{- if not .Values.global.deployment.mergingNamespace }}
+    {{- if not .Values.global.deploy.mergingNamespace }}
     apiVersion: v1
     kind: ResourceQuota
     metadata:
@@ -1426,8 +1426,8 @@ data:
     kind: Role
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1439,7 +1439,7 @@ data:
         verbs:
           - create
           - patch
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       - apiGroups:
           - ""
         resources:
@@ -1487,8 +1487,8 @@ data:
     kind: ServiceAccount
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1497,8 +1497,8 @@ data:
     kind: RoleBinding
     metadata:
       name: executor
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       {{- else }}
       namespace: workflows
       {{- end }}
@@ -1509,13 +1509,13 @@ data:
     subjects:
       - kind: ServiceAccount
         name: executor
-        {{- if .Values.global.deployment.mergingNamespace }}
-        namespace: {{ .Values.global.deployment.namespace }}
+        {{- if .Values.global.deploy.mergingNamespace }}
+        namespace: {{ .Values.global.deploy.namespace }}
         {{- else }}
         namespace: workflows
         {{- end }}
     ---
-    {{- if not .Values.global.deployment.mergingNamespace }}
+    {{- if not .Values.global.deploy.mergingNamespace }}
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
@@ -1555,10 +1555,10 @@ data:
     kind: Role
     metadata:
       name: argo-image-factory-secret-access
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       {{- else }}
-      namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+      namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
       {{- end }}
     rules:
       - apiGroups:
@@ -1573,10 +1573,10 @@ data:
     kind: RoleBinding
     metadata:
       name: argo-image-factory-secret-access
-      {{- if .Values.global.deployment.mergingNamespace }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       {{- else }}
-      namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+      namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
       {{- end }}
     roleRef:
       apiGroup: rbac.authorization.k8s.io
@@ -1587,12 +1587,12 @@ data:
         name: argo
         namespace: argo
     ---
-    {{- if not .Values.global.deployment.mergingNamespace }}
+    {{- if not .Values.global.deploy.mergingNamespace }}
     apiVersion: rbac.authorization.k8s.io/v1
     kind: Role
     metadata:
       name: executor
-      namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+      namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
     rules:
       - apiGroups:
           - ""
@@ -1640,13 +1640,13 @@ data:
     kind: ServiceAccount
     metadata:
       name: executor
-      namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+      namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
     ---
     apiVersion: rbac.authorization.k8s.io/v1
     kind: RoleBinding
     metadata:
       name: executor
-      namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+      namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
     roleRef:
       apiGroup: rbac.authorization.k8s.io
       kind: Role
@@ -1654,6 +1654,6 @@ data:
     subjects:
       - kind: ServiceAccount
         name: executor
-        namespace: {{ .Values.global.deployment.imageBuilder.namespace }}
+        namespace: {{ .Values.global.deploy.imageBuilder.namespace }}
       {{- end }}
 {{- end }}

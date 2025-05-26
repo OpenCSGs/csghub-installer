@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if .Values.global.deployment.enabled }}
+{{- if .Values.global.deploy.enabled }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -130,7 +130,7 @@ spec:
       volumes:
         - name: kube-configs
           secret:
-            {{- $secret := or .Values.global.deployment.kubeSecret .Values.deployment.kubeSecret }}
+            {{- $secret := or .Values.global.deploy.kubeSecret .Values.deployment.kubeSecret }}
             {{- $exists := lookup "v1" "Secret" .Release.Namespace $secret }}
             {{- if $exists }}
             secretName: {{ $secret }}

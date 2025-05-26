@@ -17,8 +17,8 @@ metadata:
 data:
   corefile: |
     .:53 {
-        {{- range .Values.global.deployment.knative.serving.services }}
-        forward {{ printf "%s.%s." $.Values.global.deployment.namespace .domain }} /etc/resolv.conf
+        {{- range .Values.global.deploy.knative.serving.services }}
+        forward {{ printf "%s.%s." $.Values.global.deploy.namespace .domain }} /etc/resolv.conf
         {{- end  }}
         forward . {{ include "system.coredns.ip" . }}
         log
@@ -27,16 +27,16 @@ data:
         reload
         loadbalance
     }
-    {{- range .Values.global.deployment.knative.serving.services }}
+    {{- range .Values.global.deploy.knative.serving.services }}
     {{ .domain }}:53 {
         file /var/opt/coredns/{{ .domain }}
         log
         errors
     }
     {{- end }}
-  {{- range .Values.global.deployment.knative.serving.services }}
+  {{- range .Values.global.deploy.knative.serving.services }}
   {{ .domain }}: |
-    {{- $domain := (printf "%s.%s." $.Values.global.deployment.namespace .domain) }}
+    {{- $domain := (printf "%s.%s." $.Values.global.deploy.namespace .domain) }}
     $ORIGIN {{ $domain }}
     @ 3600 IN SOA ns1.{{ $domain }} admin.{{ $domain }} (
         2022042401 ; Serial
