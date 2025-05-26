@@ -17,6 +17,13 @@ Define the external domain for csghub
 {{- end }}
 
 {{/*
+Define the external public domain for csghub
+*/}}
+{{- define "csghub.external.public.domain" -}}
+{{- include "global.domain" (list . "public") -}}
+{{- end }}
+
+{{/*
 Define the external endpoint for csghub
 */}}
 {{- define "csghub.external.endpoint" -}}

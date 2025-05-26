@@ -22,6 +22,7 @@ metadata:
     nginx.ingress.kubernetes.io/client-body-timeout: "900"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "900"
+    {{- if not .Values.global.deploy.usePublicDomain }}
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* "^/endpoint/" {
         proxy_pass http://{{ printf "%s.%s.svc.%s" (include "proxy.internal.domain" .) .Release.Namespace (include "cluster.domain" .) }}:{{ include "proxy.internal.port" . }};
@@ -34,6 +35,7 @@ metadata:
         proxy_set_header Connection $connection_upgrade;
         proxy_cookie_flags ~ nosecure samesite=lax;
       }
+    {{- end }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4  }}
     {{- end  }}
@@ -43,6 +45,7 @@ spec:
   tls:
     - hosts:
         - {{ include "csghub.external.domain" . }}
+        - {{ include "csghub.external.public.domain" . | quote }}
       {{- $secret := coalesce (include "global.ingress.tls.secret" .) .Values.ingress.tls.secretName }}
       {{- if $secret }}
       secretName: {{ $secret }}
@@ -102,4 +105,21 @@ spec:
               serviceName: {{ include "server.internal.domain" . }}
               servicePort: {{ include "server.internal.port" . }}
             {{- end }}
+    {{- if .Values.global.deploy.usePublicDomain }}
+    - host: {{ printf "*.%s" (include "csghub.external.public.domain" .) | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "proxy.internal.domain" . }}
+                port:
+                  number: {{ include "proxy.internal.port" . }}
+            {{- else }}
+              serviceName: {{ include "proxy.internal.domain" . }}
+              servicePort:  {{ include "proxy.internal.port" . }}
+            {{- end }}
+    {{- end }}
 {{- end }}
