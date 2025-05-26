@@ -232,7 +232,7 @@ mirrors:
 EOF
 
   log "INFO" "Installing K3S..."
-  install_command="curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION=v1.30.4+k3s1 sh -s - --disable=traefik"
+  install_command="curl -sfL https://rancher-mirror.rancher.cn/k3s/k3s-install.sh | INSTALL_K3S_MIRROR=cn INSTALL_K3S_VERSION=v1.30.4+k3s1 sh -s - --disable=traefik --flannel-iface=${default_interface}"
   [ "$ENABLE_NVIDIA_GPU" == "true" ] && install_command+=" --default-runtime=nvidia"
 
   retry bash -c "$install_command"
