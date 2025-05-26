@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
+{{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,15 +15,15 @@ data:
     apiVersion: v1
     kind: Namespace
     metadata:
-      name: {{ .Values.global.deployment.namespace }}
+      name: {{ .Values.global.deploy.namespace }}
       labels:
-        kubernetes.io/metadata.name: {{ .Values.global.deployment.namespace }}
+        kubernetes.io/metadata.name: {{ .Values.global.deploy.namespace }}
     ---
     apiVersion: v1
     kind: Secret
     metadata:
       name: {{ include "common.names.custom" (list . "registry-docker-config") }}
-      namespace: {{ .Values.global.deployment.namespace }}
+      namespace: {{ .Values.global.deploy.namespace }}
       annotations:
         helm.sh/resource-policy: keep
     type: kubernetes.io/dockerconfigjson
