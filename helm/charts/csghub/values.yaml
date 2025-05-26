@@ -185,6 +185,10 @@ global:
             port: "30213"
     ## Allow user defined pip source
     pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
+    ## Image Builder configuration
+    imageBuilder:
+      ## If deployment.mergingNamespace == true, namespace ==> deployment.namespace
+      namespace: "image-factory"
 
   ## Configuration for Persistence
   persistence: { }
