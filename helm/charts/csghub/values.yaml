@@ -152,6 +152,18 @@ global:
       ## The token for authenticating with Gitaly
       # token: ""
 
+  ## Configuration for content moderation settings
+  moderation:
+    enabled: false
+    ## Configuring external content moderation server connection info
+    connection: { }
+      ## The access key ID for authentication with the moderation service
+      # accessKeyId: ""
+      ## The access key secret for authentication with the moderation service
+      # accessKeySecret: ""
+      ## The region where the moderation service is hosted
+      # region: ""
+
   ## This section of configuration is used to integrate k8s to run various instances, +
   ## such as Space applications, fine-tuning, and inference instances.
   deployment:
