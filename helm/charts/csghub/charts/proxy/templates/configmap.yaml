@@ -13,11 +13,11 @@ metadata:
     resource.dependencies/deployments: |
       {{ include "common.names.custom" . }}
 data:
-  {{- range .Values.global.deployment.knative.serving.services }}
+  {{- range .Values.global.deploy.knative.serving.services }}
   {{ .domain }}.conf: |
     server {
         listen 80;
-        server_name {{ printf "*.%s.%s" $.Values.global.deployment.namespace .domain }};
+        server_name {{ printf "*.%s.%s" $.Values.global.deploy.namespace .domain }};
 
         location / {
             proxy_http_version 1.1;

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{{- if and .Values.global.deployment.enabled .Values.global.deployment.autoConfigure }}
+{{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
 {{- $registry := or .Values.global.image.registry "gcr.io/knative-releases/knative.dev" }}
 apiVersion: v1
 kind: ConfigMap
@@ -13528,7 +13528,7 @@ data:
         example.org: |
           selector:
             app: nonprofit
-      {{- range .Values.global.deployment.knative.serving.services }}
+      {{- range .Values.global.deploy.knative.serving.services }}
       {{ .domain }}: ""
       {{- end }}
     ---
@@ -14374,7 +14374,7 @@ data:
         app.kubernetes.io/version: "1.16.1"
     ---
   kourier.yaml: |
-    {{- if not .Values.global.deployment.mergingNamespace }}
+    {{- if not .Values.global.deploy.mergingNamespace }}
     apiVersion: v1
     kind: Namespace
     metadata:
@@ -14390,7 +14390,7 @@ data:
     kind: ConfigMap
     metadata:
       name: kourier-bootstrap
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system
@@ -14625,7 +14625,7 @@ data:
                 - name: METRICS_DOMAIN
                   value: "knative.dev/samples"
                 - name: KOURIER_GATEWAY_NAMESPACE
-                  {{- if .Values.global.deployment.mergingNamespace }}
+                  {{- if .Values.global.deploy.mergingNamespace }}
                   value: "knative-serving"
                   {{- else }}
                   value: "kourier-system"
@@ -14700,7 +14700,7 @@ data:
     kind: Deployment
     metadata:
       name: 3scale-kourier-gateway
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system
@@ -14820,7 +14820,7 @@ data:
     kind: Service
     metadata:
       name: kourier
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system
@@ -14836,7 +14836,7 @@ data:
           port: 80
           protocol: TCP
           targetPort: 8080
-          {{- $firstSvc := index .Values.global.deployment.knative.serving.services 0 }}
+          {{- $firstSvc := index .Values.global.deploy.knative.serving.services 0 }}
           {{- if eq $firstSvc.type "NodePort" }}
           nodePort: {{ $firstSvc.port | default 30218 }}
           {{- end }}
@@ -14852,7 +14852,7 @@ data:
     kind: Service
     metadata:
       name: kourier-internal
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system
@@ -14880,7 +14880,7 @@ data:
     kind: HorizontalPodAutoscaler
     metadata:
       name: 3scale-kourier-gateway
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system
@@ -14909,7 +14909,7 @@ data:
     kind: PodDisruptionBudget
     metadata:
       name: 3scale-kourier-gateway-pdb
-      {{- if .Values.global.deployment.mergingNamespace }}
+      {{- if .Values.global.deploy.mergingNamespace }}
       namespace: knative-serving
       {{- else }}
       namespace: kourier-system

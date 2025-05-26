@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if .Values.global.deployment.enabled }}
+{{- if .Values.global.deploy.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,10 +12,10 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
 data:
   # Specify the namespace to use and select it based on the environment
-  {{- if .Values.global.deployment.mergingNamespace }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deployment.namespace }}
+  {{- if .Values.global.deploy.mergingNamespace }}
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deploy.namespace }}
   {{- else }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deployment.imageBuilder.namespace }}
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deploy.imageBuilder.namespace }}
   {{- end }}
   # The image used by the pod needs to be accessible in the pod
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: {{ or .Values.global.image.registry .Values.image.registry }}/alpine/git:2.36.2
@@ -27,9 +27,9 @@ data:
   {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure,--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- else }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.global.deployment.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.global.deploy.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- end }}
-  {{- if .Values.global.deployment.autoConfigure }}
+  {{- if .Values.global.deploy.autoConfigure }}
   configure.sh: |
     #!/bin/bash
 
