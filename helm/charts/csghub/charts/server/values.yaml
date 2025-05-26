@@ -141,13 +141,13 @@ annotations: {}
 ## 'limits' specify the maximum amount of CPU and memory the container can use.
 ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
 ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
-resources:
-  limits:
-    cpu: 4000m
-    memory: 8192Mi
-  requests:
-    cpu: 1000m
-    memory: 1024Mi
+resources: {}
+#  limits:
+#    cpu: 4000m
+#    memory: 8192Mi
+#  requests:
+#    cpu: 1000m
+#    memory: 1024Mi
 
 ## nodeSelector: This section allows you to specify node labels for pod assignment.
 ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
