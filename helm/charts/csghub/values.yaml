@@ -189,6 +189,7 @@ global:
     imageBuilder:
       ## If deployment.mergingNamespace == true, namespace ==> deployment.namespace
       namespace: "image-factory"
+    usePublicDomain: true
 
   ## Configuration for Persistence
   persistence: { }
