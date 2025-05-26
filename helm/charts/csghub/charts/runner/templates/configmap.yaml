@@ -13,9 +13,9 @@ metadata:
 data:
   # Specify the namespace to use and select it based on the environment
   {{- if .Values.global.deployment.mergingNamespace }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: spaces
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deployment.namespace }}
   {{- else }}
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: image-factory
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deployment.imageBuilder.namespace }}
   {{- end }}
   # The image used by the pod needs to be accessible in the pod
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: {{ or .Values.global.image.registry .Values.image.registry }}/alpine/git:2.36.2

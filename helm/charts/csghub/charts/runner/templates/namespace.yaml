@@ -16,9 +16,9 @@ metadata:
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: image-factory
+  name: {{ .Values.global.deployment.imageBuilder.namespace }}
   labels:
-    kubernetes.io/metadata.name: image-factory
+    kubernetes.io/metadata.name: {{ .Values.global.deployment.imageBuilder.namespace }}
     helm.sh/resource-policy: keep
     {{ include "common.labels" . | nindent 4 }}
 {{- end }}
