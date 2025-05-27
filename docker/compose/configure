@@ -155,18 +155,30 @@ NGINX_CONF_DIR="${CURRENT_DIR}/configs/nginx"
 mkdirs "$NGINX_CONF_DIR"/ssl
 
 log "INFO" "- render nginx configuration file."
-if [ "$SERVER_PROTOCOL" == "http" ]; then
-  TEMPLATE_FILE="nginx.conf.sample"
-elif [ "$SERVER_PROTOCOL" == "https" ]; then
-  TEMPLATE_FILE="nginx.conf.ssl.sample"
+case "$SERVER_PROTOCOL" in
+    http)
+        if [ -z "$PUBLIC_ROOT_DOMAIN" ]; then
+            TEMPLATE_FILE="nginx.conf.sample"
+        else
+            TEMPLATE_FILE="nginx.conf.domain.sample"
+        fi
+        ;;
+    https)
+        mkdir -p ./configs/nginx/ssl
+        cp "$SERVER_SSL_CERT" "./configs/nginx/ssl/${SERVER_DOMAIN}.crt"
+        cp "$SERVER_SSL_KEY" "./configs/nginx/ssl/${SERVER_DOMAIN}.key"
 
-  mkdirs ./configs/nginx/ssl
-  cp "$SERVER_SSL_CERT" ./configs/nginx/ssl/${SERVER_DOMAIN}.crt
-  cp "$SERVER_SSL_KEY" ./configs/nginx/ssl/${SERVER_DOMAIN}.key
-else
-  log "ERRO" "Unknown nginx protocol: ${SERVER_PROTOCOL}"
-  exit 1
-fi
+        if [ -z "$PUBLIC_ROOT_DOMAIN" ]; then
+            TEMPLATE_FILE="nginx.conf.ssl.sample"
+        else
+            TEMPLATE_FILE="nginx.conf.domain.ssl.sample"
+        fi
+        ;;
+    *)
+        log "ERRO" "Unknown nginx protocol: ${SERVER_PROTOCOL}"
+        exit 1
+        ;;
+esac
 
 sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
     -e "s/_SERVER_PORT/${SERVER_PORT}/g" \
@@ -174,6 +186,7 @@ sed -e "s/_SERVER_DOMAIN/${SERVER_DOMAIN}/g" \
     -e "s/_SPACE_APP_INTERNAL_PORT/${SPACE_APP_INTERNAL_PORT}/g" \
     -e "s/_SPACE_APP_NAMESPACE/${SPACE_APP_NAMESPACE}/g" \
     -e "s/_SPACE_APP_INTERNAL_DOMAIN/${SPACE_APP_INTERNAL_DOMAIN}/g" \
+    -e "s/_/${PUBLIC_ROOT_DOMAIN}/g" \
     "$NGINX_CONF_DIR"/"$TEMPLATE_FILE" > "$NGINX_CONF_DIR"/nginx.conf
 
 log "INFO" "- generate temporal auth file."
