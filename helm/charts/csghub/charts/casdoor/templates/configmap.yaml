@@ -4,6 +4,19 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $password := include "casdoor.initPass" (durationRound now) }}
+{{- $htpasswd := htpasswd "root" $password | trimPrefix "root:" }}
+{{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" (list . "init-root"))).data }}
+{{- if $secretData }}
+{{- $secretPass := index $secretData "INIT_ROOT_PASSWORD" }}
+{{- if $secretPass }}
+{{- $password = $secretPass | b64dec }}
+{{- end }}
+{{- $secretHtpasswd := index $secretData "INIT_ROOT_HTPASSWD" }}
+{{- if $secretHtpasswd }}
+{{- $htpasswd = $secretHtpasswd | b64dec }}
+{{- end }}
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -63,7 +76,7 @@ data:
           "websiteUrl": {{ include "csghub.external.endpoint" . | quote }},
           "favicon": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/favicon.png",
           "logo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/logo.png",
-          "passwordType": "sha512-salt",
+          "passwordType": "bcrypt",
           "passwordSalt": "OpenCSG",
           "passwordOptions": [
             "AtLeast8",
@@ -454,9 +467,9 @@ data:
         {
           "owner": "OpenCSG",
           "name": "root",
-          "password": "f1106b473200e02af88c184ec9f83216da6fed58c97ff274883e6a553a200fc079d94de76854f0055e61ca81be52c4e84deee313e9dd2aaeb85bfce1597beb73",
+          "password": {{ $htpasswd | quote }},
           "passwordSalt": "OpenCSG",
-          "passwordType": "sha512-salt",
+          "passwordType": "bcrypt",
           "displayName": "root",
           "email": "root@example.com",
           "type": "normal-user",
@@ -548,12 +561,22 @@ data:
     WHERE
         name = 'CSGHub';
 
+    -- Enable org Select
+    UPDATE
+        application
+    SET
+        enable_sign_up = 'f',
+        org_choice_mode = 'Select'
+    WHERE
+        name = 'app-built-in';
+
     -- Reset admin user default password
     UPDATE
         "user"
     SET
-        password = {{ printf "%s@%s" (now | date "15/04") "admin" | b64enc | sha256sum | trunc 16 | squote }}
+        password_type = 'bcrypt',
+        password = {{ $htpasswd | squote }}
     WHERE
         name = 'admin'
-        AND password = '123';
+        AND password_type = 'plain';
 {{- end }}
