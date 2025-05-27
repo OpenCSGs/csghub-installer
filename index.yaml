@@ -2,6 +2,32 @@ apiVersion: v1
 entries:
   csghub:
   - apiVersion: v2
+    appVersion: v1.7.1
+    created: "2025-05-27T08:46:02.277520349Z"
+    dependencies:
+    - condition: ingress-nginx.enabled
+      name: ingress-nginx
+      repository: file://charts/ingress-nginx
+      version: 4.12.0
+    - condition: fluentd.enabled
+      name: fluentd
+      repository: file://charts/fluentd
+      version: 0.5.2
+    description: CSGHub is an open-source platform designed for managing Large Language
+      Models (LLM) assets, offering an efficient way to handle the entire LLM and
+      their assets such as datasets, spaces and codes etc. It allows users to upload,
+      download, store, verify, and distribute LLM assets via a web interface, git
+      command line, a natural language Chatbot, or CSGHub SDK.
+    digest: 13299d1a74467dd3df494eeb53d9cbff7bbfe01a669f9896942406cc93b193d4
+    home: https://opencsg.com
+    name: csghub
+    sources:
+    - https://github.com/OpenCSGs/csghub-installer
+    type: application
+    urls:
+    - https://github.com/OpenCSGs/csghub-installer/releases/download/csghub-1.7.1/csghub-1.7.1.tgz
+    version: 1.7.1
+  - apiVersion: v2
     appVersion: v1.7.0
     created: "2025-05-15T03:02:39.18083998Z"
     dependencies:
@@ -492,4 +518,4 @@ entries:
     urls:
     - https://github.com/OpenCSGs/CSGHub-helm/releases/download/csghub-0.8.2/csghub-0.8.2.tgz
     version: 0.8.2
-generated: "2025-05-15T03:02:39.181020548Z"
+generated: "2025-05-27T08:46:02.277726912Z"
