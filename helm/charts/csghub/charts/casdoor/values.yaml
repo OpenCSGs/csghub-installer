@@ -20,7 +20,7 @@ image:
   ## Specifies the location of the Registry Docker image in the registry.
   repository: casbin/casdoor
   ## Defines the specific version of the Registry image to use.
-  tag: "v1.733.0"
+  tag: "v1.799.0"
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
