@@ -42,3 +42,23 @@ Define the external endpoint for csghub
 {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Define the external public endpoint for csghub
+*/}}
+{{- define "csghub.external.public.endpoint" -}}
+{{- $domain := include "csghub.external.public.domain" . }}
+{{- if eq .Values.global.ingress.service.type "NodePort" }}
+{{- if .Values.global.ingress.tls.enabled -}}
+{{- printf "https://%s:%s" $domain "30443" -}}
+{{- else }}
+{{- printf "http://%s:%s" $domain "30080" -}}
+{{- end }}
+{{- else }}
+{{- if .Values.global.ingress.tls.enabled -}}
+{{- printf "https://%s" $domain -}}
+{{- else }}
+{{- printf "http://%s" $domain -}}
+{{- end }}
+{{- end }}
+{{- end }}
