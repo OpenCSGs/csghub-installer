@@ -1,104 +1,89 @@
+# User and worker process configuration
 user root;
-# May be equal to `grep processor /proc/cpuinfo | wc -l`
 worker_processes auto;
 worker_cpu_affinity auto;
-
-# PCRE JIT can speed up processing of regular expressions significantly.
 pcre_jit on;
 
-# error_log
+# Error log configuration
 error_log /var/log/nginx/error.log notice;
 
+# Events configuration
 events {
-    # Should be equal to `ulimit -n`
-    worker_connections 1024;
-
-    # Let each process accept multiple connections.
-    multi_accept on;
-
-    # Preferred connection method for newer linux versions.
-    use epoll;
+    worker_connections 1024;     # Maximum number of connections per worker
+    multi_accept on;             # Accept as many connections as possible per event
+    use epoll;                   # Use epoll for scalable I/O
 }
 
+# Stream configuration for TCP/UDP traffic
 stream {
     server {
-        listen 2222;
-        proxy_pass gitlab-shell:2222;
+        listen 2222;             # Listen on TCP port 2222
+        proxy_pass gitlab-shell:2222;  # Forward traffic to GitLab Shell on port 2222
     }
 }
+
+# HTTP block configuration
 http {
-    # Disables the “Server” response header
+    # Disable server version token in responses
     server_tokens off;
-    charset utf-8;
+    charset utf-8;               # Set default charset to UTF-8
 
-    # Sendfile copies data between one FD and other from within the kernel.
-    # More efficient than read() + write(), since the requires transferring
-    # data to and from the user space.
-    sendfile on;
+    # Enable file transfer optimization
+    sendfile on;                 # Send files directly from disk
+    tcp_nopush on;               # Reduce network congestion
+    tcp_nodelay on;              # Send packets immediately without delay
 
-    # Tcp_nopush causes nginx to attempt to send its HTTP response head in one
-    # packet, instead of using partial frames. This is useful for prepending
-    # headers before calling sendfile, or for throughput optimization.
-    tcp_nopush on;
-
-    # Don't buffer data-sends (disable Nagle algorithm). Good for sending
-    # frequent small bursts of data in real time.
-    #
-    tcp_nodelay on;
-
-    # http://nginx.org/en/docs/hash.html
+    # Mime types and default type
     types_hash_max_size 4096;
     include mime.types;
     default_type application/octet-stream;
 
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
+    # Enhanced log format for troubleshooting upstream issues
+    log_format debug_log '$remote_addr - $remote_user [$time_local] "$request" '
+                         '$status $body_bytes_sent "$http_referer" '
+                         '"$http_user_agent" "$http_x_forwarded_for" '
+                         'upstream_addr=$upstream_addr upstream_status=$upstream_status '
+                         'request_time=$request_time upstream_response_time=$upstream_response_time';
 
-    # Logging Settings
-    access_log /var/log/nginx/access.log main;
+    access_log /var/log/nginx/access.log debug_log;
 
-    # Gzip Settings
+    # Gzip compression settings
     gzip on;
     gzip_disable "msie6";
-
     gzip_comp_level 6;
-    # gzip_comp_level 9;
     gzip_min_length 1100;
     gzip_buffers 16 8k;
     gzip_proxied any;
-    # gzip_http_version 1.1;
     gzip_types text/plain application/xml text/css text/js text/xml application/x-javascript text/javascript application/json application/xml+rss;
 
-    # Configure nginx to proxy large file requests
-
-    # nginx does not buffer client requests and does not buffer proxy server requests
+    # Proxy and buffering optimization
     proxy_request_buffering off;
-    proxy_buffering off;
+    proxy_buffering on;
+    proxy_buffers 16 64k;
+    proxy_buffer_size 128k;
+    proxy_busy_buffers_size 256k;
 
-    # Temporary storage path, ensure this path has enough space
-    client_body_temp_path /var/nginx/client_body_temp;
-    # Maximum size of temporary files
-    proxy_max_temp_file_size 150000M;
+    client_body_temp_path /var/nginx/client_body_temp 1 2;   # Recommend using SSD storage
+    proxy_max_temp_file_size 150000M;               # Avoid large temporary files
+    client_max_body_size 0;                         # No limit for client request body size
 
-    # Maximum size of client requests
-    client_max_body_size 0;
-
-    # Increase timeout settings to support large file transfers
-    client_body_timeout 300s;
-    client_header_timeout 300s;
-    send_timeout 300s;
-    keepalive_timeout 300s;
-    proxy_read_timeout 3600;
-    proxy_connect_timeout 300;
+    # Global timeout settings (explicit units)
+    client_body_timeout 3600s;
+    client_header_timeout 3600s;
+    send_timeout 3600s;
+    keepalive_timeout 600s;
+    proxy_read_timeout 3600s;
+    proxy_connect_timeout 300s;
     proxy_redirect off;
     proxy_http_version 1.1;
 
+    # Connection upgrade mapping
     map $http_upgrade $connection_upgrade {
-      default upgrade;
-      ''      close;
+        default upgrade;
+        ''      close;
     }
 
+    # Main server configurations
     server {
         listen 80;
         server_name _SERVER_DOMAIN;
@@ -116,6 +101,7 @@ http {
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
+        # Default route
         location / {
             proxy_pass http://csghub-portal:8090;
             proxy_set_header X-Forwarded-Proto $scheme;
@@ -124,6 +110,7 @@ http {
             proxy_set_header Host $host;
         }
 
+        # API route
         location /api/ {
             proxy_pass http://csghub-server:8080/api/;
             proxy_set_header Host $host;
@@ -133,6 +120,7 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        # HF route
         location ~ ^/(hf|csg|ms)/ {
             proxy_pass http://csghub-server:8080;
             proxy_set_header Host $host;
@@ -142,6 +130,7 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
+        # Temporal UI route with basic auth
         location /temporal-ui/ {
             auth_basic "Please login with your account:";
             auth_basic_user_file /etc/nginx/ssl/.htpasswd;
@@ -152,8 +141,9 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Host $server_name;
             proxy_set_header X-Forwarded-Proto $scheme;
-       }
+        }
 
+        # Endpoint route
         location /endpoint/ {
             proxy_pass http://csghub-proxy:8083;
             proxy_set_header Host $host;
@@ -163,9 +153,10 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
-            proxy_cookie_flags ~ nosecure samesite=lax;
+            proxy_cookie_flags ~ nosecure samesite=lax;  # Set secure and samesite cookies
         }
 
+        # Git specific route
         location ~* \.git(/.*)?$ {
             proxy_pass http://csghub-server:8080;
             proxy_set_header Host $host;
@@ -173,12 +164,42 @@ http {
             proxy_set_header X-Forwarded-Proto http;
         }
 
+        # Custom error page handling for 50x errors
         error_page 500 502 503 504 /50x.html;
         location = /50x.html {
-            root  /usr/share/nginx/html;
+            root /usr/share/nginx/html;
         }
     }
 
+    server {
+        listen _SERVER_PORT ssl;
+        server_name *._PUBLIC_ROOT_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+
+        location / {
+            proxy_pass http://csghub-proxy:8083;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+
+        # Custom error page handling for 50x errors
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+    }
+
+    # Docker registry service
     server {
         listen 5000 ssl;
         server_name _SERVER_DOMAIN;
@@ -189,23 +210,24 @@ http {
         ssl_protocols TLSv1.2 TLSv1.3;
         ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
-        client_max_body_size 0;
+        client_max_body_size 0;                   # Allow unlimited body size
         chunked_transfer_encoding on;
 
         location /v2/ {
-            if ($http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*$" ) {
-                return 404;
+            if ($http_user_agent ~ "^(docker\/1\.(3|4|5(?!\.[0-9]-dev))|Go ).*$") {
+                return 404;  # Block unsupported Docker clients
             }
 
-            proxy_pass                          http://registry:5000;
-            proxy_set_header  Host              $http_host;
-            proxy_set_header  X-Real-IP         $remote_addr;
-            proxy_set_header  X-Forwarded-For   $proxy_add_x_forwarded_for;
-            proxy_set_header  X-Forwarded-Proto $scheme;
-            proxy_read_timeout                  900;
+            proxy_pass http://registry:5000;
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 900;
         }
     }
 
+    # Casdoor service configuration
     server {
         listen 8000 ssl;
         server_name _SERVER_DOMAIN;
@@ -231,6 +253,7 @@ http {
         }
     }
 
+    # MinIO service configuration
     server {
         listen 9000 ssl;
         server_name _SERVER_DOMAIN;
@@ -244,22 +267,32 @@ http {
         ignore_invalid_headers off;
         client_max_body_size 0;
 
+        client_header_timeout 7200s;
+        client_body_timeout 7200s;
+        proxy_read_timeout 7200s;
+        proxy_send_timeout 7200s;
+
+        proxy_request_buffering on;
+        proxy_buffering on;
+        proxy_buffers 32 256k;
+        proxy_buffer_size 512k;
+        proxy_busy_buffers_size 1m;
+
         location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
-
-            proxy_connect_timeout 300;
-            # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+            proxy_connect_timeout 300s;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             chunked_transfer_encoding off;
 
             proxy_pass http://minio:9000;
-       }
+        }
     }
 
+    # More MinIO server configuration
     server {
         listen 9001 ssl;
         server_name _SERVER_DOMAIN;
@@ -273,14 +306,24 @@ http {
         ignore_invalid_headers off;
         client_max_body_size 0;
 
+        client_header_timeout 7200s;
+        client_body_timeout 7200s;
+        proxy_read_timeout 7200s;
+        proxy_send_timeout 7200s;
+
+        proxy_request_buffering on;
+        proxy_buffering on;
+        proxy_buffers 32 256k;
+        proxy_buffer_size 512k;
+        proxy_busy_buffers_size 1m;
+
         location / {
             proxy_set_header Host $http_host;
             proxy_set_header X-Real-IP $remote_addr;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
 
-            proxy_connect_timeout 300;
-            # Default is HTTP/1, keepalive is only enabled in HTTP/1.1
+            proxy_connect_timeout 300s;
             proxy_http_version 1.1;
             proxy_set_header Connection "";
             proxy_set_header Upgrade $http_upgrade;
@@ -288,13 +331,13 @@ http {
             chunked_transfer_encoding off;
 
             proxy_pass http://minio:9001;
-       }
+        }
     }
 
+    # Dynamic HTTP routing for apps
     server {
         listen 80;
         server_name *._SPACE_APP_NAMESPACE._SPACE_APP_INTERNAL_DOMAIN;
-
         location / {
             proxy_http_version 1.1;
             proxy_pass http://_SPACE_APP_INTERNAL_HOST:_SPACE_APP_INTERNAL_PORT;
