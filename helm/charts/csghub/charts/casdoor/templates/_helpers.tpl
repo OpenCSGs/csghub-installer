@@ -82,3 +82,10 @@ Define postgresql dsn for casdoor
 {{- end }}
 {{- printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database -}}
 {{- end }}
+
+{{/*
+Random Password for which password not set
+*/}}
+{{- define "casdoor.initPass" -}}
+{{- printf "%s@%s" (now | date "15/04") . | sha256sum | b64enc | trunc 24 -}}
+{{- end }}

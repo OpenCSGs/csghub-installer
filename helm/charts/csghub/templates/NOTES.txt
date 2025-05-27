@@ -5,14 +5,23 @@ APP VERSION: {{ .Chart.AppVersion }}
 You have successfully installed CSGHub!
 
 Visit CSGHub at the following address:
-
+      {{ $password := include "casdoor.initPass" (durationRound now) }}
+      {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" (list . "init-root"))).data }}
+      {{- if $secretData }}
+      {{- $secretPass := index $secretData "INIT_ROOT_PASSWORD" }}
+      {{- if $secretPass }}
+      {{- $password = $secretPass | b64dec }}
+      {{- end }}
+      {{- end }}
     Address: {{ include "csghub.external.endpoint" . }}
-    Credentials: root/Root@1234
+    Credentials: root/{{ $password }}
 
 Visit the Casdoor administrator console at the following address:
 
     Address: {{ include "casdoor.external.endpoint" . }}
-    Credentials: admin/{{ printf "%s@%s" (now | date "15/04") "admin" | b64enc | sha256sum | trunc 16 }}
+    Credentials:
+        Username: root
+        Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "init-root") }} -o jsonpath="{.data.INIT_ROOT_PASSWORD}" | base64 -d)
 
 *Notes: The admin password is valid only for initial installation.*
 {{ if eq (include "starship.enabled" .) "true"  }}
