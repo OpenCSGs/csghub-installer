@@ -107,7 +107,7 @@ data:
   STARHUB_SERVER_PUBLIC_DOMAIN: {{ include "csghub.external.endpoint" . }}
   # Deprecated ==> re-enabled
   {{- if .Values.global.deploy.usePublicDomain }}
-  STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: {{ include "csghub.external.public.domain" . | quote }}
+  STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: {{ include "csghub.external.public.endpoint" . | trimPrefix "http://" | trimPrefix "https://" | quote }}
   {{- else }}
   STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
   {{- end }}
