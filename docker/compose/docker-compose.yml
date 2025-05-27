@@ -293,7 +293,7 @@ services:
       STARHUB_SERVER_SPACE_BUILDER_ENDPOINT: "http://csghub-runner:8082"
       STARHUB_SERVER_SPACE_RUNNER_ENDPOINT: "http://csghub-runner:8082"
       # Csghub Proxy
-      STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: ""
+      STARHUB_SERVER_PUBLIC_ROOT_DOMAIN: "${PUBLIC_ROOT_DOMAIN}:${SERVER_PORT}"
       STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: "${SPACE_APP_NAMESPACE}.${SPACE_APP_INTERNAL_DOMAIN}:80"
       # Casdoor
       STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"
@@ -641,7 +641,7 @@ services:
         ipv4_address: 192.171.100.121
 
   casdoor:
-    image: ${CSGHUB_IMAGE_PREFIX}/casbin/casdoor:v1.733.0
+    image: ${CSGHUB_IMAGE_PREFIX}/casbin/casdoor:v1.799.0
     depends_on:
       postgres:
         condition: service_healthy

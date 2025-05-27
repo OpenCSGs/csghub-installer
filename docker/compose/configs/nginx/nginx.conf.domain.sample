@@ -130,25 +130,34 @@ http {
             proxy_set_header X-Forwarded-Proto $scheme;
         }
 
-        # Endpoint route
-        location /endpoint/ {
-            proxy_pass http://csghub-proxy:8083;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-            proxy_set_header X-Forwarded-Proto $scheme;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection $connection_upgrade;
-            proxy_cookie_flags ~ nosecure samesite=lax;  # Set secure and samesite cookies
-        }
-
         # Git specific route
         location ~* \.git(/.*)?$ {
             proxy_pass http://csghub-server:8080;
             proxy_set_header Host $host;
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto http;
+        }
+
+        # Custom error page handling for 50x errors
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+    }
+
+    server {
+        listen _SERVER_PORT;
+        server_name *._PUBLIC_ROOT_DOMAIN;
+
+        location / {
+            proxy_pass http://csghub-proxy:8083;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
         }
 
         # Custom error page handling for 50x errors

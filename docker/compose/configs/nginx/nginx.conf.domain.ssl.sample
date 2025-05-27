@@ -85,8 +85,21 @@ http {
 
     # Main server configurations
     server {
-        listen _SERVER_PORT;
+        listen 80;
         server_name _SERVER_DOMAIN;
+
+        return 301 https://$host$request_uri;
+    }
+
+    server {
+        listen _SERVER_PORT ssl;
+        server_name _SERVER_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
         # Default route
         location / {
@@ -158,10 +171,44 @@ http {
         }
     }
 
+    server {
+        listen _SERVER_PORT ssl;
+        server_name *._PUBLIC_ROOT_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
+
+        location / {
+            proxy_pass http://csghub-proxy:8083;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        }
+
+        # Custom error page handling for 50x errors
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root /usr/share/nginx/html;
+        }
+    }
+
     # Docker registry service
     server {
-        listen 5000;
+        listen 5000 ssl;
         server_name _SERVER_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
         client_max_body_size 0;                   # Allow unlimited body size
         chunked_transfer_encoding on;
@@ -182,8 +229,14 @@ http {
 
     # Casdoor service configuration
     server {
-        listen 8000;
+        listen 8000 ssl;
         server_name _SERVER_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
         location / {
             proxy_pass http://casdoor:8000;
@@ -202,8 +255,14 @@ http {
 
     # MinIO service configuration
     server {
-        listen 9000;
+        listen 9000 ssl;
         server_name _SERVER_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
         ignore_invalid_headers off;
         client_max_body_size 0;
@@ -235,8 +294,14 @@ http {
 
     # More MinIO server configuration
     server {
-        listen 9001;
+        listen 9001 ssl;
         server_name _SERVER_DOMAIN;
+
+        ssl_certificate /etc/nginx/ssl/_SERVER_DOMAIN.crt;
+        ssl_certificate_key /etc/nginx/ssl/_SERVER_DOMAIN.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers 'ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256';
 
         ignore_invalid_headers off;
         client_max_body_size 0;
