@@ -13,6 +13,7 @@ metadata:
     helm.sh/resource-policy: keep
     {{ include "common.labels" . | nindent 4 }}
 {{- if not .Values.global.deploy.mergingNamespace }}
+---
 apiVersion: v1
 kind: Namespace
 metadata:
