@@ -215,6 +215,13 @@ global:
     ## Options: ReadWriteOnce, ReadOnlyMany, ReadWriteMany
     # accessMode: ["ReadWriteOnce"]
 
+  ## Starship GitLab OAuth
+  starship:
+    oauth: { }
+      # issuer_url: "https://gitlab.example.com"
+      # client_id: ""
+      # client_secret: ""
+
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
 ## If necessary, you can check which parameters the subChart can configure and modify them.
@@ -261,6 +268,12 @@ postgresql:
 ## For Starship
 starship:
   enabled: false
+  megalinter-server:
+    enabled: false
+  megalinter-worker:
+    enabled: false
+  secscan:
+    enabled: false
 
 ## For Dataflow
 dataflow:
