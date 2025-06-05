@@ -217,10 +217,10 @@ global:
 
   ## Starship GitLab OAuth
   starship:
-    oauth: { }
-      # issuer_url: "https://gitlab.example.com"
-      # client_id: ""
-      # client_secret: ""
+    oauth: {}
+      # issuer: "https://gitlab.example.com"
+      # clientId: "73f1c2922f51d68fa87de8c1ef0e23e8940f3aa42f5ac7a55a1f586c597d7e9c"
+      # clientSecret: "gloas-3ba02f02b3e993664ccdda2c4d76989caa11ce6f07a805b6872d266fbd465831"
 
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
