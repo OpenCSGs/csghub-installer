@@ -68,7 +68,8 @@ spec:
               value: nats://$(NATS_USERNAME):$(NATS_PASSWORD)@csghub-nats:4222
             {{- if not .Values.global.redis.external }}
             - name: REDIS_URL
-              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}
+              value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
+{{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}
             {{- end }}
             {{- with .Values.environments }}
             {{- range $key, $value := . }}

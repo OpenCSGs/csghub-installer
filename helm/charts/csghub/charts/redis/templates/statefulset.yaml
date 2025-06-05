@@ -47,7 +47,8 @@ spec:
         - name: redis
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: [ "--requirepass", "$(REDIS_PASSWD)", "--save", "60 1000", "--appendonly", "yes" ]
+{{/*          args: [ "--requirepass", "$(REDIS_PASSWD)", "--save", "60 1000", "--appendonly", "yes" ]*/}}
+          args: [ "--save", "60 1000", "--appendonly", "yes" ]
           ports:
             - containerPort: 6379
               name: redis
