@@ -20,6 +20,9 @@ data:
   DJANGO_DEBUG: "True"
   DJANGO_SETTINGS_MODULE: config.settings
   C_FORCE_ROOT: "true"
+  # Casdoor
+  CASDOOR_ENDPOINT: {{ include "casdoor.external.endpoint" . }}
+  CASDOOR_REDIRECT_URI_PATH: "/api/v1/account/casdoor/login/callback/"
   # PostgreSQL database
   DATABASE_TYPE: "postgresql"
   DATABASE_HOST: {{ include "csghub.postgresql.host" . }}
