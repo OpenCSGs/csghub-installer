@@ -785,10 +785,10 @@ data:
           "method": "Normal",
           "clientId": {{ .Values.global.starship.oauth.client_id | quote }},
           "clientSecret": {{ .Values.global.starship.oauth.client_secret | quote }},
-          "custom_auth_url": {{ printf "%s/oauth/authorize" .Values.global.starship.oauth.issuer_url | quote }},
-          "custom_token_url": {{ printf "%s/oauth/token" .Values.global.starship.oauth.issuer_url | quote }},
-          "custom_user_info_url": {{ printf "%s/api/v4/user" .Values.global.starship.oauth.issuer_url | quote }},
-          "custom_logo": "https://opencsg-public-resource.oss-cn-beijing.aliyuncs.com/gitlab_favicon.png",
+          "customAuthUrl": {{ printf "%s/oauth/authorize" .Values.global.starship.oauth.issuer_url | quote }},
+          "customTokenUrl": {{ printf "%s/oauth/token" .Values.global.starship.oauth.issuer_url | quote }},
+          "customUserInfoUrl": {{ printf "%s/api/v4/user" .Values.global.starship.oauth.issuer_url | quote }},
+          "customLogo": "https://opencsg-public-resource.oss-cn-beijing.aliyuncs.com/gitlab_favicon.png",
           "scopes": "read_user openid profile email",
           "userMapping":
           {
@@ -798,8 +798,8 @@ data:
             "id": "id",
             "username": "username"
           },
-          "issuer_url": {{ .Values.global.starship.oauth.issuer_url | quote }},
-          "provider_url": {{ .Values.global.starship.oauth.issuer_url | quote }}
+          "issuerUrl": {{ .Values.global.starship.oauth.issuer_url | quote }},
+          "providerUrl": {{ .Values.global.starship.oauth.issuer_url | quote }}
         }
       ]
     }
