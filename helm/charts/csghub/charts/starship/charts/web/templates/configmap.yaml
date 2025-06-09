@@ -71,4 +71,6 @@ data:
   AZURE_API_VERSION: {{ .Values.openai.api.version }}
   AZURE_API_KEY: {{ .Values.openai.api.key }}
   LANCEDB_URI: "/code/data/lancedb"
+  # Billing
+  STARSHIP_BILLING_API_BASE: {{ printf "http://%s:%s" (include "billing.internal.domain".) (include "billing.internal.port" .) | quote }}
 
