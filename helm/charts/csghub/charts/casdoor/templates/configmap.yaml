@@ -783,11 +783,11 @@ data:
           "category": "OAuth",
           "type": "Custom",
           "method": "Normal",
-          "clientId": {{ .Values.global.starship.oauth.clientId | quote }},
-          "clientSecret": {{ .Values.global.starship.oauth.clientSecret | quote }},
-          "customAuthUrl": {{ printf "%s/oauth/authorize" .Values.global.starship.oauth.issuer | quote }},
-          "customTokenUrl": {{ printf "%s/oauth/token" .Values.global.starship.oauth.issuer | quote }},
-          "customUserInfoUrl": {{ printf "%s/api/v4/user" .Values.global.starship.oauth.issuer | quote }},
+          "clientId": {{ .Values.global.starship.oauth.clientId | default "" | quote }},
+          "clientSecret": {{ .Values.global.starship.oauth.clientSecret | default "" | quote }},
+          "customAuthUrl": {{ printf "%s/oauth/authorize" .Values.global.starship.oauth.issuer | default "" | quote }},
+          "customTokenUrl": {{ printf "%s/oauth/token" .Values.global.starship.oauth.issuer | default "" | quote }},
+          "customUserInfoUrl": {{ printf "%s/api/v4/user" .Values.global.starship.oauth.issuer | default "" | quote }},
           "customLogo": "https://cdn.jsdelivr.net/gh/OpenCSGs/images/gitlab_favicon.png",
           "scopes": "read_user openid profile email",
           "userMapping":
@@ -798,8 +798,8 @@ data:
             "id": "id",
             "username": "username"
           },
-          "issuerUrl": {{ .Values.global.starship.oauth.issuer | quote }},
-          "providerUrl": {{ .Values.global.starship.oauth.issuer | quote }}
+          "issuerUrl": {{ .Values.global.starship.oauth.issuer | default "" | quote }},
+          "providerUrl": {{ .Values.global.starship.oauth.issuer | default "" | quote }}
         }
       ]
     }
