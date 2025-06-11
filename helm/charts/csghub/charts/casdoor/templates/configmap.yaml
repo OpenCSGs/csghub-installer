@@ -868,4 +868,21 @@ data:
     WHERE
         name = 'admin'
         AND password_type = 'plain';
+
+    {{- if and (hasKey .Values.global.starship "oauth")
+            (hasKey .Values.global.starship.oauth "clientId")
+            (hasKey .Values.global.starship.oauth "clientSecret")
+            (hasKey .Values.global.starship.oauth "issuer") }}
+    -- Update GitLab provider
+    UPDATE
+        provider
+    SET
+        client_id = {{ .Values.global.starship.oauth.clientId | squote }},
+        client_secret = {{ .Values.global.starship.oauth.clientSecret | squote }},
+        custom_auth_url = {{ printf "%s/oauth/authorize" .Values.global.starship.oauth.issuer | squote }},
+        custom_token_url = {{ printf "%s/oauth/token" .Values.global.starship.oauth.issuer | squote }},
+        custom_user_info_url = {{ printf "%s/api/v4/user" .Values.global.starship.oauth.issuer | squote }}
+    WHERE
+        name = 'GitLab_Provider';
+    {{- end }}
 {{- end }}
