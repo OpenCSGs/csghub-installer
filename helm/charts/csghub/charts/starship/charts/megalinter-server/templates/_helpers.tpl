@@ -15,10 +15,10 @@ Define the internal port for megalinter-server
 */}}
 {{- define "megalinter-server.internal.port" -}}
 {{- $port := "8000" }}
-{{- if hasKey .Values.global "megalinter-server" }}
-  {{- if hasKey .Values.global.megalinter-server "service" }}
-    {{- if hasKey .Values.global.megalinter-server.service "port" }}
-      {{- $port = .Values.global.megalinter-server.service.port }}
+{{- if hasKey .Values.global "megalinterServer" }}
+  {{- if hasKey .Values.global.megalinterServer "service" }}
+    {{- if hasKey .Values.global.megalinterServer.service "port" }}
+      {{- $port = .Values.global.megalinterServer.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
