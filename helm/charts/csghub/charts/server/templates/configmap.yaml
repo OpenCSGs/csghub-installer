@@ -129,6 +129,9 @@ data:
   STARHUB_SERVER_SPACE_PYPI_INDEX_URL: {{ .Values.global.deploy.pipIndexUrl | quote}}
   # Multiple-Sync fetch timeout
   STARHUB_SERVER_GIT_OPERATION_TIMEOUT: "120"
+  # Notification
+  STARHUB_SERVER_NOTIFIER_HOST: {{ printf "http://%s" (include "notification.internal.domain" .) }}
+  STARHUB_SERVER_NOTIFIER_PORT: {{ include "notification.internal.port" . | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap
