@@ -85,6 +85,8 @@ spec:
               value: "8080"
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
               value: {{ include "server.callback.user" . }}
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
             {{- with .Values.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
