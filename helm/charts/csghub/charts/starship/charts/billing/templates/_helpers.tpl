@@ -24,3 +24,10 @@ Define the internal port for billing
 {{- end }}
 {{- $port | toString -}}
 {{- end }}
+
+{{/*
+Define the internal endpoint for billing
+*/}}
+{{- define "billing.internal.endpoint" -}}
+{{- printf "http://%s:%s" (include "billing.internal.domain" .) (include "billing.internal.port" .) -}}
+{{- end }}

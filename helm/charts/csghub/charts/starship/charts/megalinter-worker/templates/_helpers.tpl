@@ -4,23 +4,30 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-Define the internal domain for agentic
+Define the internal domain for megalinter-worker
 */}}
-{{- define "agentic.internal.domain" -}}
-{{- include "common.names.custom" (list . "agentic") }}
+{{- define "megalinter-worker.internal.domain" -}}
+{{- include "common.names.custom" (list . "megalinter-worker") }}
 {{- end }}
 
 {{/*
-Define the internal port for agentic
+Define the internal port for megalinter-worker
 */}}
-{{- define "agentic.internal.port" -}}
+{{- define "megalinter-worker.internal.port" -}}
 {{- $port := "8000" }}
-{{- if hasKey .Values.global "agentic" }}
-  {{- if hasKey .Values.global.agentic "service" }}
-    {{- if hasKey .Values.global.agentic.service "port" }}
-      {{- $port = .Values.global.agentic.service.port }}
+{{- if hasKey .Values.global "megalinter-worker" }}
+  {{- if hasKey .Values.global.megalinter-worker "service" }}
+    {{- if hasKey .Values.global.megalinter-worker.service "port" }}
+      {{- $port = .Values.global.megalinter-worker.service.port }}
     {{- end }}
   {{- end }}
 {{- end }}
 {{- $port | toString -}}
+{{- end }}
+
+{{/*
+Define the internal endpoint for megalinter-worker
+*/}}
+{{- define "megalinter-worker.internal.endpoint" -}}
+{{- printf "http://%s:%s" (include "megalinter-worker.internal.domain" .) (include "megalinter-worker.internal.port" .) -}}
 {{- end }}

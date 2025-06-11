@@ -43,7 +43,7 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       containers:
-        - name: megalinter-api
+        - name: megalinter-worker
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           envFrom:

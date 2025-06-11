@@ -19,7 +19,7 @@ image:
   ## Specifies the location of the Registry Docker image in the registry.
   repository: "starship-web"
   ## Defines the specific version of the Registry image to use.
-  tag: "latest"
+  tag: "v0.2.0"
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 

@@ -73,4 +73,10 @@ data:
   LANCEDB_URI: "/code/data/lancedb"
   # Billing
   STARSHIP_BILLING_API_BASE: {{ printf "http://%s:%s" (include "billing.internal.domain".) (include "billing.internal.port" .) | quote }}
+  # Agentic
+  AGENTIC_SVC_API_BASE: {{ include "agentic.internal.endpoint" . }}
+  WEB_SVC_API_BASE: {{ include "web.internal.endpoint" . }}
+  BILLING_SVC_API_BASE: {{ include "billing.internal.endpoint" . }}
+  MEGALINTER_SVC_API_BASE: {{ include "megalinter-server.internal.endpoint" . }}
+  SYNC_PERMS_GIT_SERVER: {{ .Values.global.starship.oauth.issuer | trimPrefix "https://" | trimPrefix "http://" }}
 

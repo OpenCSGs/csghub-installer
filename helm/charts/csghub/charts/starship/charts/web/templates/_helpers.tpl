@@ -26,30 +26,8 @@ Define the internal port for web
 {{- end }}
 
 {{/*
-Define the external endpoint for web
+Define the internal endpoint for web
 */}}
-{{- define "web.external.endpoint" -}}
-{{- $domain := include "web.external.domain" . }}
-{{- if eq .Values.global.ingress.service.type "NodePort" }}
-{{- if eq (include "global.ingress.tls.enabled" .) "true" }}
-{{- printf "%s:%s" $domain "30443" -}}
-{{- else }}
-{{- printf "%s:%s" $domain "30080" -}}
-{{- end }}
-{{- else }}
-{{- printf "%s" $domain -}}
-{{- end }}
-{{- end }}
-
-{{/*
-Define the external endpoint for starship
-*/}}
-{{- define "starship.api.domain.withport" -}}
-{{- $endpoint := include "starship.external.api.endpoint" . }}
-{{- $parsedURL := urlParse $endpoint }}
-{{- $port := 80 }}
-{{- if eq $parsedURL.scheme "https" }}
-{{- $port = 443 }}
-{{- end }}
-{{- printf "%s:%s" $parsedURL.host $port -}}
+{{- define "web.internal.endpoint" -}}
+{{- printf "http://%s:%s" (include "web.internal.domain" .) (include "web.internal.port" .) -}}
 {{- end }}

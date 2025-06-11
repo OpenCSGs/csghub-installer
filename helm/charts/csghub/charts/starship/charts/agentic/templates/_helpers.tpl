@@ -24,3 +24,10 @@ Define the internal port for agentic
 {{- end }}
 {{- $port | toString -}}
 {{- end }}
+
+{{/*
+Define the internal endpoint for agentic
+*/}}
+{{- define "agentic.internal.endpoint" -}}
+{{- printf "http://%s:%s" (include "agentic.internal.domain" .) (include "agentic.internal.port" .) -}}
+{{- end }}
