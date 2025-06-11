@@ -72,11 +72,14 @@ data:
   AZURE_API_KEY: {{ .Values.openai.api.key }}
   LANCEDB_URI: "/code/data/lancedb"
   # Billing
-  STARSHIP_BILLING_API_BASE: {{ printf "http://%s:%s" (include "billing.internal.domain".) (include "billing.internal.port" .) | quote }}
+  STARSHIP_BILLING_API_BASE: {{ include "billing.internal.endpoint" . }}
   # Agentic
   AGENTIC_SVC_API_BASE: {{ include "agentic.internal.endpoint" . }}
   WEB_SVC_API_BASE: {{ include "web.internal.endpoint" . }}
   BILLING_SVC_API_BASE: {{ include "billing.internal.endpoint" . }}
   MEGALINTER_SVC_API_BASE: {{ include "megalinter-server.internal.endpoint" . }}
+  {{- if hasKey .Values.global.starship "oauth" }}
+  {{- if hasKey .Values.global.starship.oauth "issuer" }}
   SYNC_PERMS_GIT_SERVER: {{ .Values.global.starship.oauth.issuer | trimPrefix "https://" | trimPrefix "http://" }}
-
+  {{- end }}
+  {{- end }}
