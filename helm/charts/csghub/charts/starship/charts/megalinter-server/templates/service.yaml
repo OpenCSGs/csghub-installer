@@ -16,7 +16,7 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: 9000
       protocol: TCP
-      name: megalinter-api
+      name: megalinter-server
   selector:
     {{- include "common.labels.selector" . | nindent 4 }}
 {{- end }}

@@ -43,13 +43,13 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automount }}
       {{- end }}
       containers:
-        - name: megalinter-api
+        - name: megalinter-server
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           command: [ "sh", "-c", "uvicorn server.server:app --host 0.0.0.0 --port 9000" ]
           ports:
             - containerPort: 9000
-              name: megalinter-api
+              name: megalinter-server
               protocol: TCP
           envFrom:
             {{- if not .Values.global.redis.external }}

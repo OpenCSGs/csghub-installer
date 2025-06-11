@@ -1,4 +1,4 @@
-## Default values for MegaLinter-API.
+## Default values for MegaLinter-Server.
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.
 enabled: false
