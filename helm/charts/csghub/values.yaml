@@ -12,10 +12,10 @@ global:
     registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
     ## Only for csghub_server
     ## Specifies the csghub_server repository name.
-    # name: "csghub_server_ee"
+    # name: "csghub_server"
     ## Specifies the csghub_server image version.
     ## Example: latest, v1.0.0, etc.
-    # tag: "v1.7.0-ee"
+    # tag: "v1.8.0-ee"
     ## Specifies the csghub_server image pull policy.
     # pullPolicy: "IfNotPresent"
 
