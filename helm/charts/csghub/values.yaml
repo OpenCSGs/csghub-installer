@@ -268,12 +268,6 @@ postgresql:
 ## For Starship
 starship:
   enabled: false
-  megalinter-server:
-    enabled: false
-  megalinter-worker:
-    enabled: false
-  secscan:
-    enabled: false
 
 ## For Dataflow
 dataflow:
