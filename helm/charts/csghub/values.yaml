@@ -15,7 +15,7 @@ global:
     # name: "csghub_server"
     ## Specifies the csghub_server image version.
     ## Example: latest, v1.0.0, etc.
-    # tag: "v1.7.0"
+    # tag: "v1.8.0-ce"
     ## Specifies the csghub_server image pull policy.
     # pullPolicy: "IfNotPresent"
 
