@@ -408,7 +408,7 @@ kubectl -n csghub delete secret kube-configs &>/dev/null
 retry kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
 
 log "INFO" "- Add csghub helm repo."
-retry helm repo add csghub https://opencsgs.github.io/csghub-installer --force-update && helm repo update
+retry helm repo add csghub https://charts.opencsg.com/repository/csghub/ --force-update && helm repo update
 
 log "INFO" "- Retrieve knative service info."
 KNATIVE_INTERNAL_HOST="$IP_ADDRESS"
