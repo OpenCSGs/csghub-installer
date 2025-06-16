@@ -1,6 +1,7 @@
 ## Default values for CSGHub-Notification.
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.
+enabled: false
 
 ## Define deploy replicas
 replicas: 1
