@@ -16,6 +16,7 @@ fi
 : "${ENABLE_K3S:=true}"
 : "${ENABLE_DYNAMIC_PV:=false}"
 : "${ENABLE_NVIDIA_GPU:=false}"
+: "${ENABLE_STARSHIP:=false}"
 : "${HOSTS_ALIAS:=true}"
 : "${INSTALL_HELM:=true}"
 : "${KNATIVE_INTERNAL_DOMAIN:=app.internal}"
@@ -391,6 +392,8 @@ if [[ "$ENABLE_NVIDIA_GPU" == "true" ]]; then
   for NODE in $NODES; do
     kubectl label node "$NODE" nvidia.com/mps.capable=true nvidia.com/gpu=true
   done
+
+  verify_pod_running "nvdp"
 fi
 
 ####################################################################################
@@ -419,6 +422,7 @@ fi
 retry helm upgrade --install csghub csghub/csghub \
   --namespace csghub \
   --create-namespace \
+  --set starship.enabled="$ENABLE_STARSHIP" \
   --set global.ingress.domain="$DOMAIN" \
   --set global.ingress.service.type="$INGRESS_SERVICE_TYPE" \
   --set ingress-nginx.controller.service.type="$INGRESS_SERVICE_TYPE" \
