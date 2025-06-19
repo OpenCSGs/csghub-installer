@@ -268,6 +268,9 @@ postgresql:
 ## For Starship
 starship:
   enabled: false
+  web:
+    persistence:
+      accessMode: ["ReadWriteOnce"]
 
 ## For Dataflow
 dataflow:
