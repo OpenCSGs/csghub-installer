@@ -416,38 +416,16 @@ if [[ "$KOURIER_SERVICE_TYPE" == "NodePort" ]]; then
   KNATIVE_INTERNAL_PORT="30213"
 fi
 
-log "INFO" "- Installing csghub helm chart."
-CHART_VERSION=$(helm search repo csghub -l | sort --version-sort -r | awk 'NR==1{print $2}')
-
-if [ -z "$CHART_VERSION" ]; then
-  log "ERRO" "Failed to retrieve the latest version of the csghub chart. Please check the Helm repository."
-  exit 1
-fi
-
-TGZ_FILE="csghub-$CHART_VERSION.tgz"
-if [ -f "$TGZ_FILE" ]; then
-  log "INFO" "- The Helm chart $TGZ_FILE already exists. Skipping download."
-else
-  CSGHUB_URL="https://github.com/OpenCSGs/csghub-installer/releases/download/csghub-$CHART_VERSION/$TGZ_FILE"
-  log "INFO" "- Downloading csghub Helm chart version $CHART_VERSION from $CSGHUB_URL."
-  retry wget "$CSGHUB_URL" -q -O "$TGZ_FILE"
-
-  if [ ! -f "$TGZ_FILE" ]; then
-    log "ERRO" "- Failed to download csghub Helm chart version $CHART_VERSION."
-    exit 1
-  fi
-fi
-
-retry helm upgrade --install csghub ./csghub-"$CHART_VERSION".tgz \
+retry helm upgrade --install csghub csghub/csghub \
   --namespace csghub \
   --create-namespace \
   --set global.ingress.domain="$DOMAIN" \
   --set global.ingress.service.type="$INGRESS_SERVICE_TYPE" \
   --set ingress-nginx.controller.service.type="$INGRESS_SERVICE_TYPE" \
-  --set global.deployment.knative.serving.services[0].type="$KOURIER_SERVICE_TYPE" \
-  --set global.deployment.knative.serving.services[0].domain="$KNATIVE_INTERNAL_DOMAIN" \
-  --set global.deployment.knative.serving.services[0].host="$KNATIVE_INTERNAL_HOST" \
-  --set global.deployment.knative.serving.services[0].port="$KNATIVE_INTERNAL_PORT" | tee ./login.txt
+  --set global.deploy.knative.serving.services[0].type="$KOURIER_SERVICE_TYPE" \
+  --set global.deploy.knative.serving.services[0].domain="$KNATIVE_INTERNAL_DOMAIN" \
+  --set global.deploy.knative.serving.services[0].host="$KNATIVE_INTERNAL_HOST" \
+  --set global.deploy.knative.serving.services[0].port="$KNATIVE_INTERNAL_PORT" | tee ./login.txt
 
 ####################################################################################
 # Configuring local domain name resolution
