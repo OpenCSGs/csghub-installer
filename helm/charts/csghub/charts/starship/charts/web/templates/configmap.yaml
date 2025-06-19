@@ -50,7 +50,8 @@ data:
   # OpenAI assistants API
   USE_OPENAI_ASSISTANTS_API: "false"
   # Accounting from CSGHUB (Not configured for now)
-  ACCOUNTING_OP_MODE: "has_balance|consume"
+  # ACCOUNTING_OP_MODE: "has_balance|consume"
+  ACCOUNTING_OP_MODE: ""
   ACCOUNTING_API_BASE: {{ include "csghub.external.endpoint" . }}
   {{- $token := include "server.hub.api.token" . }}
   {{- $tokenConfigMap := include "common.names.custom" . -}}
