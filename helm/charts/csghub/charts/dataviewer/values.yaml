@@ -19,7 +19,7 @@ image:
   ## Specifies the location of the Dataviewer Docker image in the registry.
   repository: "csghub_server"
   ## Defines the specific version of the Dataviewer image to use.
-  tag: "v1.8.0-ee"
+  tag: "v1.8.1-ee"
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
