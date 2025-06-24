@@ -81,7 +81,8 @@ server:
     access_key: "minio"          # S3 access key
     secret_key: ""               # S3 secret key
     region: "cn-north-1"        # AWS region name
-    endpoint: "127.0.0.1:9000"  # S3 endpoint URL
+    endpoint: ""  # S3 endpoint URL
+    internal_endpoint: "127.0.0.1:9000" # S3 internal endpoint URL
     bucket_lookup: "auto"       # Bucket lookup style
     bucket: "csghub-server"     # Default bucket name
     encrypt: false              # Server-side encryption
@@ -283,7 +284,7 @@ portal:
     access_key: "minio"          # S3 access key
     secret_key: ""               # S3 secret key
     region: "cn-north-1"        # AWS region
-    endpoint: "127.0.0.1:9000"  # S3 endpoint
+    endpoint: ""  # S3 endpoint
     force_path_style: false       # Path-style access
     bucket: "csghub-portal"     # Bucket name
     secure: false               # Use HTTPS
@@ -385,7 +386,7 @@ gitaly:
 gitlab_shell:
   enable: true
   data: "/var/opt/csghub/gitlab_shell"
-  listen_port: 22             # SSH listen port
+  listen: "127.0.0.1:22222"             # SSH listen port
   ssh_port: 2222
   log:
     dir: "/var/log/csghub/gitlab_shell"  # Log directory
