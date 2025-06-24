@@ -456,6 +456,13 @@ if [ "$HOSTS_ALIAS" == true ]; then
           ${IP_ADDRESS} starship-api.${DOMAIN} starship-api
         }
       }
+
+    public.${DOMAIN}.server: |
+      template IN A {
+        match .*\.public\.${DOMAIN}
+        answer "{{ .Name }} 60 IN A ${IP_ADDRESS}"
+        fallthrough
+      }
 EOF
 
   log "INFO" "- Rollout restart deployment coredns."
