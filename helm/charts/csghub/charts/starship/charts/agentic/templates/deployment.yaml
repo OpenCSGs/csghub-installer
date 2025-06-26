@@ -43,7 +43,7 @@ spec:
       {{- end }}
       containers:
         - name: agentic
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           command: [ "sh", "-c", "cd /code && hypercorn starship.main:starlette --bind 0.0.0.0:8000" ]
           ports:
