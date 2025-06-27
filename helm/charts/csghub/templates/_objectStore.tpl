@@ -133,6 +133,30 @@ Define the encrypt for csghub objectStore
 {{- end }}
 
 {{/*
+Define the secure for csghub objectStore
+*/}}
+{{- define "csghub.objectStore.secure" -}}
+{{- $secure := .Values.objectStore.secure }}
+{{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+{{- $secure = "true" }}
+{{- end }}
+{{- if hasKey .Values.global "objectStore" }}
+{{- if hasKey .Values.global.objectStore "external" }}
+{{- if .Values.global.objectStore.external }}
+{{- if hasKey .Values.global.objectStore "connection" }}
+{{- if hasKey .Values.global.objectStore.connection "secure" }}
+{{- if .Values.global.objectStore.connection.secure }}
+{{- $secure = .Values.global.objectStore.connection.secure }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- $secure -}}
+{{- end }}
+
+{{/*
 Define the pathStyle for csghub objectStore
 */}}
 {{- define "csghub.objectStore.pathStyle" -}}

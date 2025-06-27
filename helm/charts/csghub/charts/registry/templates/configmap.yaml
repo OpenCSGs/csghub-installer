@@ -25,6 +25,6 @@ data:
   REGISTRY_STORAGE_S3_REGION: {{ include "csghub.objectStore.region" . }}
   REGISTRY_STORAGE_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   REGISTRY_STORAGE_S3_ENCRYPT: {{ include "csghub.objectStore.encrypt" . | quote }}
-  REGISTRY_STORAGE_S3_SECURE: {{ include "csghub.objectStore.encrypt" . | quote }}
+  REGISTRY_STORAGE_S3_SECURE: {{ include "csghub.objectStore.secure" . | quote }}
   REGISTRY_STORAGE_S3_FORCEPATHSTYLE: {{ include "csghub.objectStore.pathStyle" . | quote }}
 {{- end }}
