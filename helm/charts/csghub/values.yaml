@@ -128,7 +128,9 @@ global:
       ## The location used for authentication
       # region: "cn-north-1"
       ## Indicates whether to encrypt data in transit
-      # encrypt: "true"
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
       ## Indicates whether to use path-style requests
       # pathStyle: "true"
       ## By default (in the case of comments), the following bucket is used:
