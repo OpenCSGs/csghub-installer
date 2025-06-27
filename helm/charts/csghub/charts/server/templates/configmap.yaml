@@ -73,7 +73,7 @@ data:
   {{- end }}
   STARHUB_SERVER_S3_BUCKET: {{ include "csghub.objectStore.bucket" . }}
   STARHUB_SERVER_S3_REGION: {{ include "csghub.objectStore.region" . }}
-  STARHUB_SERVER_S3_ENABLE_SSL: {{ include "csghub.objectStore.encrypt" . | quote }}
+  STARHUB_SERVER_S3_ENABLE_SSL: {{ include "csghub.objectStore.secure" . | quote }}
   {{- if eq (include "csghub.objectStore.pathStyle" .) "true" }}
   STARHUB_SERVER_S3_BUCKET_LOOKUP: "path"
   {{- else }}
