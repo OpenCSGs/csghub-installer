@@ -18,25 +18,18 @@ global:
 
   # External services configuration (optional)
   postgresql:
-    external: false
+    enabled: true
   
   redis:
-    external: false
+    enabled: true
   
   objectStore:
-    external: false
+    enabled: true
 
 # Starship configuration - will be ignored in CE edition
 starship:
   # This setting will be ignored since global.edition is "ce"
   enabled: true
-
-# Component-specific configurations
-server:
-  replicas: 1
-
-portal:
-  replicas: 1
 
 # Resource configurations
 postgresql:
@@ -50,3 +43,12 @@ minio:
 gitaly:
   persistence:
     size: 200Gi
+
+# Component-specific configurations
+csghub:
+  server:
+    replicas: 1
+
+  portal:
+    replicas: 1
+

@@ -18,25 +18,13 @@ global:
 
   # External services configuration (optional)
   postgresql:
-    external: false
-  
+    enabled: true
+
   redis:
-    external: false
-  
+    enabled: true
+
   objectStore:
-    external: false
-
-# Starship configuration - explicitly disable even in EE
-starship:
-  # Set to false to disable Starship even in EE edition
-  enabled: false
-
-# Component-specific configurations
-server:
-  replicas: 1
-
-portal:
-  replicas: 1
+    enabled: true
 
 # Resource configurations
 postgresql:
@@ -50,3 +38,17 @@ minio:
 gitaly:
   persistence:
     size: 200Gi
+
+
+# Starship configuration - explicitly disable even in EE
+starship:
+  # Set to false to disable Starship even in EE edition
+  enabled: false
+
+# Csghub Component-specific configurations
+csghub:
+  server:
+    replicas: 1
+
+  portal:
+    replicas: 1

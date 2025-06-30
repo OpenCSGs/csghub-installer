@@ -18,13 +18,13 @@ global:
 
   # External services configuration (optional)
   postgresql:
-    external: false
+    enabled: true
   
   redis:
-    external: false
+    enabled: true
   
   objectStore:
-    external: false
+    enabled: true
 
   # Starship OAuth configuration (for EE)
   starship:
@@ -38,25 +38,18 @@ starship:
   # Must be explicitly set to true for Starship to be deployed
   enabled: true
 
-# Starship-specific configurations
-web:
-  openai:
-    model: "gpt-4"
-    api:
-      base: "https://api.openai.com/v1"
-      version: "2024-06-01"
-      key: ""  # Set via environment variable or secret
-  
-  persistence:
-    size: 10Gi
-    accessMode: ["ReadWriteMany"]
+  # Starship-specific configurations
+  web:
+    openai:
+      model: "gpt-4"
+      api:
+        base: "https://api.openai.com/v1"
+        version: "2024-06-01"
+        key: ""  # Set via environment variable or secret
 
-# Component-specific configurations
-server:
-  replicas: 1
-
-portal:
-  replicas: 1
+    persistence:
+      size: 10Gi
+      accessMode: ["ReadWriteMany"]
 
 # Resource configurations
 postgresql:
@@ -70,3 +63,12 @@ minio:
 gitaly:
   persistence:
     size: 200Gi
+
+# Csghub Component-specific configurations
+csghub:
+  server:
+    replicas: 1
+
+  portal:
+    replicas: 1
+
