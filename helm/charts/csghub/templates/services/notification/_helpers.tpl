@@ -38,14 +38,3 @@ Define the password of notification root
 {{- define "notification.password" -}}
 {{- "Root@1234" -}}
 {{- end }}
-
-{{/*
-Define extra Config
-*/}}
-{{- define "notification.extraConfig" -}}
-{{ if hasKey .Values.csghub.notification "extraConfig" }}
-{{ range $key, $value := .Values.csghub.notification.jextraConfig }}
-{{ $key }}: {{ $value | quote }}
-{{ end }}
-{{ end }}
-{{- end }}
