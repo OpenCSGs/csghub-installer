@@ -38,7 +38,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: psql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest

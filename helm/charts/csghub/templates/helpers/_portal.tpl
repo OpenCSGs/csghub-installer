@@ -14,15 +14,7 @@ Define the internal domain for portal
 Define the internal port for portal
 */}}
 {{- define "portal.internal.port" -}}
-{{- $port := "8083" }}
-{{- if hasKey .Values.global "portal" }}
-  {{- if hasKey .Values.global.portal "service" }}
-    {{- if hasKey .Values.global.portal.service "port" }}
-      {{- $port = .Values.global.portal.service.port }}
-    {{- end }}
-  {{- end }}
-{{- end }}
-{{- $port | toString -}}
+{{ include "csghub.svc.port" "portal" }}
 {{- end }}
 
 {{/*

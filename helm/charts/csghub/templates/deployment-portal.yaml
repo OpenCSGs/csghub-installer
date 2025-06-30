@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/services/portal/configmap.yaml") . | sha256sum }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-portal.yaml") . | sha256sum }}
         {{- with .Values.csghub.portal.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -50,7 +50,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.portal.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.portal.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: portal
           image: {{ or .Values.global.image.registry .Values.csghub.portal.image.registry }}/{{ .Values.csghub.portal.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.portal.image.tag) "context" .) }}

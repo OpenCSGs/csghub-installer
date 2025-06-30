@@ -43,7 +43,7 @@ data:
 
     [gitlab]
     # # URL of the GitLab server.
-    url = {{ include "server.internal.endpoint" . | quote }}
+    url = {{ printf "http://%s:%s" (include "common.names.custom" (list . "server")) (include "csghub.svc.port" "server") | quote }}
     # # 'relative_url_root' is only needed if a UNIX socket is used in 'url' and GitLab is configured to
     # # use a relative path. For example, '/gitlab'.
     # relative_url_root = '/'
@@ -52,4 +52,4 @@ data:
     # secret_file = "/opt/gitaly/.gitlab_shell_secret"
     # # Secret token used to authenticate with GitLab.
     secret = "signing-key"
-{{- end }}
+    {{- end }}

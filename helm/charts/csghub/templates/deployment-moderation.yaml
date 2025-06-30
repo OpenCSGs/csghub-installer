@@ -20,10 +20,11 @@ spec:
   minReadySeconds: 30
   template:
     metadata:
-      {{- with (include "common.annotations.pod.checksum" (dict "context" . "configmap" true "secret" false)) }}
       annotations:
-        {{- . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-moderation.yaml") . | sha256sum }}
+        {{- with .Values.csghub.moderation.podAnnotations }}
+          {{- . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "common.labels" (dict "context" . "service" "moderation") | nindent 8 }}
     spec:
@@ -46,7 +47,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.moderation.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.moderation.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: moderation
           image: {{ or .Values.global.image.registry .Values.csghub.moderation.image.registry }}/{{ or .Values.global.image.name .Values.csghub.moderation.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.moderation.image.tag) "context" .) }}

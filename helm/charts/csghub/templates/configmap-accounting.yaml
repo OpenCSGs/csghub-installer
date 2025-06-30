@@ -13,7 +13,7 @@ metadata:
     resource.dependencies/deployments: |
       {{ include "common.names.custom" (list . "accounting") }}
 data:
-  OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "accounting.internal.port" . | quote }}
+  OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "csghub.svc.port" "accounting" | quote }}
   OPENCSG_ACCOUNTING_FEE_EVENT_SUBJECT: "accounting.fee.>"
   OPENCSG_ACCOUNTING_NOTIFY_NOBALANCE_SUBJECT: "accounting.notify.nobalance"
   OPENCSG_ACCOUNTING_MSG_FETCH_TIMEOUTINSEC: "5"

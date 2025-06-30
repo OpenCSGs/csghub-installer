@@ -21,7 +21,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/services/proxy/configmap.yaml") . | sha256sum }}
+        checksum/config1: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
+        checksum/config2: {{ include (print $.Template.BasePath "/configmap-proxy-nginx.yaml") . | sha256sum }}
         {{- with .Values.csghub.proxy.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -77,7 +78,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.proxy.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: proxy
           image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/{{ or .Values.global.image.name .Values.csghub.proxy.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.proxy.image.tag) "context" .) }}
