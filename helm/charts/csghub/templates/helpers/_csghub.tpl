@@ -70,6 +70,8 @@ Get the edition suffix for image tags
 {{- $edition := .Values.global.edition | default "ee" -}}
 {{- if eq $edition "ce" -}}
 {{- print "ce" -}}
+{{- else if eq $edition "saas" -}}
+{{- print "saas" -}}
 {{- else -}}
 {{- print "ee" -}}
 {{- end -}}
