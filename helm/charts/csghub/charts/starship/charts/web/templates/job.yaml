@@ -35,6 +35,9 @@ spec:
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "web") }}
           env:
             - name: PGHOST
               value: "$(DATABASE_HOST)"
