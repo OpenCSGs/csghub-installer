@@ -1,0 +1,95 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" (list . "accounting")}}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" (dict "context" . "service" "accounting") | nindent 4 }}
+  annotations: {{ .Values.csghub.accounting.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.serviceSelectorLabels" (dict "selector" true "context" . "service" "accounting")  | nindent 6 }}
+  replicas: {{ .Values.csghub.accounting.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/services/accounting/configmap.yaml") . | sha256sum }}
+        {{- with .Values.csghub.accounting.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" (dict "context" . "service" "accounting") | nindent 8 }}
+    spec:
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.accounting.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.csghub.accounting.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if .Values.csghub.accounting.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" (list . "accounting") }}
+      automountServiceAccountToken: {{ .Values.csghub.accounting.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.csghub.accounting.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.accounting.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+      containers:
+        - name: accounting
+          image: {{ or .Values.global.image.registry .Values.csghub.accounting.image.registry }}/{{ or .Values.global.image.name .Values.csghub.accounting.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.accounting.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.accounting.image.pullPolicy }}
+          command: [ "/starhub-bin/starhub", "accounting", "launch" ]
+          ports:
+            - containerPort: 8086
+              name: accounting
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "accounting") }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
+          env:
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
+            {{- with .Values.csghub.accounting.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.csghub.accounting.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8086
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.csghub.accounting.podSecurityContext | toYaml | nindent 12 }}
+      {{- with .Values.csghub.accounting.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.csghub.accounting.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.csghub.accounting.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

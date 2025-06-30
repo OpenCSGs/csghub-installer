@@ -3,6 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if include "starship.enabled" . }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -49,12 +50,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "web") }}
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - name: REDIS_URL
 {{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}
               value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
@@ -83,12 +84,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "web") }}
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - name: REDIS_URL
               value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
 {{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}
@@ -117,12 +118,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" (list . "web") }}
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - name: REDIS_URL
               value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
 {{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}
@@ -160,3 +161,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+{{- end }}

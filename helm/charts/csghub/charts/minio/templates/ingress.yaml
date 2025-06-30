@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if and (not .Values.global.objectStore.external) .Values.ingress.enabled }}
+{{- if and .Values.global.objectStore.enabled .Values.ingress.enabled }}
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:

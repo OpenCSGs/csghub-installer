@@ -3,6 +3,10 @@
 
 ## Global configuration will override subChart's configuration
 global:
+  ## Edition configuration - determines whether to deploy CE or EE version
+  ## Valid values: "ce", "ee"
+  edition: "ee"
+
   image:
     ## List of Kubernetes secrets to use for pulling images (e.g., for private registry).
     pullSecrets: [ ]
@@ -13,11 +17,12 @@ global:
     ## Only for csghub_server
     ## Specifies the csghub_server repository name.
     # name: "csghub_server"
-    ## Specifies the csghub_server image version.
-    ## Example: latest, v1.0.0, etc.
-    # tag: "v1.8.1-ee"
+    ## Specifies the csghub_server image version base (without ce/ee suffix).
+    ## The actual tag will be constructed as: {{ tag }}-{{ edition }}
+    ## Example: v1.1.0 will become v1.1.0-ce or v1.1.0-ee based on edition
+    tag: "v1.8.1"
     ## Specifies the csghub_server image pull policy.
-    # pullPolicy: "IfNotPresent"
+    pullPolicy: "IfNotPresent"
 
   ## Enable pdb to ensure application access continuity
   pdb:
@@ -46,129 +51,64 @@ global:
       ## Enums `LoadBalancer`、`NodePort`
       type: &type LoadBalancer
 
-  ## This section configures whether to use an external container image repository.
+  ## This section configures global redis configuration, it will be used by all subcharts.
+  ## Service-Level configuration can override global configuration.
   registry:
-    ## Indicates whether the registry is external (true) or internal (false)
+    ## Indicates whether the registry is external (false) or internal (true)
     external: false
     ## If encrypt with TLS/SSL
     insecure: false
-    ## If `external` set to `true`, `connection` is needed.
     connection: { }
-      ## The URL of the Docker registry service; default is Docker Hub
-      # repository: "docker.io"
-      ## The namespace (or organization) under which the images are stored in the registry
+      # repository: "https://registry-1.docker.io"
       # namespace: "csghub"
-      ## The username for authenticating to the registry
-      # username: ""
-      ## The password for authenticating to the registry
+      # username: "registry"
       # password: ""
 
   ## This section configures whether to use an external postgresql database.
   postgresql:
-    ## Specifies whether to use an external PostgreSQL instance or a built-in one
-    external: false
+    enabled: true
     ## Configuring external postgresql database
-    ## If `external` set to `true`, `connection` is needed.
-    connection: { }
-      ## Host of the PostgreSQL database. Leave empty for built-in PostgreSQL, or provide the external host address.
-      # host: ""
-      ## Port on which the PostgreSQL database is running. Default is usually 5432.
-      # port: ""
-      ## Prefix of the database to connect to.
-      ## Priority:
-      ##       postgresql.database > subChart.postgresql{}
-      ## This method will store all metadata data in the same database, which is not recommended,
-      ##   as it may cause data table conflicts.
-      ## The recommended way is to comment this parameter and use the default database:
-      ##   - csghub_portal
-      ##   - csghub_server
-      ##   - csghub_casdoor
-      ##   - csghub_temporal
-      ##   - csghub_temporal_visibility
-      ##   - csghub_dataflow
-      ##   - starship_codegpt
-      ## Please make sure that the above databases have been created
-      # database: ""
-      ## Username for authenticating with the PostgreSQL database.
-      # user: ""
-      ## Password for the PostgreSQL user specified above.
-      # password: ""
-      ## Timezone for PostgreSQL
-      # timezone: "Etc/UTC"
+    ## Define global config, service-level config can override global config.
+    ## host: "<pg_host>"
+    ## port: 6432
+    ## user: "csghub"
+    ## timezone: "Etc/UTC"
 
-  ## This section configures whether to use an external redis cache.
+  ## This section configures global redis configuration, it will be used by all subcharts.
+  ## Service-Level configuration can override global configuration.
   redis:
-    ## Set to false to use internal Redis service
-    external: false
-    ## Configuring external redis cache
-    ## If `external` set to `true`, `connection` is needed.
-    connection: { }
-      ## Host for accessing Redis
-      # host: ""
-      ## Port for accessing Redis
-      # port: ""
-      ## Password for accessing Redis
-      # password: ""
+    enabled: true
+    ## Define global config, service-level config can override global config.
+    ## host: "<redis_host>"
+    ## port: 6379
+    ## password: ""
 
-  ## The following is a unified object storage configuration.
-  ## Once configured, the configured object storage is automatically used instead of the built-in minio object storage.
-  ## If you use external object storage, make sure the bucket has been created.
+  ## This section configures global s3 configuration, it will be used by all subcharts.
+  ## Service-Level configuration can override global configuration.
   objectStore:
-    ## If you use external object storage, set this to true, otherwise set this to false to use built-in object storage.
-    external: false
-    ## Configuring external object storage
-    ## If `external` set to `true`, `connection` is needed.
-    connection: { }
-      ## The endpoint of the object storage service, e.g., S3 compatible service URL
-      # endpoint: ""
-      ## The access key used for authentication
-      # accessKey: ""
-      ## The secret key used for authentication
-      # accessSecret: ""
-      ## The location used for authentication
-      # region: "cn-north-1"
-      ## Indicates whether to encrypt data in transit
-      # encrypt: "false"
-      ## Indicates whether using TLS
-      # secure: "true"
-      ## Indicates whether to use path-style requests
-      # pathStyle: "true"
-      ## By default (in the case of comments), the following bucket is used:
-      ##   - csghub-portal
-      ##   - csghub-server
-      ##   - csghub-registry
-      ##   - csghub-workflow
-      # bucket: ""
+    ## If you use external object storage, set this to false, otherwise set this to true to use built-in object storage.
+    enabled: true
+    ## If you use external object storage, configure the following
+    ## Service-Level configuration can override global configuration.
+    ## endpoint: "http://minio.<domain>"
+    ## accessKey: "minio"
+    ## secretKey: ""
+    ## region: "cn-north-1"
+    ## encrypt: false
+    ## secure: false
+    ## pathStyle: true
 
-  ## Configuration for gitaly settings
+  ## This section configures global gitaly configuration, it will be used by all subcharts.
+  ## Service-Level configuration can override global configuration.
   gitaly:
-    ## If you use external gitaly, set this to true, otherwise set this to false to use built-in.
-    external: false
-    ## Configuring external object storage
-    ## If `external` set to `true`, `connection` is needed.
-    connection: { }
-      ## The host where Gitaly is running
-      # host: "csghub-gitaly"
-      ## The port used to communicate with Gitaly
-      # port: 8075
-      ## The storage using by gitaly
-      # storage: "default"
-      ## The token for authenticating with Gitaly
-      # token: ""
-      ## If gitaly is a cluster
-      # isCluster: false
+    ## If you use external gitaly, set this to false, otherwise set this to true to use built-in.
+    enabled: true
+    ## only works in EE and gitaly cluster
+    isCluster: false
 
   ## Configuration for content moderation settings
   moderation:
     enabled: false
-    ## Configuring external content moderation server connection info
-    connection: { }
-      ## The access key ID for authentication with the moderation service
-      # accessKeyId: ""
-      ## The access key secret for authentication with the moderation service
-      # accessKeySecret: ""
-      ## The region where the moderation service is hosted
-      # region: ""
 
   ## This section of configuration is used to integrate k8s to run various instances, +
   ## such as Space applications, fine-tuning, and inference instances.
@@ -223,6 +163,8 @@ global:
       # issuer: "https://gitlab.example.com"
       # clientId: "73f1c2922f51d68fa87de8c1ef0e23e8940f3aa42f5ac7a55a1f586c597d7e9c"
       # clientSecret: "gloas-3ba02f02b3e993664ccdda2c4d76989caa11ce6f07a805b6872d266fbd465831"
+  dataflow:
+    enabled: false
 
 ## More subChart configuration mappings are omitted here.
 ## Under normal circumstances, these configurations are not necessary.
@@ -268,7 +210,12 @@ postgresql:
   #   - starship_codegpt
 
 ## For Starship
+## Note: Starship is only available in EE edition
 starship:
+  ## Starship will only be deployed when BOTH conditions are met:
+  ## 1. global.edition is set to "ee" (Enterprise Edition)
+  ## 2. starship.enabled is explicitly set to true
+  ## If global.edition is "ce", starship will never be deployed regardless of this setting
   enabled: false
   web:
     persistence:
@@ -276,8 +223,7 @@ starship:
 
 ## For Dataflow
 dataflow:
-  ## Disable dataflow default
-  enabled: false
+  ## You can only define configuration here， Control whether enabled in global.dataflow
   ## Configure AI Service
   openAI: { }
     ## The API endpoint address, e.g., "https://api.openai.com/v1/"
@@ -424,3 +370,1670 @@ fluentd:
           </format>
         </match>
       </label>
+
+csghub:
+  user:
+    ## Default values for CSGHub-User.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Server service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Server service will listen for connections.
+      port: 8080
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql:
+      ## Specifies the host address of the PostgreSQL database server.
+      host: "csghub-postgresql"
+      ## Defines the port on which the PostgreSQL server is listening.
+      port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      user: "csghub_server"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      database: "csghub_server"
+      ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
+      timezone: "Etc/UTC"
+
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore:
+      ## The endpoint URL of the object storage service.
+      endpoint: "http://minio.<domain>"
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      accessKey: "minio"
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      secretKey: ""
+      ## The name of the bucket within the object storage service to be used.
+      bucket: "csghub-server"
+      ## The region where the bucket is located within the object storage service.
+      region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
+      ## When set to "true", the bucket name will be part of the URL path.
+      ## For example, the URL will be in the format:
+      ## http://<minio-server>/<bucket-name>/<object-key>
+      pathStyle: "true"
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Server container.
+    ## Environment variables can be used to customize the behavior of the Server instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Server features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Server deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Server instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Server container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Server container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Server container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Server deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  server:
+    ## Default values for CSGHub-Server.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Server service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Server service will listen for connections.
+      port: 8080
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql:
+      ## Specifies the host address of the PostgreSQL database server.
+      host: ""
+      ## Defines the port on which the PostgreSQL server is listening.
+      port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      user: "csghub_server"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      database: "csghub_server"
+      ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
+      timezone: "Etc/UTC"
+
+    ## Specifies the location and credentials for accessing the external Redis cache.
+    redis:
+      ## host for accessing Redis
+      host: ""
+      ## Port for accessing Redis
+      port: 6379
+      ## Password for accessing Redis
+      password: ""
+
+    ## Configuration for Gitaly
+    gitaly:
+      ## The host where Gitaly is running
+      host: ""
+      ## The port used to communicate with Gitaly
+      port: 8075
+      ## The storage using by gitaly
+      storage: "default"
+      ## The token for authenticating with Gitaly
+      token: ""
+
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore:
+      ## The endpoint URL of the object storage service.
+      endpoint: ""
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      accessKey: "minio"
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      secretKey: ""
+      ## The name of the bucket within the object storage service to be used.
+      bucket: "csghub-server"
+      ## The region where the bucket is located within the object storage service.
+      region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
+      ## When set to "true", the bucket name will be part of the URL path.
+      ## For example, the URL will be in the format:
+      ## http://<minio-server>/<bucket-name>/<object-key>
+      pathStyle: "true"
+      ## If the machine performance is not good enable direct lfs upload
+      directUpload: "false"
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Server container.
+    ## Environment variables can be used to customize the behavior of the Server instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Server features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments:
+      STARHUB_SERVER_MODEL_DOCKER_REG_BASE: "opencsg-registry.cn-beijing.cr.aliyuncs.com/public"
+
+    ## annotations: This section allows you to add annotations to the Server deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Server instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Server container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Server container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Server container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+    #  limits:
+    #    cpu: 4000m
+    #    memory: 8192Mi
+    #  requests:
+    #    cpu: 1000m
+    #    memory: 1024Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Server deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 10
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      targetMemoryUtilizationPercentage: 80
+
+  runner:
+    ## Default values for CSGHub-Runner.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    ## External Registry configuration.
+    ## Docker Registry configuration for the builder
+    ## This subsection allows you to specify the repository, namespace, username, and password for the Docker registry.
+    registry:
+      ## The URL of the Docker registry service; default is Docker Hub
+      repository: ""
+      ## The namespace (or organization) under which the images are stored in the registry
+      namespace: "csghub"
+      ## The username for authenticating to the registry
+      username: "registry"
+      ## The password for authenticating to the registry
+      password: ""
+      ## If encrypt with TLS/SSL
+      insecure: true
+
+    service:
+      ## This determines how the Runner service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Runner service will listen for connections.
+      port: 8082
+
+    autoLabel:
+      image:
+        ## Specify path prefix relative to docker.io
+        registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+        ## Specifies the location of the Registry Docker image in the registry.
+        repository: gpu_gather
+        ## Defines the specific version of the Registry image to use.
+        tag: "latest"
+      cli:
+        image: "nvidia/cuda:12.0.0-base-ubi8"
+        cmd: "nvidia-smi --query-gpu=name --format=csv,noheader"
+
+    ## The name of the Kubernetes secret containing the kubeconfig file
+    ## This secret provides the necessary credentials for accessing the Kubernetes cluster
+    deployment:
+      kubeSecret: "kube-configs"
+      namespace: "spaces"
+
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore:
+      ## The endpoint URL of the object storage service.
+      endpoint: "http://minio.<domain>"
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      accessKey: "minio"
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      secretKey: ""
+      ## The name of the bucket within the object storage service to be used.
+      bucket: "csghub-workflow"
+      ## The region where the bucket is located within the object storage service.
+      region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
+      ## When set to "true", the bucket name will be part of the URL path.
+      ## For example, the URL will be in the format:
+      ## http://<minio-server>/<bucket-name>/<object-key>
+      pathStyle: "true"
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Runner container.
+    ## Environment variables can be used to customize the behavior of the Runner instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Runner features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Runner deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Runner instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Runner container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Runner container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Runner container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Runner deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  proxy:
+    ## Default values for CSGHub-Proxy.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## tag: "v1.1.0-ee"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    ## Specifies the location and credentials for accessing the external Redis cache.
+    redis:
+      ## host for accessing Redis
+      host: ""
+      ## Port for accessing Redis
+      port: 6379
+      ## Password for accessing Redis
+      password: ""
+
+    service:
+      ## This determines how the Runner service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Runner service will listen for connections.
+      port: 8083
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Runner container.
+    ## Environment variables can be used to customize the behavior of the Runner instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Runner features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Runner deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Runner instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Runner container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Runner container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Runner container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Runner deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  portal:
+    ## Default values for CSGHub-Portal.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_portal"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    ## Configuration for ingress. If enabled, you can access Minio console by minio.<domain>
+    ingress:
+      ## Enable or disable ingress.
+      enabled: true
+      ## TLS settings for ingress.
+      tls:
+        ## Enable or disable TLS.
+        ## It can be overwritten by global
+        enabled: false
+        ## Whether to enable tls encryption.
+        ## If this configuration is enabled, a tls secret needs to be provided
+        ## It cannot be overwritten by global
+        secretName: ""
+      annotations: { }
+
+    service:
+      ## This determines how the Server service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Server service will listen for connections.
+      port: 8090
+
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql:
+      ## Specifies the host address of the PostgreSQL database server.
+      host: ""
+      ## Defines the port on which the PostgreSQL server is listening.
+      port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      user: "csghub_portal"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      database: "csghub_portal"
+      ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
+      timezone: "Etc/UTC"
+
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore:
+      ## The endpoint URL of the object storage service.
+      endpoint: ""
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      accessKey: "minio"
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      secretKey: ""
+      ## The name of the bucket within the object storage service to be used.
+      bucket: "csghub-portal"
+      ## The region where the bucket is located within the object storage service.
+      region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
+      ## When set to "true", the bucket name will be part of the URL path.
+      ## For example, the URL will be in the format:
+      ## http://<minio-server>/<bucket-name>/<object-key>
+      pathStyle: "true"
+
+    ## SMTP server host address (e.g., smtp.example.com)
+    smtp:
+      host: ""
+      ## SMTP server port number (e.g., 465 for SSL, 587 for TLS)
+      port: 465
+      ## Username for SMTP authentication
+      username: ""
+      ## Password for SMTP authentication
+      password: ""
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Runner container.
+    ## Environment variables can be used to customize the behavior of the Runner instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Runner features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Runner deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Runner instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Runner container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Runner container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Runner container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+    #  limits:
+    #    cpu: 2000m
+    #    memory: 4096Mi
+    #  requests:
+    #    cpu: 500m
+    #    memory: 512Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Runner deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 5
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 90
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      targetMemoryUtilizationPercentage: 90
+
+  notification:
+    ## Default values for CSGHub-Notification.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Server service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Server service will listen for connections.
+      port: 8095
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql:
+      ## Specifies the host address of the PostgreSQL database server.
+      host: "csghub-postgresql"
+      ## Defines the port on which the PostgreSQL server is listening.
+      port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      user: "csghub_server"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      database: "csghub_server"
+      ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
+      timezone: "Etc/UTC"
+
+    ## Specifies the location and credentials for accessing the external Redis cache.
+    redis:
+      ## host for accessing Redis
+      host: ""
+      ## Port for accessing Redis
+      port: 6379
+      ## Password for accessing Redis
+      password: ""
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Server container.
+    ## Environment variables can be used to customize the behavior of the Server instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Server features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Server deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Server instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+
+    ## The 'resources' section is used to define the compute resource requirements for the Server container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Server container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Server container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Server deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  moderation:
+    ## Default values for CSGHub-Mirror.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    ## Configuration for content moderation settings
+    moderation:
+      ## The access key ID for authentication with the moderation service
+      accessKeyId: ""
+      ## The access key secret for authentication with the moderation service
+      accessKeySecret: ""
+      ## The region where the moderation service is hosted
+      region: ""
+
+    service:
+      ## This determines how the Gitaly service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Gitaly service will listen for connections.
+      port: 8089
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Nats container.
+    ## Environment variables can be used to customize the behavior of the Nats instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Nats features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Nats deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Nats instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+    #  helm.sh/resource-policy: keep
+
+    ## The 'resources' section is used to define the compute resource requirements for the Nats container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Nats container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Nats container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Nats deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  mirror:
+    ## Default values for CSGHub-Mirror.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    ## Specifies the location and credentials for accessing the external PostgreSQL database.
+    postgresql:
+      ## Specifies the host address of the PostgreSQL database server.
+      host: "csghub-postgresql"
+      ## Defines the port on which the PostgreSQL server is listening.
+      port: 5432
+      ## The username used for authentication with the PostgreSQL database.
+      user: "csghub_server"
+      ## The password used for authentication with the PostgreSQL database.
+      ## It is empty by default for security reasons and should be set through secure means.
+      password: ""
+      ## The name of the database to connect to on the PostgreSQL server.
+      database: "csghub_server"
+      ## Sets the timezone for the database connection, ensuring time-based operations use the correct timezone.
+      timezone: "Etc/UTC"
+
+    ## Specifies the location and credentials for accessing the external Redis cache.
+    redis:
+      ## host for accessing Redis
+      host: ""
+      ## Port for accessing Redis
+      port: 6379
+      ## Password for accessing Redis
+      password: ""
+
+    ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
+    objectStore:
+      ## The endpoint URL of the object storage service.
+      endpoint: "http://minio.<domain>"
+      ## The access key ID for authentication with the object storage service.
+      ## This is empty by default and should be provided securely.
+      accessKey: "minio"
+      ## The secret access key for authentication with the object storage service.
+      ## This is also empty by default and should be provided securely.
+      secretKey: ""
+      ## The name of the bucket within the object storage service to be used.
+      bucket: "csghub-server"
+      ## The region where the bucket is located within the object storage service.
+      region: "cn-north-1"
+      ## Indicates whether to encrypt data in transit
+      # encrypt: "false"
+      ## Indicates whether using TLS
+      # secure: "true"
+      ## When set to "true", the bucket name will be part of the URL path.
+      ## For example, the URL will be in the format:
+      ## http://<minio-server>/<bucket-name>/<object-key>
+      pathStyle: "true"
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Nats container.
+    ## Environment variables can be used to customize the behavior of the Nats instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Nats features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Nats deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Nats instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+    #  helm.sh/resource-policy: keep
+
+    ## The 'resources' section is used to define the compute resource requirements for the Nats container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Nats container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Nats container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Nats deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  dataviewer:
+    ## Default values for Dataviewer.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+    ## Enable or disable the Dataviewer component.
+    enabled: true
+
+    replicas: 1
+
+    # Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Dataviewer Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Dataviewer image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.8.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Dataflow service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Dataflow service will listen for connections.
+      port: 8093
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## Specifies the location and credentials for accessing the external Redis cache.
+    redis:
+      ## host for accessing Redis
+      host: ""
+      ## Port for accessing Redis
+      port: 6379
+      ## Password for accessing Redis
+      password: ""
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Dataviewer container.
+    ## Environment variables can be used to customize the behavior of the Dataviewer instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Dataviewer features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Dataviewer deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Dataviewer instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+    #  helm.sh/resource-policy: keep
+
+    ## The 'resources' section is used to define the compute resource requirements for the Dataviewer container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Dataviewer container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Dataviewer container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+  aigateway:
+    ## Default values for CSGHub-AIGateway.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Gitaly service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Gitaly service will listen for connections.
+      port: 8084
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the aigateway container.
+    ## Environment variables can be used to customize the behavior of the aigateway instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain aigateway features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the aigateway deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your aigateway instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+    #  helm.sh/resource-policy: keep
+
+    ## The 'resources' section is used to define the compute resource requirements for the aigateway container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the aigateway container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the aigateway container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+    #  limits:
+    #    cpu: 2000m
+    #    memory: 2048Mi
+    #  requests:
+    #    cpu: 500m
+    #    memory: 512Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the aigateway deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80
+
+  accounting:
+    ## Default values for CSGHub-Accounting.
+    ## This is a YAML-formatted file.
+    ## Declare variables to be passed into your templates.
+
+    ## Define deploy replicas
+    replicas: 1
+
+    ## Configuration for images, it can be overwritten by global.images
+    image:
+      ## List of image pull secrets.
+      ## Used to pull Docker images from private repositories.
+      ## This array is empty by default, meaning no secrets are required by default.
+      pullSecrets: [ ]
+      ## Specify path prefix relative to docker.io
+      ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
+      ## No need to add the final slash `/`
+      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+      ## Specifies the location of the Registry Docker image in the registry.
+      repository: "csghub_server"
+      ## Defines the specific version of the Registry image to use.
+      ## The tag will be automatically suffixed with edition (ce/ee) based on global.edition
+      ## tag: "v1.1.0"
+      ## Determines how the image should be pulled from the registry.
+      pullPolicy: "IfNotPresent"
+
+    service:
+      ## This determines how the Accounting service is accessed within the cluster or from external sources.
+      type: ClusterIP
+      ## This is the network port where the Accounting service will listen for connections.
+      port: 8086
+
+    serviceAccount:
+      ## Determines whether a service account should be created.
+      create: false
+      ## Controls whether the service account token should be automatically mounted.
+      automount: false
+      ## Allows for annotations to be added to the service account.
+      annotations: { }
+
+    ## podAnnotations: Allows you to add annotations to the pods. Annotations can be used to attach arbitrary -
+    ## non-identifying metadata to objects. Tools and libraries can retrieve this metadata.
+    podAnnotations: { }
+
+    ## podLabels: Provides the ability to add labels to the pods. Labels are key/value pairs that are attached to objects, -
+    ## such as pods, which can be used for the purposes of organization and to select subsets of objects.
+    podLabels: { }
+
+    ## podSecurityContext: Defines security settings for the entire pod. This can include settings like the user and group -
+    ## IDs that processes run as, and privilege and access control settings.
+    podSecurityContext: { }
+
+    ## securityContext: Specifies security settings for a specific container within a pod. This can include settings such as -
+    ## capabilities, security enhanced Linux (SELinux) options, and whether the container should run as privileged.
+    securityContext: { }
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+    # runAsNonRoot: true
+    # runAsUser: 1000
+
+    ## environments: This section is reserved for defining environment variables for the Accounting container.
+    ## Environment variables can be used to customize the behavior of the Accounting instance.
+    ## For example, you might use environment variables to configure logging levels or to enable certain Accounting features.
+    ## This section is currently empty, indicating that no environment variables have been explicitly set.
+    environments: { }
+
+    ## annotations: This section allows you to add annotations to the Accounting deployment.
+    ## Annotations are key-value pairs that can be used to store additional metadata about the deployment.
+    ## This can be useful for tools and applications that interact with your Kubernetes cluster, providing them with extra -
+    ## information about your Accounting instance.
+    ## Like the environments section, this is also currently empty.
+    annotations: { }
+    #  helm.sh/resource-policy: keep
+
+    ## The 'resources' section is used to define the compute resource requirements for the Accounting container.
+    ## Here, you can specify the minimum and maximum amount of CPU and memory that the container is allowed to use.
+    ## Leaving this section empty means that no specific resource limits or requests are set for the Accounting container.
+    ## This approach can be beneficial in environments with limited resources, such as development or testing environments,
+    ## where you might not want to enforce strict resource constraints.
+    ## However, for production environments, it's recommended to uncomment and set these values to ensure that the Accounting container
+    ## has enough resources to operate efficiently and to prevent it from consuming too much of the available resources on the node.
+    ## 'limits' specify the maximum amount of CPU and memory the container can use.
+    ## 'requests' specify the minimum amount of CPU and memory guaranteed to the container.
+    ## If these values are not set, the container could be terminated in a resource-constrained environment or it might not perform as expected.
+    resources: { }
+      # limits:
+      #   cpu: 100m
+      #   memory: 128Mi
+      # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
+    ## nodeSelector: This section allows you to specify node labels for pod assignment.
+    ## This is useful for ensuring that pods are only scheduled on nodes with specific labels.
+    nodeSelector: { }
+
+    ## tolerations: This section allows you to specify tolerations for the pods.
+    ## Tolerations enable the pods to schedule onto nodes with matching taints.
+    ## This is useful in scenarios where you want to ensure that certain workloads run on dedicated nodes.
+    tolerations: [ ]
+
+    ## affinity: This section allows you to set rules that affect how pods are scheduled based on various criteria -
+    ## including labels of pods that are already running on the node.
+    ## Affinity settings can be used to ensure that certain pods are co-located in the same node, zone, etc., or to -
+    ## spread pods across nodes or zones for high availability.
+    affinity: { }
+
+    ## autoscaling: This section configures the Horizontal Pod Autoscaler (HPA) for the Accounting deployment.
+    ## The HPA automatically scales the number of pods in a deployment, replication controller, replica set, or stateful -
+    ## set based on observed CPU utilization.
+    autoscaling:
+      ## Determines whether autoscaling is enabled. Set to true to enable autoscaling.
+      enabled: false
+      ## The minimum number of replicas. The autoscaler will not scale below this number.
+      minReplicas: 1
+      ## The maximum number of replicas. The autoscaler will not scale above this number.
+      maxReplicas: 100
+      ## The target average CPU utilization (represented as a percentage) over all the pods. When the average CPU utilization -
+      ## exceeds this threshold, the HPA will scale up.
+      targetCPUUtilizationPercentage: 80
+      ## Uncomment to enable scaling based on memory usage. This sets the target average memory utilization over all the pods.
+      # targetMemoryUtilizationPercentage: 80

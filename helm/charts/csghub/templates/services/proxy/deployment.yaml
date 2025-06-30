@@ -1,0 +1,168 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+kind: Deployment
+metadata:
+  name: {{ include "common.names.custom" (list . "proxy") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" (dict "context" . "service" "proxy") | nindent 4 }}
+  annotations: {{ .Values.csghub.proxy.annotations | toYaml | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "common.serviceSelectorLabels" (dict "selector" true "context" . "service" "proxy") | nindent 6 }}
+  replicas: {{ .Values.csghub.proxy.replicas }}
+  revisionHistoryLimit: 1
+  minReadySeconds: 30
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/services/proxy/configmap.yaml") . | sha256sum }}
+        {{- with .Values.csghub.proxy.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "common.labels" (dict "context" . "service" "proxy") | nindent 8 }}
+    spec:
+      dnsPolicy: None
+      dnsConfig:
+        nameservers:
+          - {{ include "coredns.csghub" . }}
+        searches:
+          - {{ .Release.Namespace }}.svc.cluster.local
+          - svc.cluster.local
+          - cluster.local
+        options:
+          - name: ndots
+            value: "5"
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.proxy.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.csghub.proxy.securityContext }}
+      securityContext:
+        {{- . | toYaml | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10
+      {{- if .Values.csghub.proxy.serviceAccount.create }}
+      serviceAccountName: {{ include "common.names.custom" (list . "proxy") }}
+      automountServiceAccountToken: {{ .Values.csghub.proxy.serviceAccount.automount }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-redis
+          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/redis:7.2.5
+          imagePullPolicy: {{ .Values.csghub.proxy.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
+          envFrom:
+            {{- if .Values.global.redis.enabled }}
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            {{- else }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
+          env:
+            - name: REDISCLI_AUTH
+              {{- if .Values.global.redis.enabled }}
+              value: "$(STARHUB_SERVER_REDIS_PASSWORD)"
+              {{- else }}
+              value: "$(REDIS_PASSWD)"
+              {{- end }}
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.proxy.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+      containers:
+        - name: proxy
+          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/{{ or .Values.global.image.name .Values.csghub.proxy.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.proxy.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.proxy.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub start rproxy" ]
+          ports:
+            - containerPort: 8083
+              name: proxy
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "nats") }}
+            {{- if not .Values.global.redis.enabled }}
+            - secretRef:
+                name: {{ include "common.names.custom" (list . "redis") }}
+            {{- end }}
+          env:
+            {{- if not .Values.global.redis.enabled }}
+            - name: STARHUB_SERVER_REDIS_PASSWORD
+              value: "$(REDIS_PASSWD)"
+            {{- end }}
+            - name: STARHUB_SERVER_SPACE_SESSION_SECRET_KEY
+              value: {{ sha256sum .Release.Name | trunc 32 | quote }}
+            - name: OPENCSG_ACCOUNTING_NATS_URL
+              value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
+            {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+            - name: STARHUB_SERVER_ENABLE_HTTPS
+              value: "true"
+            {{- end }}
+            {{- with .Values.csghub.proxy.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.csghub.proxy.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 8083
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.csghub.proxy.podSecurityContext | toYaml | nindent 12 }}
+        - name: nginx
+          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/nginx:latest
+          imagePullPolicy: {{ .Values.csghub.proxy.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
+          ports:
+            - containerPort: 80
+              name: proxy-nginx
+              protocol: TCP
+            {{- with .Values.csghub.proxy.environments }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- .Values.csghub.proxy.resources | toYaml | nindent 12 }}
+          livenessProbe:
+            tcpSocket:
+              port: 80
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          securityContext:
+            {{- .Values.csghub.proxy.podSecurityContext | toYaml | nindent 12 }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: false
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "common.names.custom" (list . "proxy") }}
+      {{- with .Values.csghub.proxy.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.csghub.proxy.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.csghub.proxy.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

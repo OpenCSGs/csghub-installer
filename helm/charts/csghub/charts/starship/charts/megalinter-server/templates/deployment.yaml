@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -52,15 +53,15 @@ spec:
               name: ml-server
               protocol: TCP
           envFrom:
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
             - name: MEGALINTER_SERVER_REDIS_HOST
-              value: {{ include "csghub.redis.host" . | quote }}
+              value: {{ $redisConfig.host | quote }}
             - name: MEGALINTER_SERVER_REDIS_PORT
-              value: {{ include "csghub.redis.port" . | quote }}
+              value: {{ $redisConfig.port | quote }}
             - name: MEGALINTER_SERVER_REDIS_QUEUE
               value: "megalinter:queue:requests"
             {{- with .Values.environments }}

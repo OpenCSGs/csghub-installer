@@ -4,13 +4,17 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  {{- with (include "common.annotations.deployment" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -46,21 +50,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.custom" . }}
-          env:
-            - name: PGHOST
-              value: "$(POSTGRES_SEEDS)"
-            - name: PGPORT
-              value: "$(DB_PORT)"
-            - name: PGDATABASE
-              value: "$(DBNAME)"
-            - name: PGUSER
-              value: "$(POSTGRES_USER)"
-            - name: PGPASSWORD
-              value: "$(POSTGRES_PWD)"
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: temporal
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
@@ -72,7 +62,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
-            {{- if not .Values.global.postgresql.external }}
+            {{- if .Values.global.postgresql.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "postgresql") }}
             {{- end }}

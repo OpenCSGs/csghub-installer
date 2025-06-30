@@ -3,7 +3,8 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if .Values.enabled }}
+{{- if .Values.global.dataflow.enabled }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -30,19 +31,9 @@ data:
   OPENAI_API_VERSION: {{ .apiVersion }}
   AZURE_MODEL: {{ .model }}
   {{- end }}
-  DATABASE_HOSTNAME: {{ include "csghub.postgresql.host" . }}
-  DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
-  {{- $user := include "csghub.postgresql.user" . }}
-  {{- $password := include "postgresql.initPass" $user }}
-  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
-  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
-  {{- if $secretData }}
-  {{- $secretPassword := index $secretData $user }}
-  {{- if $secretPassword }}
-  {{- $password = $secretPassword | b64dec }}
-  {{- end }}
-  {{- end }}
-  DATABASE_USERNAME: {{ $user }}
-  DATABASE_PASSWORD: {{ or (include "csghub.postgresql.password" .) $password }}
-  DATABASE_DB: {{ include "csghub.postgresql.database" . }}
+  DATABASE_HOSTNAME: {{ $pgConfig.host }}
+  DATABASE_PORT: {{ $pgConfig.port | quote }}
+  DATABASE_USERNAME: {{ $pgConfig.user }}
+  DATABASE_PASSWORD: {{ $pgConfig.password | quote }}
+  DATABASE_DB: {{ $pgConfig.database }}
 {{- end }}

@@ -1,0 +1,52 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- $objectStoreConfig := include "chart.objectStoreConfig" (dict "service" .Values.csghub.portal "global" .) | fromYaml }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values.csghub.portal "global" .) | fromYaml }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.names.custom" (list . "portal") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" (dict "context" . "service" "portal") | nindent 4 }}
+  annotations:
+    resource.dependencies/deployments: |
+      {{ include "common.names.custom" (list . "portal") }}
+data:
+  CSGHUB_PORTAL_APP_ENV: "production"
+  {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+  CSGHUB_PORTAL_ENABLE_HTTPS: "true"
+  {{- else }}
+  CSGHUB_PORTAL_ENABLE_HTTPS: "false"
+  {{- end }}
+  CSGHUB_PORTAL_ON_PREMISE: "true"
+  {{- if .Values.global.moderation.enabled }}
+  CSGHUB_PORTAL_SENSITIVE_CHECK: "true"
+  {{- else }}
+  CSGHUB_PORTAL_SENSITIVE_CHECK: "false"
+  {{- end }}
+  CSGHUB_PORTAL_STARHUB_BASE_URL: {{ include "csghub.external.endpoint" . }}
+  CSGHUB_PORTAL_STARHUB_API_KEY: {{ include "server.hub.api.token" . | quote }}
+  # PostgreSQL
+  CSGHUB_PORTAL_DATABASE_HOST: {{ $pgConfig.host }}
+  CSGHUB_PORTAL_DATABASE_PORT: {{ $pgConfig.port | quote }}
+  CSGHUB_PORTAL_DATABASE_NAME: {{ $pgConfig.database }}
+  CSGHUB_PORTAL_DATABASE_USERNAME: {{ $pgConfig.user }}
+  CSGHUB_PORTAL_DATABASE_PASSWORD: {{ $pgConfig.password }}
+  CSGHUB_PORTAL_DATABASE_DSN: {{ include "csghub.postgresql.url" (dict "service" .Values.csghub.portal "global" .) | quote }}
+  # ObjectStorage
+  CSGHUB_PORTAL_S3_ENDPOINT: {{ include "minio.external.endpoint" . | trimPrefix "http://" | trimPrefix  "https://" }}
+  {{- if not .Values.global.objectStore.enabled }}
+  CSGHUB_PORTAL_S3_ACCESS_KEY_ID: {{ $objectStoreConfig.accessKey }}
+  CSGHUB_PORTAL_S3_ACCESS_KEY_SECRET: {{ $objectStoreConfig.secretKey }}
+  {{- end }}
+  CSGHUB_PORTAL_S3_BUCKET: {{ $objectStoreConfig.bucket }}
+  CSGHUB_PORTAL_S3_REGION: {{ $objectStoreConfig.region }}
+  CSGHUB_PORTAL_S3_ENABLE_SSL: {{ $objectStoreConfig.secure | quote }}
+  # SMTP
+  CSGHUB_PORTAL_MAILER_HOST: {{ .Values.csghub.portal.smtp.host }}
+  CSGHUB_PORTAL_MAILER_PORT: {{ .Values.csghub.portal.smtp.port | quote }}
+  CSGHUB_PORTAL_MAILER_USERNAME: {{ .Values.csghub.portal.smtp.username }}
+  CSGHUB_PORTAL_MAILER_PASSWORD: {{ .Values.csghub.portal.smtp.password }}

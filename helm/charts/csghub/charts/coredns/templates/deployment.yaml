@@ -10,7 +10,10 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  {{- with (include "common.annotations.deployment" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:

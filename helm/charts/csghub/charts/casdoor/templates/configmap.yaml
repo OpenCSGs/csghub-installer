@@ -17,6 +17,8 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $htpasswd = $secretHtpasswd | b64dec }}
 {{- end }}
 {{- end }}
+
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" . ) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -44,7 +46,7 @@ data:
     runmode = prod
     copyrequestbody = true
     driverName = postgres
-    dataSourceName = {{ include "casdoor.postgresql.dsn" . | quote }}
+    dataSourceName = {{ (printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $pgConfig.user $pgConfig.password $pgConfig.host $pgConfig.port $pgConfig.database) | quote }}
     dbName =
     tableNamePrefix =
     showSql = false

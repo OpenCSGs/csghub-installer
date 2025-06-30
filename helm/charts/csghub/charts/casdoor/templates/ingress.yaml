@@ -27,7 +27,7 @@ spec:
       {{- if $secret }}
       secretName: {{ $secret }}
       {{- else }}
-      {{ fail "Minio ingress TLS is enabled but no secretName is provided." }}
+      {{ fail "Casdoor ingress TLS is enabled but no secretName is provided." }}
       {{- end }}
   {{- end }}
   rules:

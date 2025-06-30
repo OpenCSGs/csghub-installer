@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if not .Values.global.redis.external }}
+{{- if .Values.global.redis.enabled }}
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:

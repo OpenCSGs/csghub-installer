@@ -3,6 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if include "starship.enabled" . }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -34,9 +35,6 @@ spec:
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.custom" . }}
           env:
             - name: PGHOST
               value: "$(DATABASE_HOST)"
@@ -78,3 +76,4 @@ spec:
         - name: init
           configMap:
             name: {{ include "common.names.custom" (list . "web-init") }}
+{{- end }}

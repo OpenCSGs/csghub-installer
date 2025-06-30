@@ -4,13 +4,17 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  {{- with (include "common.annotations.deployment" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -47,19 +51,19 @@ spec:
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           envFrom:
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
             - name: MEGALINTER_SERVER_REDIS_HOST
-              value: {{ include "csghub.redis.host" . | quote }}
+              value: {{ $redisConfig.host | quote }}
             - name: MEGALINTER_SERVER_REDIS_PORT
-              value: {{ include "csghub.redis.port" . | quote }}
+              value: {{ $redisConfig.port | quote }}
             - name: REDIS_REPORTER_HOST
-              value: {{ include "csghub.redis.host" . | quote }}
+              value: {{ $redisConfig.host | quote }}
             - name: REDIS_REPORTER_PORT
-              value: {{ include "csghub.redis.port" . | quote }}
+              value: {{ $redisConfig.port | quote }}
             {{- with .Values.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}

@@ -1,0 +1,10 @@
+remote: origin
+target-branch: main-ee
+chart-dirs:
+  - helm/charts/csghub
+chart-repos:
+helm-extra-args: --timeout 600s
+check-version-increment: true
+validate-maintainers: false
+lint-conf: lintconf.yaml
+

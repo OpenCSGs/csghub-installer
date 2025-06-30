@@ -3,6 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -33,25 +34,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
-          env:
-            - name: PGHOST
-              value: {{ include "csghub.postgresql.host" . }}
-            - name: PGPORT
-              value: {{ include "csghub.postgresql.port" . | quote }}
-            - name: PGDATABASE
-              value: {{ include "csghub.postgresql.database" . }}
-            - name: PGUSER
-              value: {{ include "csghub.postgresql.user" . }}
-            - name: PGPASSWORD
-              {{- if .Values.global.postgresql.external }}
-              value: {{ include "csghub.postgresql.password" . }}
-              {{- else }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common.names.custom" (list . "postgresql") }}
-                  key: {{ include "csghub.postgresql.user" . }}
-              {{- end }}
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -63,22 +46,15 @@ spec:
           command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
           env:
             - name: PGHOST
-              value: {{ include "csghub.postgresql.host" . }}
+              value: {{ $pgConfig.host }}
             - name: PGPORT
-              value: {{ include "csghub.postgresql.port" . | quote }}
+              value: {{ $pgConfig.port | quote }}
             - name: PGDATABASE
-              value: {{ include "csghub.postgresql.database" . }}
+              value: {{ $pgConfig.database }}
             - name: PGUSER
-              value: {{ include "csghub.postgresql.user" . }}
+              value: {{ $pgConfig.user }}
             - name: PGPASSWORD
-              {{- if .Values.global.postgresql.external }}
-              value: {{ include "csghub.postgresql.password" . }}
-              {{- else }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "common.names.custom" (list . "postgresql") }}
-                  key: {{ include "csghub.postgresql.user" . }}
-              {{- end }}
+              value: {{ $pgConfig.password }}
           volumeMounts:
             - name: init
               mountPath: /scripts
