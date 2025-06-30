@@ -45,7 +45,7 @@ spec:
       {{- end }}
       containers:
         - name: megalinter-server
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ or .Values.global.image.tag .Values.image.tag }}
+          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           command: [ "sh", "-c", "uvicorn server.server:app --host 0.0.0.0 --port 9000" ]
           ports:
