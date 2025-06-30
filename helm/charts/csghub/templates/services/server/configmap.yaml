@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $objectStoreConfig := include "chart.objectStoreConfig" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 {{- $redisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 {{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
-{{- $gitConfig:= include "csghub.gitaly.config" (dict "service" (dict "gitaly" (dict)) "global" .) | fromYaml }}
+{{- $gitConfig := include "csghub.gitaly.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

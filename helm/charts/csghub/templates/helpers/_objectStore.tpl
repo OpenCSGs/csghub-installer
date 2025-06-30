@@ -4,7 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{/*
-生成S3配置的helper函数
+generate object store config
 */}}
 {{- define "chart.objectStoreConfig" -}}
 {{- $service := .service -}}
@@ -12,17 +12,17 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $config := dict -}}
 
 {{- if $global.Values.global.objectStore.enabled  -}}
-  {{/* 使用内部MinIO */}}
+  {{/* use internal minio */}}
   {{- $_ := set $config "endpoint" (include "minio.internal.endpoint" $global) -}}
   {{- $_ := set $config "region" "cn-north-1" -}}
 
-  {{/* 默认随机生成密码   */}}
+  {{/* random secret   */}}
   {{- $secretUser := "minio" }}
   {{- $secretPass := (randAlphaNum 15) }}
   {{- $_ := set $config "accessKey" $secretUser -}}
   {{- $_ := set $config "secretKey" $secretPass -}}
 
-  {{/* 如何已存在 secrets，则使用 secrets 的值 */}}
+  {{/* use secret if exists */}}
   {{- $secretData := (lookup "v1" "Secret" $global.Release.Namespace (include "common.names.custom" $global)).data }}
   {{- if $secretData }}
   {{- $secretUser = index $secretData "MINIO_ROOT_USER" }}
@@ -39,7 +39,7 @@ SPDX-License-Identifier: APACHE-2.0
   {{- $_ := set $config "secure" false -}}
   {{- $_ := set $config "pathStyle" true -}}
 {{- else -}}
-  {{/* 使用外部S3 */}}
+  {{/* use external object store */}}
   {{- $_ := set $config "endpoint" $global.Values.objectStore.endpoint -}}
   {{- $_ := set $config "region" $global.Values.objectStore.region -}}
   {{- $_ := set $config "accessKey" $global.Values.objectStore.accessKey -}}
@@ -49,7 +49,7 @@ SPDX-License-Identifier: APACHE-2.0
   {{- $_ := set $config "pathStyle" $global.Values.objectStore.pathStyle -}}
 {{- end -}}
 
-{{/* 服务级别的配置覆盖 */}}
+{{/* service level config override */}}
 {{- if $service.objectStore.endpoint -}}
   {{- $_ := set $config "endpoint" $service.objectStore.endpoint -}}
 {{- end -}}
@@ -69,7 +69,7 @@ SPDX-License-Identifier: APACHE-2.0
   {{- $_ := set $config "pathStyle" $service.objectStore.pathStyle -}}
 {{- end -}}
 
-{{/* 设置bucket */}}
+{{/* set bucket */}}
 {{- $_ := set $config "bucket" $service.objectStore.bucket -}}
 
 {{- $config | toYaml -}}

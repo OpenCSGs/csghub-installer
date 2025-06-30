@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $gitConfig := include "csghub.gitaly.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,7 +15,7 @@ metadata:
     resource.dependencies/statefulsets: |
       {{ include "common.names.custom" . }}
 data:
-  .gitlab_shell_secret: {{ include "csghub.gitaly.token" . }}
+  .gitlab_shell_secret: {{ $gitConfig.token }}
   init_host_keys.sh: |
     #!/bin/sh
     # Check if there are any files starting with ssh_host_ in the /srv/gitlab-shell/keys directory

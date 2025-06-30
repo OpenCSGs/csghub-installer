@@ -4,6 +4,8 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+{{- $gitConfig := include "csghub.gitaly.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 kind: Deployment
 metadata:
   name: {{ include "common.names.custom" (list . "server") }}
@@ -46,7 +48,7 @@ spec:
         - name: wait-for-redis
           image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/redis:7.2.5
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until redis-cli -h {{ $redisConfig.host }} -p {{ $redisConfig.port }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
             {{- if .Values.global.redis.enabled }}
             - configMapRef:
@@ -69,7 +71,7 @@ spec:
         - name: wait-for-gitaly
           image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "csghub.gitaly.host" . }} {{ include "csghub.gitaly.port" . }}; do echo 'Wait for gitaly to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ $gitConfig.host }} {{ $gitConfig.port }}; do echo 'Wait for gitaly to be ready'; sleep 2; done" ]
         - name: wait-for-nats
           image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}

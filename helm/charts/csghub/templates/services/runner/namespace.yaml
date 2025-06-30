@@ -10,7 +10,7 @@ metadata:
   name: {{ .Values.global.deploy.namespace }}
   labels:
     kubernetes.io/metadata.name: {{ .Values.global.deploy.namespace }}
-    {{ include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
+    {{- include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
   annotations:
     helm.sh/resource-policy: keep
 {{- if not .Values.global.deploy.mergingNamespace }}
@@ -21,7 +21,7 @@ metadata:
   name: {{ .Values.global.deploy.imageBuilder.namespace }}
   labels:
     kubernetes.io/metadata.name: {{ .Values.global.deploy.imageBuilder.namespace }}
-    {{ include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
+    {{- include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
   annotations:
     helm.sh/resource-policy: keep
 {{- end }}

@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
+{{- $RedisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.mirror "global" .) | fromYaml }}
 kind: Deployment
 metadata:
   name: {{ include "common.names.custom" (list . "mirror") }}
@@ -45,7 +46,7 @@ spec:
         - name: wait-for-redis
           image: {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/redis:7.2.5
           imagePullPolicy: {{ .Values.csghub.mirror.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until redis-cli -h {{ $RedisConfig.host }} -p {{ $RedisConfig.port }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
             {{- if .Values.global.redis.enabled }}
             - configMapRef:
