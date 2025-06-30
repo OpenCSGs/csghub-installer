@@ -22,7 +22,8 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/services/runner/configmap.yaml") . | sha256sum }}
+        checksum/config1: {{ include (print $.Template.BasePath "/configmap-runner.yaml") . | sha256sum }}
+        checksum/config2: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.runner.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -59,7 +60,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.runner.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.runner.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: runner
           image: {{ or .Values.global.image.registry .Values.csghub.runner.image.registry }}/{{ or .Values.global.image.name .Values.csghub.runner.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.runner.image.tag) "context" .) }}

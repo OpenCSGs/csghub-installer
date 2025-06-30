@@ -19,10 +19,11 @@ spec:
   minReadySeconds: 30
   template:
     metadata:
-      {{- with .Values.csghub.aigateway.podAnnotations }}
       annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
+        {{- with .Values.csghub.aigateway.podAnnotations }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         {{- include "common.labels" (dict "context" . "service" "aigateway") | nindent 8 }}
     spec:
@@ -45,7 +46,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.aigateway.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.aigateway.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: aigateway
           image: {{ or .Values.global.image.registry .Values.csghub.aigateway.image.registry }}/{{ or .Values.global.image.name .Values.csghub.aigateway.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.aigateway.image.tag) "context" .) }}

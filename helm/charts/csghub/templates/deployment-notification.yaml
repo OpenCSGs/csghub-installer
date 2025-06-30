@@ -20,6 +20,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.notification.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

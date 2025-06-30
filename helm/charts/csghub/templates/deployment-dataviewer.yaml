@@ -22,6 +22,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.dataviewer.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -67,6 +68,10 @@ spec:
           image: {{ or .Values.global.image.registry .Values.csghub.dataviewer.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.dataviewer.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "temporal.internal.domain" . }} {{ include "temporal.internal.port" . }}; do echo 'Wait for temporal to be ready'; sleep 2; done" ]
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.csghub.accounting.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.accounting.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: dataviewer
           image: {{ or .Values.global.image.registry .Values.csghub.dataviewer.image.registry }}/{{ or .Values.global.image.name .Values.csghub.dataviewer.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.dataviewer.image.tag) "context" .) }}

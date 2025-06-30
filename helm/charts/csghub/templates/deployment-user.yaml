@@ -20,6 +20,7 @@ spec:
   template:
     metadata:
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.user.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -49,7 +50,7 @@ spec:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.user.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.user.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: user
           image: {{ or .Values.global.image.registry .Values.csghub.user.image.registry }}/{{ or .Values.global.image.name .Values.csghub.user.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.user.image.tag) "context" .) }}
@@ -70,7 +71,7 @@ spec:
             - name: OPENCSG_USER_SERVER_PORT
               value: "8080"
             - name: OPENCSG_USER_SERVER_SIGNIN_SUCCESS_REDIRECT_URL
-              value: {{ include "server.callback.user" . }}
+              value: {{ printf "%s/server/callback" (include "csghub.external.endpoint" .) }}
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
             {{- with .Values.csghub.user.environments }}

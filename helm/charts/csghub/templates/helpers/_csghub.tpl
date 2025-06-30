@@ -112,3 +112,12 @@ Starship is only enabled when:
 {{- end -}}
 {{- $starshipEnabled -}}
 {{- end }}
+
+{{/*
+Define global unique HUB_SERVER_API_TOKEN
+*/}}
+{{- define "server.hub.api.token" -}}
+{{- $namespaceHash := (.Release.Namespace | sha256sum) }}
+{{- $nameHash := (.Release.Name | sha256sum) }}
+{{- printf "%s%s" $namespaceHash $nameHash -}}
+{{- end }}
