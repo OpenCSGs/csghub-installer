@@ -60,30 +60,6 @@ Define the external endpoint for casdoor
 {{- end }}
 
 {{/*
-Define postgresql dsn for casdoor
-*/}}
-{{- define "casdoor.postgresql.dsn" -}}
-{{- $host := include "csghub.postgresql.host" . }}
-{{- $port := include "csghub.postgresql.port" . }}
-{{- $database := include "csghub.postgresql.database" . }}
-{{- $user := include "csghub.postgresql.user" . }}
-{{- $password := include "postgresql.initPass" $database }}
-{{- if .Values.global.postgresql.external }}
-{{- $password = include "csghub.postgresql.password" . }}
-{{- else }}
-{{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
-{{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
-{{- if $secretData }}
-{{- $secretPass := index $secretData $user }}
-{{- if $secretPass }}
-{{- $password = $secretPass | b64dec }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- printf "user=%s password=%s host=%s port=%s sslmode=disable dbname=%s" $user $password $host $port $database -}}
-{{- end }}
-
-{{/*
 Random Password for which password not set
 */}}
 {{- define "casdoor.initPass" -}}

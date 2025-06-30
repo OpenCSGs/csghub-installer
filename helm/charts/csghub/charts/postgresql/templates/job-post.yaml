@@ -3,7 +3,7 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if not .Values.global.postgresql.external }}
+{{- if .Values.global.postgresql.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:

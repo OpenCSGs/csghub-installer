@@ -1,3 +1,8 @@
+{{/*
+Check deprecated
+*/}}
+{{ include "common.checkDeprecated" . }}
+
 CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
@@ -36,7 +41,7 @@ Visit the Temporal console at the following address:
     Credentials:
         Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "temporal") }} -o jsonpath="{.data.TEMPORAL_USERNAME}" | base64 -d)
         Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "temporal") }} -o jsonpath="{.data.TEMPORAL_PASSWORD}" | base64 -d)
-{{ if not .Values.global.objectStore.external }}
+{{ if .Values.global.objectStore.enabled }}
 Visit the Minio console at the following address:
 
     Address: {{ include "minio.external.endpoint" . }}/console/

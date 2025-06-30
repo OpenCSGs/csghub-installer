@@ -10,7 +10,10 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  {{- with (include "common.annotations.deployment" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -48,7 +51,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "casdoor.postgresql.dsn" . }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: casdoor
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}

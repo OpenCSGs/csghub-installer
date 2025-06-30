@@ -3,6 +3,8 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if include "starship.enabled" . }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
@@ -59,7 +61,7 @@ spec:
                 name: {{ include "common.names.custom" (list . "casdoor") }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
@@ -68,9 +70,9 @@ spec:
               value: "$(STARSHIP_SERVER_CASDOOR_CLIENT_ID)"
             - name: CASDOOR_SECRET_KEY
               value: "$(STARSHIP_SERVER_CASDOOR_CLIENT_SECRET)"
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - name: REDIS_URL
-              value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
+              value: {{ printf ":@%s" $redisConfig.host }}
 {{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}
             {{- end }}
             - name: NATS_URL
@@ -161,3 +163,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
+{{- end }}

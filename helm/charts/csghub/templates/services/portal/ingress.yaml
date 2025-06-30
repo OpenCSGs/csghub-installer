@@ -1,0 +1,125 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.csghub.portal.ingress.enabled }}
+apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
+kind: Ingress
+metadata:
+  name: {{ include "common.names.custom" (list . "portal") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" (dict "context" . "service" "portal") | nindent 4 }}
+  annotations:
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: {{ include "csghub.external.endpoint" . | quote }}
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/client-header-timeout: "900"
+    nginx.ingress.kubernetes.io/client-body-timeout: "900"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "900"
+    {{- if not .Values.global.deploy.usePublicDomain }}
+    nginx.ingress.kubernetes.io/server-snippet: |
+      location ~* "^/endpoint/" {
+        proxy_pass http://{{ printf "%s.%s.svc.%s" (include "proxy.internal.domain" .) .Release.Namespace (include "cluster.domain" .) }}:{{ include "proxy.internal.port" . }};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Host $server_name;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_cookie_flags ~ nosecure samesite=lax;
+      }
+    {{- end }}
+    {{- with .Values.csghub.portal.ingress.annotations }}
+    {{- toYaml . | nindent 4  }}
+    {{- end  }}
+spec:
+  ingressClassName: {{ .Values.global.ingress.className | default "nginx" }}
+  {{- if eq (include "global.ingress.tls.enabled" .) "true" }}
+  tls:
+    - hosts:
+        - {{ include "csghub.external.domain" . }}
+        - {{ include "csghub.external.public.domain" . | quote }}
+      {{- $secret := coalesce (include "global.ingress.tls.secret" .) .Values.csghub.portal.ingress.tls.secretName }}
+      {{- if $secret }}
+      secretName: {{ $secret }}
+      {{- else }}
+      {{ fail "Portal ingress TLS is enabled but no secretName is provided." }}
+      {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ include "csghub.external.domain" . }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "common.names.custom" (list . "portal") }}
+                port:
+                  number: {{ .Values.csghub.portal.service.port }}
+            {{- else }}
+              serviceName: {{ include "common.names.custom" (list . "portal") }}
+              servicePort:  {{ .Values.csghub.portal.service.port }}
+            {{- end }}
+          - path: /api/
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "server.internal.domain" . }}
+                port:
+                  number: {{ include "server.internal.port" . }}
+            {{- else }}
+              serviceName: {{ include "server.internal.domain" . }}
+              servicePort: {{ include "server.internal.port" . }}
+            {{- end }}
+          - path: /(hf|csg|ms)/
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "server.internal.domain" . }}
+                port:
+                  number: {{ include "server.internal.port" . }}
+            {{- else }}
+              serviceName: {{ include "server.internal.domain" . }}
+              servicePort: {{ include "server.internal.port" . }}
+            {{- end }}
+          - path: /.*\.git(/.*)?$
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "server.internal.domain" . }}
+                port:
+                  number: {{ include "server.internal.port" . }}
+            {{- else }}
+              serviceName: {{ include "server.internal.domain" . }}
+              servicePort: {{ include "server.internal.port" . }}
+            {{- end }}
+    {{- if .Values.global.deploy.usePublicDomain }}
+    - host: {{ printf "*.%s" (include "csghub.external.public.domain" .) | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+            {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
+              service:
+                name: {{ include "proxy.internal.domain" . }}
+                port:
+                  number: {{ include "proxy.internal.port" . }}
+            {{- else }}
+              serviceName: {{ include "proxy.internal.domain" . }}
+              servicePort:  {{ include "proxy.internal.port" . }}
+            {{- end }}
+    {{- end }}
+{{- end }}

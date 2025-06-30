@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.enabled }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -16,20 +17,10 @@ metadata:
 data:
   DB: "postgres12"
   DEFAULT_NAMESPACE_RETENTION: "7d"
-  DBNAME: {{ include "csghub.postgresql.database" . }}
-  DB_PORT: {{ include "csghub.postgresql.port" . | quote }}
-  POSTGRES_SEEDS: {{ include "csghub.postgresql.host" . }}
-  {{- $user := include "csghub.postgresql.user" . }}
-  POSTGRES_USER: {{ include "csghub.postgresql.user" . }}
-  {{- $password := include "postgresql.initPass" $user }}
-  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
-  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
-  {{- if $secretData }}
-  {{- $secretPassword := index $secretData $user }}
-  {{- if $secretPassword }}
-  {{- $password = $secretPassword | b64dec }}
-  {{- end }}
-  {{- end }}
-  POSTGRES_PWD: {{ or (include "csghub.postgresql.password" .) $password }}
-  VISIBILITY_DBNAME: {{ printf "%s_visibility" (include "csghub.postgresql.database" .) }}
+  DBNAME: {{ $pgConfig.database }}
+  DB_PORT: {{ $pgConfig.port | quote }}
+  POSTGRES_SEEDS: {{ $pgConfig.host }}
+  POSTGRES_USER: {{ $pgConfig.user }}
+  POSTGRES_PWD: {{ $pgConfig.password }}
+  VISIBILITY_DBNAME: {{ printf "%s_visibility" $pgConfig.database }}
 {{- end }}

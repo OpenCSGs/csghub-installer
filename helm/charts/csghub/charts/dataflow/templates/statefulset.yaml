@@ -3,7 +3,8 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
-{{- if .Values.enabled }}
+{{- if .Values.global.dataflow.enabled }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.statefulset.apiVersion" . }}
 kind: StatefulSet
 metadata:
@@ -47,21 +48,7 @@ spec:
         - name: wait-for-postgresql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
-          envFrom:
-            - configMapRef:
-                name: {{ include "common.names.custom" . }}
-          env:
-            - name: PGHOST
-              value: "$(DATABASE_HOSTNAME)"
-            - name: PGPORT
-              value: "$(DATABASE_PORT)"
-            - name: PGDATABASE
-              value: "$(DATABASE_DB)"
-            - name: PGUSER
-              value: "$(DATABASE_USERNAME)"
-            - name: PGPASSWORD
-              value: "$(DATABASE_PASSWORD)"
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: dataflow
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}

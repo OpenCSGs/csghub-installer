@@ -1,0 +1,110 @@
+suite: ingress test
+templates:
+  - services/portal/ingress.yaml
+  - charts/minio/templates/ingress.yaml
+  - charts/casdoor/templates/ingress.yaml
+tests:
+  - it: should fail render ingress if enabled and domain is not filled
+    templates:
+      - services/portal/ingress.yaml
+    set:
+      global.ingress.enabled: true
+      global.ingress.domain: ""
+    asserts:
+      - failedTemplate:
+          errorMessage: A valid domain entry (like example.com) is required!
+
+  - it: should render portal Ingress right if enabled
+    templates:
+      - services/portal/ingress.yaml
+    set:
+      global.ingress.enabled: true
+      global.ingress.domain: opencsg-poc.com
+    release:
+      name: csghub
+      namespace: csghub
+    chart:
+      version: 0.1.0
+      appVersion: v0.1.0
+    asserts:
+      - isKind:
+          of: Ingress
+      - equal:
+          path: spec.rules[0]
+          value:
+              host: csghub.opencsg-poc.com
+              http:
+                paths:
+                - backend:
+                    service:
+                      name: csghub-portal
+                      port:
+                        number: 8090
+                  path: /
+                  pathType: ImplementationSpecific
+                - backend:
+                    service:
+                      name: csghub-server
+                      port:
+                        number: 8080
+                  path: /api/
+                  pathType: ImplementationSpecific
+                - backend:
+                    service:
+                      name: csghub-server
+                      port:
+                        number: 8080
+                  path: /(hf|csg|ms)/
+                  pathType: ImplementationSpecific
+                - backend:
+                    service:
+                      name: csghub-server
+                      port:
+                        number: 8080
+                  path: /.*\.git(/.*)?$
+                  pathType: ImplementationSpecific
+      - notExists:
+          path: spec.tls
+      - containsDocument:
+          kind: Ingress
+          apiVersion: networking.k8s.io/v1
+          name: csghub-portal
+          namespace: csghub
+          any: false
+      - isSubset:
+          path: metadata.labels
+          content:
+            app.kubernetes.io/name: portal
+            app.kubernetes.io/instance: csghub
+            app.kubernetes.io/managed-by: Helm
+            helm.sh/chart: csghub-0.1.0
+      - isSubset:
+          path: metadata.annotations
+          content:
+            nginx.ingress.kubernetes.io/enable-cors: "true"
+            nginx.ingress.kubernetes.io/cors-allow-origin: http://csghub.opencsg-poc.com
+            nginx.ingress.kubernetes.io/proxy-body-size: "0"
+            nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+      - notFailedTemplate: {}
+
+  - it: should set tls if given
+    set:
+      global.ingress.enabled: true
+      global.ingress.tls.enabled: true
+      global.ingress.tls.secretName: my-tls-secret
+    asserts:
+      - equal:
+          path: spec.tls[0].secretName
+          value: my-tls-secret
+
+  - it: \'*.public.<domain>\' ingress should be created if usePublicDomain is true
+    set:
+      global.ingress.enabled: true
+      global.ingress.domain: opencsg-poc.com
+      global.deploy.usePublicDomain: true
+    templates:
+      - services/portal/ingress.yaml
+    asserts:
+      - equal:
+          path: spec.rules[1].host
+          value: "*.public.opencsg-poc.com"

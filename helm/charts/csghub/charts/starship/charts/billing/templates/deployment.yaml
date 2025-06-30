@@ -10,7 +10,10 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  {{- with (include "common.annotations.deployment" .) }}
+  annotations:
+    {{- . | nindent 4 }}
+  {{- end }}
 spec:
   selector:
     matchLabels:
@@ -59,14 +62,14 @@ spec:
                 name: {{ include "common.names.custom" (list . "web") }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "redis") }}
             {{- end }}
           env:
             - name: NATS_URL
               value: nats://$(NATS_USERNAME):$(NATS_PASSWORD)@csghub-nats:4222
-            {{- if not .Values.global.redis.external }}
+            {{- if not .Values.global.redis.enabled }}
             - name: REDIS_URL
               value: {{ printf ":@%s" (include "csghub.redis.host" .) }}
 {{/*              value: {{ printf ":$(REDIS_PASSWD)@%s" (include "csghub.redis.host" .) }}*/}}

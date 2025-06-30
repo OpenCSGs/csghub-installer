@@ -1,0 +1,68 @@
+{{- /*
+Copyright OpenCSG, Inc. All Rights Reserved.
+SPDX-License-Identifier: APACHE-2.0
+*/}}
+
+{{- if .Values.global.deploy.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "common.names.custom" (list . "server") }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "common.labels" (dict "context" . "service" "server") | nindent 4 }}
+  annotations:
+    helm.sh/hook: post-install, post-upgrade
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 10
+  activeDeadlineSeconds: 1200
+  template:
+    metadata:
+      name: {{ include "common.names.custom" (list . "server") }}
+      labels: {{ include "common.labels" (dict "context" . "service" "server") | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values.csghub.server "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "server.internal.domain" . }} {{ include "server.internal.port" . }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
+      containers:
+        - name: psql
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/opencsg/psql:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "server") }}
+          env:
+            - name: PGHOST
+              value: "$(STARHUB_DATABASE_HOST)"
+            - name: PGPORT
+              value: "$(STARHUB_DATABASE_PORT)"
+            - name: PGDATABASE
+              value: "$(STARHUB_DATABASE_NAME)"
+            - name: PGUSER
+              value: "$(STARHUB_DATABASE_USERNAME)"
+            - name: PGPASSWORD
+              value: "$(STARHUB_DATABASE_PASSWORD)"
+          volumeMounts:
+            - name: init
+              mountPath: /scripts
+      volumes:
+        - name: init
+          configMap:
+            name: {{ include "common.names.custom" (list . "server-init") }}
+{{- end }}

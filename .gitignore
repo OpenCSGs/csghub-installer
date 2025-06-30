@@ -6,3 +6,4 @@ tls.*
 **/.kube/*
 .DS_Store
 *.tgz
+__snapshot__

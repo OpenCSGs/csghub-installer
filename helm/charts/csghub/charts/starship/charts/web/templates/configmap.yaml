@@ -3,6 +3,9 @@ Copyright OpenCSG, Inc. All Rights Reserved.
 SPDX-License-Identifier: APACHE-2.0
 */}}
 
+{{- if include "starship.enabled" . }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values "global" .) | fromYaml }}
+{{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -25,25 +28,14 @@ data:
   CASDOOR_REDIRECT_URI_PATH: "/api/v1/account/casdoor/login/callback/"
   # PostgreSQL database
   DATABASE_TYPE: "postgresql"
-  DATABASE_HOST: {{ include "csghub.postgresql.host" . }}
-  DATABASE_PORT: {{ include "csghub.postgresql.port" . | quote }}
-  {{- $user := include "csghub.postgresql.user" . }}
-  {{- $password := include "postgresql.initPass" $user }}
-  {{- $secret := (include "common.names.custom" (list . "postgresql")) -}}
-  {{- $secretData := (lookup "v1" "Secret" .Release.Namespace $secret).data }}
-  {{- if $secretData }}
-  {{- $secretPassword := index $secretData $user }}
-  {{- if $secretPassword }}
-  {{- $password = $secretPassword | b64dec }}
-  {{- end }}
-  {{- end }}
-  {{- $password = or (include "csghub.postgresql.password" .) $password }}
-  DATABASE_USERNAME: {{ $user }}
-  DATABASE_PASSWORD: {{ $password }}
-  DATABASE_NAME: {{ include "csghub.postgresql.database" . }}
+  DATABASE_HOST: {{ $pgConfig.host }}
+  DATABASE_PORT: {{ $pgConfig.port | quote }}
+  DATABASE_USERNAME: {{ $pgConfig.user }}
+  DATABASE_PASSWORD: {{ $pgConfig.password | quote }}
+  DATABASE_NAME: {{ $pgConfig.database }}
   # Redis cache connection info
-  REDIS_URL: {{ printf ":%s@%s" (include "csghub.redis.password" .) (include "csghub.redis.host" .) | quote }}
-  REDIS_PORT: {{ include "csghub.redis.port" . | quote }}
+  REDIS_URL: {{ printf ":%s@%s" $redisConfig.password $redisConfig.host | quote }}
+  REDIS_PORT: {{ $redisConfig.port | quote }}
   # Starship urls
   STARSHIP_WEB_URL: {{ include "starship.external.endpoint" . }}
   STARSHIP_API_URL: {{ include "starship.external.api.endpoint" . }}
@@ -84,3 +76,4 @@ data:
   SYNC_PERMS_GIT_SERVER: {{ .Values.global.starship.oauth.issuer | trimPrefix "https://" | trimPrefix "http://" }}
   {{- end }}
   {{- end }}
+{{- end }}

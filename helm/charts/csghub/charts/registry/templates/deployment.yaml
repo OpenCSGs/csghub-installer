@@ -55,12 +55,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "common.names.custom" . }}
-            {{- if not .Values.global.objectStore.external }}
+            {{- if .Values.global.objectStore.enabled }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "minio") }}
             {{- end }}
           env:
-            {{- if not .Values.global.objectStore.external }}
+            {{- if .Values.global.objectStore.enabled }}
             - name: REGISTRY_STORAGE_S3_ACCESSKEY
               value: "$(MINIO_ROOT_USER)"
             - name: REGISTRY_STORAGE_S3_SECRETKEY
