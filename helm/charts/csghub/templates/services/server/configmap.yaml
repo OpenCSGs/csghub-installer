@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{- $objectStoreConfig := include "chart.objectStoreConfig" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 {{- $redisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 {{- $pgConfig := include "csghub.postgresql.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
-{{- $gitConfig:= include "csghub.gitaly.config" (dict "service" (dict "gitaly" (dict)) "global" .) | fromYaml }}
+{{- $gitConfig := include "csghub.gitaly.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -152,7 +152,9 @@ data:
   # Notification extra config
   # STARHUB_SERVER_FEISHU_APP_ID: xxxxx
   # STARHUB_SERVER_FEISHU_APP_SECRET: xxxxx
-  {{ include "notification.extraConfig" . | nindent 2 }}
+  {{ range $key, $value := .Values.csghub.notification.environments -}}
+  {{ $key }}: {{ $value | quote }}
+  {{ end }}
 
 ---
 apiVersion: v1

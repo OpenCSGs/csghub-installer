@@ -4,6 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if .Values.csghub.dataviewer.enabled }}
+{{- $redisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.dataviewer "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -46,7 +47,7 @@ spec:
         - name: wait-for-redis
           image: {{ or .Values.global.image.registry .Values.csghub.dataviewer.image.registry }}/redis:7.2.5
           imagePullPolicy: {{ .Values.csghub.dataviewer.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until redis-cli -h {{ include "csghub.redis.host" . }} -p {{ include "csghub.redis.port" . }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
+          command: [ "/bin/sh", "-c", "until redis-cli -h {{ $redisConfig.host }} -p {{ $redisConfig.port }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
             {{- if .Values.global.redis.enabled }}
             - configMapRef:

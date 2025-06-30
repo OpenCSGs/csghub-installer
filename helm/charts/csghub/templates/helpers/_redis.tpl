@@ -1,5 +1,5 @@
 {{/*
-生成Redis配置的helper函数
+generate redis config
 */}}
 {{- define "csghub.redis.config" -}}
 {{- $service := .service -}}
@@ -7,18 +7,18 @@
 {{- $config := dict -}}
 
 {{- if $global.Values.global.redis.enabled -}}
-  {{/* 使用内部Redis */}}
+  {{- /* use internal redis */ -}}
   {{- $_ := set $config "host" (include "common.names.custom" (list $global "redis")) -}}
   {{- $_ := set $config "port" 6379 -}}
   {{- $_ := set $config "password" (or $global.Values.redis.password (randAlphaNum 15)) -}}
 {{- else -}}
-  {{/* 使用外部Redis */}}
+  {{- /* user external redis */ -}}
   {{- $_ := set $config "host" $global.Values.global.redis.host -}}
   {{- $_ := set $config "port" $global.Values.global.redis.port -}}
   {{- $_ := set $config "password" $global.Values.global.redis.password -}}
 {{- end -}}
 
-{{/* 服务级别的配置覆盖 */}}
+{{/* service-level config override */}}
 {{- if $service.redis.host -}}
   {{- $_ := set $config "host" $service.redis.host -}}
 {{- end -}}
@@ -29,10 +29,10 @@
   {{- $_ := set $config "password" $service.redis.password -}}
 {{- end -}}
 
-{{/* 设置database */}}
+{{/* set database */}}
 {{- $_ := set $config "database" ($service.redis.database | default 0) -}}
 
-{{/* 设置其他可选配置 */}}
+{{/* optional config */}}
 {{- if hasKey $global.Values.global.redis "sentinel" -}}
   {{- if $global.Values.global.redis.sentinel.enabled -}}
     {{- $_ := set $config "sentinel" $global.Values.global.redis.sentinel -}}
@@ -49,7 +49,8 @@
 {{- end -}}
 
 {{/*
-兼容性helper函数 - 保持原有的API
+TODO: remove it
+backward compatibility for starship
 */}}
 {{- define "csghub.redis.host" -}}
 {{- $config := include "csghub.redis.config" (dict "service" (dict "redis" (dict)) "global" .) | fromYaml -}}
@@ -71,7 +72,7 @@
 {{- end }}
 
 {{/*
-生成Redis URL
+generate redis url
 */}}
 {{- define "csghub.redis.url" -}}
 {{- $service := .service -}}
