@@ -1,0 +1,28 @@
+suite: gitaly test
+tests:
+  - it: should render gitaly configmap right
+    templates:
+      - charts/gitaly/templates/configmap.yaml
+    set:
+      global.gitaly.enabled: true
+    release:
+      name: csghub
+    asserts:
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: "listen_addr = \"0.0.0.0:8075\""
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: "token = \"Y3NnaHViQDEyMzQh\""
+
+  - it: gitlab_shell_secrets should match gitaly token
+    templates:
+      - charts/gitlab-shell/templates/configmap.yaml
+    set:
+      global.gitaly.enabled: true
+    release:
+      name: csghub
+    asserts:
+      - matchRegex:
+          path: data[".gitlab_shell_secret"]
+          pattern: "Y3NnaHViQDEyMzQh"
