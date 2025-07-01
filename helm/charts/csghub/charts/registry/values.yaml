@@ -1,9 +1,3 @@
-## Default values for Distribution Registry.
-## This is a YAML-formatted file.
-## Declare variables to be passed into your templates.
-## Enable or disable the Distribution Registry component.
-enabled: true
-
 ## Define deploy replicas
 replicas: 1
 

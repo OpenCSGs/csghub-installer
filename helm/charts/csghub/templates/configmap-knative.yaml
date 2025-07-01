@@ -14,6 +14,7 @@
 
 {{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
 {{- $registry := or .Values.global.image.registry "gcr.io/knative-releases/knative.dev" }}
+{{- $registryConfig := include "chart.registryConfig" (dict "service" .Values.csghub.runner "global" .) | fromYaml }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -13503,8 +13504,8 @@ data:
       annotations:
         knative.dev/example-checksum: "720ddb97"
     data:
-      {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
-      registries-skipping-tag-resolving: "{{ include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }},{{ .Values.global.registry.connection.repository }},opencsg-registry.cn-beijing.cr.aliyuncs.com"
+      {{- if or .Values.global.registry.enabled .Values.global.registry.insecure }}
+      registries-skipping-tag-resolving: "{{ include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://" }},{{ $registryConfig.repository }},opencsg-registry.cn-beijing.cr.aliyuncs.com"
       {{- end }}
       queue-sidecar-image: {{ $registry }}/serving/cmd/queue:v1.16.1
     ---

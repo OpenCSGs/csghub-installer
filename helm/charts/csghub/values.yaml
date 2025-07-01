@@ -37,15 +37,13 @@ global:
 
   ## Registry configuration
   registry:
-    ## Use external registry (false) or internal (true)
-    external: false
+    enabled: true
     ## Disable TLS/SSL encryption
     insecure: false
-    connection: { }
-      # repository: "https://registry-1.docker.io"
-      # namespace: "csghub"
-      # username: "registry"
-      # password: ""
+    # repository: "https://registry-1.docker.io"
+    # namespace: "csghub"
+    # username: "registry"
+    # password: ""
 
   ## PostgreSQL database configuration
   postgresql:

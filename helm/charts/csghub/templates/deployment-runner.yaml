@@ -5,6 +5,7 @@ SPDX-License-Identifier: APACHE-2.0
 
 {{- if .Values.global.deploy.enabled }}
 {{- $objectStoreConfig := include "chart.objectStoreConfig" (dict "service" .Values.csghub.runner "global" .) | fromYaml }}
+{{- $registryConfig := include "chart.registryConfig" (dict "service" .Values.csghub.runner "global" .) | fromYaml }}
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
@@ -79,7 +80,8 @@ spec:
                 name: {{ include "common.names.custom" (list . "nats") }}
           env:
             - name: STARHUB_SERVER_DOCKER_REG_BASE
-              value: {{ printf "%s/%s" (include "csghub.registry.repository" .) (include "csghub.registry.namespace" .) }}
+              ## DEBUG: {{ $registryConfig }}
+              value: {{ printf "%s/%s" $registryConfig.repository $registryConfig.namespace }}
             - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
               value: {{ include "common.names.custom" (list . "registry-docker-config") }}
             - name: OPENCSG_ACCOUNTING_NATS_URL
