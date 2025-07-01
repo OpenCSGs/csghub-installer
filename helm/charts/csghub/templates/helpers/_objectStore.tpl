@@ -23,15 +23,16 @@ generate object store config
   {{- $_ := set $config "secretKey" $secretPass -}}
 
   {{/* use secret if exists */}}
-  {{- $secretData := (lookup "v1" "Secret" $global.Release.Namespace (include "common.names.custom" $global)).data }}
+  {{- $secret := (include "common.names.custom" (list $global "minio")) -}}
+  {{- $secretData := (lookup "v1" "Secret" $global.Release.Namespace $secret).data }}
   {{- if $secretData }}
   {{- $secretUser = index $secretData "MINIO_ROOT_USER" }}
   {{- if $secretUser }}
-  {{- $_ := set $config "accessKey" $secretUser -}}
+  {{- $_ := set $config "accessKey" ($secretUser | b64dec) -}}
   {{- end }}
   {{- $secretPass = index $secretData "MINIO_ROOT_PASSWORD" }}
   {{- if $secretPass }}
-  {{- $_ := set $config "secretKey" $secretPass -}}
+  {{- $_ := set $config "secretKey" ($secretPass | b64dec) -}}
   {{- end }}
   {{- end }}
 
