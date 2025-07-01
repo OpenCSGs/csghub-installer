@@ -23,9 +23,9 @@ spec:
       name: {{ include "common.names.custom" (list . "runner") }}
       labels: {{ include "common.labels" (dict "context" . "service" "post-configure") | nindent 8 }}
     spec:
-      {{- if .Values.csghub.runner.serviceAccount.create }}
+      {{- if .Values.csghub.server.serviceAccount.create }}
       serviceAccountName: {{ include "common.names.custom" (list . "runner") }}
-      automountServiceAccountToken: {{ .Values.csghub.runner.serviceAccount.automount }}
+      automountServiceAccountToken: {{ .Values.csghub.server.serviceAccount.automount }}
       {{- end }}
       restartPolicy: OnFailure
       {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}

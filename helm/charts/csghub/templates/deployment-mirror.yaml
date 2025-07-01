@@ -4,7 +4,7 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
-{{- $RedisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.mirror "global" .) | fromYaml }}
+{{- $RedisConfig := include "csghub.redis.config" (dict "service" .Values.csghub.server "global" .) | fromYaml }}
 kind: Deployment
 metadata:
   name: {{ include "common.names.custom" (list . "mirror") }}
@@ -39,9 +39,9 @@ spec:
         {{- . | toYaml | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: 10
-      {{- if .Values.csghub.mirror.serviceAccount.create }}
+      {{- if .Values.csghub.server.serviceAccount.create }}
       serviceAccountName: {{ include "common.names.custom" (list . "mirror") }}
-      automountServiceAccountToken: {{ .Values.csghub.mirror.serviceAccount.automount }}
+      automountServiceAccountToken: {{ .Values.csghub.server.serviceAccount.automount }}
       {{- end }}
       initContainers:
         - name: wait-for-server
@@ -75,14 +75,21 @@ spec:
             - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
               value: "$(MINIO_ROOT_PASSWORD)"
             {{- end }}
-            {{- with .Values.csghub.mirror.environments }}
+            {{- with .Values.csghub.server.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
           resources:
-            {{- .Values.csghub.mirror.resources | toYaml | nindent 12 }}
+            {{- if .Values.csghub.autoscaling.enabled }}
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "256Mi"
+            {{- end }}
           securityContext:
             {{- .Values.csghub.mirror.podSecurityContext | toYaml | nindent 12 }}
         - name: mirror-lfs
@@ -111,14 +118,21 @@ spec:
             - name: STARHUB_SERVER_S3_ACCESS_KEY_SECRET
               value: "$(MINIO_ROOT_PASSWORD)"
             {{- end }}
-            {{- with .Values.csghub.mirror.environments }}
+            {{- with .Values.csghub.server.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
           resources:
-            {{- .Values.csghub.mirror.resources | toYaml | nindent 12 }}
+            {{- if .Values.csghub.autoscaling.enabled }}
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "256Mi"
+            {{- end }}
           securityContext:
             {{- .Values.csghub.mirror.podSecurityContext | toYaml | nindent 12 }}
       {{- with .Values.csghub.mirror.nodeSelector }}

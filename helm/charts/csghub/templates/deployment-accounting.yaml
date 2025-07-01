@@ -38,9 +38,9 @@ spec:
         {{- . | toYaml | nindent 8 }}
       {{- end }}
       terminationGracePeriodSeconds: 10
-      {{- if .Values.csghub.accounting.serviceAccount.create }}
+      {{- if .Values.csghub.server.serviceAccount.create }}
       serviceAccountName: {{ include "common.names.custom" (list . "accounting") }}
-      automountServiceAccountToken: {{ .Values.csghub.accounting.serviceAccount.automount }}
+      automountServiceAccountToken: {{ .Values.csghub.server.serviceAccount.automount }}
       {{- end }}
       initContainers:
         - name: wait-for-server
@@ -66,14 +66,21 @@ spec:
           env:
             - name: OPENCSG_ACCOUNTING_NATS_URL
               value: "nats://$(NATS_USERNAME):$(NATS_PASSWORD)@{{ include "nats.internal.domain" . }}:{{ include "nats.internal.ports.api" . }}"
-            {{- with .Values.csghub.accounting.environments }}
+            {{- with .Values.csghub.server.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
             {{- end }}
           resources:
-            {{- .Values.csghub.accounting.resources | toYaml | nindent 12 }}
+            {{- if .Values.csghub.autoscaling.enabled }}
+            requests:
+              cpu: "20m"
+              memory: "128Mi"
+            limits:
+              cpu: "50m"
+              memory: "256Mi"
+            {{- end }}
           livenessProbe:
             tcpSocket:
               port: 8086

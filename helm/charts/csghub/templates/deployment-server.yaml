@@ -122,7 +122,14 @@ spec:
             {{- end }}
             {{- end }}
           resources:
-            {{- .Values.csghub.server.resources | toYaml | nindent 12 }}
+            {{- if .Values.csghub.autoscaling.enabled }}
+            requests:
+              cpu: {{ .Values.csghub.server.resources.requests.cpu | default "100m" }}
+              memory: {{ .Values.csghub.server.resources.requests.memory | default "256Mi" }}
+            limits:
+              cpu: {{ .Values.csghub.server.resources.limits.cpu | default "300m" }}
+              memory: {{ .Values.csghub.server.resources.limits.memory | default "512Mi" }}
+            {{- end }}
           livenessProbe:
             tcpSocket:
               port: 8080
