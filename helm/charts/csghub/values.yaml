@@ -215,6 +215,15 @@ csghub:
     ## Deployment annotations
     annotations: { }
 
+    ## Deployment resource requests
+    resources:
+       limits:
+         cpu: 100m
+         memory: 128Mi
+       requests:
+         cpu: 100m
+         memory: 128Mi
+
     ## Node scheduling configuration
     nodeSelector: { }
     tolerations: [ ]

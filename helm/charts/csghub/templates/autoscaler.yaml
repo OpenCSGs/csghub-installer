@@ -15,8 +15,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "portal") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
@@ -42,8 +42,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "server") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: {{ .Values.csghub.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas }}
   metrics:
     - type: Resource
       resource:
@@ -69,8 +69,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "dataviewer") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
@@ -96,8 +96,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "gateway") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 3
   metrics:
     - type: Resource
       resource:
@@ -123,8 +123,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "mirror") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 4
   metrics:
     - type: Resource
       resource:
@@ -150,8 +150,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "runner") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 2
   metrics:
     - type: Resource
       resource:
@@ -177,8 +177,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "notification") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 2
   metrics:
     - type: Resource
       resource:
@@ -204,8 +204,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "user") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 2
   metrics:
     - type: Resource
       resource:
@@ -231,8 +231,8 @@ spec:
     apiVersion: {{ include "common.capabilities.deployment.apiVersion" . }}
     kind: Deployment
     name: {{ include "common.names.custom" (list . "accounting") }}
-  minReplicas: {{ .Values.csghub.autoscaling.minReplicas | default 1 }}
-  maxReplicas: {{ .Values.csghub.autoscaling.maxReplicas | default 3 }}
+  minReplicas: 1
+  maxReplicas: 2
   metrics:
     - type: Resource
       resource:

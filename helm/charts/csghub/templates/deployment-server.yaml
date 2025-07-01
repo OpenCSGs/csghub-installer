@@ -124,11 +124,11 @@ spec:
           resources:
             {{- if .Values.csghub.autoscaling.enabled }}
             requests:
-              cpu: "100m"
-              memory: "256Mi"
+              cpu: {{ .Values.csghub.server.resources.requests.cpu | default "100m" }}
+              memory: {{ .Values.csghub.server.resources.requests.memory | default "256Mi" }}
             limits:
-              cpu: "300m"
-              memory: "512Mi"
+              cpu: {{ .Values.csghub.server.resources.limits.cpu | default "300m" }}
+              memory: {{ .Values.csghub.server.resources.limits.memory | default "512Mi" }}
             {{- end }}
           livenessProbe:
             tcpSocket:
