@@ -24,7 +24,7 @@ data:
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "300"
   # Task status correction time, default is 5 minutes
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_STATUS_TTL: "300"
-  {{- if or (not .Values.global.registry.external) .Values.global.registry.insecure }}
+  {{- if or .Values.global.registry.enabled .Values.global.registry.insecure }}
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--skip-tls-verify,--insecure,--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.csghub.runner.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
   {{- else }}
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_ARGS: "--compressed-caching=false,--single-snapshot,--build-arg=PyPI={{ .Values.global.deploy.pipIndexUrl }},--build-arg=HF_ENDPOINT={{ printf "%s/hf" (include "csghub.external.endpoint" .) }}"
