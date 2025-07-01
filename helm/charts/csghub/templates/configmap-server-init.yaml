@@ -17,7 +17,7 @@ metadata:
       {{ include "common.names.custom" (list . "casdoor") }}
       {{ include "common.names.custom" (list . "mirror") }}
       {{ include "common.names.custom" (list . "portal") }}
-      {{ include "common.names.custom" (list . "proxy") }}
+      {{ include "common.names.custom" (list . "gateway") }}
       {{ include "common.names.custom" (list . "runner") }}
 data:
   {{- $currentScope := . }}
