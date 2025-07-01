@@ -744,12 +744,6 @@ csghub:
         image: "nvidia/cuda:12.0.0-base-ubi8"
         cmd: "nvidia-smi --query-gpu=name --format=csv,noheader"
 
-    ## The name of the Kubernetes secret containing the kubeconfig file
-    ## This secret provides the necessary credentials for accessing the Kubernetes cluster
-    deployment:
-      kubeSecret: "csghub-kube-configs"
-      namespace: "spaces"
-
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.
     objectStore:
       ## The endpoint URL of the object storage service.

@@ -114,8 +114,7 @@ spec:
       volumes:
         - name: kube-configs
           secret:
-            {{- $secret := or .Values.global.deploy.kubeSecret .Values.csghub.runner.deployment.kubeSecret }}
-            secretName: {{ $secret }}
+            secretName: {{ .Values.global.deploy.kubeSecret }}
       {{- with .Values.csghub.runner.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
