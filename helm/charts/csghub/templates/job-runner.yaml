@@ -77,11 +77,7 @@ spec:
       volumes:
         - name: kube-configs
           secret:
-            {{- $secret := or .Values.global.deploy.kubeSecret .Values.csghub.runner.deployment.kubeSecret }}
-            {{- $exists := lookup "v1" "Secret" .Release.Namespace $secret }}
-            {{- if $exists }}
-            secretName: {{ $secret }}
-            {{- end }}
+            secretName: {{ .Values.global.deploy.kubeSecret }}
         - name: configure
           configMap:
             name: {{ include "common.names.custom" (list . "runner") }}
