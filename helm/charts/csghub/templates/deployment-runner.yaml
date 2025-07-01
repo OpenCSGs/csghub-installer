@@ -80,7 +80,6 @@ spec:
                 name: {{ include "common.names.custom" (list . "nats") }}
           env:
             - name: STARHUB_SERVER_DOCKER_REG_BASE
-              ## DEBUG: {{ $registryConfig }}
               value: {{ printf "%s/%s" $registryConfig.repository $registryConfig.namespace }}
             - name: STARHUB_SERVER_DOCKER_IMAGE_PULL_SECRET
               value: {{ include "common.names.custom" (list . "registry-docker-config") }}

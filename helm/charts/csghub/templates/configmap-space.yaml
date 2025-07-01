@@ -29,7 +29,6 @@ data:
         helm.sh/resource-policy: keep
     type: kubernetes.io/dockerconfigjson
     data:
-      ## DEBUG: {{ $registryConfig }}
       .dockerconfigjson: {{ printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"auth\":\"%s\"}}}" $registryConfig.repository $registryConfig.username $registryConfig.password (printf "%s:%s" $registryConfig.username $registryConfig.password | b64enc) | b64enc }}
     ---
     {{- end }}
