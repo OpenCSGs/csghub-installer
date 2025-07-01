@@ -49,7 +49,7 @@ Visit the Minio console at the following address:
         Username: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_USER}" | base64 -d)
         Password: $(kubectl get secret --namespace {{ .Release.Namespace }} {{ include "common.names.custom" (list . "minio") }} -o jsonpath="{.data.MINIO_ROOT_PASSWORD}" | base64 -d)
 {{- end }}
-{{ if not .Values.global.registry.external }}
+{{ if .Values.global.registry.enabled }}
 To access Registry using docker-cli:
     {{ $registry := (include "registry.external.endpoint" . | trimPrefix "http://" | trimPrefix "https://") }}
     Endpoint: {{ $registry }}
