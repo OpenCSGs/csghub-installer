@@ -28,7 +28,7 @@ spec:
       labels:
         {{- include "common.labels" (dict "context" . "service" "mirror") | nindent 8 }}
     spec:
-      {{- with (or .Values.global.image.pullSecrets .Values.csghub.mirror.image.pullSecrets) }}
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -46,12 +46,12 @@ spec:
       initContainers:
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
-          imagePullPolicy: {{ .Values.csghub.portal.server.pullPolicy }}
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: mirror-repo
-          image: {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/{{ or .Values.global.image.name .Values.csghub.mirror.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.mirror.image.tag) "context" .) }}
-          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.mirror.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub mirror repo-sync" ]
           envFrom:
             - configMapRef:
@@ -86,8 +86,8 @@ spec:
           securityContext:
             {{- .Values.csghub.mirror.podSecurityContext | toYaml | nindent 12 }}
         - name: mirror-lfs
-          image: {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/{{ or .Values.global.image.name .Values.csghub.mirror.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.mirror.image.tag) "context" .) }}
-          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.mirror.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub mirror lfs-sync" ]
           envFrom:
             - configMapRef:

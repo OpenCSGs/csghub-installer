@@ -28,7 +28,7 @@ spec:
       automountServiceAccountToken: {{ .Values.csghub.runner.serviceAccount.automount }}
       {{- end }}
       restartPolicy: OnFailure
-      {{- with (or .Values.global.image.pullSecrets .Values.csghub.runner.image.pullSecrets) }}
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -36,8 +36,8 @@ spec:
       {{- end }}
       containers:
         - name: kubectl
-          image: {{ or .Values.global.image.registry .Values.csghub.runner.image.registry }}/bitnami/kubectl:latest
-          imagePullPolicy: {{ .Values.csghub.runner.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/bitnami/kubectl:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/bash", "/scripts/configure.sh" ]
           volumeMounts:
             - name: kube-configs
@@ -55,7 +55,7 @@ spec:
               mountPath: /space
         - name: gpu-gather
           image: {{ or .Values.global.image.registry .Values.csghub.runner.autoLabel.image.registry }}/{{ .Values.csghub.runner.autoLabel.image.repository }}:{{ .Values.csghub.runner.autoLabel.image.tag }}
-          imagePullPolicy: {{ .Values.csghub.runner.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           args: [ "-d", "/.kube", "-n", "default", "-i", "{{ or .Values.global.image.registry .Values.csghub.runner.autoLabel.image.registry }}/{{ .Values.csghub.runner.autoLabel.cli.image }}", "-c", "{{ .Values.csghub.runner.autoLabel.cli.cmd }}" ]
           volumeMounts:
             - name: kube-configs
