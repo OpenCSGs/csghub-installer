@@ -50,7 +50,7 @@ data:
 
   # Redis Connection Info
   STARHUB_SERVER_REDIS_ENDPOINT: {{ printf "%s:%v" $redisConfig.host $redisConfig.port | quote }}
-  {{- if .Values.global.redis.enabled }}
+  {{- if not .Values.global.redis.enabled }}
   STARHUB_SERVER_REDIS_PASSWORD: {{ $redisConfig.password | quote }}
   {{- end }}
 
