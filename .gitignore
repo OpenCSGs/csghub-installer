@@ -7,3 +7,4 @@ tls.*
 .DS_Store
 *.tgz
 __snapshot__
+.debug/
