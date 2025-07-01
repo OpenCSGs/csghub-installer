@@ -27,11 +27,11 @@ generate object store config
   {{- if $secretData }}
   {{- $secretUser = index $secretData "MINIO_ROOT_USER" }}
   {{- if $secretUser }}
-  {{- $_ := set $config "accessKey" $secretUser -}}
+  {{- $_ := set $config "accessKey" ($secretUser | b64dec) -}}
   {{- end }}
   {{- $secretPass = index $secretData "MINIO_ROOT_PASSWORD" }}
   {{- if $secretPass }}
-  {{- $_ := set $config "secretKey" $secretPass -}}
+  {{- $_ := set $config "secretKey" ($secretPass | b64dec) -}}
   {{- end }}
   {{- end }}
 
