@@ -39,7 +39,7 @@ spec:
         options:
           - name: ndots
             value: "5"
-      {{- with (or .Values.global.image.pullSecrets .Values.csghub.proxy.image.pullSecrets) }}
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -61,8 +61,8 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: proxy
-          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/{{ or .Values.global.image.name .Values.csghub.proxy.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.proxy.image.tag) "context" .) }}
-          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.proxy.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub start rproxy" ]
           ports:
             - containerPort: 8083
@@ -106,8 +106,8 @@ spec:
           securityContext:
             {{- .Values.csghub.proxy.podSecurityContext | toYaml | nindent 12 }}
         - name: nginx
-          image: {{ or .Values.global.image.registry .Values.csghub.proxy.image.registry }}/nginx:latest
-          imagePullPolicy: {{ .Values.csghub.proxy.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/nginx:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
           ports:
             - containerPort: 80

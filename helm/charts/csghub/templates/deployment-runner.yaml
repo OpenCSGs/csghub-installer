@@ -41,7 +41,7 @@ spec:
         options:
           - name: ndots
             value: "5"
-      {{- with (or .Values.global.image.pullSecrets .Values.csghub.runner.image.pullSecrets) }}
+      {{- with (or .Values.global.image.pullSecrets .Values.csghub.server.image.pullSecrets) }}
       imagePullSecrets:
         {{- range . }}
         - name: {{ . }}
@@ -63,8 +63,8 @@ spec:
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: runner
-          image: {{ or .Values.global.image.registry .Values.csghub.runner.image.registry }}/{{ or .Values.global.image.name .Values.csghub.runner.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.runner.image.tag) "context" .) }}
-          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.runner.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "deploy", "runner" ]
           ports:
             - containerPort: 8082
