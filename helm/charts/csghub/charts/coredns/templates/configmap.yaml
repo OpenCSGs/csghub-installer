@@ -13,7 +13,7 @@ metadata:
   annotations:
     resource.dependencies/deployments: |
       {{ include "common.names.custom" . }}
-      {{ include "common.names.custom" (list . "proxy") }}
+      {{ include "common.names.custom" (list . "gateway") }}
 data:
   corefile: |
     .:53 {
@@ -45,6 +45,6 @@ data:
         604800     ; Expire
         86400      ; Minimum TTL
     )
-    *   3600 IN A  {{ include "proxy.nginx.ip" . }}
+    *   3600 IN A  {{ include "rproxy.nginx.ip" . }}
   {{- end }}
 {{- end }}

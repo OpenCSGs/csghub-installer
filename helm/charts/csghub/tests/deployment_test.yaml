@@ -1,8 +1,7 @@
 suite: image test
 templates:
-  - deployment-aigateway.yaml
+  - deployment-gateway.yaml
   - deployment-server.yaml
-  - deployment-proxy.yaml
   - deployment-portal.yaml
   - deployment-mirror.yaml
   - deployment-accounting.yaml
@@ -17,9 +16,8 @@ templates:
 tests:
   - it: global image should work and default ee
     templates:
-      - deployment-aigateway.yaml
+      - deployment-gateway.yaml
       - deployment-server.yaml
-      - deployment-proxy.yaml
       - deployment-portal.yaml
       - deployment-mirror.yaml
       - deployment-accounting.yaml
@@ -35,9 +33,8 @@ tests:
 
   - it: service-level image tag should not work when global.image.tag is set
     templates:
-      - deployment-aigateway.yaml
+      - deployment-gateway.yaml
       - deployment-server.yaml
-      - deployment-proxy.yaml
       - deployment-portal.yaml
       - deployment-mirror.yaml
       - deployment-accounting.yaml

@@ -16,7 +16,7 @@ Get the port number by service name
       "dataviewer"   8093
       "moderation"   8089
       "notification" 8095
-      "proxy"        8083
+      "rproxy"       8083
       "runner"       8082
       "portal"       8090
   -}}

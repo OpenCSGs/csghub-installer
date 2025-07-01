@@ -25,7 +25,7 @@ metadata:
     {{- if not .Values.global.deploy.usePublicDomain }}
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* "^/endpoint/" {
-        proxy_pass http://{{ printf "%s.%s.svc.%s" (include "common.names.custom" (list . "proxy")) .Release.Namespace (include "cluster.domain" .) }}:{{ include "csghub.svc.port" "proxy" }};
+        proxy_pass http://{{ printf "%s.%s.svc.%s" (include "common.names.custom" (list . "gateway")) .Release.Namespace (include "cluster.domain" .) }}:{{ include "csghub.svc.port" "rproxy" }};
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -114,12 +114,12 @@ spec:
             backend:
             {{- if eq (include "common.capabilities.ingress.apiVersion" .) "networking.k8s.io/v1" }}
               service:
-                name: {{ include "common.names.custom" (list . "proxy") }}
+                name: {{ include "common.names.custom" (list . "gateway") }}
                 port:
-                  number: {{ include "csghub.svc.port" "proxy" }}
+                  number: {{ include "csghub.svc.port" "rproxy" }}
             {{- else }}
-              serviceName: {{ include "common.names.custom" (list . "proxy") }}
-              servicePort: {{ include "csghub.svc.port" "proxy" }}
+              serviceName: {{ include "common.names.custom" (list . "gateway") }}
+              servicePort: {{ include "csghub.svc.port" "rproxy" }}
             {{- end }}
     {{- end }}
 {{- end }}

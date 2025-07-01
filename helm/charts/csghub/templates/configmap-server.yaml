@@ -21,10 +21,9 @@ metadata:
       {{ include "common.names.custom" (list . "casdoor") }}
       {{ include "common.names.custom" (list . "mirror") }}
       {{ include "common.names.custom" (list . "portal") }}
-      {{ include "common.names.custom" (list . "proxy") }}
+      {{ include "common.names.custom" (list . "gateway") }}
       {{ include "common.names.custom" (list . "runner") }}
       {{ include "common.names.custom" (list . "dataviewer") }}
-      {{ include "common.names.custom" (list . "moderation") }}
 data:
   GIN_MODE: release
   STARHUB_SERVER_SAAS: "false"
@@ -113,7 +112,7 @@ data:
   {{- end }}
 
   # Deprecated
-  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.deploy.namespace (include "csghub.svc.port" "proxy") | quote }}
+  STARHUB_SERVER_INTERNAL_ROOT_DOMAIN: {{ printf "%s.app.internal:%s" .Values.global.deploy.namespace (include "csghub.svc.port" "rproxy") | quote }}
 
   # Casdoor
   STARHUB_SERVER_CASDOOR_CERTIFICATE: "/starhub-bin/casdoor/tls.crt"
@@ -134,7 +133,7 @@ data:
   # Moderation
   {{- if .Values.global.moderation.enabled }}
   STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "true"
-  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "common.names.custom" (list . "moderation")) | quote }}
+  OPENCSG_MODERATION_SERVER_HOST: {{ printf "http://%s" (include "common.names.custom" (list . "gateway")) | quote }}
   OPENCSG_MODERATION_SERVER_PORT: {{ include "csghub.svc.port" "moderation" | quote }}
   {{- else }}
   STARHUB_SERVER_SENSITIVE_CHECK_ENABLE: "false"

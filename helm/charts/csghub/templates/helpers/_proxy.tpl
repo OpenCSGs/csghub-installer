@@ -6,7 +6,7 @@ SPDX-License-Identifier: APACHE-2.0
 {{/*
 Define the ip of proxy nginx service self-managed
 */}}
-{{- define "proxy.nginx.ip" -}}
+{{- define "rproxy.nginx.ip" -}}
 {{- $ip := include "system.coredns.ip" . }}
 {{- $nip := regexReplaceAll "[0-9]+$" $ip "148" }}
 {{- $nip -}}
