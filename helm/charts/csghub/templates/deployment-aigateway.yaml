@@ -44,8 +44,8 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.csghub.aigateway.image.registry }}/busybox:latest
-          imagePullPolicy: {{ .Values.csghub.aigateway.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: aigateway

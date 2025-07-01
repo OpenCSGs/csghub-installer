@@ -116,7 +116,7 @@ global:
     ## Enable or disable the deployment of this application.
     enabled: true
     ## Name of the Kubernetes Secret to be used for configuration or credentials.
-    kubeSecret: "kube-configs"
+    kubeSecret: "csghub-kube-configs"
     ## Kubernetes namespace where the deployment will be created.
     namespace: "spaces"
     ## If it's set to enable, it will install knative and argo automatically.
@@ -783,7 +783,7 @@ csghub:
     ## The name of the Kubernetes secret containing the kubeconfig file
     ## This secret provides the necessary credentials for accessing the Kubernetes cluster
     deployment:
-      kubeSecret: "kube-configs"
+      kubeSecret: "csghub-kube-configs"
       namespace: "spaces"
 
     ## Specifies the location and credentials for accessing the external Object Storage (OSS) service.

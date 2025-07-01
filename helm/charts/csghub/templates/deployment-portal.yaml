@@ -43,10 +43,6 @@ spec:
       automountServiceAccountToken: {{ .Values.csghub.portal.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image:  {{ or .Values.global.image.registry .Values.csghub.portal.image.registry }}/opencsg/psql:latest
-          imagePullPolicy: {{ .Values.csghub.portal.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values.csghub.portal "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
         - name: wait-for-server
           image: {{ or .Values.global.image.registry .Values.csghub.portal.image.registry }}/busybox:latest
           imagePullPolicy: {{ .Values.csghub.portal.image.pullPolicy }}

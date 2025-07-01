@@ -15,9 +15,9 @@ metadata:
     helm.sh/hook-weight: "1"
     helm.sh/hook-delete-policy: before-hook-creation
 spec:
-  ttlSecondsAfterFinished: 3600
+  ttlSecondsAfterFinished: 1200
   backoffLimit: 10
-  activeDeadlineSeconds: 1200
+  activeDeadlineSeconds: 600
   template:
     metadata:
       name: {{ include "common.names.custom" (list . "server") }}

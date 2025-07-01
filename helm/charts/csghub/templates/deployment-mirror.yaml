@@ -44,32 +44,9 @@ spec:
       automountServiceAccountToken: {{ .Values.csghub.mirror.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-redis
-          image: {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/redis:7.2.5
-          imagePullPolicy: {{ .Values.csghub.mirror.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until redis-cli -h {{ $RedisConfig.host }} -p {{ $RedisConfig.port }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
-          envFrom:
-            {{- if .Values.global.redis.enabled }}
-            - configMapRef:
-                name: {{ include "common.names.custom" (list . "server") }}
-            {{- else }}
-            - secretRef:
-                name: {{ include "common.names.custom" (list . "redis") }}
-            {{- end }}
-          env:
-            - name: REDISCLI_AUTH
-              {{- if .Values.global.redis.enabled }}
-              value: "$(STARHUB_SERVER_REDIS_PASSWORD)"
-              {{- else }}
-              value: "$(REDIS_PASSWD)"
-              {{- end }}
-        - name: wait-for-postgresql
-          image:  {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/opencsg/psql:latest
-          imagePullPolicy: {{ .Values.csghub.mirror.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values.csghub.mirror "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.csghub.mirror.image.registry }}/busybox:latest
-          imagePullPolicy: {{ .Values.csghub.mirror.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.portal.server.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: mirror-repo

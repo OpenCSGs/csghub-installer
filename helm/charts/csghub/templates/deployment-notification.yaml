@@ -43,10 +43,10 @@ spec:
       automountServiceAccountToken: {{ .Values.csghub.notification.serviceAccount.automount }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image:  {{ or .Values.global.image.registry .Values.csghub.notification.image.registry }}/opencsg/psql:latest
-          imagePullPolicy: {{ .Values.csghub.notification.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values.csghub.notification "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
+        - name: wait-for-server
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
+          command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: notification
           image: {{ or .Values.global.image.registry .Values.csghub.notification.image.registry }}/{{ or .Values.global.image.name .Values.csghub.notification.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.notification.image.tag) "context" .) }}
