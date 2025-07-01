@@ -58,8 +58,8 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.csghub.runner.image.registry }}/busybox:latest
-          imagePullPolicy: {{ .Values.csghub.runner.image.pullPolicy }}
+          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: runner
@@ -115,10 +115,7 @@ spec:
         - name: kube-configs
           secret:
             {{- $secret := or .Values.global.deploy.kubeSecret .Values.csghub.runner.deployment.kubeSecret }}
-            {{- $exists := lookup "v1" "Secret" .Release.Namespace $secret }}
-            {{- if $exists }}
             secretName: {{ $secret }}
-            {{- end }}
       {{- with .Values.csghub.runner.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
