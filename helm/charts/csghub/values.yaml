@@ -81,6 +81,11 @@ global:
     enabled: true
     ## Enable Gitaly cluster (EE only)
     isCluster: false
+    ## External Gitaly configuration
+    # host: "<gitaly_host>"
+    # port: 8075
+    # storage: "default"
+    # token: ""
 
   ## Content moderation configuration
   moderation:
