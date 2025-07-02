@@ -19,8 +19,10 @@ generate registry config
   {{/* default credentials */}}
   {{- $defaultUser := $global.Values.registry.username }}
   {{- $defaultPass := (include "registry.initPass" $global.Release.Name) }}
+  {{- $defaultHtpasswd := htpasswd ($defaultUser | toString) $defaultPass }}
   {{- $_ := set $config "username" $defaultUser -}}
   {{- $_ := set $config "password" $defaultPass -}}
+  {{- $_ := set $config "htpasswd" $defaultHtpasswd -}}
 
   {{/* use secrets if exists */}}
   {{- $secret := (include "common.names.custom" (list $global "registry")) -}}
@@ -33,6 +35,10 @@ generate registry config
   {{- $secretPass := index $secretData "REGISTRY_PASSWORD" }}
   {{- if $secretPass }}
   {{- $_ := set $config "password" ($secretPass | b64dec) -}}
+  {{- end }}
+  {{- $secretHtpasswd := index $secretData "htpasswd" }}
+  {{- if $secretHtpasswd }}
+  {{- $_ := set $config "htpasswd" ($secretHtpasswd | b64dec) -}}
   {{- end }}
   {{- end }}
 
