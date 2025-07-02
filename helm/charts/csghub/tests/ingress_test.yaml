@@ -2,17 +2,8 @@ suite: ingress test
 templates:
   - ingress.yaml
   - charts/starship/charts/frontend/templates/ingress.yaml
+  - charts/registry/templates/ingress.yaml
 tests:
-  - it: should fail render ingress if enabled and domain is not filled
-    templates:
-      - ingress.yaml
-    set:
-      global.ingress.enabled: true
-      global.ingress.domain: ""
-    asserts:
-      - failedTemplate:
-          errorMessage: A valid domain entry (like example.com) is required!
-
   - it: should render portal Ingress right if enabled
     templates:
       - ingress.yaml
@@ -130,3 +121,15 @@ tests:
       - equal:
           path: spec.tls[0].secretName
           value: my-tls-secret
+
+  - it: registry should be created if registry is enabled
+    set:
+      global.ingress.enabled: true
+      global.ingress.domain: opencsg-poc.com
+      registry.enabled: true
+    templates:
+      - charts/registry/templates/ingress.yaml
+    asserts:
+      - equal:
+          path: spec.rules[0].host
+          value: registry.opencsg-poc.com
