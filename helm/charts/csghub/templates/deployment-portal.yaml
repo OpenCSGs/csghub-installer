@@ -9,7 +9,11 @@ metadata:
   name: {{ include "common.names.custom" (list . "portal") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "portal") | nindent 4 }}
-  annotations: {{ .Values.csghub.portal.annotations | toYaml | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.csghub.portal.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -20,7 +24,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-portal.yaml") . | sha256sum }}
         {{- with .Values.csghub.portal.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

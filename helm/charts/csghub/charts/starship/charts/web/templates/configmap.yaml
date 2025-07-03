@@ -12,12 +12,6 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" . }}
-      {{ include "common.names.custom" (list . "celery-worker") }}
-      {{ include "common.names.custom" (list . "billing") }}
-      {{ include "common.names.custom" (list . "agentic") }}
 data:
   # This is a debug env
   DJANGO_DEBUG: "True"

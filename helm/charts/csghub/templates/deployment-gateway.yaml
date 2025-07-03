@@ -9,7 +9,11 @@ metadata:
   name: {{ include "common.names.custom" (list . "gateway") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "gateway") | nindent 4 }}
-  annotations: {{ .Values.csghub.gateway.annotations | toYaml | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.csghub.gateway.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -20,9 +24,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config1: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
-        checksum/config2: {{ include (print $.Template.BasePath "/configmap-gateway-rproxy.yaml") . | sha256sum }}
-        checksum/config3: {{ include (print $.Template.BasePath "/configmap-gateway-moderation.yaml") . | sha256sum }}
         {{- with .Values.csghub.gateway.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -121,12 +122,16 @@ spec:
             - containerPort: 80
               name: rproxy-nginx
               protocol: TCP
-            {{- with .Values.csghub.server.environments }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "gateway-rproxy-nginx") }}
+          {{- with .Values.csghub.server.environments }}
+          env:
             {{- range $key, $value := . }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
-            {{- end }}
+          {{- end }}
           resources:
             {{- if .Values.csghub.autoscaling.enabled }}
             requests:

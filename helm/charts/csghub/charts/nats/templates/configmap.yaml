@@ -31,15 +31,6 @@ metadata:
   labels: {{ include "common.labels" . | nindent 4 }}
   annotations:
     helm.sh/resource-policy: keep
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" (list . "server") }}
-      {{ include "common.names.custom" (list . "user") }}
-      {{ include "common.names.custom" (list . "portal") }}
-      {{ include "common.names.custom" (list . "accounting") }}
-      {{ include "common.names.custom" (list . "runner") }}
-      {{ include "common.names.custom" (list . "gateway") }}
-    resource.dependencies/statefulsets: |
-      {{ include "common.names.custom" . }}
 type: Opaque
 data:
   NATS_USERNAME: {{ $username | b64enc }}

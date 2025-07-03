@@ -9,7 +9,11 @@ metadata:
   name: {{ include "common.names.custom" (list . "user") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "user") | nindent 4 }}
-  annotations: {{ .Values.csghub.user.annotations | toYaml | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.csghub.user.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -20,7 +24,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.user.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}

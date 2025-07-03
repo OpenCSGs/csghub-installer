@@ -24,8 +24,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -60,6 +58,11 @@ spec:
             - containerPort: 8000
               name: casdoor
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
+            - secretRef:
+                name: {{ include "common.names.custom" . }}
           env:
             - name: RUNNING_IN_DOCKER
               value: "true"

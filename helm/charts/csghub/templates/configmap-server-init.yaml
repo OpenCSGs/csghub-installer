@@ -9,16 +9,6 @@ metadata:
   name: {{ include "common.names.custom" (list . "server-init") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "server-init") | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" (list . "server") }}
-      {{ include "common.names.custom" (list . "user") }}
-      {{ include "common.names.custom" (list . "accounting") }}
-      {{ include "common.names.custom" (list . "casdoor") }}
-      {{ include "common.names.custom" (list . "mirror") }}
-      {{ include "common.names.custom" (list . "portal") }}
-      {{ include "common.names.custom" (list . "gateway") }}
-      {{ include "common.names.custom" (list . "runner") }}
 data:
   {{- $currentScope := . }}
   {{- range $path, $_ := .Files.Glob "scripts/*.sql" }}

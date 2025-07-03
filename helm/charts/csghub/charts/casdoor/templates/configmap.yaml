@@ -25,11 +25,6 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" . }}
-      {{ include "common.names.custom" (list . "portal") }}
-      {{ include "common.names.custom" (list . "user") }}
 data:
   STARHUB_SERVER_CASDOOR_CLIENT_ID: "7a97bc5168cb75ffc514"
   STARHUB_SERVER_CASDOOR_CLIENT_SECRET: "33bd85106818efd90c57fb35ffc787aabbff6f7a"

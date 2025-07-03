@@ -10,9 +10,6 @@ metadata:
   name: {{ include "common.names.custom" (list . "postgresql-init") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" . }}
 data:
   {{- $secretData := (lookup "v1" "Secret" .Release.Namespace (include "common.names.custom" .)).data }}
   initialize.sql: |
@@ -58,9 +55,6 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" . }}
 data:
   postgresql.conf: |
     listen_addresses = '*'

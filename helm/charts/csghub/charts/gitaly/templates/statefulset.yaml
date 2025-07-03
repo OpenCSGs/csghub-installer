@@ -21,7 +21,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -52,6 +51,9 @@ spec:
             - containerPort: 8075
               name: gitaly
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" . }}
           {{- with .Values.environments }}
           env:
             {{- range $key, $value := . }}

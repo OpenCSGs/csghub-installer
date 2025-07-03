@@ -83,7 +83,7 @@ dependencies:
     version: "^0.1.9"
     repository: file://charts/starship
     condition: starship.enabled
-  - name: watcher
-    version: "1.1.1"
-    repository: "file://charts/watcher"
-    condition: watcher.enabled
+  - name: reloader
+    version: "2.1.4"
+    repository: "file://charts/reloader"
+    condition: reloader.enabled

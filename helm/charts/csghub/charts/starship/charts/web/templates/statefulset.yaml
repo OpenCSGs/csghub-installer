@@ -11,7 +11,11 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations: {{ .Values.annotations | toYaml | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -22,8 +26,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/configmap1: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
-        checksum/configmap2: {{ include (print $.Template.BasePath "/configmap-ng.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -106,6 +108,9 @@ spec:
             - containerPort: 80
               name: nginx
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.custom" (list . "web-nginx") }}
           {{- with .Values.environments }}
           env:
             {{- range $key, $value := . }}
