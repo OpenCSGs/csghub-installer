@@ -387,6 +387,9 @@ ingress-nginx:
     22: csghub/csghub-gitlab-shell:22
   ## NGINX Ingress Controller configuration
   controller:
+    ## Add extra options
+    extraArgs:
+      default-backend-service: csghub/csghub-ingress-nginx-defaultbackend
     ## Configuration for the controller image
     ## Reset digest to use third-party repository
     ## DO NOT UPDATE!!! image.digest and admissionWebhooks.patch.image.digest
@@ -411,6 +414,7 @@ ingress-nginx:
     #      server-snippet: |
     #        limit_req zone=global burst=40;
     #        limit_conn addr 50;
+      custom-http-errors: "404,500,502,503"
     ## Allow the use of server snippets in annotations
     allowSnippetAnnotations: true
     ## Configuration for the service exposed by the Ingress Controller
@@ -426,6 +430,19 @@ ingress-nginx:
         tcp:
           ## Node port for TCP traffic on port 22
           22: 30022
+  ## Custom error pages
+  defaultBackend:
+    enabled: true
+    image:
+      image: ingress-nginx/custom-error-pages
+      tag: v1.2.0
+    extraVolumes:
+      - name: custom-error-pages
+        configMap:
+          name: csghub-custom-error-pages
+    extraVolumeMounts:
+      - name: custom-error-pages
+        mountPath: /www
 
 ## This section is used to configure how to collect pod logs in the current namespace.
 ## By default, they are directly output to the fluentd standard output in json format.

@@ -22,6 +22,8 @@ metadata:
     nginx.ingress.kubernetes.io/client-body-timeout: "900"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "900"
+    nginx.ingress.kubernetes.io/custom-http-errors: "404,500,502,503"
+    nginx.ingress.kubernetes.io/proxy_intercept_errors : "on"
     {{- if not .Values.global.deploy.usePublicDomain }}
     nginx.ingress.kubernetes.io/server-snippet: |
       location ~* "^/endpoint/" {
