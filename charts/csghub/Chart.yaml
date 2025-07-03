@@ -3,7 +3,7 @@ name: csghub
 description: CSGHub charts with CE and EE.
 home: https://opencsg.com
 sources:
-  - https://github.com/OpenCSGs/csghub-installer
+  - https://github.com/OpenCSGs/csghub-charts
 
 # A chart can be either an 'application' or a 'library' chart.
 #

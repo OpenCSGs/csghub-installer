@@ -67,4 +67,4 @@ To access Registry using docker-cli:
 *Notes: This is not a container registry suitable for production environments.*
 {{ end }}
 For more details, visit:
-    https://github.com/OpenCSGs/csghub-installer
+    https://github.com/OpenCSGs/csghub-charts
