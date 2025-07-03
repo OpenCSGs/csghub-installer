@@ -8,3 +8,4 @@ tls.*
 *.tgz
 __snapshot__
 .debug/
+.codesouler
