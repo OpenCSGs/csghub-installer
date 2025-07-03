@@ -406,9 +406,9 @@ if ! kubectl get ns csghub &>/dev/null; then
   kubectl config set-context --current --namespace=csghub
 fi
 
-log "INFO" "- Creating Secret kube-configs."
-kubectl -n csghub delete secret kube-configs &>/dev/null
-retry kubectl -n csghub create secret generic kube-configs --from-file=/root/.kube/
+log "INFO" "- Creating Secret csghub-kube-configs."
+kubectl -n csghub delete secret csghub-kube-configs &>/dev/null
+retry kubectl -n csghub create secret generic csghub-kube-configs --from-file=/root/.kube/
 
 log "INFO" "- Add csghub helm repo."
 retry helm repo add csghub https://charts.opencsg.com/repository/csghub/ --force-update && helm repo update

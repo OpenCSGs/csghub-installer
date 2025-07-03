@@ -1,6 +1,0 @@
-# fluentd.conf
-
-<source>
-  @type forward
-  port 24224
-</source>

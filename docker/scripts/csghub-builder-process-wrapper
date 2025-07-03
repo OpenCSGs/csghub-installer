@@ -1,8 +1,0 @@
-#!/bin/bash
-
-export SPACE_BUILDER_PORT=${SPACE_BUILDER_PORT:-"8089"}
-export SPACE_DATA_PATH=${SPACE_DATA_PATH:-/var/opt/csghub-builder}
-export PIP_INDEX_URL=${PIP_INDEX_URL:-""}
-
-# Keep all other
-cd / && exec /usr/bin/builder "$@"
