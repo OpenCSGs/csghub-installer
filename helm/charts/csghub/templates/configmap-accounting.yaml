@@ -9,9 +9,6 @@ metadata:
   name: {{ include "common.names.custom" (list . "accounting")}}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "accounting") | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" (list . "accounting") }}
 data:
   OPENCSG_ACCOUNTING_SERVER_PORT: {{ include "csghub.svc.port" "accounting" | quote }}
   OPENCSG_ACCOUNTING_FEE_EVENT_SUBJECT: "accounting.fee.>"

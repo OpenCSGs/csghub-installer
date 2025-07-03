@@ -11,9 +11,6 @@ metadata:
   name: {{ include "common.names.custom" . }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" . | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" . }}
 data:
   DB: "postgres12"
   DEFAULT_NAMESPACE_RETENTION: "7d"

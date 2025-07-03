@@ -41,8 +41,8 @@ dependencies:
 - name: starship
   repository: file://charts/starship
   version: 0.1.9
-- name: watcher
-  repository: file://charts/watcher
-  version: 1.1.1
-digest: sha256:7256b9e1b6aff4d450d92c37304e976ab07efb4478a4fbc6012a386998bc17fc
-generated: "2025-06-27T11:13:09.518382+08:00"
+- name: reloader
+  repository: file://charts/reloader
+  version: 2.1.4
+digest: sha256:afabaf5a23022bf7d7dd2fb2741986ba0c75670e6efe9b24c6811b9617083f8b
+generated: "2025-07-02T18:56:01.183295+08:00"

@@ -11,9 +11,6 @@ metadata:
   name: {{ include "common.names.custom" (list . "portal") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "portal") | nindent 4 }}
-  annotations:
-    resource.dependencies/deployments: |
-      {{ include "common.names.custom" (list . "portal") }}
 data:
   CSGHUB_PORTAL_APP_ENV: "production"
   {{- if eq (include "global.ingress.tls.enabled" .) "true" }}

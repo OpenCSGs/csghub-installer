@@ -12,7 +12,11 @@ metadata:
   name: {{ include "common.names.custom" (list . "runner") }}
   namespace: {{ .Release.Namespace }}
   labels: {{ include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
-  annotations: {{ .Values.csghub.runner.annotations | toYaml | nindent 4 }}
+  annotations:
+    reloader.stakater.com/auto: "true"
+    {{- with .Values.csghub.runner.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   selector:
     matchLabels:
@@ -23,8 +27,6 @@ spec:
   template:
     metadata:
       annotations:
-        checksum/config1: {{ include (print $.Template.BasePath "/configmap-runner.yaml") . | sha256sum }}
-        checksum/config2: {{ include (print $.Template.BasePath "/configmap-server.yaml") . | sha256sum }}
         {{- with .Values.csghub.runner.podAnnotations }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -54,7 +56,7 @@ spec:
       {{- end }}
       terminationGracePeriodSeconds: 10
       {{- if .Values.csghub.server.serviceAccount.create }}
-      serviceAccountName: {{ include "common.names.custom" (list . "server")}}
+      serviceAccountName: {{ include "common.names.custom" (list . "server") }}
       automountServiceAccountToken: {{ .Values.csghub.server.serviceAccount.automount }}
       {{- end }}
       initContainers:
@@ -78,6 +80,10 @@ spec:
                 name: {{ include "common.names.custom" (list . "server") }}
             - secretRef:
                 name: {{ include "common.names.custom" (list . "nats") }}
+            {{- if .Values.global.deploy.enabled }}
+            - secretRef:
+                name: {{ .Values.global.deploy.kubeSecret }}
+            {{- end }}
           env:
             - name: STARHUB_SERVER_DOCKER_REG_BASE
               value: {{ printf "%s/%s" $registryConfig.repository $registryConfig.namespace }}
