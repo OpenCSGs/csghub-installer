@@ -1,0 +1,86 @@
+name: Release CSGHub Docker Compose
+
+on:
+  push:
+    tags:
+      - 'v\d+\.\d+\.\d+'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+          lfs: false
+
+      - name: Check if Release Exists
+        id: check_release
+        run: |
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }}")
+          if echo "$response" | grep -q '"id"'; then
+            echo "release_exists=true" >> $GITHUB_ENV
+            echo "✅ Release already exists"
+          else
+            echo "release_exists=false" >> $GITHUB_ENV
+            echo "🆕 Release will be created"
+          fi
+
+      - name: Get Previous Tag
+        id: get_previous_tag
+        if: env.release_exists == 'false'
+        run: |
+          # Get all tags sorted by version in descending order
+          ALL_TAGS=$(git tag --sort=-v:refname)
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          
+          # Try to find the previous revision of the current tag
+          PREVIOUS_TAG=$(echo "$ALL_TAGS" | grep -F -x -A 1 "$CURRENT_TAG" | tail -n 1 || echo "")
+          
+          # If no previous tag is found, the first commit is used
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "ℹ️ No previous tag found, using first commit"
+            PREVIOUS_TAG=$(git rev-list --max-parents=0 HEAD)
+          fi
+          
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_ENV
+          echo "🔖 Current tag: $CURRENT_TAG"
+          echo "🔖 Previous tag/commit: $PREVIOUS_TAG"
+
+      - name: Generate Release Notes
+        id: generate_release_notes
+        if: env.release_exists == 'false'
+        run: |
+          # Calling GitHub API to generate release notes
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/generate-notes" \
+            -d '{
+              "tag_name":"'"${{ github.ref_name }}"'",
+              "target_commitish":"'"${{ github.sha }}"'",
+              "previous_tag_name":"'"${{ env.previous_tag }}"'"
+            }')
+          
+          # Handling API Responses
+          if [[ $? -eq 0 ]] && [[ -n "$response" ]]; then
+            echo "$response" | jq -r '.body' > release-notes.md
+            echo "📝 Generated release notes:"
+            cat release-notes.md
+          else
+            echo "❌ Failed to generate release notes"
+            exit 1
+          fi
+
+      - name: Publish Release
+        if: env.release_exists == 'false'
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          bodyFile: "release-notes.md"
+          draft: false
+          prerelease: false

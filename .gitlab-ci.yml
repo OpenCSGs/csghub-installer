@@ -8,25 +8,18 @@ stages:
 
 variables:
   CHART_NAME: "csghub"
-  CHART_PATH: "./helm/charts/csghub"
-  HELM_REGISTRY: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/helm/stable"
-
-before_script:
-  - apt update && apt install -y curl git
-  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-  - chmod 700 get_helm.sh
-  - ./get_helm.sh
+  CHART_PATH: "charts/csghub"
+  HELM_REGISTRY: "https://charts.opencsg.com/repository/csghub"
 
 package:
   stage: package
-  image: ubuntu:22.04
+  image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/helmpack/chart-testing:v3.13.0
   script:
-    - helm package $CHART_PATH -d ./
-    - helm repo add --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CHART_NAME $HELM_REGISTRY
-    - helm plugin install https://github.com/chartmuseum/helm-push
-    - helm cm-push *.tgz $CHART_NAME
-  tags:
-    - external
+    - |
+      helm package "$CHART_PATH" -d ./
+      curl -v -u "${HELM_REGISTRY_USER}":"${HELM_REGISTRY_PASSWORD}" \
+        --upload-file *.tgz \
+        "${HELM_REGISTRY}"
   artifacts:
     paths:
       - "*.tgz"
