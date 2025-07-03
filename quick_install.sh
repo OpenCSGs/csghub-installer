@@ -24,6 +24,7 @@ fi
 : "${KNATIVE_INTERNAL_PORT:=80}"
 : "${INGRESS_SERVICE_TYPE:=NodePort}"
 : "${KOURIER_SERVICE_TYPE:=NodePort}"
+: "${EDITION:=ee}"
 
 # Get the domain from the command line argument
 : "${DOMAIN:=$1}"
@@ -422,6 +423,7 @@ fi
 retry helm upgrade --install csghub csghub/csghub \
   --namespace csghub \
   --create-namespace \
+  --set global.edition="$EDITION" \
   --set starship.enabled="$ENABLE_STARSHIP" \
   --set global.ingress.domain="$DOMAIN" \
   --set global.ingress.service.type="$INGRESS_SERVICE_TYPE" \
