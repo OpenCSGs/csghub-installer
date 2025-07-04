@@ -16930,7 +16930,7 @@ spec:
             - --zap-log-level=2
           command:
             - /manager
-          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/lws:v0.6.1
+          image: opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/lws:v0.6.1
           livenessProbe:
             httpGet:
               path: /healthz
