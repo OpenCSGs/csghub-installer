@@ -48,7 +48,7 @@ spec:
       {{- end }}
       containers:
         - name: postgresql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: [ "-c", "config_file=/etc/postgresql/postgresql.conf" ]
           ports:

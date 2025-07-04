@@ -15,9 +15,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "docker.io"
   ## Specifies the location of the Registry Docker image in the registry.
-  repository: "starship-secscan"
+  repository: "opencsghq/starship-secscan"
   ## Defines the specific version of the Registry image to use.
   tag: "latest"
   ## Determines how the image should be pulled from the registry.

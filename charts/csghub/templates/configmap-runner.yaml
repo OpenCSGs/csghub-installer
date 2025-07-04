@@ -18,8 +18,8 @@ data:
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_NAMESPACE: {{ .Values.global.deploy.imageBuilder.namespace }}
   {{- end }}
   # The image used by the pod needs to be accessible in the pod
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/alpine/git:2.36.2
-  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_IMAGE: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/kaniko-project-executor:v1.23.2
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_GIT_IMAGE: {{ include "image.fixed.prefix" (list . "alpine/git:2.36.2") }}
+  STARHUB_SERVER_RUNNER_IMAGE_BUILDER_KANIKO_IMAGE: {{ include "image.fixed.prefix" (list . "bitnami/kaniko:1.23.2") }}
   # The cleanup time after the image builder task is completed, the default is 2 minutes
   STARHUB_SERVER_RUNNER_IMAGE_BUILDER_JOB_TTL: "300"
   # Task status correction time, default is 5 minutes

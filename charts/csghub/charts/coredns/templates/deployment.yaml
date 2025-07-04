@@ -47,7 +47,7 @@ spec:
       {{- end }}
       containers:
         - name: coredns
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           args: [ "-conf", "/var/opt/coredns/corefile" ]
           ports:

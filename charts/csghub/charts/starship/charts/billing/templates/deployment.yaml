@@ -48,7 +48,7 @@ spec:
       {{- end }}
       containers:
         - name: billing
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           command: [ "sh", "-c", "sh /tmp/config.sh && /app/billing -config=/app/config/config.yaml" ]
           ports:

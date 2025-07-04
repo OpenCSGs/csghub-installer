@@ -6,7 +6,7 @@ global:
   edition: "ce"
   
   image:
-    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+    #registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com"
     # Base tag without suffix - will become v1.8.0-ce automatically
     tag: "v1.8.0"
     pullPolicy: "IfNotPresent"

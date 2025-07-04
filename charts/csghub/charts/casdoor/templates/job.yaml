@@ -32,16 +32,16 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: psql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql -f $$sql_file; done" ]
           env:

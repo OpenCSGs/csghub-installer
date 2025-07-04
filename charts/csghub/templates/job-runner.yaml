@@ -36,7 +36,7 @@ spec:
       {{- end }}
       containers:
         - name: kubectl
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/bitnami/kubectl:latest
+          image: {{ include "image.fixed.prefix" (list . "bitnami/kubectl:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/bash", "/scripts/configure.sh" ]
           volumeMounts:
@@ -54,9 +54,10 @@ spec:
             - name: space
               mountPath: /space
         - name: gpu-gather
-          image: {{ or .Values.global.image.registry .Values.csghub.runner.autoLabel.image.registry }}/{{ .Values.csghub.runner.autoLabel.image.repository }}:{{ .Values.csghub.runner.autoLabel.image.tag }}
+          {{- $repository := printf "%s:%s" .Values.csghub.runner.autoLabel.image.repository .Values.csghub.runner.autoLabel.image.tag }}
+          image: {{ include "image.fixed.prefix" (list . $repository) }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
-          args: [ "-d", "/.kube", "-n", "default", "-i", "{{ or .Values.global.image.registry .Values.csghub.runner.autoLabel.image.registry }}/{{ .Values.csghub.runner.autoLabel.cli.image }}", "-c", "{{ .Values.csghub.runner.autoLabel.cli.cmd }}" ]
+          args: [ "-d", "/.kube", "-n", "default", "-i", "{{ include "image.fixed.prefix" (list . .Values.csghub.runner.autoLabel.cli.image) }}", "-c", "{{ .Values.csghub.runner.autoLabel.cli.cmd }}" ]
           volumeMounts:
             - name: kube-configs
               mountPath: /.kube

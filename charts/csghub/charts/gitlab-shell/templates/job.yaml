@@ -35,8 +35,9 @@ spec:
         {{- end }}
       {{- end }}
       containers:
+        {{- $_ := set .Values.image "registry" "docker.io" }}
         - name: kubectl
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/bitnami/kubectl:latest
+          image: {{ include "image.fixed.prefix" (list . "bitnami/kubectl:latest" )}}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c" ]
           args:

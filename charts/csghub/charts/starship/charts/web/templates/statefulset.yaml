@@ -49,7 +49,7 @@ spec:
       {{- end }}
       containers:
         - name: web
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "sh", "-c", "cp -a /code/project/static /usr/share/ && /code/start.sh" ]
           ports:
@@ -102,7 +102,7 @@ spec:
               mountPath: /code/data
               subPath: codedata
         - name: nginx
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/nginx:latest
+          image: {{include "image.fixed.prefix" (list . "nginx:latest") }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80

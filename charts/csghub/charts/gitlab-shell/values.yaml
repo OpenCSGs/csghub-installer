@@ -12,9 +12,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "registry.gitlab.com"
   ## Specifies the location of the Gitaly Docker image in the registry.
-  repository: gitlab-shell
+  repository: "gitlab-org/build/cng/gitlab-shell"
   ## Defines the specific version of the Gitaly image to use.
   tag: "v17.5.0"
   ## Determines how the image should be pulled from the registry.

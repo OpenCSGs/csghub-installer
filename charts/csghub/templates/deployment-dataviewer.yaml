@@ -47,12 +47,14 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
         - name: dataviewer
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          {{- $tag := include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          {{- $_ := set .Values.csghub.server.image "tag" $tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.csghub.server.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "dataviewer", "launch" ]
           ports:

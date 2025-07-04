@@ -44,7 +44,7 @@ spec:
       {{- end }}
       containers:
         - name: gitaly
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "/scripts/process-wrapper" ]
           ports:

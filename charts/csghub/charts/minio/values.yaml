@@ -11,9 +11,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "docker.io"
   ## Specifies the location of the Minio Docker image in the registry.
-  repository: minio/minio
+  repository: "minio/minio"
   ## Defines the specific version of the Minio image to use.
   tag: "RELEASE.2024-12-18T13-15-44Z"
   ## Determines how the image should be pulled from the registry.

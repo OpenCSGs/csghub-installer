@@ -9,12 +9,12 @@ global:
     ## Specify path prefix of images, no need to add the final slash `/`
     ## You can add namespace follow registry.
     ## eg: docker.io/minio/minio:latest ==> {{ registry }}/minio/minio:latest
-    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+    registry: "docker.io"
     ## Specifies the starship-web-image repository name.
-    # name: "starship-web-image"
+    # name: "opencsghq/starship-web"
     ## Specifies the starship-web-image image version.
     ## Example: latest, v1.0.0, etc.
-    # tag: "v0.1.9"
+    # tag: "v0.2.0"
     ## Specifies the starship-web-image image pull policy.
     # pullPolicy: "IfNotPresent"
 

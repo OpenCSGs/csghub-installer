@@ -11,9 +11,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "docker.io"
   ## Specifies the location of the Dataflow Docker image in the registry.
-  repository: dataflow
+  repository: "opencsghq/dataflow"
   ## Defines the specific version of the Dataflow image to use.
   tag: "latest"
   ## Determines how the image should be pulled from the registry.

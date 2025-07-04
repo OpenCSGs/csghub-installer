@@ -4,7 +4,11 @@ SPDX-License-Identifier: APACHE-2.0
 */}}
 
 {{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
-{{- $registry := or .Values.global.image.registry "quay.io" }}
+{{- if not .Values.image }}
+  {{- $_ := set .Values "image" (dict "registry" "quay.io") }}
+{{- else }}
+  {{- $_ := set .Values.image "registry" "quay.io" }}
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -1337,7 +1341,7 @@ data:
             - args:
                 - server
               env: []
-              image: {{ $registry }}/argoproj/argocli:v3.5.12
+              image: {{ include "image.fixed.prefix" (list . "argoproj/argocli:v3.5.12") }}
               name: argo-server
               ports:
                 - containerPort: 2746
@@ -1392,7 +1396,7 @@ data:
                     fieldRef:
                       apiVersion: v1
                       fieldPath: metadata.name
-              image: {{ $registry }}/argoproj/workflow-controller:v3.5.12
+              image: {{ include "image.fixed.prefix" (list . "argoproj/workflow-controller:v3.5.12") }}
               livenessProbe:
                 failureThreshold: 3
                 httpGet:

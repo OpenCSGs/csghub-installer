@@ -47,12 +47,12 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: casdoor
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8000

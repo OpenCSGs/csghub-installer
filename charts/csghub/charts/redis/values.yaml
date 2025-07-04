@@ -11,9 +11,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "docker.io"
   ## Specifies the location of the Redis Docker image in the registry.
-  repository: redis
+  repository: "redis"
   ## Defines the specific version of the Redis image to use.
   tag: "7.2.5"
   ## Determines how the image should be pulled from the registry.

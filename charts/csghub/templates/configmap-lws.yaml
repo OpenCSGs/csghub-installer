@@ -11,7 +11,6 @@ so all description fields are truncated using the following command:
 */}}
 
 {{- if and .Values.global.deploy.enabled .Values.global.deploy.autoConfigure }}
-{{- $registry := or .Values.global.image.registry "quay.io" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -7910,7 +7909,7 @@ data:
                 - --zap-log-level=2
               command:
                 - /manager
-              image: opencsg-registry.cn-beijing.cr.aliyuncs.com/public/lws:v0.6.1
+              image: {{ or .Values.global.image.registry "docker.io" }}/opencsghq/lws:v0.6.1
               livenessProbe:
                 httpGet:
                   path: /healthz

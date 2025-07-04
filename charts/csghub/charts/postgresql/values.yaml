@@ -11,9 +11,9 @@ image:
   ## Specify path prefix relative to docker.io
   ## eg: minio/minio:latest with prefix {{ prefix }}/minio/minio:latest
   ## No need to add the final slash `/`
-  registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+  registry: "docker.io"
   ## Specifies the location of the PostgreSQL Docker image in the registry.
-  repository: postgres
+  repository: "opencsghq/postgres"
   ## Defines the specific version of the PostgreSQL image to use.
   tag: "15.10"
   ## Determines how the image should be pulled from the registry.

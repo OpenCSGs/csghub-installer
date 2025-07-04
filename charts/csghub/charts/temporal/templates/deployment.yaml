@@ -49,12 +49,12 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
       containers:
         - name: temporal
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 7233
@@ -89,7 +89,8 @@ spec:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
         {{- if and .Values.ingress.enabled .Values.ui.enabled }}
         - name: temporal-ui
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.ui.repository }}:{{ .Values.image.ui.tag }}
+          {{- $repository := printf "%s:%s" .Values.image.ui.repository .Values.image.ui.tag }}
+          image: {{ include "image.fixed.prefix" (list . $repository) }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 8080

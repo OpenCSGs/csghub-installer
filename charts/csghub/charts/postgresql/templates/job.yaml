@@ -32,7 +32,7 @@ spec:
       {{- end }}
       containers:
         - name: psql
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest")  }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done; psql -f /scripts/initialize.sql" ]
           env:

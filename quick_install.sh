@@ -295,7 +295,7 @@ EOF
   kubectl create namespace local-path-storage 2>/dev/null
   retry helm repo add sig-storage-local-static-provisioner https://kubernetes-sigs.github.io/sig-storage-local-static-provisioner --force-update
   retry helm repo update
-  retry helm template --debug sig-storage-local-static-provisioner/local-static-provisioner --namespace local-path-storage | sed 's/registry.k8s.io/opencsg-registry.cn-beijing.cr.aliyuncs.com\/opencsg_public/g'> local-volume-provisioner.generated.yaml
+  retry helm template --debug sig-storage-local-static-provisioner/local-static-provisioner --namespace local-path-storage | sed 's/registry.k8s.io/opencsg-registry.cn-beijing.cr.aliyuncs.com\/opencsghq/g'> local-volume-provisioner.generated.yaml
   retry kubectl apply -f local-volume-provisioner.generated.yaml
 
   # Verify that the local-path-storage pod is running
@@ -380,8 +380,8 @@ if [[ "$ENABLE_NVIDIA_GPU" == "true" ]]; then
     --version v0.17.0 \
     --set gfd.enabled=true \
     --set runtimeClassName=nvidia \
-    --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nvidia/k8s-device-plugin \
-    --set nfd.image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public/nfd/node-feature-discovery
+    --set image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/nvidia/k8s-device-plugin \
+    --set nfd.image.repository=opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsghq/nfd/node-feature-discovery
 
   log "INFO" "- Patch device-discovery-strategy to nvml."
   ## value enums: auto, tegra, nvml

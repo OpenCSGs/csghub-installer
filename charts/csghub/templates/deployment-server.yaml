@@ -49,7 +49,7 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-redis
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/redis:7.2.5
+          image: {{ include "image.fixed.prefix" (list . "redis:7.2.5") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until redis-cli -h {{ $redisConfig.host }} -p {{ $redisConfig.port }} ping; do echo 'Wait for Redis to be ready'; sleep 2; done" ]
           envFrom:
@@ -68,24 +68,26 @@ spec:
               value: "$(REDIS_PASSWD)"
               {{- end }}
         - name: wait-for-postgresql
-          image:  {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/opencsg/psql:latest
+          image: {{ include "image.fixed.prefix" (list . "opencsghq/psql:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until pg_isready -d \"{{ include "csghub.postgresql.dsn" (dict "service" .Values.csghub.server "global" .) }}\"; do echo 'Wait for PostgreSQL to be ready'; sleep 2; done" ]
         - name: wait-for-gitaly
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ $gitConfig.host }} {{ $gitConfig.port }}; do echo 'Wait for gitaly to be ready'; sleep 2; done" ]
         - name: wait-for-nats
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "nats.internal.domain" . }} {{ include "nats.internal.ports.api" . }}; do echo 'Wait for nats to be ready'; sleep 2; done" ]
         - name: wait-for-temporal
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "temporal.internal.domain" . }} {{ include "temporal.internal.port" . }}; do echo 'Wait for temporal to be ready'; sleep 2; done" ]
       containers:
         - name: server
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          {{- $tag := include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          {{- $_ := set .Values.csghub.server.image "tag" $tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.csghub.server.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/scripts/init.sh" ]
           ports:

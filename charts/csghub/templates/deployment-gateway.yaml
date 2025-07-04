@@ -58,12 +58,14 @@ spec:
       {{- end }}
       initContainers:
         - name: wait-for-server
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/busybox:latest
+          image: {{ include "image.fixed.prefix" (list . "busybox:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "until nc -z {{ include "common.names.custom" (list . "server") }} {{ include "csghub.svc.port" "server" }}; do echo 'Wait for csghub-server to be ready'; sleep 2; done" ]
       containers:
+        {{- $tag := include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+        {{- $_ := set .Values.csghub.server.image "tag" $tag }}
         - name: rproxy
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          image: {{ include "image.generic.prefix" (list . .Values.csghub.server.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && /starhub-bin/starhub start rproxy" ]
           ports:
@@ -115,7 +117,7 @@ spec:
           securityContext:
             {{- .Values.csghub.gateway.podSecurityContext | toYaml | nindent 12 }}
         - name: rproxy-nginx
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/nginx:latest
+          image: {{ include "image.fixed.prefix" (list . "nginx:latest") }}
           imagePullPolicy: {{ .Values.csghub.server.image.pullPolicy }}
           command: [ "/bin/sh", "-c", "update-ca-certificates && nginx -g \"daemon off;\""]
           ports:
@@ -154,7 +156,7 @@ spec:
               readOnly: false
         {{- if .Values.global.moderation.enabled }}
         - name: moderation
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          image: {{ include "image.generic.prefix" (list . .Values.csghub.server.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "moderation", "launch" ]
           ports:
@@ -191,7 +193,7 @@ spec:
             {{- .Values.csghub.gateway.podSecurityContext | toYaml | nindent 12 }}
         {{- end }}
         - name: aigateway
-          image: {{ or .Values.global.image.registry .Values.csghub.server.image.registry }}/{{ or .Values.global.image.name .Values.csghub.server.image.repository }}:{{ include "csghub.image.tag" (dict "tag" (or .Values.global.image.tag .Values.csghub.server.image.tag) "context" .) }}
+          image: {{ include "image.generic.prefix" (list . .Values.csghub.server.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.csghub.server.image.pullPolicy }}
           command: [ "/starhub-bin/starhub", "aigateway", "launch" ]
           ports:

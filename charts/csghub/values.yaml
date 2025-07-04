@@ -6,9 +6,9 @@ global:
   ## Image configuration
   image:
     ## Image registry path (without trailing slash)
-    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+    registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com"
     ## Image repository
-    # name: "csghub_server"
+    # name: "opencsghq/csghub-server"
     ## Image tag format: {{ tag }}-{{ edition }} (e.g., v1.8.1-ee)
     tag: "v1.8.1"
     ## Image pull policy
@@ -152,8 +152,8 @@ csghub:
   server:
     ## Image configuration
     image:
-      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
-      repository: "csghub_server"
+      registry: "docker.io"
+      repository: "opencsghq/csghub-server"
       # tag: "v1.1.0"
       pullPolicy: "IfNotPresent"
       pullSecrets: [ ]
@@ -251,9 +251,9 @@ csghub:
     autoLabel:
       image:
         ## Image registry path
-        registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
+        registry: "docker.io"
         ## Image repository
-        repository: gpu_gather
+        repository: "opencsghq/gpu_gather"
         ## Image tag
         tag: "latest"
       cli:
@@ -278,8 +278,8 @@ csghub:
     ## Image configuration
     image:
       pullSecrets: [ ]
-      registry: "opencsg-registry.cn-beijing.cr.aliyuncs.com/opencsg_public"
-      repository: "csghub_portal"
+      registry: "docker.io"
+      repository: "opencsghq/csghub-portal"
       # tag: "v1.1.0"
       pullPolicy: "IfNotPresent"
 
@@ -391,6 +391,7 @@ ingress-nginx:
     ## Reset digest to use third-party repository
     ## DO NOT UPDATE!!! image.digest and admissionWebhooks.patch.image.digest
     image:
+      image: opencsghq/ingress-nginx-controller
       ## Digest of the image for the controller
       digest: ""
     ## Configuration for admission webhooks
@@ -399,6 +400,7 @@ ingress-nginx:
       patch:
         ## Digest of the image for the admission webhook
         image:
+          image: opencsghq/ingress-nginx-kube-webhook-certgen
           ## Digest of the image for the admission webhook
           digest: ""
     ## Configuration settings for the Ingress Controller
@@ -431,7 +433,7 @@ ingress-nginx:
   defaultBackend:
     enabled: true
     image:
-      image: ingress-nginx/custom-error-pages
+      image: opencsghq/ingress-nginx-custom-error-pages
       tag: v1.2.0
     extraVolumes:
       - name: custom-error-pages
@@ -441,6 +443,9 @@ ingress-nginx:
       - name: custom-error-pages
         mountPath: /www
 
+reloader:
+  image:
+    name: "opencsghq/stakater-reloader"
 ## This section is used to configure how to collect pod logs in the current namespace.
 ## By default, they are directly output to the fluentd standard output in json format.
 fluentd:

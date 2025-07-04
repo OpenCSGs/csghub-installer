@@ -48,7 +48,7 @@ spec:
       {{- end }}
       containers:
         - name: producer
-          image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.repository }}:{{ .Values.image.tag }}
+          image: {{ include "image.generic.prefix" (list . .Values.image) }}
           imagePullPolicy: {{ or .Values.global.image.pullPolicy .Values.image.pullPolicy }}
           envFrom:
             {{- if not .Values.global.redis.enabled }}
