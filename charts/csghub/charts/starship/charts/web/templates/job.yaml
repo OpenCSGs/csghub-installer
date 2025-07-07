@@ -43,7 +43,7 @@ spec:
         - name: psql
           image: {{ or .Values.global.image.registry .Values.image.registry }}/opencsg/psql:latest
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql \"{{ include "csghub.postgresql.url" (dict "service" .Values "global" .) }}\" -f $$sql_file; done" ]
+          command: [ "/bin/sh", "-c", "for sql_file in /scripts/*.sql; do echo Executing $$sql_file; psql \"{{ include "csghub.postgresql.dsn" (dict "service" .Values "global" .) }}\" -f $$sql_file; done" ]
           volumeMounts:
             - name: init
               mountPath: /scripts
