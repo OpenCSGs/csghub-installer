@@ -450,7 +450,10 @@ reloader:
 ## By default, they are directly output to the fluentd standard output in json format.
 fluentd:
   enabled: false
-  # Configuration for Fluentd file sources
+  ## Image configuration
+  image:
+    repository: "opencsghq/fluent-fluentd-kubernetes-daemonset"
+  ## Configuration for Fluentd file sources
   fileConfigs:
     # Configuration for sources
     01_sources.conf: |-
