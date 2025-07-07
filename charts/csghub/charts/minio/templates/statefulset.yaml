@@ -55,9 +55,11 @@ spec:
             - containerPort: 9000
               name: api
               protocol: TCP
+            {{- if .Values.ui.enabled }}
             - containerPort: 9001
               name: console
               protocol: TCP
+            {{- end }}
           envFrom:
             - secretRef:
                 name: {{ include "common.names.custom" . }}

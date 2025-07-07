@@ -19,6 +19,10 @@ image:
   ## Determines how the image should be pulled from the registry.
   pullPolicy: "IfNotPresent"
 
+# Minio console configuration
+ui:
+  enabled: false
+
 ## Configuration for ingress. If enabled, you can access Minio console by minio.<domain>
 ingress:
   ## Enable or disable ingress.

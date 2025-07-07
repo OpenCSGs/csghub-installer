@@ -17,10 +17,12 @@ spec:
       targetPort: 9000
       protocol: TCP
       name: api
-    - port: {{ add .Values.service.ports.console }}
+    {{- if .Values.ui.enabled }}
+    - port: {{ .Values.service.ports.console }}
       targetPort: 9001
       protocol: TCP
       name: console
+    {{- end }}
   selector:
     {{- include "common.labels.selector" . | nindent 4 }}
 {{- end }}

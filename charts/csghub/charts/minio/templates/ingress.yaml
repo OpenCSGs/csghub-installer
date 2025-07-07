@@ -44,6 +44,7 @@ spec:
               servicePort: {{ .Values.service.ports.api }}
               {{- end }}
 ---
+{{- if .Values.ui.enabled }}
 apiVersion: {{ include "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
@@ -89,4 +90,5 @@ spec:
               serviceName: {{ include "common.names.custom" . }}
               servicePort: {{ .Values.service.ports.console }}
               {{- end }}
+{{- end }}
 {{- end }}

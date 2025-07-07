@@ -87,7 +87,7 @@ spec:
             periodSeconds: 10
           securityContext:
             {{- .Values.podSecurityContext | toYaml | nindent 12 }}
-        {{- if .Values.ingress.enabled }}
+        {{- if and .Values.ingress.enabled .Values.ui.enabled }}
         - name: temporal-ui
           image: {{ or .Values.global.image.registry .Values.image.registry }}/{{ .Values.image.ui.repository }}:{{ .Values.image.ui.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
