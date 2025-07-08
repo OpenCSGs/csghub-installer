@@ -112,9 +112,9 @@ global:
             ## Internal domain for service access
             domain: "app.internal"
             ## API server host address
-            host: "192.168.18.10"
+            # host: "192.168.18.10"
             ## Service port (NodePort value when type is NodePort)
-            port: "30213"
+            # port: "30213"
     ## Custom pip repository URL
     pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
     ## Image builder configuration
