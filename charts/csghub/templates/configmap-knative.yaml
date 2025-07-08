@@ -14616,7 +14616,7 @@ data:
             app: net-kourier-controller
         spec:
           containers:
-            - image: {{ include "image.fixed.prefix" (list . "knative-releases/knative.dev/net-kourier/cmd/kourier:v1.16.1") }}
+            - image: {{ include "image.fixed.prefix" (list . "knative-releases/knative.dev/net-kourier/cmd/kourier:v1.16.0") }}
               name: controller
               env:
                 - name: CERTS_SECRET_NAMESPACE
