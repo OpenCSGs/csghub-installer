@@ -292,6 +292,13 @@ csghub:
         secretName: ""
       annotations: { }
 
+    ## Links to docs center (not for ce/ee)
+    docs: { }
+      ## If using domain, it'll create svc by ExternalName
+      # domain: ""
+      # host: "192.168.18.10"
+      # port: "8003"
+
     ## PostgreSQL database configuration
     postgresql:
       host: ""

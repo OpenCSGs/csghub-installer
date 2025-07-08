@@ -156,3 +156,40 @@ spec:
     {{- include "common.serviceSelectorLabels" (dict "selector" true "context" . "service" "runner") | nindent 4 }}
 {{- end }}
 ---
+{{- if or (and .Values.csghub.portal.docs.host .Values.csghub.portal.docs.port) .Values.csghub.portal.docs.domain }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "common.names.custom" (list . "docs") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
+spec:
+  {{- if .Values.csghub.portal.docs.domain }}
+  type: ExternalName
+  externalName: {{ .Values.csghub.portal.docs.domain | trimPrefix "https://" | trimPrefix "http://" }}
+  {{- else }}
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.csghub.portal.docs.port }}
+      targetPort: {{ .Values.csghub.portal.docs.port }}
+      protocol: TCP
+      name: docs
+  {{- end }}
+{{- end }}
+---
+{{- if and .Values.csghub.portal.docs.host .Values.csghub.portal.docs.port }}
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: {{ include "common.names.custom" (list . "docs") }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "common.labels" (dict "context" . "service" "runner") | nindent 4 }}
+subsets:
+  - addresses:
+      - ip: {{ .Values.csghub.portal.docs.host }}
+    ports:
+      - port: {{ .Values.csghub.portal.docs.port }}
+{{- end }}
+---
