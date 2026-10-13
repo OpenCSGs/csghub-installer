@@ -52,6 +52,12 @@ data:
   CSGHUB_PORTAL_PRIVATE_S3_BUCKET: {{ $portalS3Config.bucket | quote }}
   CSGHUB_PORTAL_PRIVATE_S3_REGION: {{ $portalS3Config.region | quote }}
   CSGHUB_PORTAL_PRIVATE_S3_ENABLE_SSL: {{ $portalS3Config.secure | quote }}
+  CSGHUB_PORTAL_REGION: {{ $portalSvc.region | default "" | quote }}
+  ## Portal Configuration for Direct Email
+  CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_KEY: {{ $portalSvc.email.accessKey | default "" | quote }}
+  CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_SECRET: {{ $portalSvc.email.accessSecret | default "" | quote }}
+  CSGHUB_PORTAL_DIRECT_EMAIL_ENDPOINT: {{ $portalSvc.email.endpoint | default "" | quote }}
+  CSGHUB_PORTAL_DIRECT_EMAIL_REGION: {{ $portalSvc.email.region | default "" | quote }}
   ## Portal Configuration for Redis
   CSGHUB_PORTAL_REDIS_ADDR: {{ printf "%s:%v" $portalRedisConfig.host $portalRedisConfig.port | quote }}
   {{- if or (and .Values.global.redis.enabled .Values.redis.requirePass) (and (not .Values.global.redis.enabled) $portalRedisConfig.password) }}

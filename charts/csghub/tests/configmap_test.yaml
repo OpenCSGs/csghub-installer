@@ -91,6 +91,21 @@ tests:
           path: data.CSGHUB_PORTAL_PRIVATE_S3_BUCKET
           value: "csghub-portal"
       - equal:
+          path: data.CSGHUB_PORTAL_REGION
+          value: ""
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_KEY
+          value: "email-access-key"
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_SECRET
+          value: "email-access-secret"
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ENDPOINT
+          value: "email.example.com"
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_REGION
+          value: ""
+      - equal:
           path: data.CSGHUB_PORTAL_REDIS_ADDR
           value: "csghub-redis:6379"
       - equal:
@@ -498,6 +513,13 @@ tests:
           external:
             host: "10.6.0.14"
             port: 8080
+      portal:
+        region: ""
+        email:
+          accessKey: ""
+          accessSecret: ""
+          endpoint: ""
+          region: ""
     asserts:
       - equal:
           path: data.CSGHUB_PORTAL_DATABASE_DSN
@@ -541,6 +563,21 @@ tests:
       - equal:
           path: data.CSGHUB_PORTAL_PRIVATE_S3_ENABLE_SSL
           value: "true"
+      - equal:
+          path: data.CSGHUB_PORTAL_REGION
+          value: ""
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_KEY
+          value: ""
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ACCESS_SECRET
+          value: ""
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_ENDPOINT
+          value: ""
+      - equal:
+          path: data.CSGHUB_PORTAL_DIRECT_EMAIL_REGION
+          value: ""
       - equal:
           path: data.STARHUB_SERVER_S3_ACCESS_KEY_ID
           value: "s3"
