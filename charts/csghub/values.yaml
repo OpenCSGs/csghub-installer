@@ -230,9 +230,19 @@ portal:
     # secretKey: ""                        # Secret key for authentication
     # bucket: "csghub-portal-public"       # Bucket name
     # region: ""                           # Storage region
-    # secure: false                      # Use secure TLS certificates
-    # encrypt: false                     # Enable TLS encryption
-    # pathStyle: true                    # Use path-style addressing
+    # secure: false                        # Use secure TLS certificates
+    # encrypt: false                       # Enable TLS encryption
+    # pathStyle: true                      # Use path-style addressing
+
+  # region: ""                             # Site region
+
+  ## Direct email service configuration
+  email: {}
+    # existingSecret: ""                   # Overrides portal.email.{accessKey,accessSecret,endpoint,region} when set
+    # accessKey: ""                        # Direct email access key
+    # accessSecret: ""                     # Direct email access secret
+    # endpoint: ""                         # Direct email endpoint
+    # region: ""                           # Direct email region
 
 ## Main service logic and API interface
 server:

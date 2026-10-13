@@ -81,6 +81,12 @@ portal:
   docs: {}
   postgresql: {}
   objectStore: {}
+  region: ""
+  email:
+    accessKey: "email-access-key"
+    accessSecret: "email-access-secret"
+    endpoint: "email.example.com"
+    region: ""
 
 server:
   image: {}
