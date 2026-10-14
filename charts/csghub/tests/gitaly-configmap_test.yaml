@@ -61,6 +61,47 @@ tests:
           path: data["config.toml"]
           pattern: 'url = "http://csghub-server:8080"'
 
+  - it: renders the default git settings from values
+    template: gitaly/configmap.yaml
+    asserts:
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'use_bundled_binaries = true'
+
+  - it: renders custom git config entries from values
+    template: gitaly/configmap.yaml
+    set:
+      gitaly:
+        git:
+          config:
+            - key: "core.bigFileThreshold"
+              value: "1048576"
+            - key: "http.sslVerify"
+              value: "false"
+    asserts:
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: '\[\[git\.config\]\]'
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'key = "core\.bigFileThreshold"'
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'value = "1048576"'
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'key = "http\.sslVerify"'
+      - matchRegex:
+          path: data["config.toml"]
+          pattern: 'value = "false"'
+
+  - it: omits the [[git.config]] block when config list is empty
+    template: gitaly/configmap.yaml
+    asserts:
+      - notMatchRegex:
+          path: data["config.toml"]
+          pattern: '\[\[git\.config\]\]'
+
   - it: renders nothing when the built-in gitaly is disabled
     template: gitaly/configmap.yaml
     set:
