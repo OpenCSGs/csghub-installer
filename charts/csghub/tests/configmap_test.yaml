@@ -142,6 +142,25 @@ tests:
       - equal:
           path: data.STARHUB_SERVER_PUBLIC_ROOT_DOMAIN
           value: "csghub.example.com"
+      - equal:
+          path: data.STARHUB_SERVER_STORAGE_GATEWAY_ENABLE_PRESIGNED_URL_PROXY
+          value: "true"
+      - equal:
+          path: data.CSGHUB_PORTAL_USE_STORAGE_PROXY
+          value: "true"
+
+  - it: renders the storage gateway proxy settings from server config
+    template: csghub/configmap.yaml
+    set:
+      server:
+        enablePresignedUrlProxy: false
+    asserts:
+      - equal:
+          path: data.STARHUB_SERVER_STORAGE_GATEWAY_ENABLE_PRESIGNED_URL_PROXY
+          value: "false"
+      - equal:
+          path: data.CSGHUB_PORTAL_USE_STORAGE_PROXY
+          value: "false"
 
   - it: renders the runner, accounting and user settings
     template: csghub/configmap.yaml
