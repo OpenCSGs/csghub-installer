@@ -36,7 +36,7 @@ data:
     ## Git configuration
     [[git.config]]
     key = "http.sslVerify"
-    value = {{ .Values.global.gitaly.git.sslVerify | default false | quote }}
+    value = {{ .Values.global.gitaly.git.sslVerify | default true | quote }}
 
     ## storage configuration, expected in $HOME
     [[storage]]

@@ -154,9 +154,10 @@ global:
     ## Reference an existing Secret containing GITALY_HOST/GITALY_PORT/GITALY_TOKEN/
     ## [GITALY_STORAGE]/[GITALY_SCHEME]/[GITALY_JWT_SECRET]. Only honored when enabled=false.
     existingSecret: ""
+
     ## Git configuration
-    git:
-      sslVerify: false                 # git http.sslVerify: verify TLS/SSL certificates when cloning over HTTPS
+    git: {}
+      # sslVerify: true                 # git http.sslVerify: verify TLS/SSL certificates when cloning over HTTPS
 
   ## Dataflow configuration
   dataflow:
