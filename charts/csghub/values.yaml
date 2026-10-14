@@ -142,9 +142,7 @@ global:
   gitaly:
     ## Use built-in (true) or external (false)
     enabled: true
-    ## Git configuration
-    git:
-      sslVerify: false                 # git http.sslVerify: verify TLS/SSL certificates when cloning over HTTPS
+
     ## External Gitaly configuration
     external: {}
       # scheme: "tcp"               # Connection scheme: tcp, tls, unix
@@ -156,6 +154,9 @@ global:
     ## Reference an existing Secret containing GITALY_HOST/GITALY_PORT/GITALY_TOKEN/
     ## [GITALY_STORAGE]/[GITALY_SCHEME]/[GITALY_JWT_SECRET]. Only honored when enabled=false.
     existingSecret: ""
+    ## Git configuration
+    git:
+      sslVerify: false                 # git http.sslVerify: verify TLS/SSL certificates when cloning over HTTPS
 
   ## Dataflow configuration
   dataflow:
