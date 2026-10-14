@@ -33,6 +33,11 @@ data:
     [git]
     use_bundled_binaries = true
 
+    ## Git configuration
+    [[git.config]]
+    key = "http.sslVerify"
+    value = {{ .Values.global.gitaly.git.sslVerify | default false | quote }}
+
     ## storage configuration, expected in $HOME
     [[storage]]
     name = {{ $service.storage | default "default" | quote }}

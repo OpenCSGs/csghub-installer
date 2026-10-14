@@ -142,6 +142,9 @@ global:
   gitaly:
     ## Use built-in (true) or external (false)
     enabled: true
+    ## Git configuration
+    git:
+      sslVerify: false                 # git http.sslVerify: verify TLS/SSL certificates when cloning over HTTPS
     ## External Gitaly configuration
     external: {}
       # scheme: "tcp"               # Connection scheme: tcp, tls, unix
