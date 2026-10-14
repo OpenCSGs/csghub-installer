@@ -33,4 +33,4 @@ data:
   POSTGRE_NAME: {{ $pgConfig.database | quote }}
   POSTGRE_USER: {{ $pgConfig.user | quote }}
   POSTGRE_PASSWORD: {{ $pgConfig.password | quote }}
-  SSLMODE: {{ $pgConfig.sslmode | quote }}
+  POSTGRE_SSL_MODE: {{ $pgConfig.sslmode | quote }}
