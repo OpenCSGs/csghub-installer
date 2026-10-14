@@ -755,6 +755,17 @@ gitaly:
 
   storage: "default"                         # Gitaly storage name
 
+  ## Git executable settings
+  git:
+    ## Arbitrary git config entries, each rendered as a [[git.config]] block
+    ## under [git] in config.toml. Example:
+    ##   config:
+    ##     - key: "core.bigFileThreshold"
+    ##       value: "1048576"
+    ##     - key: "http.sslVerify"
+    ##       value: "false"
+    config: []
+
   logging:
     level: "info"                            # Log output level
 

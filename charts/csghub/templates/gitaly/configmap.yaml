@@ -32,6 +32,12 @@ data:
     ## Git executable settings
     [git]
     use_bundled_binaries = true
+    {{- range $cfg := $service.git.config }}
+    [[git.config]]
+    {{- range $key, $value := $cfg }}
+    {{ $key }} = {{ $value | quote }}
+    {{- end }}
+    {{- end }}
 
     ## storage configuration, expected in $HOME
     [[storage]]

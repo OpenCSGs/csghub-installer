@@ -330,6 +330,8 @@ gitaly:
   storage: "default"
   logging:
     level: "info"
+  git:
+    config: []
   persistence:
     size: "200Gi"
   securityContext:
