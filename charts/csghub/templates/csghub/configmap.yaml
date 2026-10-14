@@ -392,6 +392,7 @@ data:
   OPENCSG_MEMORY_SERVER_RETRY_DELAY_MILLIS: {{ $serverSvc.memory.retryDelayMillis | quote }}
 
   ## Server Configuration for S3 Proxy
+  CSGHUB_PORTAL_USE_STORAGE_PROXY: {{ $serverSvc.enablePresignedUrlProxy | quote }}
   STARHUB_SERVER_STORAGE_GATEWAY_ENABLE_PRESIGNED_URL_PROXY: {{ $serverSvc.enablePresignedUrlProxy | quote }}
 
   ## Define default error redirect URL
