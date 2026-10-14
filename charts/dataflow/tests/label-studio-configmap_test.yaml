@@ -94,7 +94,7 @@ tests:
           path: data.POSTGRE_PASSWORD
           pattern: "^.{32}$"
       - equal:
-          path: data.SSLMODE
+          path: data.POSTGRE_SSL_MODE
           value: "disable"
 
   - it: renders the global external postgresql connection when built-in is disabled
@@ -126,7 +126,7 @@ tests:
           path: data.POSTGRE_PASSWORD
           value: "pgpass"
       - equal:
-          path: data.SSLMODE
+          path: data.POSTGRE_SSL_MODE
           value: "prefer"
 
   - it: renders the service-level postgresql override with highest priority
