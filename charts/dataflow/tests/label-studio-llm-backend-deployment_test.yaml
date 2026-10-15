@@ -6,7 +6,7 @@
 
 suite: Test Label Studio LLM Backend Deployment
 templates:
-  - label-studio/llm-backend/deployment.yaml
+  - label-studio-llm-backend/deployment.yaml
 release:
   name: csghub
   namespace: csghub
@@ -17,7 +17,7 @@ tests:
   ## Metadata and labels
   ## ------------------------------------------------------------------
   - it: renders the Deployment metadata with standard labels
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     asserts:
       - equal:
           path: metadata.name
@@ -45,7 +45,7 @@ tests:
   ## Spec defaults
   ## ------------------------------------------------------------------
   - it: renders the Deployment spec defaults
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     asserts:
       - equal:
           path: spec.replicas
@@ -64,7 +64,7 @@ tests:
           value: 20
 
   - it: omits the service account block when serviceAccountName is not set
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     asserts:
       - notExists:
           path: spec.template.spec.serviceAccountName
@@ -73,7 +73,7 @@ tests:
   ## Container image, ports, envFrom and probes
   ## ------------------------------------------------------------------
   - it: renders the llm-backend container with image, ports, envFrom and probes
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     asserts:
       - equal:
           path: spec.template.spec.containers[0].name
@@ -124,7 +124,7 @@ tests:
   ## Image configuration
   ## ------------------------------------------------------------------
   - it: overrides the image registry when registryPolicy is force
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       global:
         image:
@@ -136,7 +136,7 @@ tests:
           value: "registry.opencsg.com/opencsghq/label-studio:v2.6.0-llm-back"
 
   - it: prefers service-level pullSecrets over global pullSecrets
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       labelStudioLlmBackend:
         image:
@@ -152,7 +152,7 @@ tests:
           value: "svc-secret"
 
   - it: prefers the service-level pull policy over the global pull policy
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       labelStudioLlmBackend:
         image:
@@ -169,7 +169,7 @@ tests:
   ## Environment variables and resources
   ## ------------------------------------------------------------------
   - it: renders extra container environments when set
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       labelStudioLlmBackend:
         environments:
@@ -190,7 +190,7 @@ tests:
           value: "info"
 
   - it: renders container resources when set
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       labelStudioLlmBackend:
         resources:
@@ -218,7 +218,7 @@ tests:
   ## Spec overrides
   ## ------------------------------------------------------------------
   - it: renders overridden spec scalars when provided
-    template: label-studio/llm-backend/deployment.yaml
+    template: label-studio-llm-backend/deployment.yaml
     set:
       labelStudioLlmBackend:
         replicas: 2
