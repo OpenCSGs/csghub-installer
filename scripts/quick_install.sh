@@ -33,7 +33,7 @@ TIMEOUT=300
 
 K3S_SERVER=""
 K3S_TOKEN=""
-K3S_VERSION="v1.34.3+k3s1"
+K3S_VERSION="v1.36.5+k3s1"
 
 
 ################################################################################
@@ -1015,36 +1015,24 @@ metadata:
 data:
 EOF
 
-      # Normal domain entries
+      # Consolidated zone rooted at the full domain: pin explicit hostnames
+      # and provide a template catch-all for any remaining names
       if [[ ${#HOST_ENTRIES[@]} -gt 0 ]]; then
-        echo "  ${DOMAIN#*.}.server: |"
-        echo "    ${DOMAIN#*.} {"
+        echo "  ${DOMAIN}.server: |"
+        echo "    ${DOMAIN} {"
         echo "      hosts {"
         for h in "${HOST_ENTRIES[@]}"; do
           echo "        $ip $h"
         done
+        echo "        fallthrough"
         echo "      }"
-        echo "    }"
-      fi
-
-      # Wildcard entries
-      for w in "${WILDCARD_ENTRIES[@]}"; do
-        # remove leading *.
-        local clean_domain="${w#*.}"
-        echo "  ${clean_domain}.server: |"
-        echo "    ${clean_domain} {"
-        echo "      template IN A {"
+        echo "      template IN A ${DOMAIN} {"
         echo "        answer \"{{ .Name }} 3600 IN A $ip\""
-        echo "        fallthrough"
-        echo "      }"
-        echo "      template IN AAAA {"
-        echo "        answer \"{{ .Name }} 3600 IN AAAA ::\""
-        echo "        fallthrough"
         echo "      }"
         echo "      log"
         echo "      errors"
         echo "    }"
-      done
+      fi
     }
 
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
