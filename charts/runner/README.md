@@ -82,10 +82,8 @@ See [values.yaml](values.yaml) for the full list of configurable parameters.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `knative.serving.domain` | Domain suffix for Knative services | `example.com` |
 | `knative.serving.ingress` | Ingress provider | `gateway-api` |
-| `knative.serving.autoscaler.enableScaleToZero` | Scale to zero | `true` |
-| `knative.serving.autoscaler.scaleToZeroPodRetentionPeriod` | Pod retention period | `60m` |
+| `knative.serving.config` | Knative `config-*` map (e.g. `config-autoscaler`, `config-domain`, `config-features`). Each top-level key is a ConfigMap the operator creates; its sub-keys are the data entries. The chart injects `network.ingress-class`, `deployment.registries-skipping-tag-resolving` and the gateway-api `gateway` block as computed defaults the user hasn't set | See `values.yaml` |
 
 ## Installation
 

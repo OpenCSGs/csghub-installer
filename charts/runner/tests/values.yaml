@@ -120,11 +120,43 @@ space:
 ## Knative Serving configuration
 knative:
   serving:
-    domain: "example.com"
     ingress: "gateway-api"
-    autoscaler:
-      enableScaleToZero: true
-      scaleToZeroPodRetentionPeriod: "60m"
+    config:
+      autoscaler:
+        enable-scale-to-zero: "true"
+        scale-to-zero-pod-retention-period: "60m"
+      certmanager: {}
+      defaults: {}
+      deployment: {}
+      domain:
+        example.com: ""
+      features:
+        kubernetes.podspec-priorityclassname: "enabled"
+        kubernetes.podspec-schedulername: "enabled"
+        kubernetes.podspec-affinity: "enabled"
+        kubernetes.podspec-nodeselector: "enabled"
+        kubernetes.podspec-dnsconfig: "enabled"
+        kubernetes.podspec-dnspolicy: "enabled"
+        kubernetes.podspec-dryrun: "enabled"
+        kubernetes.podspec-fieldref: "enabled"
+        kubernetes.podspec-init-containers: "enabled"
+        kubernetes.podspec-persistent-volume-claim: "enabled"
+        kubernetes.podspec-persistent-volume-write: "enabled"
+        kubernetes.podspec-tolerations: "enabled"
+        kubernetes.podspec-topologyspreadconstraints: "enabled"
+        kubernetes.podspec-volumes-emptydir: "enabled"
+        multi-container: "enabled"
+        tag-header-based-routing: "enabled"
+      gateway: {}
+      gc: {}
+      leader-election: {}
+      logging: {}
+      network: {}
+      observability:
+        metrics-protocol: "prometheus"
+        request-metrics-protocol: "prometheus"
+        request-metrics-endpoint: ":9091"
+      tracing: {}
 
 ## RBAC configuration
 rbac:
