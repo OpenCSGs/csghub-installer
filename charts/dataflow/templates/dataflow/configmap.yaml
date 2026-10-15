@@ -37,4 +37,5 @@ data:
   DATABASE_DB: {{ $pgConfig.database | quote }}
   DATABASE_USERNAME: {{ $pgConfig.user | quote }}
   DATABASE_PASSWORD: {{ $pgConfig.password | quote }}
+  PGSSLMODE: {{ $pgConfig.sslmode | quote }}
   CSGHUB_DATAFLOW_TEMPLATE_IMAGE: {{ $service.image.repository }}:{{ $service.image.tag | replace "api" "argo" }}

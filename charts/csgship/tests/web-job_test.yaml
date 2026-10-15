@@ -150,10 +150,10 @@ tests:
           diskType: ssd
     asserts:
       - equal:
-          path: spec.template.spec.containers[0].env[5].name
+          path: spec.template.spec.containers[0].env[6].name
           value: "EXTRA"
       - equal:
-          path: spec.template.spec.containers[0].env[5].value
+          path: spec.template.spec.containers[0].env[6].value
           value: "value"
       - equal:
           path: spec.template.spec.nodeSelector.diskType
@@ -185,3 +185,36 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].env[4].value
           value: "webpass"
+
+  ## ------------------------------------------------------------------
+  ## PGSSLMODE passthrough
+  ## ------------------------------------------------------------------
+  - it: exposes PGSSLMODE for libpq-based clients
+    template: web/job.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[5].name
+          value: "PGSSLMODE"
+      - equal:
+          path: spec.template.spec.containers[0].env[5].value
+          value: "disable"
+
+  - it: reflects the global external PGSSLMODE value
+    template: web/job.yaml
+    set:
+      global:
+        postgresql:
+          enabled: false
+          external:
+            host: "10.0.0.5"
+            port: 5433
+            user: "webuser"
+            password: "webpass"
+            sslmode: "require"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[5].name
+          value: "PGSSLMODE"
+      - equal:
+          path: spec.template.spec.containers[0].env[5].value
+          value: "require"

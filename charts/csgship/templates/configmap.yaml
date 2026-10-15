@@ -39,6 +39,7 @@ data:
   DATABASE_USERNAME: {{ $pgConfig.user | quote }}
   DATABASE_PASSWORD: {{ $pgConfig.password | quote }}
   DATABASE_NAME: {{ $pgConfig.database | quote }}
+  PGSSLMODE: {{ $pgConfig.sslmode | quote }}
 
   ## Web Configuration for Redis
   {{- $redisConfig := include "common.redis.config" (dict "ctx" . "service" $service) | fromYaml }}

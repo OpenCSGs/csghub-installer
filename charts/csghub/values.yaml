@@ -1030,6 +1030,15 @@ superset:
 
   secretEnv:
     create: false
+  ## Database SSL configuration. When ssl.enabled is true, the vendored
+  ## superset subchart appends `?sslmode=<ssl.mode>` to the SQLALCHEMY_DATABASE_URI.
+  ## Set ssl.enabled to true and ssl.mode to match global.postgresql.external.sslmode
+  ## (typically "require" for encrypt-only, "verify-ca" or "verify-full" with
+  ## a CA bundle) when connecting to an external PostgreSQL over TLS.
+  database:
+    ssl:
+      enabled: false
+      mode: "require"
   postgresql:
     enabled: false
   redis:
