@@ -105,6 +105,8 @@ spec:
               value: {{ $pgConfig.user | quote }}
             - name: PGPASSWORD
               value: {{ $pgConfig.password | quote }}
+            - name: PGSSLMODE
+              value: {{ $pgConfig.sslmode | quote }}
             - name: OAUTH_CLIENT_ID
               value: {{ $webSvc.oauth.clientId | quote }}
             - name: OAUTH_CLIENT_SECRET

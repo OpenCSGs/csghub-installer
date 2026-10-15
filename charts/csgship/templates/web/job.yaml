@@ -82,6 +82,8 @@ spec:
               value: {{ $pgConfig.user | quote }}
             - name: PGPASSWORD
               value: {{ $pgConfig.password | quote }}
+            - name: PGSSLMODE
+              value: {{ $pgConfig.sslmode | quote }}
             {{- with $service.environments }}
             {{- range $key, $value := . }}
             - name: {{ $key }}

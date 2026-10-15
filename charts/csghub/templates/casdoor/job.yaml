@@ -114,6 +114,8 @@ spec:
               value: {{ $pgConfig.user | quote }}
             - name: PGPASSWORD
               value: {{ $pgConfig.password | quote }}
+            - name: PGSSLMODE
+              value: {{ $pgConfig.sslmode | quote }}
             - name: CSGHUB_CLIENT_ID
               value: "$(STARHUB_SERVER_CASDOOR_CLIENT_ID)"
             - name: CSGHUB_CLIENT_SECRET

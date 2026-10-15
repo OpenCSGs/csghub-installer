@@ -227,6 +227,33 @@ tests:
           path: data.SYNC_PERMS_GIT_SERVER
 
   ## ------------------------------------------------------------------
+  ## PGSSLMODE passthrough
+  ## ------------------------------------------------------------------
+  - it: propagates the built-in PGSSLMODE value of disable
+    template: configmap.yaml
+    asserts:
+      - equal:
+          path: data.PGSSLMODE
+          value: "disable"
+
+  - it: propagates the global external PGSSLMODE value
+    template: configmap.yaml
+    set:
+      global:
+        postgresql:
+          enabled: false
+          external:
+            host: "10.6.0.10"
+            port: 6432
+            user: "postgres"
+            password: "Postgres2025"
+            sslmode: "require"
+    asserts:
+      - equal:
+          path: data.PGSSLMODE
+          value: "require"
+
+  ## ------------------------------------------------------------------
   ## MegaLinter redis reporter
   ## ------------------------------------------------------------------
   - it: renders the MegaLinter server redis reporter settings

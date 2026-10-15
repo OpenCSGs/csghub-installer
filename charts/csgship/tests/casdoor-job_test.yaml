@@ -133,35 +133,65 @@ tests:
     template: casdoor/job.yaml
     asserts:
       - equal:
-          path: spec.template.spec.containers[0].env[6].name
+          path: spec.template.spec.containers[0].env[7].name
           value: "OAUTH_CLIENT_ID"
       - equal:
-          path: spec.template.spec.containers[0].env[6].value
+          path: spec.template.spec.containers[0].env[7].value
           value: "gitlab-client-id"
       - equal:
-          path: spec.template.spec.containers[0].env[7].name
+          path: spec.template.spec.containers[0].env[8].name
           value: "OAUTH_CLIENT_SECRET"
       - equal:
-          path: spec.template.spec.containers[0].env[7].value
+          path: spec.template.spec.containers[0].env[8].value
           value: "gitlab-client-secret"
       - equal:
-          path: spec.template.spec.containers[0].env[8].name
+          path: spec.template.spec.containers[0].env[9].name
           value: "OAUTH_ISSUER"
       - equal:
-          path: spec.template.spec.containers[0].env[8].value
+          path: spec.template.spec.containers[0].env[9].value
           value: "https://gitlab.example.com"
       - equal:
-          path: spec.template.spec.containers[0].env[9].name
+          path: spec.template.spec.containers[0].env[10].name
           value: "CSGSHIP_CLIENT_ID"
       - equal:
-          path: spec.template.spec.containers[0].env[9].value
+          path: spec.template.spec.containers[0].env[10].value
           value: "$(CASDOOR_CLIENT_ID)"
       - equal:
-          path: spec.template.spec.containers[0].env[10].name
+          path: spec.template.spec.containers[0].env[11].name
           value: "CSGSHIP_CLIENT_SECRET"
       - equal:
-          path: spec.template.spec.containers[0].env[10].value
+          path: spec.template.spec.containers[0].env[11].value
           value: "$(CASDOOR_SECRET_KEY)"
+
+  - it: exposes PGSSLMODE for libpq-based clients
+    template: casdoor/job.yaml
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[6].name
+          value: "PGSSLMODE"
+      - equal:
+          path: spec.template.spec.containers[0].env[6].value
+          value: "disable"
+
+  - it: reflects the global external PGSSLMODE value
+    template: casdoor/job.yaml
+    set:
+      global:
+        postgresql:
+          enabled: false
+          external:
+            host: "pg.external"
+            port: 6432
+            user: "pguser"
+            password: "pgpass"
+            sslmode: "require"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].env[6].name
+          value: "PGSSLMODE"
+      - equal:
+          path: spec.template.spec.containers[0].env[6].value
+          value: "require"
 
   - it: mounts the casdoor ConfigMap volume with defaultMode 0744
     template: casdoor/job.yaml

@@ -222,6 +222,58 @@ tests:
           value: "http://csghub.example.com/-/label-studio"
 
   ## ------------------------------------------------------------------
+  ## PGSSLMODE passthrough
+  ## ------------------------------------------------------------------
+  - it: propagates the built-in PGSSLMODE value of disable
+    template: dataflow/configmap.yaml
+    asserts:
+      - equal:
+          path: data.PGSSLMODE
+          value: "disable"
+
+  - it: propagates the global external PGSSLMODE value
+    template: dataflow/configmap.yaml
+    set:
+      global:
+        postgresql:
+          enabled: false
+          external:
+            host: "pg.external"
+            port: 6432
+            user: "pguser"
+            password: "pgpass"
+            sslmode: "require"
+    asserts:
+      - equal:
+          path: data.PGSSLMODE
+          value: "require"
+
+  - it: lets the service-level postgresql override win over the global one
+    template: dataflow/configmap.yaml
+    set:
+      global:
+        postgresql:
+          enabled: false
+          external:
+            host: "global.host"
+            port: 5432
+            user: "globaluser"
+            password: "globalpass"
+            sslmode: "require"
+      dataflow:
+        postgresql:
+          host: "df.host"
+          port: 9999
+          database: "dfdb"
+          user: "dfuser"
+          password: "dfpass"
+          sslmode: "verify-ca"
+    asserts:
+      - equal:
+          path: data.PGSSLMODE
+          value: "verify-ca"
+
+  ## ------------------------------------------------------------------
   ## Required-value validation
   ## ------------------------------------------------------------------
   - it: fails to render when externalUrl is empty in standalone mode
