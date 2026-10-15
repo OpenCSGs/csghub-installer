@@ -179,10 +179,12 @@ runner:
     pipIndexUrl: "https://pypi.tuna.tsinghua.edu.cn/simple/"
   knative:
     serving:
-      domain: "example.com"
-      autoscaler:
-        enableScaleToZero: true
-        scaleToZeroPodRetentionPeriod: "60m"
+      config:
+        autoscaler:
+          enable-scale-to-zero: "true"
+          scale-to-zero-pod-retention-period: "60m"
+        domain:
+          example.com: ""
   logcollector:
     enabled: true
 

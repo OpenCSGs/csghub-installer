@@ -141,14 +141,14 @@ tests:
           value: "gateway-api.ingress.networking.knative.dev"
       - equal:
           path: spec.config["gateway"]["external-gateways"]
-          value: |
+          value: |-
             - class: eg-external
               gateway: csghub/knative
               supported-features:
               - HTTPRouteRequestTimeout
       - equal:
           path: spec.config["gateway"]["local-gateways"]
-          value: |
+          value: |-
             - class: eg-internal
               gateway: csghub/knative-local
               supported-features:
@@ -234,6 +234,27 @@ tests:
           path: spec.config.deployment.registries-skipping-tag-resolving
           value: "csghub.example.com,hub.other.com,myreg.io"
 
+  - it: lets user values override the computed defaults
+    template: knativeserving.yaml
+    documentSelector:
+      path: kind
+      value: KnativeServing
+    set:
+      knative:
+        serving:
+          config:
+            network:
+              ingress-class: "custom.ingress.networking.knative.dev"
+            deployment:
+              registries-skipping-tag-resolving: "my.reg.io,other.io"
+    asserts:
+      - equal:
+          path: spec.config.network.ingress-class
+          value: "custom.ingress.networking.knative.dev"
+      - equal:
+          path: spec.config.deployment.registries-skipping-tag-resolving
+          value: "my.reg.io,other.io"
+
   - it: renders the observability configuration
     template: knativeserving.yaml
     documentSelector:
@@ -271,8 +292,9 @@ tests:
       - equal:
           path: spec.config.network.ingress-class
           value: "kourier.ingress.networking.knative.dev"
-      - notExists:
+      - equal:
           path: spec.config["gateway"]
+          value: {}
 
   ## ------------------------------------------------------------------
   ## KnativeServing CR spec: OpenCSG registry override
@@ -340,8 +362,9 @@ tests:
     set:
       knative:
         serving:
-          autoscaler:
-            enableScaleToZero: false
+          config:
+            autoscaler:
+              enable-scale-to-zero: "false"
     asserts:
       - equal:
           path: spec.config.autoscaler.enable-scale-to-zero
@@ -355,14 +378,15 @@ tests:
     set:
       knative:
         serving:
-          autoscaler:
-            scaleToZeroPodRetentionPeriod: "30s"
+          config:
+            autoscaler:
+              scale-to-zero-pod-retention-period: "30s"
     asserts:
       - equal:
           path: spec.config.autoscaler.scale-to-zero-pod-retention-period
           value: "30s"
 
-  - it: renders a custom domain
+  - it: renders a custom domain while keeping the default
     template: knativeserving.yaml
     documentSelector:
       path: kind
@@ -370,10 +394,13 @@ tests:
     set:
       knative:
         serving:
-          domain: "custom.io"
+          config:
+            domain:
+              custom.io: ""
     asserts:
       - equal:
           path: spec.config.domain["custom.io"]
           value: ""
-      - notExists:
+      - equal:
           path: spec.config.domain["example.com"]
+          value: ""

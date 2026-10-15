@@ -509,15 +509,19 @@ runner:
   ## Knative Serving configuration
   knative:
     serving:
-      domain: "example.com"              # Domain suffix for Knative services
-
       ## Ingress provider: "kourier" or "gateway-api"
       # ingress: "gateway-api"
 
-      ## Enable ksvc scale pod to 0 (stop space/inference/finetune/... instance)
-      autoscaler:
-        enableScaleToZero: true
-        scaleToZeroPodRetentionPeriod: "60m"
+      ## Knative config-* maps. Each top-level key is a ConfigMap created by
+      ## the Knative operator; its sub-keys are the data entries in that map.
+      ## Computed defaults (network.ingress-class, deployment tag resolving,
+      ## gateway-api gateway block) are injected by the runner chart when unset.
+      config:
+        autoscaler:
+          enable-scale-to-zero: "true"
+          scale-to-zero-pod-retention-period: "60m"
+        domain:
+          example.com: ""
 
   ## Enable logcollector default
   logcollector:

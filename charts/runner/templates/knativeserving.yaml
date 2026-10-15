@@ -85,56 +85,29 @@ spec:
     istio:
       enabled: false
   config:
-    domain:
-      {{ $service.knative.serving.domain }}: ""
-    autoscaler:
-      enable-scale-to-zero: {{ $service.knative.serving.autoscaler.enableScaleToZero | quote }}
-      scale-to-zero-pod-retention-period: {{ $service.knative.serving.autoscaler.scaleToZeroPodRetentionPeriod | quote }}
-    network:
-      {{- if $gatewayAPI }}
-      ingress-class: gateway-api.ingress.networking.knative.dev
-      {{- else }}
-      ingress-class: kourier.ingress.networking.knative.dev
-      {{- end }}
-    {{- if $gatewayAPI }}
-    gateway:
-      external-gateways: |
-        - class: eg-external
-          gateway: {{ .Release.Namespace }}/knative
-          supported-features:
-          - HTTPRouteRequestTimeout
-      local-gateways: |
-        - class: eg-internal
-          gateway: {{ .Release.Namespace }}/knative-local
-          supported-features:
-          - HTTPRouteRequestTimeout
+    {{- /* Computed defaults are injected only when the user hasn't set them,
+       so a values-driven override always wins. */ -}}
+    {{- $globalRegistry := .Values.global.image.registry | default "" }}
+    {{- $privateRegistry := .Values.externalUrl | trimPrefix "https://" | trimPrefix "http://" }}
+    {{- $registryList := list (include "common.domain.csghub" .) $privateRegistry $globalRegistry | sortAlpha | uniq }}
+    {{- $ingressClass := ternary "gateway-api.ingress.networking.knative.dev" "kourier.ingress.networking.knative.dev" $gatewayAPI }}
+    {{- $defaults := dict
+          "deployment" (dict "registries-skipping-tag-resolving" (join "," $registryList))
+          "network" (dict "ingress-class" $ingressClass) }}
+    {{- if $isOpencsgRegistry }}
+    {{- $_ := set (get $defaults "deployment") "queue-sidecar-image" (printf "%s/serving/cmd/queue:%s" $knativeRegistry $knativeVersion) }}
     {{- end }}
-    features:
-      kubernetes.podspec-priorityclassname: "enabled"
-      kubernetes.podspec-schedulername: "enabled"
-      kubernetes.podspec-affinity: "enabled"
-      kubernetes.podspec-nodeselector: "enabled"
-      kubernetes.podspec-dnsconfig: "enabled"
-      kubernetes.podspec-dnspolicy: "enabled"
-      kubernetes.podspec-dryrun: "enabled"
-      kubernetes.podspec-fieldref: "enabled"
-      kubernetes.podspec-init-containers: "enabled"
-      kubernetes.podspec-persistent-volume-claim: "enabled"
-      kubernetes.podspec-persistent-volume-write: "enabled"
-      kubernetes.podspec-tolerations: "enabled"
-      kubernetes.podspec-topologyspreadconstraints: "enabled"
-      kubernetes.podspec-volumes-emptydir: "enabled"
-      multi-container: "enabled"
-      tag-header-based-routing: "enabled"
-    deployment:
-      {{- $globalRegistry := .Values.global.image.registry | default "" }}
-      {{- $privateRegistry := .Values.externalUrl | trimPrefix "https://" | trimPrefix "http://" }}
-      {{- $registryList := list (include "common.domain.csghub" .) $privateRegistry $globalRegistry | sortAlpha | uniq }}
-      registries-skipping-tag-resolving: {{ join "," $registryList | trimSuffix "," | quote }}
-      {{- if $isOpencsgRegistry }}
-      queue-sidecar-image: {{ $knativeRegistry }}/serving/cmd/queue:{{ $knativeVersion }}
-      {{- end }}
-    observability:
-      metrics-protocol: "prometheus"
-      request-metrics-protocol: "prometheus"
-      request-metrics-endpoint: ":9091"
+    {{- if $gatewayAPI }}
+    {{- $_ := set $defaults "gateway" (dict
+          "external-gateways" (toYaml (list (dict
+                "class" "eg-external"
+                "gateway" (printf "%s/knative" .Release.Namespace)
+                "supported-features" (list "HTTPRouteRequestTimeout"))))
+          "local-gateways" (toYaml (list (dict
+                "class" "eg-internal"
+                "gateway" (printf "%s/knative-local" .Release.Namespace)
+                "supported-features" (list "HTTPRouteRequestTimeout"))))
+    ) }}
+    {{- end }}
+    {{- $userConfig := deepCopy ($service.knative.serving.config | default dict) }}
+    {{- toYaml (merge $userConfig $defaults) | nindent 4 }}

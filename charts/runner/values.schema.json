@@ -223,17 +223,17 @@
         "serving": {
           "type": "object",
           "properties": {
-            "domain": { "type": "string", "description": "Domain suffix for Knative services" },
             "ingress": {
               "type": "string",
               "enum": ["kourier", "gateway-api"],
               "description": "Knative ingress provider"
             },
-            "autoscaler": {
+            "config": {
               "type": "object",
-              "properties": {
-                "enableScaleToZero": { "type": "boolean", "description": "Enable scaling to zero" },
-                "scaleToZeroPodRetentionPeriod": { "type": "string", "description": "Pod retention period after scale to zero" }
+              "description": "Knative config-* maps. The top-level key is a ConfigMap the Knative operator creates; its sub-keys are the data entries in that map. The chart injects a few computed defaults (e.g. network.ingress-class) when the user hasn't set them.",
+              "additionalProperties": {
+                "type": "object",
+                "additionalProperties": true
               }
             },
             "services": {

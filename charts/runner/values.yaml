@@ -184,17 +184,85 @@ space:
   # statusCheckInterval: 10
 
 ## Knative Serving configuration
+## https://knative.dev/docs/serving/configging-serving-cr/#config-map
 knative:
   serving:
-    domain: "example.com"               # Domain suffix for Knative services
-
     ## Ingress provider: "kourier" or "gateway-api"
     # ingress: "gateway-api"
 
-    ## Enable ksvc scale pod to 0 (stop space/inference/finetune/... instance)
-    autoscaler:
-      enableScaleToZero: true
-      scaleToZeroPodRetentionPeriod: "60m"
+    ## Knative config-* map. Each top-level key is a ConfigMap created by
+    ## the Knative operator; its sub-keys are the data entries in that map.
+    ## The chart injects computed defaults for a few keys when the user
+    ## hasn't set them:
+    ##   - deployment.registries-skipping-tag-resolving
+    ##   - deployment.queue-sidecar-image (when using the OpenCSG registry)
+    ##   - network.ingress-class
+    ##   - gateway (when using the gateway-api ingress)
+    config:
+      ## config-autoscaler: autoscaling behavior (scale to zero, retention)
+      autoscaler:
+        enable-scale-to-zero: "true"
+        scale-to-zero-pod-retention-period: "60m"
+
+      ## config-certmanager: TLS certificate settings
+      certmanager: {}
+
+      ## config-defaults: default values applied to services/revisions
+      defaults: {}
+
+      ## config-deployment: deployment overrides (image registries, queue sidecar)
+      ## registries-skipping-tag-resolving / queue-sidecar-image are injected by
+      ## the chart when unset.
+      deployment: {}
+
+      ## config-domain: default domain suffix for Knative routes
+      domain:
+        example.com: ""
+
+      ## config-features: enable/disable Knative Serving features
+      features:
+        kubernetes.podspec-priorityclassname: "enabled"
+        kubernetes.podspec-schedulername: "enabled"
+        kubernetes.podspec-affinity: "enabled"
+        kubernetes.podspec-nodeselector: "enabled"
+        kubernetes.podspec-dnsconfig: "enabled"
+        kubernetes.podspec-dnspolicy: "enabled"
+        kubernetes.podspec-dryrun: "enabled"
+        kubernetes.podspec-fieldref: "enabled"
+        kubernetes.podspec-init-containers: "enabled"
+        kubernetes.podspec-persistent-volume-claim: "enabled"
+        kubernetes.podspec-persistent-volume-write: "enabled"
+        kubernetes.podspec-tolerations: "enabled"
+        kubernetes.podspec-topologyspreadconstraints: "enabled"
+        kubernetes.podspec-volumes-emptydir: "enabled"
+        multi-container: "enabled"
+        tag-header-based-routing: "enabled"
+
+      ## config-gateway: gateway-api gateways (injected when using gateway-api
+      ## ingress: external-gateways / local-gateways)
+      gateway: {}
+
+      ## config-gc: garbage collection of revisions
+      gc: {}
+
+      ## config-leader-election: leader election settings
+      leader-election: {}
+
+      ## config-logging: logger levels and configuration
+      logging: {}
+
+      ## config-network: ingress-class and networking (ingress-class is injected
+      ## by the chart when unset)
+      network: {}
+
+      ## config-observability: metrics and request logging endpoints
+      observability:
+        metrics-protocol: "prometheus"
+        request-metrics-protocol: "prometheus"
+        request-metrics-endpoint: ":9091"
+
+      ## config-tracing: tracing backend settings
+      tracing: {}
 
     ## Deprecated configuration (for backward compatibility)
     services: []
