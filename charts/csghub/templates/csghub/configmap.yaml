@@ -198,6 +198,7 @@ data:
   ## Server Configuration for AIGateway
   {{- $aigatewaySvc := $aiGatewaySvc.aigateway }}
   OPENCSG_AIGATEWAY_PORT: {{ $aigatewaySvc | dig "service" "port" 8094 | quote }}
+  OPENCSG_AIGATEWAY_PUBLIC_URL: {{ include "common.endpoint.aigateway" . | quote }}
   {{- if ne .Values.global.edition "ce" }}
   OPENCSG_AIGATEWAY_LLMLOG_ENABLE: {{ dig "llm" "log" "enabled" true $aigatewaySvc | quote }}
   OPENCSG_AIGATEWAY_LLM_TRACE_ENABLE: {{ dig "llm" "trace" "enabled" true $aigatewaySvc | quote }}
