@@ -258,6 +258,9 @@ tests:
       - equal:
           path: data.OPENCSG_AIGATEWAY_PORT
           value: "8094"
+      - matchRegex:
+          path: data.OPENCSG_AIGATEWAY_PUBLIC_URL
+          pattern: "https://.*/aigateway"
       - equal:
           path: data.OPENCSG_AIGATEWAY_LLMLOG_ENABLE
           value: "true"
