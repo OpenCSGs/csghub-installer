@@ -260,7 +260,7 @@ tests:
           value: "8094"
       - matchRegex:
           path: data.OPENCSG_AIGATEWAY_PUBLIC_URL
-          pattern: "https://.*/aigateway"
+          pattern: "https://.*/aigateway/v1"
       - equal:
           path: data.OPENCSG_AIGATEWAY_LLMLOG_ENABLE
           value: "true"
