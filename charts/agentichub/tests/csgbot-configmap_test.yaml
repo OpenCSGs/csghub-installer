@@ -71,6 +71,25 @@ tests:
           path: data["csgbot.toml"]
           pattern: "langflow-access-token = \"[0-9a-f]{44}\""
 
+  - it: renders the GitLab token when configured
+    template: csgbot/configmap.yaml
+    set:
+      csgbot:
+        config:
+          credentials:
+            gitlabToken: "glpat-test-token"
+    asserts:
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^gitlab-token = "glpat-test-token"$'
+
+  - it: omits the GitLab token when not configured
+    template: csgbot/configmap.yaml
+    asserts:
+      - notMatchRegex:
+          path: data["csgbot.toml"]
+          pattern: "gitlab-token"
+
   ## ------------------------------------------------------------------
   ## CSGHub section
   ## ------------------------------------------------------------------
@@ -380,6 +399,43 @@ tests:
       - matchRegex:
           path: data["csgbot.toml"]
           pattern: "platform-quota-maintenance-contact = \"support@example\\.com\""
+
+  ## ------------------------------------------------------------------
+  ## User feedback section
+  ## ------------------------------------------------------------------
+  - it: renders the GitLab user feedback configuration when set
+    template: csgbot/configmap.yaml
+    set:
+      csgbot:
+        config:
+          userFeedback:
+            gitlabEndpoint: "https://git-devops.example.com/"
+            gitlabProjectId: "312"
+            gitlabEpicId: "234"
+            gitlabDefaultAssigneeId: 207
+    asserts:
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^\[user-feedback\]$'
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^gitlab-endpoint = "https://git-devops\.example\.com/"$'
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^gitlab-project-id = "312"$'
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^gitlab-epic-id = "234"$'
+      - matchRegex:
+          path: data["csgbot.toml"]
+          pattern: '(?m)^gitlab-default-assignee-id = 207$'
+
+  - it: omits the user feedback section when not configured
+    template: csgbot/configmap.yaml
+    asserts:
+      - notMatchRegex:
+          path: data["csgbot.toml"]
+          pattern: '\[user-feedback\]'
 
   ## ------------------------------------------------------------------
   ## Conditional rendering

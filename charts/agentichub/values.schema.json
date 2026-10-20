@@ -233,6 +233,12 @@
         "config": {
           "type": "object",
           "properties": {
+            "credentials": {
+              "type": "object",
+              "properties": {
+                "gitlabToken": { "type": "string" }
+              }
+            },
             "aigateway": {
               "type": "object",
               "properties": {
@@ -338,7 +344,26 @@
             },
             "logging": { "type": "object" },
             "observability": { "type": "object" },
-            "userFacingErrors": { "type": "object" }
+            "userFacingErrors": { "type": "object" },
+            "userFeedback": {
+              "type": "object",
+              "properties": {
+                "gitlabEndpoint": { "type": "string" },
+                "gitlabProjectId": {
+                  "oneOf": [
+                    { "type": "string" },
+                    { "type": "integer" }
+                  ]
+                },
+                "gitlabEpicId": {
+                  "oneOf": [
+                    { "type": "string" },
+                    { "type": "integer" }
+                  ]
+                },
+                "gitlabDefaultAssigneeId": { "type": "integer", "minimum": 0 }
+              }
+            }
           }
         }
       }

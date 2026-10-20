@@ -203,6 +203,9 @@ csgbot:
 
   ## ConfigMap Configuration
   config:
+    credentials: {}
+      # gitlabToken: ""              # GitLab token used by CSGBot integrations
+
     aigateway: {}
       # apiKey: ""                   # AIGateway access key for csgbot
       # temperature: 0.1            # Model temperature
@@ -269,6 +272,12 @@ csgbot:
 
     userFacingErrors: {}
       # platformQuotaMaintenanceContact: ""   # Contact info shown on 403 quota errors
+
+    userFeedback: {}
+      # gitlabEndpoint: ""          # GitLab endpoint for user feedback
+      # gitlabProjectId: "312"      # GitLab project ID
+      # gitlabEpicId: "234"         # GitLab Epic ID
+      # gitlabDefaultAssigneeId: 207 # Default GitLab assignee ID
 
 #################################################################
 ##  Built-in Third-party Components                            ##

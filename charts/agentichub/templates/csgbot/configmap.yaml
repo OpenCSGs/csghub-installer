@@ -34,6 +34,10 @@ data:
     {{- $agenticSvcName := include "common.names.custom" (list . $agenticSvc.name) }}
     {{- $agenticflowToken := include "agenticflow.api.token" . }}
     langflow-access-token = {{ $agenticflowToken | quote }}
+    {{- $gitlabToken := dig "config" "credentials" "gitlabToken" "" .Values.csgbot }}
+    {{- if $gitlabToken }}
+    gitlab-token = {{ $gitlabToken | quote }}
+    {{- end }}
 
     [csghub]
     {{- $csghubEndpoint := .Values.externalUrl }}
@@ -120,4 +124,22 @@ data:
     [user-facing-errors]
     # Shown when AI Gateway returns platform quota exhausted (403). Replace with customer IT contact.
     platform-quota-maintenance-contact = {{ dig "config" "userFacingErrors" "platformQuotaMaintenanceContact" "" .Values.csgbot | quote }}
+
+    {{- $userFeedback := dig "config" "userFeedback" dict .Values.csgbot }}
+    {{- if $userFeedback }}
+
+    [user-feedback]
+    {{- with dig "gitlabEndpoint" "" $userFeedback }}
+    gitlab-endpoint = {{ . | quote }}
+    {{- end }}
+    {{- with dig "gitlabProjectId" "" $userFeedback }}
+    gitlab-project-id = {{ . | quote }}
+    {{- end }}
+    {{- with dig "gitlabEpicId" "" $userFeedback }}
+    gitlab-epic-id = {{ . | quote }}
+    {{- end }}
+    {{- if hasKey $userFeedback "gitlabDefaultAssigneeId" }}
+    gitlab-default-assignee-id = {{ dig "gitlabDefaultAssigneeId" 0 $userFeedback }}
+    {{- end }}
+    {{- end }}
 {{- end }}
