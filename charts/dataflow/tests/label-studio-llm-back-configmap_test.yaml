@@ -1,12 +1,12 @@
-# Test suite for the label-studio-llm-backend ConfigMap.
+# Test suite for the label-studio-llm-back ConfigMap.
 #
 # The ConfigMap carries the runtime mode switch and the gunicorn listen port,
 # both consumed by the backend via envFrom. PORT is derived from service.port
 # so the application and the Service cannot drift apart.
 
-suite: Test Label Studio LLM Backend ConfigMap
+suite: Test Label Studio LLM Back ConfigMap
 templates:
-  - label-studio-llm-backend/configmap.yaml
+  - label-studio-llm-back/configmap.yaml
 release:
   name: csghub
   namespace: csghub
@@ -14,17 +14,17 @@ values:
   - values.yaml
 tests:
   - it: renders the ConfigMap metadata with standard labels
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: metadata.name
-          value: "csghub-label-studio-llm-backend"
+          value: "csghub-label-studio-llm-back"
       - equal:
           path: metadata.namespace
           value: "csghub"
       - equal:
           path: metadata.labels["app.kubernetes.io/service"]
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: metadata.labels["app.kubernetes.io/instance"]
           value: "csghub"
@@ -36,23 +36,23 @@ tests:
           value: "Helm"
 
   - it: enables the third-party model mode
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: data.USE_THIRD_PARTY_MODELS
           value: "true"
 
   - it: renders PORT from service.port
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: data.PORT
           value: "9090"
 
   - it: honors a custom service.port for PORT
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         service:
           port: 9191
     asserts:
@@ -61,7 +61,7 @@ tests:
           value: "9191"
 
   - it: renders the gunicorn runtime settings
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: data.LOG_LEVEL
@@ -74,7 +74,7 @@ tests:
           value: "8"
 
   - it: renders the local-model defaults (no-op under third-party mode)
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: data.MODEL_DIR
@@ -87,7 +87,7 @@ tests:
           value: "sam2.1_hiera_large.pt"
 
   - it: renders the third-party provider settings
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - equal:
           path: data.VOLCENGINE_ENTITY_SEGMENT_MODEL
@@ -106,7 +106,7 @@ tests:
           value: "360"
 
   - it: omits basic auth when not configured
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     asserts:
       - notExists:
           path: data.BASIC_AUTH_USER
@@ -114,9 +114,9 @@ tests:
           path: data.BASIC_AUTH_PASS
 
   - it: sets basic auth only when both fields are provided
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         basicAuth:
           user: mluser
           pass: mlpass
@@ -129,9 +129,9 @@ tests:
           value: "mlpass"
 
   - it: ignores basic auth when only one field is provided
-    template: label-studio-llm-backend/configmap.yaml
+    template: label-studio-llm-back/configmap.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         basicAuth:
           user: mluser
     asserts:

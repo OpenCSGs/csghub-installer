@@ -1,12 +1,12 @@
-# Test suite for the label-studio-llm-backend Deployment.
+# Test suite for the label-studio-llm-back Deployment.
 #
 # The Deployment runs the aggregated ML backend on port 9090 with HTTP
 # /health probes and consumes its configuration via envFrom on the
 # matching ConfigMap.
 
-suite: Test Label Studio LLM Backend Deployment
+suite: Test Label Studio LLM Back Deployment
 templates:
-  - label-studio-llm-backend/deployment.yaml
+  - label-studio-llm-back/deployment.yaml
 release:
   name: csghub
   namespace: csghub
@@ -17,17 +17,17 @@ tests:
   ## Metadata and labels
   ## ------------------------------------------------------------------
   - it: renders the Deployment metadata with standard labels
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     asserts:
       - equal:
           path: metadata.name
-          value: "csghub-label-studio-llm-backend"
+          value: "csghub-label-studio-llm-back"
       - equal:
           path: metadata.namespace
           value: "csghub"
       - equal:
           path: metadata.labels["app.kubernetes.io/service"]
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: metadata.labels["app.kubernetes.io/instance"]
           value: "csghub"
@@ -45,7 +45,7 @@ tests:
   ## Spec defaults
   ## ------------------------------------------------------------------
   - it: renders the Deployment spec defaults
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     asserts:
       - equal:
           path: spec.replicas
@@ -58,13 +58,13 @@ tests:
           value: 600
       - equal:
           path: spec.selector.matchLabels["app.kubernetes.io/service"]
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: spec.template.spec.terminationGracePeriodSeconds
           value: 20
 
   - it: omits the service account block when serviceAccountName is not set
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     asserts:
       - notExists:
           path: spec.template.spec.serviceAccountName
@@ -72,12 +72,12 @@ tests:
   ## ------------------------------------------------------------------
   ## Container image, ports, envFrom and probes
   ## ------------------------------------------------------------------
-  - it: renders the llm-backend container with image, ports, envFrom and probes
-    template: label-studio-llm-backend/deployment.yaml
+  - it: renders the llm-back container with image, ports, envFrom and probes
+    template: label-studio-llm-back/deployment.yaml
     asserts:
       - equal:
           path: spec.template.spec.containers[0].name
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: spec.template.spec.containers[0].image
           value: "docker.io/opencsghq/label-studio:v2.6.0-llm-back"
@@ -95,7 +95,7 @@ tests:
           value: "TCP"
       - equal:
           path: spec.template.spec.containers[0].envFrom[0].configMapRef.name
-          value: "csghub-label-studio-llm-backend"
+          value: "csghub-label-studio-llm-back"
       - equal:
           path: spec.template.spec.containers[0].livenessProbe.httpGet.path
           value: "/health"
@@ -124,7 +124,7 @@ tests:
   ## Image configuration
   ## ------------------------------------------------------------------
   - it: overrides the image registry when registryPolicy is force
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
       global:
         image:
@@ -136,9 +136,9 @@ tests:
           value: "registry.opencsg.com/opencsghq/label-studio:v2.6.0-llm-back"
 
   - it: prefers service-level pullSecrets over global pullSecrets
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         image:
           pullSecrets:
             - "svc-secret"
@@ -152,9 +152,9 @@ tests:
           value: "svc-secret"
 
   - it: prefers the service-level pull policy over the global pull policy
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         image:
           pullPolicy: "Always"
       global:
@@ -169,9 +169,9 @@ tests:
   ## Environment variables and resources
   ## ------------------------------------------------------------------
   - it: renders extra container environments when set
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         environments:
           DEBUG: "false"
           LOG_LEVEL: "info"
@@ -190,9 +190,9 @@ tests:
           value: "info"
 
   - it: renders container resources when set
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         resources:
           requests:
             cpu: "500m"
@@ -218,9 +218,9 @@ tests:
   ## Spec overrides
   ## ------------------------------------------------------------------
   - it: renders overridden spec scalars when provided
-    template: label-studio-llm-backend/deployment.yaml
+    template: label-studio-llm-back/deployment.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         replicas: 2
         minReadySeconds: 10
         terminationGracePeriodSeconds: 60

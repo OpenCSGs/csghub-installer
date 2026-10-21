@@ -163,10 +163,10 @@ labelStudio:
     runAsUser: 0
     runAsGroup: 0
 
-## Label Studio LLM Backend
+## Label Studio LLM Back
 ## Aggregated ML backend for label-studio; serves inference through third-party
 ## APIs instead of local models (see USE_THIRD_PARTY_MODELS in the ConfigMap).
-labelStudioLlmBackend:
+labelStudioLlmBack:
   ## Image settings (overrides global.image)
   image:
     # registry: "docker.io"

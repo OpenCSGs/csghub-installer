@@ -1,30 +1,30 @@
-# Test suite for the label-studio-llm-backend Service.
+# Test suite for the label-studio-llm-back Service.
 #
-# The Service exposes the llm-backend port (9090 by default) and selects pods
-# by the llm-backend service label. Both port and targetPort are derived from
+# The Service exposes the llm-back port (9090 by default) and selects pods
+# by the llm-back service label. Both port and targetPort are derived from
 # service.port.
 
-suite: Test Label Studio LLM Backend Service
+suite: Test Label Studio LLM Back Service
 templates:
-  - label-studio-llm-backend/service.yaml
+  - label-studio-llm-back/service.yaml
 release:
   name: csghub
   namespace: csghub
 values:
   - values.yaml
 tests:
-  - it: renders the llm-backend Service metadata and labels
-    template: label-studio-llm-backend/service.yaml
+  - it: renders the llm-back Service metadata and labels
+    template: label-studio-llm-back/service.yaml
     asserts:
       - equal:
           path: metadata.name
-          value: "csghub-label-studio-llm-backend"
+          value: "csghub-label-studio-llm-back"
       - equal:
           path: metadata.namespace
           value: "csghub"
       - equal:
           path: metadata.labels["app.kubernetes.io/service"]
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: metadata.labels["app.kubernetes.io/instance"]
           value: "csghub"
@@ -35,8 +35,8 @@ tests:
           path: metadata.labels["app.kubernetes.io/managed-by"]
           value: "Helm"
 
-  - it: renders the llm-backend Service spec with default port
-    template: label-studio-llm-backend/service.yaml
+  - it: renders the llm-back Service spec with default port
+    template: label-studio-llm-back/service.yaml
     asserts:
       - equal:
           path: spec.type
@@ -55,15 +55,15 @@ tests:
           value: "http"
       - equal:
           path: spec.selector["app.kubernetes.io/service"]
-          value: "label-studio-llm-backend"
+          value: "label-studio-llm-back"
       - equal:
           path: spec.selector["app.kubernetes.io/instance"]
           value: "csghub"
 
   - it: renders a custom port and propagates it to both port and targetPort
-    template: label-studio-llm-backend/service.yaml
+    template: label-studio-llm-back/service.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         service:
           port: 9191
     asserts:
@@ -75,9 +75,9 @@ tests:
           value: 9191
 
   - it: renders a NodePort type when service.type is overridden
-    template: label-studio-llm-backend/service.yaml
+    template: label-studio-llm-back/service.yaml
     set:
-      labelStudioLlmBackend:
+      labelStudioLlmBack:
         service:
           type: "NodePort"
     asserts:

@@ -95,8 +95,8 @@ labelStudio:
     runAsUser: 0
     runAsGroup: 0
 
-## Label Studio LLM Backend
-labelStudioLlmBackend:
+## Label Studio LLM Back
+labelStudioLlmBack:
   image:
     repository: opencsghq/label-studio
     tag: v2.6.0-llm-back
