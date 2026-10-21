@@ -243,11 +243,12 @@ csgbot:
           # registry: "docker.io"
           repository: "opencsghq/openclaw-sandbox"
           tag: "03c2897c"
+      # Ref: /product/starhub/starhub-server/-/blob/main/configs/agent_runtime/csgclaw.json?ref_type=heads
       csgclawServer:
         image:
           # registry: "docker.io"
           repository: "opencsghq/csgclaw-server-sandbox"
-          tag: "2026090405"
+          tag: "2026101201"
       csgclawAgent:
         image:
           # registry: "docker.io"
