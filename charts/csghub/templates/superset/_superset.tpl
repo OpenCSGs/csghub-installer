@@ -62,6 +62,34 @@ AUTH_USER_REGISTRATION_ROLE = 'Admin'
 {{- end -}}
 
 {{- /*
+# Resolve the Superset SECRET_KEY, shared by the master secret and the
+# superset-env secret so both stay in sync.
+# Precedence: value already persisted in the master secret > legacy value in
+# the pre-f718c320 superset-env secret (one-time migration) > derivation.
+# The legacy step matters because superset-env used to hold a random
+# randAlphaNum key and its encrypted dbs rows are unreadable after the key
+# changes, so we must carry the old value forward on the first migration.
+*/}}
+{{- define "superset.secretKey" }}
+  {{- $ctx := . }}
+  {{- $masterName := include "common.names.custom" (list $ctx "secrets") }}
+  {{- $masterData := ((lookup "v1" "Secret" $ctx.Release.Namespace $masterName).data) | default dict }}
+  {{- $stored := dig "superset-secret-key" "" $masterData | b64dec }}
+  {{- if $stored }}
+    {{- $stored -}}
+  {{- else }}
+    {{- $envName := include "common.names.custom" (list $ctx "superset-env") }}
+    {{- $envData := ((lookup "v1" "Secret" $ctx.Release.Namespace $envName).data) | default dict }}
+    {{- $legacy := dig "SUPERSET_SECRET_KEY" "" $envData | b64dec }}
+    {{- if $legacy }}
+      {{- $legacy -}}
+    {{- else }}
+      {{- include "common.secret.value" (list $ctx "superset-secret-key" 56) -}}
+    {{- end }}
+  {{- end }}
+{{- end -}}
+
+{{- /*
 # Superset Config Override
 # Generates the full config override block (SECRET_KEY + OAuth).
 # Usage: {{ include "superset.config.override" . }}
