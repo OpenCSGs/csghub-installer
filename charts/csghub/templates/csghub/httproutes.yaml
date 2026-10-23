@@ -56,7 +56,7 @@ spec:
         - name: {{ $serverSvcName }}
           port: {{ dig "service" "port" 8080 $serverSvc }}
       timeouts:
-        request: 5m
+        request: 0s
     - matches:
         - path:
             type: RegularExpression

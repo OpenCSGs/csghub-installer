@@ -77,7 +77,7 @@ tests:
               - name: csghub-server
                 port: 8080
             timeouts:
-              request: 5m
+              request: 0s
 
   - it: routes git clone paths to the server with a 15m timeout
     template: csghub/httproutes.yaml
